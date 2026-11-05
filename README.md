@@ -1,27 +1,57 @@
 # OpenDesertVR
 
-Free, open-source experimental PCVR adaptation research for **Crimson Desert** (BlackSpace Engine, Windows DirectX 12). This is a community project, not affiliated with Pearl Abyss.
+Free, open-source VR adaptation research for Crimson Desert (Windows).
+Community project, not affiliated with Pearl Abyss.
 
-**Status: M0 — standalone OpenXR/D3D12 foundation. No in-game VR support has been implemented or verified.**
+**M0: standalone OpenXR/D3D12 stereo testhost implemented. Headset verification
+is pending. No in-game VR support exists.** VRcade remains a future roadmap.
 
-## Principles
-- Open source, no paywall, no proprietary VR mod dependency, no telemetry.
-- Do not redistribute Crimson Desert binaries/assets, circumvent DRM, or interfere with anti-cheat/network services.
-- Never claim duplicated side-by-side images or depth reprojection provide genuine independent per-eye geometry.
-- Separate evidence from hypotheses; game adapter remains inactive until safe, authorized experiments prove feasibility.
-- No storefront compatibility claims without manual testing.
+The testhost renders original red/green/blue cubes at 1/3/8 meters from
+independent runtime eye poses and asymmetric projections. It runs without
+Crimson Desert. Game adapter capabilities stay Unsupported/Unverified.
 
-## Start with Codex
-Read [Technical Specification](docs/OpenDesertVR_Technical_Specification.md) and [Codex Master Prompt](Codex_Master_Prompt.md). Execute **M0 only**. The required initial product is an independent D3D12/OpenXR stereo testhost, hardware diagnostics, deterministic tests, and Windows CI. It must build without a Crimson Desert installation.
+## Build and test
 
-## Development
-Windows 11 x64; Visual Studio 2022 C++ workload; CMake; Windows SDK; Khronos OpenXR SDK. Full build commands and pinned dependency versions must be implemented and documented in M0. Any missing runtime or headset must be reported as *not tested*, not passed.
+Windows x64, Visual Studio 2022 C++ tools/Windows SDK, CMake 3.24+:
 
-## Roadmap
-- **G0/M0:** independent OpenXR/D3D12 stereo renderer, diagnostics, headless tests/CI
-- **G1:** non-invasive game-build and DX12 feasibility research
-- **G2:** demonstrate genuinely distinct per-eye views in game
-- **G3:** head tracking, camera integration, comfort
-- **G4:** stabilization and public alpha
+```powershell
+cmake --preset windows-msvc-debug
+cmake --build --preset windows-msvc-debug
+ctest --preset windows-msvc-debug
+cmake --preset windows-msvc-release
+cmake --build --preset windows-msvc-release
+ctest --preset windows-msvc-release
+powershell -ExecutionPolicy Bypass -File scripts/package.ps1
+```
 
-License: MIT for **original project code** only, with separate third-party notices. Game and brand remain their owners' property.
+Dependencies download on configure from immutable revisions with SHA256 checks.
+The ZIP includes the OpenXR loader, redistributable MSVC DLLs, config and
+license notices. Install/activate your vendor OpenXR runtime separately.
+See [manual headset checklist](docs/M0_ACCEPTANCE.md) and
+[actual evidence](docs/M0_PROGRESS.md).
+
+```powershell
+./out/build/release/Release/odv-cli.exe doctor
+./out/build/release/Release/odv-testhost.exe --config config/testhost.json --report out/headset-report.json
+```
+
+Doctor/export-report emit versioned sanitized JSON. Missing requirements
+return exit 3. The host defaults to 60 seconds; Ctrl+C requests exit.
+CPU frame timings are measured; GPU/reprojection metrics remain NOT_RUN.
+Core/math tests can also use the portable-debug Ninja preset without Windows;
+the XR host and graphics test are Windows-only.
+
+## Boundaries
+
+No game hooks, injection, protected binary edits, game files, telemetry,
+paid injector dependency or DRM/anti-cheat circumvention. Synthetic stereo
+does not prove the game can render additional views. Headless CI, software
+GPU tests, actual headset tests and actual game tests are separate evidence.
+
+Read [technical specification](docs/OpenDesertVR_Technical_Specification.md),
+[build prompt](Codex_Master_Prompt.md), [VRcade roadmap](docs/VRCADE_ROADMAP.md),
+[architecture](docs/architecture.md) and [G1 research plan](docs/RESEARCH.md).
+
+New implementation is MIT ([LICENSE-MIT](LICENSE-MIT)); the initial repository
+retains [CC0](LICENSE). Third-party licenses are preserved in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -17,3 +17,16 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }} --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Test
         run: ctest --preset ${{ matrix.preset }} -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+      - name: Stage Release runtime (headset and game tests NOT_RUN)
+        if: matrix.preset == 'windows-msvc-release'
+        run: cmake --install out/build/release --config Release --component Runtime --prefix out/package
+      - uses: actions/upload-artifact@v4
+        if: matrix.preset == 'windows-msvc-release'
+        with:
+          name: OpenDesertVR-M0-win64
+          path: out/package
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tests-${{ matrix.preset }}
+          path: out/build/*/Testing/Temporary/LastTest.log

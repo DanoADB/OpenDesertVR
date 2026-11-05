@@ -46,4 +46,11 @@ Documentation, local-first privacy, portable profiles, safe error recovery, cont
 - Record architecture decisions in `docs/decisions` whenever changing core abstractions.
 
 ## Current implementation snapshot (2026-11-04)
-CMake presets, Windows CI configuration, stereo math and headless test source have been committed. They have **not** yet been independently verified by a successful build. OpenXR/D3D12 testhost and actual game integration remain unimplemented. See `docs/M0_PROGRESS.md`.
+
+Standalone OpenXR/D3D12 stereo testhost, diagnostics, configuration, inactive
+game adapter, pinned dependencies, packaging and Windows CI are implemented.
+Local MSVC Debug/Release builds and all six deterministic/native tests pass.
+WARP raster/readback verifies separate-eye pixel disparity. The active Meta
+runtime is discoverable; no headset system was available. Actual headset
+acceptance remains PENDING, and no game VR integration exists.
+See `docs/M0_PROGRESS.md` and `docs/M0_ACCEPTANCE.md`.
