@@ -4,12 +4,13 @@
 // integrity. Do not change that upstream protection or machine registration.
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include <iostream>
 #include <sddl.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <windows.h>
 
 namespace {
 struct Handle {
@@ -80,6 +81,8 @@ struct TestDesktop {
         SECURITY_ATTRIBUTES attributes{sizeof(SECURITY_ATTRIBUTES), security, FALSE};
         const auto name =
             L"odv-tests-" + std::to_wstring(GetCurrentProcessId()) + L"-" + std::to_wstring(GetTickCount64());
+        const auto original = GetProcessWindowStation();
+        const auto original_desktop = GetThreadDesktop(GetCurrentThreadId());
         station = CreateWindowStationW(name.c_str(), CWF_CREATE_ONLY, WINSTA_ALL_ACCESS, &attributes);
         const auto error = GetLastError();
         if (!station) {
@@ -87,13 +90,14 @@ struct TestDesktop {
             SetLastError(error);
             checked(FALSE, "private test window station");
         }
-        const auto original = GetProcessWindowStation();
         checked(SetProcessWindowStation(station), "select private test window station");
         desktop = CreateDesktopW(L"default", nullptr, nullptr, 0, GENERIC_ALL, &attributes);
         const auto desktop_error = GetLastError();
         const BOOL restored = SetProcessWindowStation(original);
+        const BOOL thread_restored = SetThreadDesktop(original_desktop);
         LocalFree(security);
         checked(restored, "restore test window station");
+        checked(thread_restored, "restore test thread desktop");
         if (!desktop) {
             SetLastError(desktop_error);
             checked(FALSE, "private test desktop");
