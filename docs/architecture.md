@@ -38,7 +38,10 @@ window with nearest-rank percentiles and a separate lifetime count.
 
 The test-only runtime loads through the official OpenXR loader with a
 process-local XR_RUNTIME_JSON override, creates WARP swapchain images and
-audits image/frame ordering and teardown. It is neither a headset emulator
+audits image/frame ordering and teardown. On disposable GitHub workers, the
+CI fixture temporarily registers that manifest and restores the prior runtime
+selection in finally, because their elevated service ignores environment
+overrides. Local tests use a non-elevated shell. The runtime is neither a headset emulator
 nor a conformance implementation and is never installed in the user package.
 The report exposes test_runtime=true and keeps hardware/game validation
 NOT_RUN. Image waits use 100 ms calls and a five-second retry deadline;

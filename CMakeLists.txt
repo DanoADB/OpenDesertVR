@@ -69,9 +69,6 @@ if(BUILD_TESTING)
   add_test(NAME odv_cli_invalid COMMAND odv-cli invalid)
   set_tests_properties(odv_cli_invalid PROPERTIES WILL_FAIL TRUE)
   if(WIN32)
-    add_executable(odv_test_process tests/run_test_process.cpp)
-    target_link_libraries(odv_test_process PRIVATE advapi32 user32)
-    add_test(NAME odv_restricted_process COMMAND odv_test_process --restricted ${CMAKE_COMMAND} --version)
     add_test(NAME odv_testhost_help COMMAND odv-testhost --help)
     add_executable(odv_graphics_tests tests/graphics_tests.cpp)
     target_link_libraries(odv_graphics_tests PRIVATE odv_d3d12)
@@ -79,7 +76,7 @@ if(BUILD_TESTING)
     add_test(NAME odv_graphics_validation COMMAND odv_graphics_tests --debug-layer)
     set_tests_properties(odv_graphics_validation PROPERTIES TIMEOUT 60 SKIP_RETURN_CODE 77)
     set_tests_properties(odv_graphics_warp PROPERTIES TIMEOUT 60)
-    add_test(NAME odv_cli_missing_runtime COMMAND odv_test_process ${CMAKE_COMMAND} -DCLI=$<TARGET_FILE:odv-cli> -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/cli_missing_runtime.cmake)
+    add_test(NAME odv_cli_missing_runtime COMMAND ${CMAKE_COMMAND} -DCLI=$<TARGET_FILE:odv-cli> -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/cli_missing_runtime.cmake)
     set_tests_properties(odv_cli_missing_runtime PROPERTIES TIMEOUT 30)
     add_library(odv_mock_runtime SHARED tests/mock_runtime/runtime.cpp)
     target_link_libraries(odv_mock_runtime PRIVATE OpenXR::headers nlohmann_json::nlohmann_json d3d12 dxgi)
@@ -90,14 +87,14 @@ if(BUILD_TESTING)
         acquire_failure wait_failure release_failure second_acquire_failure second_wait_failure
         second_release_failure second_allocation_failure begin_session_failure wait_frame_failure
         begin_frame_failure locate_failure end_frame_failure image_timeout)
-      add_test(NAME odv_xr_${scenario} COMMAND odv_test_process ${CMAKE_COMMAND}
+      add_test(NAME odv_xr_${scenario} COMMAND ${CMAKE_COMMAND}
         -DHOST=$<TARGET_FILE:odv-testhost>
         -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
         -DSCENARIO=${scenario} -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/integration.cmake)
       set_tests_properties(odv_xr_${scenario} PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
     endforeach()
     foreach(scenario normal missing_headset)
-      add_test(NAME odv_collector_${scenario} COMMAND odv_test_process ${CMAKE_COMMAND}
+      add_test(NAME odv_collector_${scenario} COMMAND ${CMAKE_COMMAND}
         -DPACKAGE=$<TARGET_FILE_DIR:odv-testhost>
         -DRUNNER=${CMAKE_CURRENT_SOURCE_DIR}/scripts/run-headset-test.ps1
         -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json

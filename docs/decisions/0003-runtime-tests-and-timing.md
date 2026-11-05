@@ -29,14 +29,15 @@ seconds; an acquired but unwaited image is left to session destruction rather
 than being released illegally.
 
 
-Hosted runner finding: GitHub's Windows worker uses high integrity, where
-the official loader rejects XR_RUNTIME_JSON. Runtime tests now launch through
-a test-only helper: high-integrity parents create a restricted primary token
-with administrator SID disabled, maximum privileges disabled and medium
-integrity; ordinary parents launch normally. All test descendants inherit
-the reduced token. Upstream loader protections and runtime registration are
-unchanged. The helper is excluded from installed packages.
+Hosted runner finding: GitHub's elevated Windows service ignores
+XR_RUNTIME_JSON. Use scripts/ci-test.ps1 only on the disposable GitHub worker:
+save ActiveRuntime, register the built test-runtime manifest for the native
+suite, then point it to an absent manifest for the missing-runtime check.
+Restore the prior value in finally. The fixture rejects ordinary local
+invocation and is not installed in the package. The missing-runtime phase
+runs after all native test processes have exited, avoiding registration races.
 
-Process/token APIs:
-- https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken
-- https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw
+Local tests run from a non-elevated shell with per-process environment
+overrides. The application and packaged collector do not write runtime
+registration. The upstream loader is unmodified. Hosted tests retain the
+same actual native host and official loader as local tests.

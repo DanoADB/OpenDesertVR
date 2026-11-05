@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: cmake --build --preset ${{ matrix.preset }} --parallel 4 --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Test
-        run: ctest --preset ${{ matrix.preset }} --parallel 3 -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+        run: ./scripts/ci-test.ps1 -Preset '${{ matrix.preset }}'
       - name: Stage Release runtime (headset and game tests NOT_RUN)
         if: matrix.preset == 'windows-msvc-release'
         run: |
@@ -42,3 +42,4 @@ jobs:
             out/build/*/mock-*/report.json
             out/build/*/mock-*/audit.json
             out/build/*/collector-*/run-summary.json
+            out/ci-*.log
