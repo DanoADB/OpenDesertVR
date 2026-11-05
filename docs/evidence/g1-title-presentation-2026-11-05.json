@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "actual_game_external_presentation_baseline",
+  "scene": "title/start menu (user confirmed)",
+  "game_storefront": "Steam",
+  "steam_app_id": 3321460,
+  "manifest_build_id": "26448710",
+  "game_settings": null,
+  "resolution": null,
+  "hdr_state": null,
+  "frame_generation": null,
+  "capture_source_commit": "e9f184ed26743ed87ba1fba4aadc14dee3b59453",
+  "capture_info": {
+    "schema_version": 1,
+    "tool": "PresentMon console",
+    "tool_version": "2.6.0",
+    "tool_sha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
+    "requested_duration_seconds": 30,
+    "target": "CrimsonDesert.exe",
+    "game_executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "game_executable_size_bytes": 327116696,
+    "game_file_version": "1.0.0.3549",
+    "capture_script_sha256": "b415e92465cd67411846f1d65ae5881a9ad48fa53c3db5d7226a75f524683c30",
+    "summary_script_sha256": "e0945949cdc075a1128b88c7bd90957822971f40fac392d7d339a4c4a4e750a0",
+    "capture_exit": 0,
+    "summary_exit": 0,
+    "status": "CAPTURED"
+  },
+  "summary": {
+    "schema_version": 1,
+    "evidence_kind": "external_presentmon_csv_summary",
+    "application": "CrimsonDesert.exe",
+    "input_sha256": "a5374cda0fcb9069fa3d4595eb06dd800a9b6f6d1ef330f53544e6f43f1dab03",
+    "matching_rows": 1794,
+    "streams": [
+      {
+        "stream": 1,
+        "rows": 1794,
+        "present_runtimes": [
+          "DXGI"
+        ],
+        "present_modes": [
+          "Hardware Composed: Independent Flip"
+        ],
+        "between_presents": {
+          "status": "OBSERVED",
+          "samples": 1794,
+          "median_ms": 16.6869,
+          "p95_ms": 18.4211,
+          "max_ms": 27.8759
+        },
+        "missing_intervals": 0,
+        "zero_intervals_excluded": 0,
+        "not_displayed_rows": null,
+        "not_displayed_rows_status": "NOT_RUN"
+      }
+    ],
+    "d3d12_render_path": "UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED",
+    "limitations": [
+      "Intervals describe separate presentation streams, not measured headset latency.",
+      "DXGI presentation does not distinguish D3D11 from D3D12 or prove stereo.",
+      "DisplayedTime=NA counts only rows marked not displayed by PresentMon; it is not an XR compositor drop metric.",
+      "No scene, game settings or workload is inferred from the CSV."
+    ]
+  },
+  "verification": {
+    "input_sha256_rechecked": true,
+    "summary_independently_recomputed": true,
+    "capture_and_summary_script_hashes_match_original_git_revision": true
+  },
+  "scope": "Title/menu presentation sample only. Not gameplay, stereo, camera access or headset performance. No game binary modification or injected capture used.",
+  "reanalysis": {
+    "summary_script_sha256": "893167e0f12e2023abd71bc9c6c862aeaf9fbdc931e6a29f73366cc98011cd20",
+    "reason": "The initial summary represented an absent DisplayedTime column as zero not-displayed rows. Reanalysis explicitly records NOT_RUN/null; intervals are unchanged. The original local CSV/summary and capture-info fingerprints are preserved."
+  }
+}

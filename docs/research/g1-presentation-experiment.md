@@ -26,6 +26,16 @@ The game was not running and no game presentation was observed. This is a
 Windows tracing privilege limitation, not evidence of game incompatibility.
 The scripts do not auto-elevate, change group membership or stop other profilers.
 
+The user subsequently ran the helper from Administrator PowerShell while the
+game was at its title/start menu. Capture and analysis exited 0: 1,794 matching
+rows in one DXGI stream, hardware-composed independent flip, median/p95/max
+between presents 16.6869/18.4211/27.8759 ms. The game executable and helper-script
+hashes are verified in [the actual evidence](../evidence/g1-title-presentation-2026-11-05.json).
+Settings/resolution/frame generation were not recorded; this is not gameplay
+or headset performance evidence. This CSV omits DisplayedTime, so undisplayed
+row count is explicitly NOT_RUN/null in corrected analysis. The original raw
+CSV remains local and is hash-bound to the preserved evidence.
+
 ## Run and record
 
 Start the game normally through Steam. Use a stable title/menu scene first;
@@ -49,8 +59,8 @@ No automatic game launch or settings change occurs.
 Keep raw.csv and capture.log local: they can contain IDs/addresses. Share
 summary.json and capture-info.json. The summary replaces swapchain addresses
 with stream numbers, removes PIDs/paths and reports each stream separately.
-NA, zero and malformed intervals are handled explicitly; missing data is never
-reported as measured zero. Failed capture/parse never claims success.
+NA, zero and malformed intervals are handled explicitly; missing columns/data
+are never reported as measured zero. Failed capture/parse never claims success.
 
 ## Interpretation and next technical gate
 

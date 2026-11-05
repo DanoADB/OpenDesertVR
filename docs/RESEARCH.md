@@ -23,8 +23,10 @@ After the 2026-11-05 Quest Pro core hardware acceptance, a
 build fingerprint and reviewed the published EULA/store disclosures.
 Non-invasive technical research continues with an
 [external presentation capture](research/g1-presentation-experiment.md).
-Intrusive integration still needs review; game presentation, camera control
-and actual in-game stereo remain unverified.
+Intrusive integration still needs review. A user-confirmed title-menu capture
+observes one DXGI presentation stream; world-render API, camera control and
+actual in-game stereo remain unverified. See the
+[camera feasibility source review](research/crimson-camera-feasibility.md).
 
 
 ## Pinned upstream stereo-source review

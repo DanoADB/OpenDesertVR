@@ -32,6 +32,7 @@ def summarize(path, process_id):
         reader = csv.DictReader(stream)
         if not required.issubset(reader.fieldnames or []):
             raise ValueError("CSV lacks required PresentMon presentation columns")
+        displayed_time_present = "DisplayedTime" in reader.fieldnames
         for row in reader:
             # The capture may contain unrelated rows. Never merge them into the game.
             application = (row.get("Application") or "").replace("\\", "/").rsplit("/", 1)[-1]
@@ -93,7 +94,8 @@ def summarize(path, process_id):
             "between_presents": timing(chain["intervals"]),
             "missing_intervals": chain["missing_intervals"],
             "zero_intervals_excluded": chain["zero_intervals"],
-            "not_displayed_rows": chain["not_displayed_rows"],
+            "not_displayed_rows": chain["not_displayed_rows"] if displayed_time_present else None,
+            "not_displayed_rows_status": "OBSERVED" if displayed_time_present else "NOT_RUN",
         })
     return {
         "schema_version": 1,

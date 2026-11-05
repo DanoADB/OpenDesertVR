@@ -43,5 +43,5 @@ jobs:
             out/build/*/Testing/Temporary/LastTest.log
             out/build/*/mock-*/report.json
             out/build/*/mock-*/audit.json
-            out/build/*/collector-*/run-summary.json
+            out/build/*/collector-*/*.json
             out/ci-*.log

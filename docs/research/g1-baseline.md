@@ -29,8 +29,11 @@ for our proposed adapter.
 The [official store listing](https://store.steampowered.com/app/3321460/Crimson_Desert_Enhanced/)
 discloses Denuvo Anti-tamper and lists DirectX 12. These are publisher/store
 claims, not local instrumentation results. Anti-tamper does not establish an
-anti-cheat implementation. Network behavior, actual rendering/presentation and
-camera access remain UNVERIFIED.
+anti-cheat implementation. A later title-menu ETW capture observes DXGI
+presentation; [its evidence](../evidence/g1-title-presentation-2026-11-05.json)
+does not establish the actual world-render API or camera control. Those and
+network behavior remain UNVERIFIED. The initial metadata record predates that
+capture and retains its original NOT_RUN fields.
 
 ## Technical research and integration boundaries
 

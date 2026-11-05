@@ -13,14 +13,17 @@ SPEC.loader.exec_module(SUMMARY)
 
 
 class PresentationSummaryTests(unittest.TestCase):
-    def summarize(self, rows):
+    def summarize(self, rows, displayed_column=True):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "capture.csv"
             with path.open("w", newline="", encoding="utf-8-sig") as stream:
                 writer = csv.writer(stream)
-                writer.writerow(["Application", "ProcessID", "SwapChainAddress", "PresentRuntime",
-                                 "PresentMode", "MsBetweenPresents", "DisplayedTime"])
-                writer.writerows(rows)
+                columns = ["Application", "ProcessID", "SwapChainAddress", "PresentRuntime",
+                           "PresentMode", "MsBetweenPresents"]
+                if displayed_column:
+                    columns.append("DisplayedTime")
+                writer.writerow(columns)
+                writer.writerows(rows if displayed_column else [row[:-1] for row in rows])
             return SUMMARY.summarize(path, 12345)
 
     def row(self, interval, address="private-address-A", pid=12345, app="CrimsonDesert.exe"):
@@ -49,6 +52,16 @@ class PresentationSummaryTests(unittest.TestCase):
     def test_missing_only_is_not_measured(self):
         stream = self.summarize([self.row("NA")])["streams"][0]
         self.assertEqual(stream["between_presents"]["status"], "NOT_RUN")
+
+    def test_missing_display_column_is_not_zero_dropped(self):
+        stream = self.summarize([self.row(16.7)], displayed_column=False)["streams"][0]
+        self.assertIsNone(stream["not_displayed_rows"])
+        self.assertEqual(stream["not_displayed_rows_status"], "NOT_RUN")
+
+    def test_display_column_na_is_counted(self):
+        stream = self.summarize([self.row(16.7)])["streams"][0]
+        self.assertEqual(stream["not_displayed_rows"], 1)
+        self.assertEqual(stream["not_displayed_rows_status"], "OBSERVED")
 
     def test_bad_timings_fail(self):
         for value in ["NaN", "inf", "-inf", "-1", "garbage"]:
