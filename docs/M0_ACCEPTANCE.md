@@ -10,7 +10,9 @@ See [visual observations](evidence/m0-quest-pro-2026-11-05.json) and
 [structured hardware reports](evidence/m0-quest-pro-reports-2026-11-05.json).
 The checklist below remains a reusable template, not a claim that every
 extended check passed. Hardware debug validation, arbitrary GPU removal,
-runtime crash, compositor metrics and runtime version remain unverified.
+runtime crash and compositor metrics remain unverified. The original acceptance
+reports lack a runtime version; a [later doctor query](evidence/m0-runtime-version-2026-11-05.json)
+records OpenXR runtime version 1.208.0 without retroactively changing those reports.
 
 This package tests synthetic geometry only. No game installation is needed.
 M0 does not pass the roadmap's hardware exit gate until this checklist is

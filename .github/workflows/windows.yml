@@ -21,6 +21,8 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }} --parallel 4 --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Test
         run: ./scripts/ci-test.ps1 -Preset '${{ matrix.preset }}'
+      - name: Test presentation-summary filtering and statistics
+        run: python -m unittest discover -s tests -p test_presentmon_summary.py -v
       - name: Stage Release runtime (headset and game tests NOT_RUN)
         if: matrix.preset == 'windows-msvc-release'
         run: |

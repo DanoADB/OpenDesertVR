@@ -11,6 +11,8 @@
   projections, depth-buffered rasterization, GPU completion before release.
 - Doctor/export-report, explicit missing prerequisites and inactive
   CrimsonDesertAdapter capabilities.
+- Numeric OpenXR runtime version in reports; a later actual-runtime doctor
+  query records 1.208.0. The earlier headset runs used the preceding binary.
 - Revision/hash-pinned Khronos loader and JSON dependency, dependency notices,
   architecture/safety/research/manual acceptance docs and Release packaging.
 - Windows Debug/Release CI definitions including WARP graphics checks.

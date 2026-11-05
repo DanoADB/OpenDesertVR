@@ -32,12 +32,13 @@ claims, not local instrumentation results. Anti-tamper does not establish an
 anti-cheat implementation. Network behavior, actual rendering/presentation and
 camera access remain UNVERIFIED.
 
-## Decision under the project boundaries
+## Technical research and integration boundaries
 
-**HOLD live integration.** The specification requires a permitted approach
-before hooks and forbids protection bypass. A free/open-source license on our
-code, ordinary game ownership or an upstream mod's existence does not resolve
-the permission issue. No hook, injection, camera offset or bypass is proposed.
+**Non-invasive technical research continues.** The EULA review is context,
+not a blanket technical-research stop. The user requested technology-focused
+testing; making a repository private is neither required nor technical proof.
+The specification still requires review before hooks and forbids protection
+bypass. No hook, injection, camera offset or bypass is proposed here.
 
 To reopen live integration, obtain publisher permission covering the intended
 camera/render extension, or establish a specifically reviewed permitted route
@@ -45,8 +46,9 @@ consistent with the project boundaries. Then record its scope and restrictions,
 identify any documented extension API, and plan a minimal reversible experiment.
 Do not silently treat an unresolved permission question as approval.
 
-If a permitted route is established, first observe ordinary DX12 presentation
-with approved tooling and explicit stop conditions. Establish frame ownership,
+First observe ordinary presentation through the external ETW collector described
+in [the presentation experiment](g1-presentation-experiment.md). DXGI events
+alone do not distinguish D3D11 from D3D12. Establish frame ownership,
 camera control, temporal effects and actual two-eye world rendering separately.
 Texture copies alone cannot establish G2; see the
 [upstream stereo audit](stereo-pipeline-audit.md). If no permitted route exists,
