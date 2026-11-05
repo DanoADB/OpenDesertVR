@@ -95,7 +95,9 @@ passed: the host stopped its session and exited 0; after reconnecting, a fresh
 launch rendered 1,214 stereo frames, exited 0 and passed user visual confirmation.
 **Core M0 hardware acceptance passes for this tested configuration.** Hardware
 graphics debug validation, arbitrary GPU removal/runtime crash and compositor
-metrics remain unverified. No G1 integration work has begun.
+metrics remain unverified. No live game integration work has begun.
+The [G1 metadata/permissions baseline](research/g1-baseline.md) records a hold
+pending a permitted approach.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements
 remain NOT_RUN. D3D12 debug validation is SKIPPED here because Graphics Tools

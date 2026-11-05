@@ -18,6 +18,12 @@ presentation evidence. Compare possible camera/frame-ownership approaches
 using evidence only. Deliver an integration plan or stop decision before
 implementing any hooks. No G1 experiment was performed during this M0 work.
 
+After the 2026-11-05 Quest Pro core hardware acceptance, a
+[G1 non-invasive baseline](research/g1-baseline.md) recorded the local Steam
+build fingerprint and reviewed the published EULA/store disclosures.
+Live integration is on hold pending a permitted approach; game presentation,
+camera control and actual in-game stereo remain unverified.
+
 
 ## Pinned upstream stereo-source review
 

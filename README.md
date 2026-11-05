@@ -3,8 +3,10 @@
 Free, open-source VR adaptation research for Crimson Desert (Windows).
 Community project, not affiliated with Pearl Abyss.
 
-**M0: standalone OpenXR/D3D12 stereo testhost implemented. Headset verification
-is pending. No in-game VR support exists.** VRcade remains a future roadmap.
+**M0: standalone OpenXR/D3D12 stereo testhost implemented; core headset
+acceptance passed on Meta Quest Pro (2026-11-05). No in-game VR support exists.**
+VRcade remains a future roadmap. [G1's non-invasive baseline](docs/research/g1-baseline.md)
+records a live-integration hold pending a permitted approach.
 
 The testhost renders original red/green/blue cubes at 1/3/8 meters from
 independent runtime eye poses and asymmetric projections. It runs without
