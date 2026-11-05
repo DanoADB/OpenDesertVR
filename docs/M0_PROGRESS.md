@@ -30,6 +30,7 @@ No Crimson Desert installation was used.
 | Actual loader with absent runtime override | PASS: categorized FAIL readiness, exit 3, sanitized JSON |
 | Installed runtime discovery | PASS: Meta runtime exposes XR_KHR_D3D12_enable |
 | Testhost without available headset | Expected FAIL readiness: XR_ERROR_FORM_FACTOR_UNAVAILABLE (-35), zero submitted frames |
+| Extracted Release package smoke | PASS: both programs run; missing headset returns exit 3 |
 | Real headset visual stereo/tracking | NOT_RUN |
 | Real headset stop/disconnect/device loss | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
@@ -54,6 +55,8 @@ cmake --build --preset windows-msvc-release
 ctest --preset windows-msvc-release
 powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
+
+Machine-readable local evidence: [m0-local-2026-11-04.json](evidence/m0-local-2026-11-04.json).
 
 Build artifacts stay in ignored out/. The package includes build-info.json
 with source commit and dirty flag. See M0_ACCEPTANCE.md for exact hardware
