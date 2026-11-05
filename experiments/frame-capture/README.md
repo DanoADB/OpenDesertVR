@@ -1,11 +1,15 @@
-# Prepared single-frame game capture experiment
+# Single-frame game capture experiment
 
-Status: **preparation only; game GPU capture NOT_RUN.** The external RenderDoc
-API entrypoints/options were checked against the installed tool, Python and
-PowerShell syntax passed, and the launcher correctly rejected an already-running
-game. The new API launch/control path still requires an actual test. Separately,
-the [owned capture lab](../capture-lab/README.md) already captured/replayed D3D12
-and checked every expected pixel. Neither result proves game capture or VR.
+Status: **game launch/control attempt FAILED before a frame request; no game
+GPU capture obtained.** The same launch API passed on the owned D3D12 fixture;
+replay verified all 256 pixels. The game target connected, then disconnected
+before READY_FOR_FRAME. A later game process had a different identity. This is
+consistent with launch handoff, but the cause remains unverified. No retry,
+late attachment, child/global hook or protection bypass was attempted.
+See the [sanitized attempt record](../../docs/evidence/g1-frame-capture-attempt-2026-11-05.json).
+The running-game guard also passed. Neither result proves game camera control
+or stereo. The commands below document the attempted method, not a working
+capture recipe for this Steam build.
 
 ## Reviewed method and scope
 
@@ -63,4 +67,5 @@ game adapter stays inactive and Unsupported/Unverified throughout this experimen
 
 The script's owned_launch mode is restricted to odv_capture_fixture.exe and is
 reserved for validating the launcher API independently; it cannot award game
-capture or stereo capability. An untested mode remains unverified.
+capture or stereo capability. Owned launch/replay passed on 2026-11-05; game
+target-control frame triggering remains unverified.

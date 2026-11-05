@@ -31,6 +31,14 @@ The subsequent [Direct3D12 event trace](evidence/g1-d3d12-execution-2026-11-05.j
 observes actual command-list execution in the game process. World-pass identity
 and camera control are still separate unanswered questions.
 
+The [controlled early-start frame-capture attempt](evidence/g1-frame-capture-attempt-2026-11-05.json)
+validated the RenderDoc launch API on an owned D3D12 fixture, with exact replay
+pixels. The game connection disconnected before a frame request; a different
+game process subsequently appeared. No game capture was obtained and the cause
+is unverified. This method stopped without child/global hooks, late attachment,
+Steam configuration changes or protection bypass. A new loading approach needs
+its own review before execution; the adapter remains inactive.
+
 
 ## Pinned upstream stereo-source review
 
