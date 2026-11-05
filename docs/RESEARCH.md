@@ -17,3 +17,12 @@ network/anti-cheat implications, publicly available diagnostics and DX12
 presentation evidence. Compare possible camera/frame-ownership approaches
 using evidence only. Deliver an integration plan or stop decision before
 implementing any hooks. No G1 experiment was performed during this M0 work.
+
+
+## Pinned upstream stereo-source review
+
+See [the static pipeline audit](research/stereo-pipeline-audit.md) for pinned
+Cyberpunk VR and REFramework camera/render/submission paths, selected direct
+dependency licenses, limits and adoption decision. No mod code or dependencies
+were adopted; builds and game/hardware execution were NOT_RUN. This read-only
+preparation does not advance the M0 hardware gate.

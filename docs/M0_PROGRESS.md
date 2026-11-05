@@ -16,6 +16,10 @@
 - Windows Debug/Release CI definitions including WARP graphics checks.
 - Packaged report collector gates host startup on doctor readiness, records
   source provenance, and preserves NOT_RUN for visual validation.
+- Pinned static Cyberpunk VR/REFramework source audit and selected direct
+  license inventory; no mod code/dependencies adopted. Sampled eye events now
+  share frame index and relative predicted display timing, checked by native
+  integration tests.
 - GPU timestamp queries, bounded per-eye/stereo timing summaries and explicit
   retained/lifetime sample counts.
 - Test-only OpenXR runtime exercising the compiled host with 25 normal/failure

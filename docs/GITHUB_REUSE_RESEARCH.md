@@ -3,6 +3,10 @@
 **Project:** OpenDesertVR  
 **Status:** Source and project claims surveyed; no upstream component integrated or tested yet.
 
+Current follow-up: [pinned stereo-source audit](research/stereo-pipeline-audit.md)
+and [M0 implementation evidence](M0_PROGRESS.md). The survey below is the
+initial reconnaissance snapshot, not current build or hardware status.
+
 ## Executive decision
 Use Khronos OpenXR hello_xr and Microsoft DirectX 12 samples as the **M0 reference baseline**; examine the MIT-licensed Cyberpunk2077-VR-OpenSource and REFramework projects for architectural approaches, not proof of independently rendered game stereo. Defer Crimson Desert modding, archive handling, and runtime integrations to **G1 after M0**. Never inherit license assumptions from a repository's README without checking each copied source file, submodule and dependency.
 

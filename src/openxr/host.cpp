@@ -11,6 +11,7 @@
 #include <iostream>
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
+#include <optional>
 #include <thread>
 
 namespace odv::xr {
@@ -56,6 +57,7 @@ class Host final : public IXrFrame {
     DXGI_FORMAT format{};
     XrEnvironmentBlendMode blend = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
     XrFrameState frame_state{XR_TYPE_FRAME_STATE};
+    std::optional<XrTime> first_display_time;
     std::array<XrView, 2> views{{{XR_TYPE_VIEW}, {XR_TYPE_VIEW}}};
     std::array<XrCompositionLayerProjectionView, 2> layers{
         {{XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}}};
@@ -242,6 +244,8 @@ class Host final : public IXrFrame {
         frame_gpu_ms = {};
         XrFrameWaitInfo wait{XR_TYPE_FRAME_WAIT_INFO};
         xrcheck(xrWaitFrame(session, &wait, &frame_state), "wait frame");
+        if (!first_display_time)
+            first_display_time = frame_state.predictedDisplayTime;
         XrFrameBeginInfo begin{XR_TYPE_FRAME_BEGIN_INFO};
         xrcheck(xrBeginFrame(session, &begin), "begin frame");
         frame_open = true;
@@ -296,19 +300,23 @@ class Host final : public IXrFrame {
             layer.fov = v.fov;
             layer.subImage = {eye.swapchain, {{0, 0}, {eye.width, eye.height}}, 0};
             if (frames % 120 == 0) {
-                log.record("EYE_GEOMETRY", {{"eye", index},
-                                            {"x", p.position.x},
-                                            {"y", p.position.y},
-                                            {"z", p.position.z},
-                                            {"qx", p.orientation.x},
-                                            {"qy", p.orientation.y},
-                                            {"qz", p.orientation.z},
-                                            {"qw", p.orientation.w},
-                                            {"left", v.fov.angleLeft},
-                                            {"right", v.fov.angleRight},
-                                            {"up", v.fov.angleUp},
-                                            {"down", v.fov.angleDown},
-                                            {"vertices", geometry.size()}});
+                log.record("EYE_GEOMETRY",
+                           {{"eye", index},
+                            {"frame_index", frames},
+                            {"display_time_from_start_ns", frame_state.predictedDisplayTime - *first_display_time},
+                            {"display_period_ns", frame_state.predictedDisplayPeriod},
+                            {"x", p.position.x},
+                            {"y", p.position.y},
+                            {"z", p.position.z},
+                            {"qx", p.orientation.x},
+                            {"qy", p.orientation.y},
+                            {"qz", p.orientation.z},
+                            {"qw", p.orientation.w},
+                            {"left", v.fov.angleLeft},
+                            {"right", v.fov.angleRight},
+                            {"up", v.fov.angleUp},
+                            {"down", v.fov.angleDown},
+                            {"vertices", geometry.size()}});
                 std::cout << "eye=" << index << " position_m=" << p.position.x << ',' << p.position.y << ','
                           << p.position.z << " vertices=" << geometry.size() << '\n';
             }

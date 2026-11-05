@@ -46,3 +46,10 @@ nor a conformance implementation and is never installed in the user package.
 The report exposes test_runtime=true and keeps hardware/game validation
 NOT_RUN. Image waits use 100 ms calls and a five-second retry deadline;
 vendor calls that ignore their timeout still have no hard watchdog.
+
+
+Sampled EYE_GEOMETRY events carry a shared frame index, relative predicted
+display-time offset and display period, alongside each eye's pose and FOV.
+This lets evidence distinguish a coherent eye pair from unrelated eye labels
+without exporting an absolute runtime clock value. The static upstream review
+in docs/research/stereo-pipeline-audit.md explains the provenance requirement.
