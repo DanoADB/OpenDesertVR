@@ -73,7 +73,7 @@ struct TestDesktop {
         auto user = reinterpret_cast<TOKEN_USER *>(bytes.data());
         LPWSTR sid_string{};
         checked(ConvertSidToStringSidW(user->User.Sid, &sid_string), "test desktop SID text");
-        const std::wstring sddl = L"D:(A;;GA;;;" + std::wstring(sid_string) + L")S:(ML;;NW;;;ME)";
+        const std::wstring sddl = L"D:(A;;GA;;;SY)(A;;GA;;;" + std::wstring(sid_string) + L")S:(ML;;NW;;;ME)";
         LocalFree(sid_string);
         PSECURITY_DESCRIPTOR security{};
         checked(ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl.c_str(), SDDL_REVISION_1, &security, nullptr),
