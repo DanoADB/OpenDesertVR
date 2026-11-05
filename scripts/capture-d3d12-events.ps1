@@ -47,12 +47,21 @@ $info = [ordered]@{
     game_executable_size_bytes = $gameFile.Length
     game_file_version = $gameFile.VersionInfo.FileVersion
     script_sha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    execution_start_event_schema = @($executionEvents | ForEach-Object {
+        @{event_id=$_.Id; version=$_.Version; task=$_.Task.Name; opcode=$_.Opcode.Name}
+    })
     status = 'STARTED'
     start_exit = $null
     stop_exit = $null
     trace_session_stopped = $false
 }
 $started = $false
+$localContext = @{
+    target_process_id = $target.Id
+    target_process_start_utc = $target.StartTime.ToUniversalTime().ToString('o')
+    privacy = 'LOCAL ONLY: PID context for reanalyzing raw.etl. Do not publish this file.'
+}
+[IO.File]::WriteAllText((Join-Path $outputRoot 'local-context.json'), (($localContext | ConvertTo-Json) + [Environment]::NewLine), [Text.UTF8Encoding]::new($false))
 try {
     # Direct volatile ETW session, no saved collector, service, injection or group change.
     & logman.exe start $sessionName -p $providerId.ToString('B') '0x2' 5 -o $etl -f bincirc -max 64 -bs 64 -nb 16 64 -ct perf -ets *> $log
@@ -121,4 +130,4 @@ try {
     [IO.File]::WriteAllText($infoPath, (($info | ConvertTo-Json -Depth 5) + [Environment]::NewLine), [Text.UTF8Encoding]::new($false))
 }
 Write-Output "Capture complete: $outputRoot"
-Write-Output 'Keep raw.etl and capture.log local; share summary.json and capture-info.json.'
+Write-Output 'Keep raw.etl, local-context.json and capture.log local; share summary.json and capture-info.json.'

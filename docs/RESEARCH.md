@@ -27,6 +27,9 @@ Intrusive integration still needs review. A user-confirmed title-menu capture
 observes one DXGI presentation stream; world-render API, camera control and
 actual in-game stereo remain unverified. See the
 [camera feasibility source review](research/crimson-camera-feasibility.md).
+The subsequent [Direct3D12 event trace](evidence/g1-d3d12-execution-2026-11-05.json)
+observes actual command-list execution in the game process. World-pass identity
+and camera control are still separate unanswered questions.
 
 
 ## Pinned upstream stereo-source review

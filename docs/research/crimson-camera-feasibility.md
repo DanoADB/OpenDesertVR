@@ -68,8 +68,10 @@ not treating guesses or a single heading float as a VR adapter.
 The external title-menu trace establishes a presentation baseline; see
 [the actual record](../evidence/g1-title-presentation-2026-11-05.json).
 Windows module metadata shows D3D11, D3D12/D3D12Core and DXGI loaded, which is
-not enough to assign all world rendering to one API. The local Direct3D12 ETW
-provider exists, but its game submission events have not yet been captured.
+not enough to assign all world rendering to one API. The later
+[Direct3D12 trace](../evidence/g1-d3d12-execution-2026-11-05.json) does observe
+6,623 command-list execution starts in the game process at the title menu.
+That establishes D3D12 execution, not world-pass identity or camera control.
 
 The next experiment must establish actual rendering/frame ownership and a
 reviewed runtime camera-control point on the exact installed build. Require
