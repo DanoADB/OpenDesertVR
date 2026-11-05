@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "owned_graphics_capture_tool_validation",
+  "tool": {
+    "name": "RenderDoc",
+    "version": "1.47",
+    "archive_url": "https://renderdoc.org/stable/1.47/RenderDoc_1.47_64.zip",
+    "locally_observed_archive_sha256": "b51712e58d40066b34ca30c7869d15f72e4b5c001b2d92232f6783a636d5a3c1",
+    "archive_hash_is_vendor_published": false,
+    "authenticode_verified": [
+      "renderdoccmd.exe",
+      "renderdoc.dll",
+      "qrenderdoc.exe"
+    ],
+    "signer_subject": "Baldur Scott Karlsson"
+  },
+  "source_files": [
+    {
+      "path": "experiments/capture-lab/CMakeLists.txt",
+      "sha256": "243933dff980e5b8ee07e37d8961b34004a76ff85332199612d7df0b945c2041"
+    },
+    {
+      "path": "experiments/capture-lab/fixture.cpp",
+      "sha256": "73397e263d6b10497d34054aac67be47de04578e33015894f5c11e5f5d63fa94"
+    },
+    {
+      "path": "experiments/capture-lab/analyse_owned.py",
+      "sha256": "77b64d61b34e81502ce3c1f1bd76955316d1377f3c1bc7818fe584fbc271d989"
+    }
+  ],
+  "fixture_executable_sha256": "c508e1621a3a02d92f1a0e7bbac8ce88e37e148a9dfc909f47df00d7f8b35602",
+  "replay_summary": {
+    "schema_version": 1,
+    "evidence_kind": "owned_capture_tool_fixture",
+    "capture_sha256": "5adb5b94c99a99b14480afe14485942c70ba5771076eee9ae9b7aec36c95a993",
+    "api": "GraphicsAPI.D3D12",
+    "clear_actions": 1,
+    "verified_rgba8_targets": 1,
+    "dimensions": [
+      16,
+      16
+    ],
+    "all_pixels_rgba8": [
+      0,
+      255,
+      255,
+      255
+    ],
+    "status": "PASS",
+    "game_capture": "NOT_RUN",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED"
+  },
+  "scope": "Owned synthetic D3D12 clear only; no game launched/attached, no game GPU capture, no world-pass/camera/stereo proof. Raw capture remains local. Optional lab is excluded from installed M0 runtime."
+}
