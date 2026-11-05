@@ -24,6 +24,9 @@ if ($TargetProcessId) {
     $target = $targets[0]
 }
 $python = (Get-Command python.exe -ErrorAction Stop).Source
+$gameFile = Get-Item -LiteralPath $target.Path
+$gameHash = (Get-FileHash -LiteralPath $gameFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+$summaryScript = Join-Path $PSScriptRoot 'summarize-presentmon.py'
 $captureId = [Guid]::NewGuid().ToString('N')
 if (!$OutputDirectory) { $OutputDirectory = Join-Path $repository ('out/g1/capture-' + $captureId) }
 $outputRoot = [IO.Path]::GetFullPath($OutputDirectory)
@@ -39,6 +42,11 @@ $metadata = [ordered]@{
     tool_sha256 = $toolHash
     requested_duration_seconds = $DurationSeconds
     target = 'CrimsonDesert.exe'
+    game_executable_sha256 = $gameHash
+    game_executable_size_bytes = $gameFile.Length
+    game_file_version = $gameFile.VersionInfo.FileVersion
+    capture_script_sha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    summary_script_sha256 = (Get-FileHash -LiteralPath $summaryScript -Algorithm SHA256).Hash.ToLowerInvariant()
     capture_exit = $null
     summary_exit = $null
     status = 'STARTED'
@@ -49,7 +57,7 @@ try {
     & $toolPath --process_id $target.Id --output_file $csv --session_name ('OpenDesertVR-' + $captureId) --timed $DurationSeconds --terminate_after_timed --no_console_stats --no_track_input *> $log
     $metadata.capture_exit = $LASTEXITCODE
     if ($LASTEXITCODE -ne 0) { throw 'PresentMon capture failed. Inspect capture.log; no presentation result is inferred.' }
-    & $python (Join-Path $PSScriptRoot 'summarize-presentmon.py') $csv --process-id $target.Id --output $summary
+    & $python $summaryScript $csv --process-id $target.Id --output $summary
     $metadata.summary_exit = $LASTEXITCODE
     if ($LASTEXITCODE -ne 0) { throw 'CSV summary failed; do not treat this capture as validated.' }
     $metadata.status = 'CAPTURED'
