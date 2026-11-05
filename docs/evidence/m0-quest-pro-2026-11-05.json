@@ -15,8 +15,8 @@
     "world_anchored_during_head_translation_and_rotation": "PASS",
     "alternating_eye_viewpoint_shift_without_double_vision": "PASS",
     "comfortable_motion_without_reported_flicker_or_strong_judder": "PASS",
-    "timed_or_requested_orderly_shutdown": "NOT_RUN",
-    "runtime_menu_return": "NOT_RUN",
+    "timed_or_requested_orderly_shutdown": "PASS_USER_REPORTED_AND_HOST_EXIT_0",
+    "runtime_menu_return": "PASS_USER_REPORTED_AND_FOCUS_TRANSITIONS_RECORDED",
     "disconnect_and_fresh_process_recovery": "NOT_RUN",
     "hardware_graphics_debug_validation": "NOT_RUN"
   },

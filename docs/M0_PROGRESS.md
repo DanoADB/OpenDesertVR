@@ -45,6 +45,7 @@ No Crimson Desert installation was used.
 | Extracted Release package smoke | PASS: both programs run; missing headset returns exit 3 |
 | Real headset visual stereo/tracking | User-reported PASS on Meta Quest Pro (2026-11-05); host binary matches packaged 404d38a build |
 | Real headset submission and shutdown | First run: 536 stereo frames, host exit 0, STOPPING then IDLE; second: 747 stereo frames, exit summary missing |
+| Real headset menu return and timed shutdown | PASS: user-confirmed depth/tracking restored and clean finish; 60-second run, 2,833 stereo frames, focus transitions, STOPPING/EXITING and host exit 0 |
 | Real headset disconnect/device loss | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
 | Hosted GitHub Actions execution | PASS: Debug and Release each 34/34, including D3D12 debug validation; [run 41965528980](https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980) |
@@ -84,9 +85,12 @@ and comfortable motion were reported passing by the user on 2026-11-05.
 See [the observation record](evidence/m0-quest-pro-2026-11-05.json).
 Actual reports verify build provenance, CPU/GPU timings and one successful
 host exit following STOPPING. See [hardware reports](evidence/m0-quest-pro-reports-2026-11-05.json).
+The user also confirmed menu return and clean timed finish during a recorded
+60-second run (2,833 stereo frames). CPU frame median/p95/max were
+13.8455/14.1924/29.4084 ms, including runtime waits and non-rendering frames.
 The predicted display period is approximately 72 Hz; no measured display cadence
-or compositor drop/reprojection claim is made. Disconnect/recovery, runtime-menu
-return and hardware graphics debug validation remain unverified;
+or compositor drop/reprojection claim is made. Disconnect/recovery
+and hardware graphics debug validation remain unverified;
 the roadmap's M0 exit gate is still PENDING. No G1 integration work has begun.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements
