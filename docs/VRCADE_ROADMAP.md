@@ -49,7 +49,8 @@ Documentation, local-first privacy, portable profiles, safe error recovery, cont
 
 Standalone OpenXR/D3D12 stereo testhost, diagnostics, configuration, inactive
 game adapter, pinned dependencies, packaging and Windows CI are implemented.
-Local MSVC Debug/Release builds and all six deterministic/native tests pass.
+Local MSVC Debug/Release builds each report 31 tests passed, zero failed and
+one skipped (optional D3D12 debug validation unavailable).
 WARP raster/readback verifies separate-eye pixel disparity. The active Meta
 runtime is discoverable; no headset system was available. Actual headset
 acceptance remains PENDING, and no game VR integration exists.

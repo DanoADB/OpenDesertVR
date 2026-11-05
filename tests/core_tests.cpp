@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "odv/core/core.hpp"
+#include "odv/core/metrics.hpp"
 #include "odv/game/adapter.hpp"
 #include "odv/openxr/lifecycle.hpp"
 #include "odv/stereo/scene.hpp"
@@ -40,6 +41,26 @@ struct MockFrame : xr::IXrFrame {
     void end(bool submit) override { calls += submit ? 'E' : 'Z'; }
 };
 int main() {
+    TimingWindow timing;
+    check_test(timing.summary()["status"] == "NOT_RUN", "no timing observation must remain NOT_RUN");
+    for (int i = 1; i <= 20; ++i)
+        timing.add(i);
+    check_test(timing.summary()["median"] == 10 && timing.summary()["p95"] == 19, "nearest-rank timing percentiles");
+    for (std::size_t i = 0; i < TimingWindow::capacity; ++i)
+        timing.add(2);
+    check_test(timing.summary()["samples"] == 4096 && timing.summary()["total_samples"] == 4116 &&
+                   timing.summary()["max"] == 2,
+               "timing retention bound and lifetime count");
+    try {
+        timing.add(std::numeric_limits<double>::quiet_NaN());
+        check_test(false, "NaN timing accepted");
+    } catch (const std::invalid_argument &) {
+    }
+    try {
+        timing.add(-1);
+        check_test(false, "negative timing accepted");
+    } catch (const std::invalid_argument &) {
+    }
     check_test(std::holds_alternative<Config>(parse_config(R"({"schema_version":1,"duration_seconds":2})")),
                "valid config");
     for (const std::string text :

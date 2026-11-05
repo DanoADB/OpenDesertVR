@@ -66,6 +66,19 @@ void Renderer::initialize(LUID luid, D3D_FEATURE_LEVEL level, bool debug) {
     hr(device_->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &buffer, D3D12_RESOURCE_STATE_GENERIC_READ,
                                         nullptr, IID_PPV_ARGS(&upload_)),
        "vertex allocation");
+    // Timestamp support is optional; failure to obtain a frequency leaves the
+    // metric NOT_RUN. Once enabled, allocation/device failures remain fatal.
+    if (SUCCEEDED(queue_->GetTimestampFrequency(&timestamp_frequency_)) && timestamp_frequency_ != 0) {
+        D3D12_QUERY_HEAP_DESC query{};
+        query.Type = D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
+        query.Count = 2;
+        hr(device_->CreateQueryHeap(&query, IID_PPV_ARGS(&timestamp_heap_)), "timestamp query heap");
+        props.Type = D3D12_HEAP_TYPE_READBACK;
+        buffer.Width = 2 * sizeof(UINT64);
+        hr(device_->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &buffer, D3D12_RESOURCE_STATE_COPY_DEST,
+                                            nullptr, IID_PPV_ARGS(&timestamp_readback_)),
+           "timestamp readback allocation");
+    }
 }
 void Renderer::pipeline(DXGI_FORMAT format) {
     const char *shader = R"(
@@ -169,6 +182,9 @@ void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UI
     upload_->Unmap(0, nullptr);
     hr(allocator_->Reset(), "reset allocator");
     hr(commands_->Reset(allocator_.Get(), pipeline_.Get()), "reset list");
+    last_gpu_ms_.reset();
+    if (timestamp_heap_)
+        commands_->EndQuery(timestamp_heap_.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0);
     D3D12_RENDER_TARGET_VIEW_DESC view{};
     view.Format = format;
     view.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
@@ -190,9 +206,26 @@ void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UI
     commands_->IASetVertexBuffers(0, 1, &vb);
     commands_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commands_->DrawInstanced(static_cast<UINT>(vertices.size()), 1, 0, 0);
+    if (timestamp_heap_) {
+        commands_->EndQuery(timestamp_heap_.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 1);
+        commands_->ResolveQueryData(timestamp_heap_.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, 2, timestamp_readback_.Get(),
+                                    0);
+    }
     hr(commands_->Close(), "close list");
     ID3D12CommandList *lists[] = {commands_.Get()};
     queue_->ExecuteCommandLists(1, lists);
     sync(); // Simplicity over throughput: GPU complete before image release or buffer reuse.
+    if (timestamp_heap_) {
+        void *data{};
+        const D3D12_RANGE range{0, 2 * sizeof(UINT64)};
+        hr(timestamp_readback_->Map(0, &range, &data), "read GPU timestamps");
+        UINT64 values[2]{};
+        memcpy(values, data, sizeof(values));
+        const D3D12_RANGE written{0, 0};
+        timestamp_readback_->Unmap(0, &written);
+        if (values[1] >= values[0])
+            last_gpu_ms_ =
+                1000.0 * static_cast<double>(values[1] - values[0]) / static_cast<double>(timestamp_frequency_);
+    }
 }
 } // namespace odv::d3d

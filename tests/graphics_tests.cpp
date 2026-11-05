@@ -2,6 +2,7 @@
 #include "odv/d3d12/renderer.hpp"
 #include <cmath>
 #include <cstring>
+#include <d3d12sdklayers.h>
 #include <iostream>
 #include <stdexcept>
 using namespace odv;
@@ -26,6 +27,8 @@ std::array<double, 3> capture(Renderer &graphics, const math::Pose &pose) {
        "test target");
     const auto vertices = stereo::vertices(pose, {-0.7, 0.7, 0.7, -0.7}, 0.05, 100);
     graphics.render(texture.Get(), desc.Format, width, height, vertices);
+    if (!graphics.last_gpu_ms() || !std::isfinite(*graphics.last_gpu_ms()) || *graphics.last_gpu_ms() < 0)
+        throw std::runtime_error("WARP GPU timestamps were not measured");
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
     UINT rows = 0;
     UINT64 row_size = 0, total = 0;
@@ -92,8 +95,17 @@ std::array<double, 3> capture(Renderer &graphics, const math::Pose &pose) {
     return sum;
 }
 } // namespace
-int main() {
+int main(int argc, char **argv) {
     try {
+        const bool debug = argc == 2 && std::string(argv[1]) == "--debug-layer";
+        if (debug) {
+            Com<ID3D12Debug> layer;
+            if (FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&layer)))) {
+                std::cout << "D3D12 debug layer unavailable; validation NOT_RUN\n";
+                return 77;
+            }
+            layer->EnableDebugLayer();
+        }
         // Exercise actual HRESULT classification used for every native allocation.
         try {
             hr(E_OUTOFMEMORY, "injected allocation");
@@ -133,6 +145,21 @@ int main() {
                   << '\n';
         if (!(near_delta > mid_delta && mid_delta > far_delta && far_delta > 0.5))
             throw std::runtime_error("rasterized eye disparity invalid");
+        if (debug) {
+            Com<ID3D12InfoQueue> messages;
+            hr(graphics.device()->QueryInterface(IID_PPV_ARGS(&messages)), "D3D12 validation queue");
+            for (UINT64 i = 0; i < messages->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
+                SIZE_T size = 0;
+                hr(messages->GetMessage(i, nullptr, &size), "validation message size");
+                std::vector<unsigned char> bytes(size);
+                auto message = reinterpret_cast<D3D12_MESSAGE *>(bytes.data());
+                hr(messages->GetMessage(i, message, &size), "validation message");
+                if (message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION ||
+                    message->Severity == D3D12_MESSAGE_SEVERITY_ERROR)
+                    throw std::runtime_error(message->pDescription);
+            }
+            std::cout << "D3D12 validation: no corruption or error messages\n";
+        }
         return 0;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

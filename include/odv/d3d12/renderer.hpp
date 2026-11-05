@@ -6,6 +6,7 @@
 #include "odv/stereo/scene.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <optional>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -22,6 +23,10 @@ class Renderer {
     Com<ID3D12PipelineState> pipeline_;
     Com<ID3D12DescriptorHeap> rtv_, dsv_;
     Com<ID3D12Resource> upload_, depth_;
+    Com<ID3D12QueryHeap> timestamp_heap_;
+    Com<ID3D12Resource> timestamp_readback_;
+    UINT64 timestamp_frequency_{};
+    std::optional<double> last_gpu_ms_;
     UINT width_{}, height_{};
     UINT64 serial_{};
     HANDLE event_{};
@@ -35,5 +40,6 @@ class Renderer {
     void sync();
     ID3D12Device *device() const { return device_.Get(); }
     ID3D12CommandQueue *queue() const { return queue_.Get(); }
+    std::optional<double> last_gpu_ms() const { return last_gpu_ms_; }
 };
 } // namespace odv::d3d

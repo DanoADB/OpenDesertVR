@@ -10,7 +10,7 @@ FetchContent_Declare(nlohmann_json URL https://codeload.github.com/nlohmann/json
 FetchContent_MakeAvailable(nlohmann_json)
 add_library(odv_math STATIC src/math/stereo.cpp)
 target_include_directories(odv_math PUBLIC include)
-add_library(odv_core STATIC src/core/core.cpp)
+add_library(odv_core STATIC src/core/core.cpp src/core/metrics.cpp)
 target_include_directories(odv_core PUBLIC include)
 target_link_libraries(odv_core PUBLIC nlohmann_json::nlohmann_json)
 add_library(odv_stereo STATIC src/stereo/scene.cpp)
@@ -72,8 +72,25 @@ if(BUILD_TESTING)
     add_executable(odv_graphics_tests tests/graphics_tests.cpp)
     target_link_libraries(odv_graphics_tests PRIVATE odv_d3d12)
     add_test(NAME odv_graphics_warp COMMAND odv_graphics_tests)
+    add_test(NAME odv_graphics_validation COMMAND odv_graphics_tests --debug-layer)
+    set_tests_properties(odv_graphics_validation PROPERTIES TIMEOUT 60 SKIP_RETURN_CODE 77)
     set_tests_properties(odv_graphics_warp PROPERTIES TIMEOUT 60)
     add_test(NAME odv_cli_missing_runtime COMMAND ${CMAKE_COMMAND} -DCLI=$<TARGET_FILE:odv-cli> -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/cli_missing_runtime.cmake)
     set_tests_properties(odv_cli_missing_runtime PROPERTIES TIMEOUT 30)
+    add_library(odv_mock_runtime SHARED tests/mock_runtime/runtime.cpp)
+    target_link_libraries(odv_mock_runtime PRIVATE OpenXR::headers nlohmann_json::nlohmann_json d3d12 dxgi)
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json"
+      CONTENT "{\"file_format_version\":\"1.0.0\",\"runtime\":{\"library_path\":\"$<TARGET_FILE:odv_mock_runtime>\"}}")
+    foreach(scenario normal request_exit skip_render invalid_tracking all_skip wait_timeout
+        session_loss instance_loss missing_headset missing_extension wrong_adapter allocation_failure
+        acquire_failure wait_failure release_failure second_acquire_failure second_wait_failure
+        second_release_failure second_allocation_failure begin_session_failure wait_frame_failure
+        begin_frame_failure locate_failure end_frame_failure image_timeout)
+      add_test(NAME odv_xr_${scenario} COMMAND ${CMAKE_COMMAND}
+        -DHOST=$<TARGET_FILE:odv-testhost>
+        -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
+        -DSCENARIO=${scenario} -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/integration.cmake)
+      set_tests_properties(odv_xr_${scenario} PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
+    endforeach()
   endif()
 endif()

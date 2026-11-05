@@ -19,7 +19,10 @@ powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
 
 The first configure downloads immutable hash-checked dependencies. No game
-files or headset are needed for builds/tests. The WARP test rasterizes
+files or headset are needed for builds/tests. The test-only OpenXR runtime exercises the compiled host and checks frame
+ordering, image ownership, error cleanup and shutdown. It is not shipped.
+The optional D3D12 validation test is SKIPPED if Graphics Tools is unavailable;
+that result is never treated as validation PASS. The WARP test rasterizes
 independent eyes and checks red/green/blue object pixel disparity. It is a
 software GPU test, not headset evidence.
 
@@ -57,7 +60,9 @@ Runtime/driver failures can stall inside vendor calls; record that as a failure.
       headset-report.json for distinct poses and asymmetric FOV when provided.
 - [ ] Record CPU frame median/p95/max and sample count. These include wait and
       submission/fence time; they are not GPU timestamps or display latency.
-      GPU timestamp and runtime reprojection/drop metrics remain NOT_RUN.
+      Record GPU eye/stereo timing summaries separately: they cover eye-render
+      commands, not compositor/display latency. Runtime reprojection/drop
+      metrics remain NOT_RUN.
 - [ ] Test idle/visibility changes, runtime menu, session STOPPING and Ctrl+C.
       No crash or graphics validation error; confirm orderly destruction.
 - [ ] Disconnect/reconnect or shut down runtime: host fails closed, then a

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "odv/openxr/host.hpp"
+#include "odv/core/metrics.hpp"
 #include "odv/d3d12/renderer.hpp"
 #include "odv/openxr/lifecycle.hpp"
 #define XR_USE_PLATFORM_WIN32
@@ -23,6 +24,8 @@ void xrcheck(XrResult result, const char *operation) {
             code = ErrorCode::headset;
         if (result == XR_ERROR_EXTENSION_NOT_PRESENT)
             code = ErrorCode::extension;
+        if (result == XR_ERROR_OUT_OF_MEMORY)
+            code = ErrorCode::allocation;
         throw Failure(code, std::string(operation) + " (OpenXR " + std::to_string(result) + ")");
     }
 }
@@ -58,7 +61,10 @@ class Host final : public IXrFrame {
         {{XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW}}};
     bool frame_open = false, exit_requested = false;
     uint64_t frames = 0, rendered = 0;
-    std::vector<double> timings;
+    TimingWindow timings;
+    std::array<TimingWindow, 2> gpu_timings;
+    TimingWindow gpu_stereo_timings;
+    std::array<std::optional<double>, 2> frame_gpu_ms;
 
     ~Host() {
         // Complete application GPU work before runtime-owned textures/session die.
@@ -100,6 +106,9 @@ class Host final : public IXrFrame {
         info.enabledExtensionCount = 1;
         info.enabledExtensionNames = &extension;
         xrcheck(xrCreateInstance(&info, &instance), "create XR instance");
+        XrInstanceProperties properties{XR_TYPE_INSTANCE_PROPERTIES};
+        xrcheck(xrGetInstanceProperties(instance, &properties), "runtime properties");
+        report["test_runtime"] = std::string(properties.runtimeName) == "OpenDesertVR Test Runtime";
         XrSystemGetInfo system_info{XR_TYPE_SYSTEM_GET_INFO};
         system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
         xrcheck(xrGetSystem(instance, &system_info, &system), "get headset system (connect and wake PCVR headset)");
@@ -230,6 +239,7 @@ class Host final : public IXrFrame {
         }
     }
     bool wait_begin() override {
+        frame_gpu_ms = {};
         XrFrameWaitInfo wait{XR_TYPE_FRAME_WAIT_INFO};
         xrcheck(xrWaitFrame(session, &wait, &frame_state), "wait frame");
         XrFrameBeginInfo begin{XR_TYPE_FRAME_BEGIN_INFO};
@@ -257,10 +267,16 @@ class Host final : public IXrFrame {
         // An acquired image must be successfully waited before release. On a wait
         // failure the session is torn down; never illegally release an unwaited image.
         XrSwapchainImageWaitInfo wait{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-        wait.timeout = XR_INFINITE_DURATION;
+        wait.timeout = 100000000; // 100 ms, so a timing-out runtime cannot trap the host forever.
+        const auto wait_deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
         XrResult waited;
         do {
             waited = xrWaitSwapchainImage(eye.swapchain, &wait);
+            if (waited == XR_TIMEOUT_EXPIRED) {
+                if (interrupted || std::chrono::steady_clock::now() >= wait_deadline)
+                    throw Failure(ErrorCode::session, "eye image wait cancelled or exceeded five seconds");
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
         } while (waited == XR_TIMEOUT_EXPIRED);
         xrcheck(waited, "wait eye image");
         XrSwapchainImageReleaseInfo release{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
@@ -272,6 +288,9 @@ class Host final : public IXrFrame {
             auto geometry = stereo::vertices(pose, {v.fov.angleLeft, v.fov.angleRight, v.fov.angleUp, v.fov.angleDown},
                                              config.near_z, config.far_z);
             graphics.render(eye.images.at(image).texture, format, eye.width, eye.height, geometry);
+            frame_gpu_ms[index] = graphics.last_gpu_ms();
+            if (frame_gpu_ms[index])
+                gpu_timings[index].add(*frame_gpu_ms[index]);
             auto &layer = layers[index];
             layer.pose = v.pose;
             layer.fov = v.fov;
@@ -320,8 +339,11 @@ class Host final : public IXrFrame {
         frame_open = false;
         xrcheck(xrEndFrame(session, &end_info), "end frame");
         ++frames;
-        if (submit)
+        if (submit) {
             ++rendered;
+            if (frame_gpu_ms[0] && frame_gpu_ms[1])
+                gpu_stereo_timings.add(*frame_gpu_ms[0] + *frame_gpu_ms[1]);
+        }
     }
 };
 void failure(Json &report, const Failure &error) {
@@ -408,9 +430,7 @@ Json run(const Config &config) {
                 frame(host);
                 const double ms =
                     std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - before).count();
-                if (host.timings.size() == 4096)
-                    host.timings.erase(host.timings.begin());
-                host.timings.push_back(ms);
+                host.timings.add(ms);
             } else
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
@@ -431,14 +451,12 @@ Json run(const Config &config) {
     report["frames"] = host.frames;
     report["stereo_frames"] = host.rendered;
     report["events"] = host.log.snapshot();
-    if (!host.timings.empty()) {
-        std::sort(host.timings.begin(), host.timings.end());
-        report["cpu_frame_ms"] = {{"samples", host.timings.size()},
-                                  {"median", host.timings[host.timings.size() / 2]},
-                                  {"p95", host.timings[(host.timings.size() - 1) * 95 / 100]},
-                                  {"max", host.timings.back()}};
-    }
-    report["gpu_timing"] = "NOT_RUN";
+    report["cpu_frame_ms"] = host.timings.summary();
+    report["gpu_timing"] = host.gpu_stereo_timings.empty() ? "NOT_RUN" : "PASS";
+    report["gpu_eye_ms"] = Json::array({host.gpu_timings[0].summary(), host.gpu_timings[1].summary()});
+    report["gpu_stereo_ms"] = host.gpu_stereo_timings.summary();
+    report["timing_scope"] = "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, "
+                             "excludes compositor/display latency";
     report["reprojection_metrics"] = "NOT_RUN";
     return report;
 }

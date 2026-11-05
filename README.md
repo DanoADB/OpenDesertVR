@@ -37,7 +37,8 @@ See [manual headset checklist](docs/M0_ACCEPTANCE.md) and
 
 Doctor/export-report emit versioned sanitized JSON. Missing requirements
 return exit 3. The host defaults to 60 seconds; Ctrl+C requests exit.
-CPU frame timings are measured; GPU/reprojection metrics remain NOT_RUN.
+CPU and GPU eye-render timings are measured; runtime reprojection metrics remain NOT_RUN.
+Reports label the test-only runtime explicitly and keep hardware validation separate.
 Core/math tests can also use the portable-debug Ninja preset without Windows;
 the XR host and graphics test are Windows-only.
 

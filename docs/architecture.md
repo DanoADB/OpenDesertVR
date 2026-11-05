@@ -29,3 +29,17 @@ Reports export stable check codes, booleans, counts, timings, transforms and
 FOVs, not runtime paths, adapter LUIDs, serials or external error text.
 The local console may contain upstream runtime/loader messages; review those
 before sharing. Reports are opt-in local files, never uploaded.
+
+
+GPU queries bracket eye clear/draw commands, resolve into a readback buffer,
+and are read only after the completion fence. They exclude CPU runtime waits,
+compositor work and display latency. Statistics use a rolling 4096-sample
+window with nearest-rank percentiles and a separate lifetime count.
+
+The test-only runtime loads through the official OpenXR loader with a
+process-local XR_RUNTIME_JSON override, creates WARP swapchain images and
+audits image/frame ordering and teardown. It is neither a headset emulator
+nor a conformance implementation and is never installed in the user package.
+The report exposes test_runtime=true and keeps hardware/game validation
+NOT_RUN. Image waits use 100 ms calls and a five-second retry deadline;
+vendor calls that ignore their timeout still have no hard watchdog.
