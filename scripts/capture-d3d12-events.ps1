@@ -55,7 +55,7 @@ $info = [ordered]@{
 $started = $false
 try {
     # Direct volatile ETW session, no saved collector, service, injection or group change.
-    & logman.exe start $sessionName -p $providerId.ToString() '0x2' 5 -o $etl -f bincirc -max 64 -bs 64 -nb 16 64 -ct perf -ets *> $log
+    & logman.exe start $sessionName -p $providerId.ToString('B') '0x2' 5 -o $etl -f bincirc -max 64 -bs 64 -nb 16 64 -ct perf -ets *> $log
     $info.start_exit = $LASTEXITCODE
     if ($LASTEXITCODE -ne 0) { throw 'Could not start Direct3D12 trace; inspect capture.log and tracing privileges.' }
     $started = $true
