@@ -5,6 +5,7 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <iostream>
+#include <sddl.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -50,6 +51,57 @@ std::wstring quote(const std::wstring &arg) {
     result += L'\"';
     return result;
 }
+struct TestDesktop {
+    HWINSTA station{};
+    HDESK desktop{};
+    std::wstring path;
+    ~TestDesktop() {
+        if (desktop)
+            CloseDesktop(desktop);
+        if (station)
+            CloseWindowStation(station);
+    }
+    void create(HANDLE token) {
+        // Hosted service desktops can grant access only through Administrators.
+        // Create private, medium-integrity test objects granting the current user
+        // access. Never alter the active desktop/window station's permissions.
+        DWORD size = 0;
+        GetTokenInformation(token, TokenUser, nullptr, 0, &size);
+        std::vector<unsigned char> bytes(size);
+        checked(GetTokenInformation(token, TokenUser, bytes.data(), size, &size), "test desktop user");
+        auto user = reinterpret_cast<TOKEN_USER *>(bytes.data());
+        LPWSTR sid_string{};
+        checked(ConvertSidToStringSidW(user->User.Sid, &sid_string), "test desktop SID text");
+        const std::wstring sddl = L"D:(A;;GA;;;" + std::wstring(sid_string) + L")S:(ML;;NW;;;ME)";
+        LocalFree(sid_string);
+        PSECURITY_DESCRIPTOR security{};
+        checked(ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl.c_str(), SDDL_REVISION_1, &security, nullptr),
+                "test desktop security");
+        SECURITY_ATTRIBUTES attributes{sizeof(SECURITY_ATTRIBUTES), security, FALSE};
+        const auto name =
+            L"odv-tests-" + std::to_wstring(GetCurrentProcessId()) + L"-" + std::to_wstring(GetTickCount64());
+        station = CreateWindowStationW(name.c_str(), CWF_CREATE_ONLY, WINSTA_ALL_ACCESS, &attributes);
+        const auto error = GetLastError();
+        if (!station) {
+            LocalFree(security);
+            SetLastError(error);
+            checked(FALSE, "private test window station");
+        }
+        const auto original = GetProcessWindowStation();
+        checked(SetProcessWindowStation(station), "select private test window station");
+        desktop = CreateDesktopW(L"default", nullptr, nullptr, 0, GENERIC_ALL, &attributes);
+        const auto desktop_error = GetLastError();
+        const BOOL restored = SetProcessWindowStation(original);
+        LocalFree(security);
+        checked(restored, "restore test window station");
+        if (!desktop) {
+            SetLastError(desktop_error);
+            checked(FALSE, "private test desktop");
+        }
+        path = name + L"\\default";
+        std::cerr << "test launcher: private medium-integrity desktop ready\n" << std::flush;
+    }
+};
 } // namespace
 int wmain(int argc, wchar_t **argv) {
     if (argc < 2)
@@ -72,6 +124,7 @@ int wmain(int argc, wchar_t **argv) {
         const auto label = reinterpret_cast<TOKEN_MANDATORY_LABEL *>(storage.data());
         const DWORD level = *GetSidSubAuthority(label->Label.Sid, *GetSidSubAuthorityCount(label->Label.Sid) - 1);
         const bool reduce = force_restricted || level > SECURITY_MANDATORY_MEDIUM_RID;
+        TestDesktop test_desktop;
         if (reduce) {
             std::cerr << "test launcher: reducing elevated parent token\n" << std::flush;
             SID_IDENTIFIER_AUTHORITY nt = SECURITY_NT_AUTHORITY;
@@ -96,6 +149,8 @@ int wmain(int argc, wchar_t **argv) {
                                         sizeof(target) + GetLengthSid(medium.value)),
                     "lower test integrity");
             std::cerr << "test launcher: medium integrity token ready\n" << std::flush;
+            if (level > SECURITY_MANDATORY_MEDIUM_RID)
+                test_desktop.create(token.value);
         }
         std::wstring command;
         for (int i = first; i < argc; ++i) {
@@ -109,6 +164,8 @@ int wmain(int argc, wchar_t **argv) {
         startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
         startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
         startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+        if (!test_desktop.path.empty())
+            startup.lpDesktop = test_desktop.path.data();
         PROCESS_INFORMATION process{};
         if (reduce)
             checked(CreateProcessAsUserW(restricted.value, nullptr, command.data(), nullptr, nullptr, TRUE,
