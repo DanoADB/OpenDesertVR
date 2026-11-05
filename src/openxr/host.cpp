@@ -110,6 +110,9 @@ class Host final : public IXrFrame {
         xrcheck(xrCreateInstance(&info, &instance), "create XR instance");
         XrInstanceProperties properties{XR_TYPE_INSTANCE_PROPERTIES};
         xrcheck(xrGetInstanceProperties(instance, &properties), "runtime properties");
+        report["openxr_runtime_version"] = {{"major", XR_VERSION_MAJOR(properties.runtimeVersion)},
+                                            {"minor", XR_VERSION_MINOR(properties.runtimeVersion)},
+                                            {"patch", XR_VERSION_PATCH(properties.runtimeVersion)}};
         report["test_runtime"] = std::string(properties.runtimeName) == "OpenDesertVR Test Runtime";
         XrSystemGetInfo system_info{XR_TYPE_SYSTEM_GET_INFO};
         system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
