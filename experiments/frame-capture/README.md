@@ -69,3 +69,35 @@ The script's owned_launch mode is restricted to odv_capture_fixture.exe and is
 reserved for validating the launcher API independently; it cannot award game
 capture or stereo capability. Owned launch/replay passed on 2026-11-05; game
 target-control frame triggering remains unverified.
+
+## Owned target-control regression checks
+
+The separate odv_present_fixture is an ordinary owned D3D12 application with
+a small cyan window, two swapchain buffers and a known 16x16 cyan texture.
+It contains no RenderDoc API calls, game code or capture hooks. Each frame
+clears both targets, presents and waits for GPU completion before reusing its
+allocator. It exits cooperatively on stop.flag, window close or after 60 seconds.
+
+Build the capture lab as described in its README, then run from the repository
+root with the reviewed portable RenderDoc 1.47 already available:
+
+```powershell
+./experiments/frame-capture/test-owned-control.ps1 -Scenario capture
+./experiments/frame-capture/test-owned-control.ps1 -Scenario disconnect
+./experiments/frame-capture/test-owned-control.ps1 -Scenario timeout
+```
+
+These checks use owned_control mode and the same launch, identity, readiness,
+trigger, notification, snapshot and hash-verification path as the game probe.
+Capture requires successful replay of all 256 known pixels. Disconnect closes
+the fixture after readiness without requesting a frame; timeout leaves it
+running without a request until the polling deadline. Both require a FAILED
+report at READY_FOR_FRAME, no RDC, the expected local failure reason and no
+game capability claim. All scenarios verify the fixture's actual exit code 0.
+No target is force-terminated or automatically relaunched after a timeout.
+
+All three [local checks passed](../../docs/evidence/g1-owned-control-2026-11-05.json).
+Failure reports now retain failure_stage to distinguish launch, readiness,
+capture request and saving failures. CI compiles the ordinary fixture and
+checks script syntax; it does not execute RenderDoc or award capture evidence.
+These owned checks do not resolve the game's process handoff.

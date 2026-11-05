@@ -40,7 +40,8 @@ def run(config, report, report_path):
     mode = config["mode"]
     executable = Path(config["executable"]).resolve()
     case = report_path.parent.resolve()
-    expected_name = {"owned_launch": "odv_capture_fixture.exe", "game_title": "crimsondesert.exe"}.get(mode)
+    expected_name = {"owned_launch": "odv_capture_fixture.exe", "owned_control": "odv_present_fixture.exe",
+                     "game_title": "crimsondesert.exe"}.get(mode)
     if expected_name is None or executable.name.casefold() != expected_name:
         raise RuntimeError("Unexpected mode or executable identity")
     if digest(executable) != config["executable_sha256"]:
@@ -60,7 +61,7 @@ def run(config, report, report_path):
     # One literal Windows path argument; the final 'raw' component cannot end in '\\'.
     if '"' in str(prefix):
         raise RuntimeError("Invalid capture-prefix path")
-    arguments = '"' + str(prefix) + '"' if mode == "owned_launch" else ""
+    arguments = '"' + str(prefix) + '"' if mode in {"owned_launch", "owned_control"} else ""
     report.update({"status": "LAUNCHING", "mode": mode, "executable_sha256": config["executable_sha256"]})
     save(report_path, report)
     result = rd.ExecuteAndInject(str(executable), str(executable.parent), arguments, [], str(prefix), options,
@@ -80,8 +81,8 @@ def run(config, report, report_path):
         raise RuntimeError("Cannot connect to the newly launched local target")
     try:
         name = target.GetTarget().replace("\\", "/").rsplit("/", 1)[-1].casefold()
-        if name not in {"crimsondesert", "crimsondesert.exe"} or target.GetPID() <= 0:
-            raise RuntimeError("Target-control identity does not match the launched game")
+        if name not in {expected_name, Path(expected_name).stem} or target.GetPID() <= 0:
+            raise RuntimeError("Target-control identity does not match the launched executable")
         save(case / "local-context.json", {
             "target_process_id": target.GetPID(), "target_ident": result.ident,
             "privacy": "LOCAL ONLY: do not publish this PID/connection context or raw capture",
@@ -124,7 +125,8 @@ def run(config, report, report_path):
                 if metadata["capture_sha256"] != source_hash:
                     raise RuntimeError("Saved capture does not match the completed source")
                 report.update(metadata)
-                report.update({"status": "CAPTURED", "game_gpu_capture": "OBSERVED"})
+                report.update({"status": "CAPTURED" if mode == "game_title" else "OWNED_CONTROL_CAPTURED",
+                               "game_gpu_capture": "OBSERVED" if mode == "game_title" else "NOT_RUN"})
                 save(report_path, report)
                 return
             time.sleep(0.1)
@@ -148,7 +150,8 @@ except Exception as error:
     traceback.print_exc()
     if report_path is not None:
         (report_path.parent / "local-error.txt").write_text(traceback.format_exc(), encoding="utf-8")
-        report.update({"status": "FAILED", "failure_type": type(error).__name__})
+        report.update({"failure_stage": report["status"], "status": "FAILED",
+                       "failure_type": type(error).__name__})
         save(report_path, report)
 finally:
     # qrenderdoc owns replay lifetime. Its process exit alone does not prove success.

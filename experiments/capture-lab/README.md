@@ -63,3 +63,13 @@ The [recorded local validation](../../docs/evidence/g1-owned-capture-lab-2026-11
 passes those checks. This validates tooling on owned synthetic content only.
 It does not establish that a protected game can be captured, that a capture
 identifies camera matrices, or that independent game-world stereo is possible.
+
+## Ordinary presenting fixture
+
+odv_present_fixture is a separate owned D3D12/DXGI application without capture
+API dependencies. It presents a small cyan window for external target-control
+tests, including disconnect and timeout. See the
+[three-scenario runner](../frame-capture/README.md#owned-target-control-regression-checks).
+It stays outside the main build and install. CI compiles it independently with
+ODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF, which requires no RenderDoc header or
+download. Hosted compilation is not evidence of capture/replay execution.
