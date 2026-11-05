@@ -43,6 +43,28 @@ project can adopt. No paid/proprietary injector dependency is introduced.
 
 ## Next engineering proof
 
+Additional public runtime leads were inspected without execution or adoption:
+
+- CrimsonDesertCoop revision c0a89386c57bc645a95586537dbaad148e9ccce7,
+  [camera namespace](https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/include/cdcoop/core/game_structures.h#L350),
+  describes a zoom/FOV field from an older game version. Nearby pose-field
+  descriptions are explicitly speculative comments, not a verified camera
+  layout. Its broader claims are not treated as our installed-build evidence.
+- CD Companion revision cdf69d0245eb68ac2910a2531155ee561a70bff9,
+  [get_camera_heading](https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/reader.py#L105),
+  reads a captured scalar heading; the corresponding
+  [capture path](https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/cave_builder.py#L285)
+  uses runtime code modifications. This is a source-level lead about heading
+  observation, not a complete camera pose/projection controller or stereo path.
+
+Neither lead was validated against our binary. No signatures, offsets or code
+were transplanted. GitHub metadata returned no recognized repository license
+for either; licensing/reuse is not cleared. The ten inspected files and exact
+fingerprints are in [the runtime-lead inventory](crimson-runtime-camera-leads.json).
+The review excludes their unrelated multiplayer/teleport behavior and makes no
+claim that those features work. These leads justify further camera research,
+not treating guesses or a single heading float as a VR adapter.
+
 The external title-menu trace establishes a presentation baseline; see
 [the actual record](../evidence/g1-title-presentation-2026-11-05.json).
 Windows module metadata shows D3D11, D3D12/D3D12Core and DXGI loaded, which is

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "scope": "Selected static source leads only. No source execution, mod build/install, binary patch or game memory scan/write. No upstream code adopted.",
+  "repositories": [
+    {
+      "repository": "blizz3010/CrimsonDesertCoop",
+      "commit": "c0a89386c57bc645a95586537dbaad148e9ccce7",
+      "license_review": "GitHub repository metadata returned no recognized license. Licensing is not cleared; no reuse is proposed.",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "fad870cf2724928b14283a6467047e8be63ffe1f4226dbd0721ae2cf60242196",
+          "url": "https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/README.md"
+        },
+        {
+          "path": "src/core/hooks.cpp",
+          "sha256": "1738c31dd93f68920478512eb9ae976c494fcf8d1c94cf331ba7d20fb7b11dad",
+          "url": "https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/src/core/hooks.cpp"
+        },
+        {
+          "path": "src/core/game_structures.cpp",
+          "sha256": "d5f2c004b2c9c31bc3330ea5005ac3c5721e0fa098fbba7ea63454e3c22e52ce",
+          "url": "https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/src/core/game_structures.cpp"
+        },
+        {
+          "path": "include/cdcoop/core/game_structures.h",
+          "sha256": "5a0368f3e0c3a5193bcf482341f8b1d15c3ed95a153278c676e3d7e7b5f0cd7e",
+          "url": "https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/include/cdcoop/core/game_structures.h"
+        },
+        {
+          "path": "src/ui/overlay.cpp",
+          "sha256": "4969eb47ee6618fd1fa8befff5c077b10fdc275674d31ea5e0958e6ee8306eeb",
+          "url": "https://github.com/blizz3010/CrimsonDesertCoop/blob/c0a89386c57bc645a95586537dbaad148e9ccce7/src/ui/overlay.cpp"
+        }
+      ]
+    },
+    {
+      "repository": "leandrodiogenes/cd-companion",
+      "commit": "cdf69d0245eb68ac2910a2531155ee561a70bff9",
+      "license_review": "GitHub repository metadata returned no recognized license. Licensing is not cleared; no reuse is proposed.",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "4a175b42bcadc0b4ce01032a9eb41ad4a6aa83683e5af584dc40a12b836d0b89",
+          "url": "https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/README.md"
+        },
+        {
+          "path": "server/memory/engine.py",
+          "sha256": "a26ebd946384c5b3536a0d49ee5ae5cd421499b019d73dafe9a6cb1b10f1a87c",
+          "url": "https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/engine.py"
+        },
+        {
+          "path": "server/memory/constants.py",
+          "sha256": "c5645c22b2cc984831b7c06db59d5f1d5834dac88a17564e1376cb7f789fc064",
+          "url": "https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/constants.py"
+        },
+        {
+          "path": "server/memory/reader.py",
+          "sha256": "950f0c244d28979d7993caeedee35208c55b271086753f0c6e698cc55370f724",
+          "url": "https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/reader.py"
+        },
+        {
+          "path": "server/memory/cave_builder.py",
+          "sha256": "e5fe0523b3da91412e38593779cda0cd5dd51a1787fa8b347a3c91f51fa031f2",
+          "url": "https://github.com/leandrodiogenes/cd-companion/blob/cdf69d0245eb68ac2910a2531155ee561a70bff9/server/memory/cave_builder.py"
+        }
+      ]
+    }
+  ]
+}
