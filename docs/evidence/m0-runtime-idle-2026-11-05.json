@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "actual_runtime_collector",
+  "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+  "source_dirty": false,
+  "requested_duration_seconds": 15,
+  "test_runtime": false,
+  "doctor": {
+    "application": "OpenDesertVR 0.1.0",
+    "checks": [
+      {
+        "detail": "D3D12 hardware adapter found; XR match checked separately",
+        "name": "basic_gpu",
+        "status": "PASS"
+      },
+      {
+        "detail": "OpenXR loader reached an active runtime",
+        "name": "runtime_discovery",
+        "status": "PASS"
+      },
+      {
+        "detail": "XR_KHR_D3D12_enable available",
+        "name": "d3d12_extension",
+        "status": "PASS"
+      },
+      {
+        "detail": "HMD system available; visual verification still NOT_RUN",
+        "name": "headset_system",
+        "status": "PASS"
+      },
+      {
+        "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+        "name": "runtime_gpu_device",
+        "status": "PASS"
+      },
+      {
+        "detail": "doctor does not create a presentation session",
+        "name": "session_rendering",
+        "status": "NOT_RUN"
+      }
+    ],
+    "d3d12_extension": true,
+    "game_adapter": {
+      "active": false,
+      "adapter": "CrimsonDesert",
+      "adapter_compatibility": "Unverified",
+      "build": "Unverified",
+      "depth": "Unverified",
+      "frame_ownership": "Unverified",
+      "head_tracking": "Unverified",
+      "hud": "Unverified",
+      "integration": "Unsupported",
+      "motion_control": "Unverified",
+      "motion_vectors": "Unverified",
+      "native_stereo": "Unverified",
+      "per_eye_camera": "Unverified",
+      "reconstructed_depth": "Unverified",
+      "schema_version": 1,
+      "theater": "Unverified"
+    },
+    "game_validation": "NOT_RUN",
+    "gpu": {
+      "d3d12_capable_adapters": 2,
+      "hardware_adapters": 2,
+      "identifiers": "REDACTED"
+    },
+    "headset_validation": "NOT_RUN",
+    "os": "Windows x64",
+    "ready": true,
+    "schema_version": 1,
+    "test_runtime": false
+  },
+  "host": {
+    "application": "OpenDesertVR 0.1.0",
+    "checks": [
+      {
+        "detail": "OpenXR loader reached an active runtime",
+        "name": "runtime_discovery",
+        "status": "PASS"
+      },
+      {
+        "detail": "XR_KHR_D3D12_enable available",
+        "name": "d3d12_extension",
+        "status": "PASS"
+      },
+      {
+        "detail": "HMD system available; visual verification still NOT_RUN",
+        "name": "headset_system",
+        "status": "PASS"
+      },
+      {
+        "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+        "name": "runtime_gpu_device",
+        "status": "PASS"
+      },
+      {
+        "detail": "stereo session, reference space and two eye swapchains created",
+        "name": "session_resources",
+        "status": "PASS"
+      },
+      {
+        "detail": "No valid stereo frame submitted",
+        "name": "stereo_submission",
+        "status": "NOT_RUN"
+      }
+    ],
+    "cpu_frame_ms": {
+      "samples": 0,
+      "status": "NOT_RUN",
+      "total_samples": 0
+    },
+    "d3d12_extension": true,
+    "events": [
+      {
+        "code": "SESSION_STATE",
+        "fields": {
+          "state": 1
+        }
+      }
+    ],
+    "frames": 0,
+    "game_validation": "NOT_RUN",
+    "gpu_eye_ms": [
+      {
+        "samples": 0,
+        "status": "NOT_RUN",
+        "total_samples": 0
+      },
+      {
+        "samples": 0,
+        "status": "NOT_RUN",
+        "total_samples": 0
+      }
+    ],
+    "gpu_stereo_ms": {
+      "samples": 0,
+      "status": "NOT_RUN",
+      "total_samples": 0
+    },
+    "gpu_timing": "NOT_RUN",
+    "headset_validation": "NOT_RUN",
+    "os": "Windows x64",
+    "ready": false,
+    "reprojection_metrics": "NOT_RUN",
+    "schema_version": 1,
+    "stereo_frames": 0,
+    "test_runtime": false,
+    "timing_scope": "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, excludes compositor/display latency"
+  },
+  "run_summary": {
+    "technical_submission": "FAIL",
+    "headset_validation": "NOT_RUN",
+    "doctor_exit": 0,
+    "schema_version": 1,
+    "host_invoked": true,
+    "host_exit": 3,
+    "game_validation": "NOT_RUN",
+    "test_runtime": false,
+    "stereo_frames": 0,
+    "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+    "source_dirty": false
+  },
+  "interpretation": "Runtime and device readiness passed; session and eye swapchains created. Session remained IDLE, so no rendering/timing or active-session shutdown acceptance was established. Headset worn/Link state during this attempt is unknown. Separate user visual observations remain valid as reported."
+}
