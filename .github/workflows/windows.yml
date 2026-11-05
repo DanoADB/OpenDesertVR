@@ -23,6 +23,13 @@ jobs:
         run: ./scripts/ci-test.ps1 -Preset '${{ matrix.preset }}'
       - name: Test presentation-summary filtering and statistics
         run: python -m unittest discover -s tests -p test_presentmon_summary.py -v
+      - name: Check optional research-script syntax (no game or GPU capture)
+        run: |
+          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tokens = $null; $errors = $null
+          [Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'experiments/frame-capture/start-probe.ps1'), [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count) { throw ($errors | Out-String) }
       - name: Stage Release runtime (headset and game tests NOT_RUN)
         if: matrix.preset == 'windows-msvc-release'
         run: |
