@@ -11,6 +11,14 @@ The running-game guard also passed. Neither result proves game camera control
 or stereo. The commands below document the attempted method, not a working
 capture recipe for this Steam build.
 
+An optional follow-up uses the
+[reviewed isolated Steam development context](../../docs/research/g1-steam-capture-context.md).
+Add -SteamDevelopmentContext to start-probe.ps1 to write the actual App ID only
+inside the fresh ignored capture directory and use that as the working
+directory. The ordinary Steam client must already be running. No game-directory
+file, client setting or licensing check is modified. The default launch context
+is unchanged; this option is a separate experiment with its own evidence.
+
 ## Reviewed method and scope
 
 RenderDoc 1.47 is an external diagnostic tool, not a runtime dependency.

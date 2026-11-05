@@ -2,7 +2,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$GameExecutable,
     [string]$RenderDocRoot,
-    [ValidateRange(30, 300)][int]$TimeoutSeconds = 180
+    [ValidateRange(30, 300)][int]$TimeoutSeconds = 180,
+    [switch]$SteamDevelopmentContext
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -46,6 +47,12 @@ $config = @{
     executable_sha256 = $gameHash
     script = $script
     timeout_seconds = $TimeoutSeconds
+}
+if ($SteamDevelopmentContext) {
+    if (!(Get-Process -Name steam -ErrorAction SilentlyContinue)) { throw 'The ordinary Steam client must be running.' }
+    # Vendor-documented development hint; no file is written into the game directory.
+    [IO.File]::WriteAllText((Join-Path $case 'steam_appid.txt'), '3321460', [Text.UTF8Encoding]::new($false))
+    $config.launch_context = 'steam_development_appid'
 }
 $configPath = Join-Path $case 'local-config.json'
 [IO.File]::WriteAllText($configPath, (($config | ConvertTo-Json -Depth 4) + [Environment]::NewLine), [Text.UTF8Encoding]::new($false))

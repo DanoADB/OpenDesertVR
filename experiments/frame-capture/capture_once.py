@@ -62,9 +62,18 @@ def run(config, report, report_path):
     if '"' in str(prefix):
         raise RuntimeError("Invalid capture-prefix path")
     arguments = '"' + str(prefix) + '"' if mode in {"owned_launch", "owned_control"} else ""
+    launch_context = config.get("launch_context", "executable_directory")
+    working_directory = executable.parent
+    if launch_context == "steam_development_appid":
+        if mode != "game_title" or (case / "steam_appid.txt").read_text(encoding="utf-8") != "3321460":
+            raise RuntimeError("Expected the reviewed game App ID in the isolated case directory")
+        working_directory = case
+    elif launch_context != "executable_directory":
+        raise RuntimeError("Unreviewed launch context")
+    report["launch_context"] = launch_context
     report.update({"status": "LAUNCHING", "mode": mode, "executable_sha256": config["executable_sha256"]})
     save(report_path, report)
-    result = rd.ExecuteAndInject(str(executable), str(executable.parent), arguments, [], str(prefix), options,
+    result = rd.ExecuteAndInject(str(executable), str(working_directory), arguments, [], str(prefix), options,
                                  mode == "owned_launch")
     if result.result != rd.ResultCode.Succeeded:
         raise RuntimeError("External capture launch failed: " + str(result.result))
