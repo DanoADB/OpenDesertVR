@@ -132,6 +132,9 @@ One owned timeout/reconnect/capture/replay check passed on the same live process
 and verified all 256 pixels before normal exit 0; see
 [its evidence](../../docs/evidence/g1-owned-reconnect-2026-11-05.json).
 The game's lower-memory retry remains NOT_RUN pending graphics-settings review.
+Reconnection after an owned polling timeout does not demonstrate recovery from
+the game's allocation error. The [memory-failure review](../../docs/research/g1-capture-memory.md)
+recommends a fresh controlled game launch for the graphics-settings comparison.
 
 ## Aggregate offline frame structure
 
