@@ -37,10 +37,10 @@ Leave the unmodified game at its title/menu. In Administrator PowerShell, from
 any directory, run the repository's script by its full path:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:/Users/danod/.codex/.chatgpt-projects/g-p-69dfa3a24f448191a2dba1dd630f668f/OpenDesertVR/scripts/capture-d3d12-events.ps1" -DurationSeconds 10
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:/path/to/OpenDesertVR/scripts/capture-d3d12-events.ps1" -DurationSeconds 10
 ```
 
-Other checkouts should substitute their own script path. Default output is a
+Substitute your own script path for the example above. Default output is a
 fresh out/g1/d3d12-* directory. Let the command finish so its finally block stops
 the trace; stop only its generated OpenDesertVR-D3D12 session if manual cleanup
 is required. Never stop another profiler's session. Share summary.json and
