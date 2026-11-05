@@ -54,6 +54,10 @@ std::wstring quote(const std::wstring &arg) {
 int wmain(int argc, wchar_t **argv) {
     if (argc < 2)
         return 2;
+    const bool force_restricted = std::wstring(argv[1]) == L"--restricted";
+    const int first = force_restricted ? 2 : 1;
+    if (argc <= first)
+        return 2;
     try {
         Handle token, restricted;
         checked(OpenProcessToken(GetCurrentProcess(),
@@ -67,7 +71,7 @@ int wmain(int argc, wchar_t **argv) {
                 "read test integrity");
         const auto label = reinterpret_cast<TOKEN_MANDATORY_LABEL *>(storage.data());
         const DWORD level = *GetSidSubAuthority(label->Label.Sid, *GetSidSubAuthorityCount(label->Label.Sid) - 1);
-        const bool reduce = level > SECURITY_MANDATORY_MEDIUM_RID;
+        const bool reduce = force_restricted || level > SECURITY_MANDATORY_MEDIUM_RID;
         if (reduce) {
             std::cerr << "test launcher: reducing elevated parent token\n" << std::flush;
             SID_IDENTIFIER_AUTHORITY nt = SECURITY_NT_AUTHORITY;
@@ -76,8 +80,8 @@ int wmain(int argc, wchar_t **argv) {
                                              0, 0, &admin.value),
                     "administrator SID");
             SID_AND_ATTRIBUTES disable{admin.value, 0};
-            checked(CreateRestrictedToken(token.value, DISABLE_MAX_PRIVILEGE, 1, &disable, 0, nullptr, 0, nullptr,
-                                          &restricted.value),
+            checked(CreateRestrictedToken(token.value, DISABLE_MAX_PRIVILEGE | LUA_TOKEN, 1, &disable, 0, nullptr, 0,
+                                          nullptr, &restricted.value),
                     "restrict test privileges");
             std::cerr << "test launcher: restricted token created\n" << std::flush;
             SID_IDENTIFIER_AUTHORITY mandatory = SECURITY_MANDATORY_LABEL_AUTHORITY;
@@ -94,8 +98,8 @@ int wmain(int argc, wchar_t **argv) {
             std::cerr << "test launcher: medium integrity token ready\n" << std::flush;
         }
         std::wstring command;
-        for (int i = 1; i < argc; ++i) {
-            if (i > 1)
+        for (int i = first; i < argc; ++i) {
+            if (i > first)
                 command += L' ';
             command += quote(argv[i]);
         }
@@ -107,8 +111,8 @@ int wmain(int argc, wchar_t **argv) {
         startup.hStdError = GetStdHandle(STD_ERROR_HANDLE);
         PROCESS_INFORMATION process{};
         if (reduce)
-            checked(CreateProcessAsUserW(restricted.value, nullptr, command.data(), nullptr, nullptr, TRUE, 0, nullptr,
-                                         nullptr, &startup, &process),
+            checked(CreateProcessAsUserW(restricted.value, nullptr, command.data(), nullptr, nullptr, TRUE,
+                                         CREATE_NO_WINDOW, nullptr, nullptr, &startup, &process),
                     "start reduced-privilege test");
         else
             checked(CreateProcessW(nullptr, command.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &startup,
