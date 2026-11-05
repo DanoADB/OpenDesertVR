@@ -14,6 +14,8 @@
 - Revision/hash-pinned Khronos loader and JSON dependency, dependency notices,
   architecture/safety/research/manual acceptance docs and Release packaging.
 - Windows Debug/Release CI definitions including WARP graphics checks.
+- Packaged report collector gates host startup on doctor readiness, records
+  source provenance, and preserves NOT_RUN for visual validation.
 - GPU timestamp queries, bounded per-eye/stereo timing summaries and explicit
   retained/lifetime sample counts.
 - Test-only OpenXR runtime exercising the compiled host with 25 normal/failure
@@ -29,8 +31,8 @@ No Crimson Desert installation was used.
 |---|---|
 | Debug configure/build | PASS |
 | Release configure/build | PASS |
-| CTest Debug | 31 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
-| CTest Release | 31 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
+| CTest Debug | 33 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
+| CTest Release | 33 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
 | Real D3D12 WARP raster/readback | PASS; near/mid/far pixel disparities 20.1375 / 7 / 4.95688 |
 | Actual loader with absent runtime override | PASS: categorized FAIL readiness, exit 3, sanitized JSON |
 | Installed runtime discovery | PASS: Meta runtime exposes XR_KHR_D3D12_enable |
@@ -39,7 +41,7 @@ No Crimson Desert installation was used.
 | Real headset visual stereo/tracking | NOT_RUN |
 | Real headset stop/disconnect/device loss | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
-| Hosted GitHub Actions execution | NOT_RUN locally; workflow configured |
+| Hosted GitHub Actions execution | First run compiled both configurations and passed WARP/debug validation; runtime override tests failed under elevated runner. Reduced-privilege harness fix awaiting hosted verification |
 
 Deterministic tests cover asymmetric FOV edges, invalid FOV/pose/quaternion,
 IPD and handedness, clipping depth, geometric disparity, version/schema/config

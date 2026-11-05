@@ -27,3 +27,16 @@ Optional debug-layer testing returns CTest skip code 77 when unavailable.
 No validation result is invented. A repeated image timeout fails after five
 seconds; an acquired but unwaited image is left to session destruction rather
 than being released illegally.
+
+
+Hosted runner finding: GitHub's Windows worker uses high integrity, where
+the official loader rejects XR_RUNTIME_JSON. Runtime tests now launch through
+a test-only helper: high-integrity parents create a restricted primary token
+with administrator SID disabled, maximum privileges disabled and medium
+integrity; ordinary parents launch normally. All test descendants inherit
+the reduced token. Upstream loader protections and runtime registration are
+unchanged. The helper is excluded from installed packages.
+
+Process/token APIs:
+- https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken
+- https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw

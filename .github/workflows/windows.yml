@@ -19,7 +19,11 @@ jobs:
         run: ctest --preset ${{ matrix.preset }} -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Stage Release runtime (headset and game tests NOT_RUN)
         if: matrix.preset == 'windows-msvc-release'
-        run: cmake --install out/build/release --config Release --component Runtime --prefix out/package
+        run: |
+          cmake --install out/build/release --config Release --component Runtime --prefix out/package
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $metadata = @{schema_version=1; source_commit=(git rev-parse HEAD); source_dirty=[bool](git status --porcelain); configuration='Release'; architecture='x64'; headset_validation='NOT_RUN'; game_validation='NOT_RUN'}
+          [IO.File]::WriteAllText((Join-Path $PWD 'out/package/build-info.json'), ($metadata | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
       - uses: actions/upload-artifact@v4
         if: matrix.preset == 'windows-msvc-release'
         with:
@@ -29,4 +33,8 @@ jobs:
         if: always()
         with:
           name: tests-${{ matrix.preset }}
-          path: out/build/*/Testing/Temporary/LastTest.log
+          path: |
+            out/build/*/Testing/Temporary/LastTest.log
+            out/build/*/mock-*/report.json
+            out/build/*/mock-*/audit.json
+            out/build/*/collector-*/run-summary.json

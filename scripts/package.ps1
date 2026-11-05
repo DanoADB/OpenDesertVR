@@ -26,6 +26,10 @@ try {
     Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Force
     $hash = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
     "$hash  OpenDesertVR-M0-win64.zip" | Set-Content -LiteralPath ($zip + '.sha256') -Encoding ASCII
+    $snapshotName = 'OpenDesertVR-M0-' + $revision.Substring(0,7) + '-win64.zip'
+    $snapshot = Join-Path $packageRoot $snapshotName
+    Copy-Item -LiteralPath $zip -Destination $snapshot -Force
+    "$hash  $snapshotName" | Set-Content -LiteralPath ($snapshot + '.sha256') -Encoding ASCII
     Write-Output $zip
     # Keep stage for inspection; never recursively remove a caller-computed path.
 } finally { Pop-Location }
