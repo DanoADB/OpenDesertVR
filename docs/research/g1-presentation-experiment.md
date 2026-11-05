@@ -75,3 +75,6 @@ distributions and missing samples for each workload. Then design the smallest
 reviewed experiment to distinguish the active render path and test camera/frame
 ownership. Stop on a protection warning, game instability or a required bypass.
 Do not disable protection or infer that texture copying produces true VR.
+
+The [Direct3D12 event experiment](g1-d3d12-events.md) is the next concrete API
+observation. Its existence is not evidence that a successful trace ran.
