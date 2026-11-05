@@ -102,7 +102,12 @@ presentation and D3D12 execution evidence. The subsequent
 [early-start capture attempt](evidence/g1-frame-capture-attempt-2026-11-05.json)
 lost its game connection before requesting a frame. The owned capture/replay
 fixture passed; game world-pass and camera control remain unverified. The
-attempted loading method stopped pending review of another approach.
+first loading method stopped. A later isolated Steam development context kept
+the early-loaded target through D3D12 readiness and a title-menu frame request,
+but the capture failed allocating an initial-state READBACK heap with
+E_OUTOFMEMORY. No game frame was saved. The
+[memory review](research/g1-capture-memory.md) requires original graphics settings
+recorded before a temporary lower-memory comparison in a fresh game process.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements
 remain NOT_RUN. D3D12 debug validation is SKIPPED here because Graphics Tools

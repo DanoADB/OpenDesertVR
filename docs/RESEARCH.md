@@ -44,8 +44,11 @@ kept the early-loaded game target through D3D12 initialization and a verified
 title-menu frame request. RenderDoc then reported E_OUTOFMEMORY while creating
 a readback buffer; no capture file was obtained. This is loading/capture-failure
 evidence, not camera control or G2. The current next experiment records original
-graphics settings, temporarily reduces capture memory requirements, and reconnects
-to the same early-loaded layer. The [owned reconnect and aggregate replay checks](evidence/g1-owned-reconnect-2026-11-05.json)
+graphics settings, temporarily reduces capture memory requirements, and uses
+a fresh controlled game launch. The [diagnostic log](evidence/g1-capture-allocation-log-2026-11-05.json)
+narrows the failure to initial-state READBACK heap creation and records a fatal
+OOM handler path; see the [memory review](research/g1-capture-memory.md).
+The [owned reconnect and aggregate replay checks](evidence/g1-owned-reconnect-2026-11-05.json)
 passed independently. Game replay remains unverified.
 
 

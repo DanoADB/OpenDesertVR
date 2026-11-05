@@ -5,6 +5,15 @@ requested one frame, but its overlay reported E_OUTOFMEMORY while creating a
 readback buffer. No RDC was saved. The exact failing resource/allocation is
 unknown; see the [attempt record](../evidence/g1-steam-context-attempt-2026-11-05.json).
 
+The subsequent [local diagnostic-log review](../evidence/g1-capture-allocation-log-2026-11-05.json)
+narrows the failed call to CreateHeap for initial-state READBACK heap index 4.
+The first failure is in the texture initial-content path, followed by repeated
+texture and buffer errors within the same single frame request. The log records
+one fatal OOM-handler event and discards the frame. It does not report the
+failing resource dimensions or requested bytes. Raw log data remains local;
+the evidence contains only aggregate counts, call-site interpretation and its
+snapshot fingerprint.
+
 ## Pinned external source review
 
 RenderDoc 1.47
@@ -30,6 +39,8 @@ handling can also retain an out-of-memory fatal error. Our successful owned
 timeout/reconnect test does not prove recovery from this game's memory error.
 Prefer a fresh controlled game launch after changing graphics settings to
 avoid attributing retained capture-layer failure state to the new settings.
+The actual log records the HRESULT handler's fatal OOM path at the heap-creation
+call. A fresh game process is therefore required for the next comparison.
 No error state, API return or game/protection check will be patched or forced.
 
 The documented
@@ -37,6 +48,14 @@ The documented
 applies only where an API can defer allocations and explicitly does not
 guarantee a memory limit. Do not promise that setting it fixes this D3D12
 readback allocation, or introduce unreviewed tool/vendor-extension overrides.
+
+An actual CaptureOptions instance in the reviewed 1.47 binary reports
+refAllResources=false, captureAllCmdLists=false, verifyBufferAccess=false and
+softMemoryLimit=0. saveAllInitials is not exposed by this version's Python
+CaptureOptions; no nonexistent switch is set. The prior game script constructed
+these defaults and did not modify those fields. New capture reports record
+the supported values explicitly. This audits scope settings, not the live
+game's resource sizes, and does not establish a memory mitigation.
 
 ## Next controlled comparison
 

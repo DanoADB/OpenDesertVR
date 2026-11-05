@@ -77,6 +77,14 @@ def run(config, report, report_path):
     options.allowFullscreen = True
     options.apiValidation = False
     options.captureCallstacks = False
+    report["capture_options"] = {
+        "ref_all_resources": bool(options.refAllResources),
+        "capture_all_command_lists": bool(options.captureAllCmdLists),
+        "verify_buffer_access": bool(options.verifyBufferAccess),
+        "soft_memory_limit_mb": int(options.softMemoryLimit),
+        "api_validation": bool(options.apiValidation),
+        "capture_callstacks": bool(options.captureCallstacks),
+    }
     # One literal Windows path argument; the final 'raw' component cannot end in '\\'.
     if '"' in str(prefix):
         raise RuntimeError("Invalid capture-prefix path")
