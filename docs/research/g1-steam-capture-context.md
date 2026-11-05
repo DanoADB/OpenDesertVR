@@ -1,6 +1,10 @@
 # G1 isolated Steam development-context experiment
 
-Status: reviewed method; game execution NOT_RUN at preparation time.
+Status: executed at the title menu. The original target remained connected,
+initialized D3D12 and accepted one frame request. RenderDoc displayed a readback
+buffer creation failure with E_OUTOFMEMORY; the helper eventually timed out
+without an RDC. See the [actual record](../evidence/g1-steam-context-attempt-2026-11-05.json).
+Loading is observed; successful game capture and replay remain unverified.
 
 The first direct RenderDoc launch connected, then lost its target before any
 frame request. Windows process metadata subsequently identified Steam as the

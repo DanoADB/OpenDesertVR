@@ -31,7 +31,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check optional research-script syntax (no game or GPU capture)
         run: |
-          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py
+          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $tokens = $null; $errors = $null
           foreach ($script in @('start-probe.ps1', 'test-owned-control.ps1')) {

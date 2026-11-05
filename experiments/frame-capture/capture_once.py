@@ -41,7 +41,8 @@ def run(config, report, report_path):
     executable = Path(config["executable"]).resolve()
     case = report_path.parent.resolve()
     expected_name = {"owned_launch": "odv_capture_fixture.exe", "owned_control": "odv_present_fixture.exe",
-                     "game_title": "crimsondesert.exe"}.get(mode)
+                     "owned_control_resume": "odv_present_fixture.exe", "game_title": "crimsondesert.exe",
+                     "game_title_resume": "crimsondesert.exe"}.get(mode)
     if expected_name is None or executable.name.casefold() != expected_name:
         raise RuntimeError("Unexpected mode or executable identity")
     if digest(executable) != config["executable_sha256"]:
@@ -52,6 +53,24 @@ def run(config, report, report_path):
     prefix = case / "raw"
     if list(case.glob("*.rdc")):
         raise RuntimeError("Use a fresh capture directory")
+    resume = mode.endswith("_resume")
+    source_case = case
+    prior_context = None
+    if resume:
+        source_case = Path(config["source_case"]).resolve()
+        if source_case == case or source_case.parent != case.parent:
+            raise RuntimeError("Resume requires a distinct sibling case from this experiment")
+        prior_config = json.loads((source_case / "local-config.json").read_text(encoding="utf-8-sig"))
+        prior_report = json.loads((source_case / "capture-info.json").read_text(encoding="utf-8-sig"))
+        prior_context = json.loads((source_case / "local-context.json").read_text(encoding="utf-8-sig"))
+        if (prior_config["mode"] != mode[:-len("_resume")] or
+                Path(prior_config["executable"]).resolve() != executable or
+                prior_config["executable_sha256"] != config["executable_sha256"] or
+                prior_report["status"] != "FAILED" or
+                prior_report.get("failure_stage") not in {"READY_FOR_FRAME", "CAPTURE_REQUESTED"}):
+            raise RuntimeError("Resume origin is not a failed capture on the same reviewed executable")
+        report["resume_origin_report_sha256"] = digest(source_case / "capture-info.json")
+    old_paths = {path.resolve() for path in source_case.glob("*.rdc")}
     options = rd.CaptureOptions()
     options.hookIntoChildren = False
     options.allowVSync = True
@@ -64,7 +83,9 @@ def run(config, report, report_path):
     arguments = '"' + str(prefix) + '"' if mode in {"owned_launch", "owned_control"} else ""
     launch_context = config.get("launch_context", "executable_directory")
     working_directory = executable.parent
-    if launch_context == "steam_development_appid":
+    if resume:
+        launch_context = "existing_early_layer"
+    elif launch_context == "steam_development_appid":
         if mode != "game_title" or (case / "steam_appid.txt").read_text(encoding="utf-8") != "3321460":
             raise RuntimeError("Expected the reviewed game App ID in the isolated case directory")
         working_directory = case
@@ -73,27 +94,35 @@ def run(config, report, report_path):
     report["launch_context"] = launch_context
     report.update({"status": "LAUNCHING", "mode": mode, "executable_sha256": config["executable_sha256"]})
     save(report_path, report)
-    result = rd.ExecuteAndInject(str(executable), str(working_directory), arguments, [], str(prefix), options,
-                                 mode == "owned_launch")
-    if result.result != rd.ResultCode.Succeeded:
-        raise RuntimeError("External capture launch failed: " + str(result.result))
+    if resume:
+        ident = prior_context["target_ident"]
+        report["status"] = "CONNECTING_EXISTING_LAYER"
+        save(report_path, report)
+    else:
+        result = rd.ExecuteAndInject(str(executable), str(working_directory), arguments, [], str(prefix), options,
+                                     mode == "owned_launch")
+        if result.result != rd.ResultCode.Succeeded:
+            raise RuntimeError("External capture launch failed: " + str(result.result))
+        ident = result.ident
     if mode == "owned_launch":
         path = case / "raw_capture.rdc"
         report.update(capture_metadata(path))
         report["status"] = "OWNED_LAUNCH_VALIDATED"
         save(report_path, report)
         return
-    if not result.ident:
+    if not ident:
         raise RuntimeError("No target-control endpoint returned")
-    target = rd.CreateTargetControl("localhost", result.ident, "OpenDesertVR G1", False)
+    target = rd.CreateTargetControl("localhost", ident, "OpenDesertVR G1", False)
     if target is None:
         raise RuntimeError("Cannot connect to the newly launched local target")
     try:
         name = target.GetTarget().replace("\\", "/").rsplit("/", 1)[-1].casefold()
         if name not in {expected_name, Path(expected_name).stem} or target.GetPID() <= 0:
             raise RuntimeError("Target-control identity does not match the launched executable")
+        if resume and target.GetPID() != prior_context["target_process_id"]:
+            raise RuntimeError("The early-loaded target process has changed")
         save(case / "local-context.json", {
-            "target_process_id": target.GetPID(), "target_ident": result.ident,
+            "target_process_id": target.GetPID(), "target_ident": ident,
             "privacy": "LOCAL ONLY: do not publish this PID/connection context or raw capture",
         })
         deadline = time.monotonic() + timeout
@@ -118,7 +147,9 @@ def run(config, report, report_path):
             if was_requested and message.type == rd.TargetControlMessageType.NewCapture:
                 entry = message.newCapture
                 path = Path(entry.path).resolve()
-                if not entry.local or path.parent != case or path.suffix.casefold() != ".rdc":
+                if path in old_paths:
+                    continue
+                if not entry.local or path.parent != source_case or path.suffix.casefold() != ".rdc":
                     raise RuntimeError("Capture is not a local file inside the selected case directory")
                 if digest(executable) != config["executable_sha256"]:
                     raise RuntimeError("Game executable fingerprint changed during capture")
@@ -134,8 +165,9 @@ def run(config, report, report_path):
                 if metadata["capture_sha256"] != source_hash:
                     raise RuntimeError("Saved capture does not match the completed source")
                 report.update(metadata)
-                report.update({"status": "CAPTURED" if mode == "game_title" else "OWNED_CONTROL_CAPTURED",
-                               "game_gpu_capture": "OBSERVED" if mode == "game_title" else "NOT_RUN"})
+                is_game = mode in {"game_title", "game_title_resume"}
+                report.update({"status": "CAPTURED" if is_game else "OWNED_CONTROL_CAPTURED",
+                               "game_gpu_capture": "OBSERVED" if is_game else "NOT_RUN"})
                 save(report_path, report)
                 return
             time.sleep(0.1)

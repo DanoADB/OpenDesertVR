@@ -39,6 +39,15 @@ is unverified. This method stopped without child/global hooks, late attachment,
 Steam configuration changes or protection bypass. A new loading approach needs
 its own review before execution; the adapter remains inactive.
 
+The later [isolated Steam development-context experiment](research/g1-steam-capture-context.md)
+kept the early-loaded game target through D3D12 initialization and a verified
+title-menu frame request. RenderDoc then reported E_OUTOFMEMORY while creating
+a readback buffer; no capture file was obtained. This is loading/capture-failure
+evidence, not camera control or G2. The current next experiment records original
+graphics settings, temporarily reduces capture memory requirements, and reconnects
+to the same early-loaded layer. The [owned reconnect and aggregate replay checks](evidence/g1-owned-reconnect-2026-11-05.json)
+passed independently. Game replay remains unverified.
+
 
 ## Pinned upstream stereo-source review
 

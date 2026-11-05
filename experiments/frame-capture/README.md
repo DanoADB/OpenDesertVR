@@ -18,6 +18,11 @@ inside the fresh ignored capture directory and use that as the working
 directory. The ordinary Steam client must already be running. No game-directory
 file, client setting or licensing check is modified. The default launch context
 is unchanged; this option is a separate experiment with its own evidence.
+The [follow-up result](../../docs/evidence/g1-steam-context-attempt-2026-11-05.json)
+observed that the early-loaded game layer stayed connected and reached the
+title menu. One frame request failed creating a readback buffer with
+E_OUTOFMEMORY. No RDC was obtained; allocation size and underlying cause are
+unverified. The helper's terminal report records its timeout at CAPTURE_REQUESTED.
 
 ## Reviewed method and scope
 
@@ -109,3 +114,37 @@ Failure reports now retain failure_stage to distinguish launch, readiness,
 capture request and saving failures. CI compiles the ordinary fixture and
 checks script syntax; it does not execute RenderDoc or award capture evidence.
 These owned checks do not resolve the game's process handoff.
+
+## Reconnect to an already early-loaded layer
+
+After a failed request, -ResumeFromCase followed by the original case path
+creates a fresh output case and reconnects to that layer. It does not launch
+the game or call ExecuteAndInject/InjectIntoProcess. The launcher checks the
+same original live process, exact executable hash and reviewed loaded DLL;
+the Python helper also checks the prior failed report, executable, target PID
+and sibling-case provenance. An absent, changed or busy target fails closed.
+Do not use this option as a way to inject into an uninstrumented running game.
+
+The resumed layer still writes raw captures under its original local prefix.
+New reports/snapshots use the fresh case, and previously existing capture paths
+cannot satisfy a new request. The prior failure record remains unchanged.
+One owned timeout/reconnect/capture/replay check passed on the same live process
+and verified all 256 pixels before normal exit 0; see
+[its evidence](../../docs/evidence/g1-owned-reconnect-2026-11-05.json).
+The game's lower-memory retry remains NOT_RUN pending graphics-settings review.
+
+## Aggregate offline frame structure
+
+summarize_frame.py runs through qrenderdoc --python with
+ODV_FRAME_SUMMARY_CONFIG pointing to a local JSON containing capture, its
+expected capture_sha256, a fresh output path and this script's absolute script
+path. It opens only a fingerprint-matched D3D12 capture, initializes replay,
+then counts action flags, texture shapes and buffer sizes. It never exports
+resource names/IDs, shaders, texture pixels, buffer payloads or addresses.
+Raw captures and summary-local-error.txt remain local. Require a fresh REPLAYED
+report with the expected hash; tool exit code alone is insufficient.
+
+The owned fixture produced two clears, one present, zero draw calls, a 16x16
+target and a 320x180 target. This matches the ordinary fixture's structure;
+independent pixel replay is separate. No game frame has yet been replayed.
+REPLAYED does not assert image fidelity, world-pass identity or camera control.

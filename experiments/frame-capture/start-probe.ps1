@@ -3,11 +3,14 @@ param(
     [Parameter(Mandatory=$true)][string]$GameExecutable,
     [string]$RenderDocRoot,
     [ValidateRange(30, 300)][int]$TimeoutSeconds = 180,
-    [switch]$SteamDevelopmentContext
+    [switch]$SteamDevelopmentContext,
+    [string]$ResumeFromCase
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-if (Get-Process -Name CrimsonDesert -ErrorAction SilentlyContinue) {
+$existingGame = @(Get-Process -Name CrimsonDesert -ErrorAction SilentlyContinue)
+if ($ResumeFromCase -and $SteamDevelopmentContext) { throw 'Resume does not launch or change the development context.' }
+if (!$ResumeFromCase -and $existingGame.Count) {
     throw 'Close the game normally before starting a controlled fresh-launch capture.'
 }
 $gameFile = Get-Item -LiteralPath $GameExecutable
@@ -33,6 +36,22 @@ foreach ($name in $pinned.Keys) {
         throw "Tool signature verification failed: $name."
     }
 }
+if ($ResumeFromCase) {
+    $sourceCase = (Resolve-Path -LiteralPath $ResumeFromCase).Path
+    if ((Split-Path $sourceCase -Parent) -ne (Join-Path $repository 'out/g1') -or $existingGame.Count -ne 1) {
+        throw 'Resume requires a prior case in this repository and exactly one existing game process.'
+    }
+    $sourceContext = Get-Content (Join-Path $sourceCase 'local-context.json') -Raw | ConvertFrom-Json
+    $sourceReport = Get-Item -LiteralPath (Join-Path $sourceCase 'capture-info.json')
+    if ($existingGame[0].Id -ne $sourceContext.target_process_id -or $existingGame[0].Path -ne $gameFile.FullName -or
+        $existingGame[0].StartTime.ToUniversalTime() -gt $sourceReport.LastWriteTimeUtc) {
+        throw 'The original early-loaded game process is no longer present.'
+    }
+    $captureLayer = @($existingGame[0].Modules | Where-Object { $_.ModuleName -eq 'renderdoc.dll' })
+    if ($captureLayer.Count -ne 1 -or $captureLayer[0].FileName -ne (Join-Path $toolRoot 'renderdoc.dll')) {
+        throw 'The reviewed early-loaded capture layer is not present; no late injection is attempted.'
+    }
+}
 $uiConfig = Join-Path $env:APPDATA 'qrenderdoc/UI.config'
 if (!(Test-Path -LiteralPath $uiConfig) -or !(Get-Content -LiteralPath $uiConfig -Raw | ConvertFrom-Json).Analytics_TotalOptOut) {
     throw 'Configure the external tool privacy preferences before automated use; existing settings are not changed here.'
@@ -53,6 +72,10 @@ if ($SteamDevelopmentContext) {
     # Vendor-documented development hint; no file is written into the game directory.
     [IO.File]::WriteAllText((Join-Path $case 'steam_appid.txt'), '3321460', [Text.UTF8Encoding]::new($false))
     $config.launch_context = 'steam_development_appid'
+}
+if ($ResumeFromCase) {
+    $config.mode = 'game_title_resume'
+    $config.source_case = $sourceCase
 }
 $configPath = Join-Path $case 'local-config.json'
 [IO.File]::WriteAllText($configPath, (($config | ConvertTo-Json -Depth 4) + [Environment]::NewLine), [Text.UTF8Encoding]::new($false))
