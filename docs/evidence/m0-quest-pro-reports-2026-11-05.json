@@ -2007,5 +2007,880 @@
     },
     "visual_menu_return": "PASS_USER_REPORTED",
     "visible_clean_finish": "PASS_USER_REPORTED"
-  }
+  },
+  "disconnect_test_run": {
+    "user_action": "User confirmed Quest Link disconnected after seeing cubes; transport method unspecified",
+    "config": {
+      "schema_version": 1,
+      "debug_layer": false,
+      "duration_seconds": 120,
+      "near_z": 0.05,
+      "far_z": 100
+    },
+    "host": {
+      "application": "OpenDesertVR 0.1.0",
+      "checks": [
+        {
+          "detail": "OpenXR loader reached an active runtime",
+          "name": "runtime_discovery",
+          "status": "PASS"
+        },
+        {
+          "detail": "XR_KHR_D3D12_enable available",
+          "name": "d3d12_extension",
+          "status": "PASS"
+        },
+        {
+          "detail": "HMD system available; visual verification still NOT_RUN",
+          "name": "headset_system",
+          "status": "PASS"
+        },
+        {
+          "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+          "name": "runtime_gpu_device",
+          "status": "PASS"
+        },
+        {
+          "detail": "stereo session, reference space and two eye swapchains created",
+          "name": "session_resources",
+          "status": "PASS"
+        },
+        {
+          "detail": "Synthetic frames submitted; visual correctness UNVERIFIED",
+          "name": "stereo_submission",
+          "status": "PASS"
+        }
+      ],
+      "cpu_frame_ms": {
+        "max": 22.0052,
+        "median": 0.0559,
+        "p95": 14.0081,
+        "samples": 2279,
+        "status": "PASS",
+        "total_samples": 2279
+      },
+      "d3d12_extension": true,
+      "events": [
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 2
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 5
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2062857722,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 1920,
+            "left": -0.9424777626991272,
+            "qw": -0.9951884746551514,
+            "qx": 0.09619133174419403,
+            "qy": -0.01850920356810093,
+            "qz": 0.0021359280217438936,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4541451334953308,
+            "y": 0.22896316647529602,
+            "z": 0.5580829977989197
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2062857722,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 1920,
+            "left": -0.6981316804885864,
+            "qw": -0.9951884746551514,
+            "qx": 0.09619133174419403,
+            "qy": -0.01850920356810093,
+            "qz": 0.0021359280217438936,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.5224429965019226,
+            "y": 0.22842922806739807,
+            "z": 0.5555931925773621
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 3733521222,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 2040,
+            "left": -0.9424777626991272,
+            "qw": -0.9956138730049133,
+            "qx": 0.09280795603990555,
+            "qy": -0.010350164026021957,
+            "qz": 0.005711989477276802,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4884771704673767,
+            "y": 0.2281847596168518,
+            "z": 0.5385926961898804
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 3733521222,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 2040,
+            "left": -0.6981316804885864,
+            "qw": -0.9956138730049133,
+            "qx": 0.09280795603990555,
+            "qy": -0.010350164026021957,
+            "qz": 0.005711989477276802,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.5568034052848816,
+            "y": 0.22727611660957336,
+            "z": 0.5372565984725952
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5404206120,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 2160,
+            "left": -0.9424777626991272,
+            "qw": -0.9935678839683533,
+            "qx": 0.11224977672100067,
+            "qy": -0.013336100615561008,
+            "qz": 0.006722032558172941,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.48725757002830505,
+            "y": 0.22278130054473877,
+            "z": 0.5367380976676941
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5404206120,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 2160,
+            "left": -0.6981316804885864,
+            "qw": -0.9935678839683533,
+            "qx": 0.11224977672100067,
+            "qy": -0.013336100615561008,
+            "qz": 0.006722032558172941,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.5555723905563354,
+            "y": 0.22166374325752258,
+            "z": 0.5350300669670105
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 6
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        }
+      ],
+      "frames": 2279,
+      "game_validation": "NOT_RUN",
+      "gpu_eye_ms": [
+        {
+          "max": 0.02048,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 449,
+          "status": "PASS",
+          "total_samples": 449
+        },
+        {
+          "max": 0.020416,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 449,
+          "status": "PASS",
+          "total_samples": 449
+        }
+      ],
+      "gpu_stereo_ms": {
+        "max": 0.040896,
+        "median": 0.014336,
+        "p95": 0.015359999999999999,
+        "samples": 449,
+        "status": "PASS",
+        "total_samples": 449
+      },
+      "gpu_timing": "PASS",
+      "headset_validation": "NOT_RUN",
+      "os": "Windows x64",
+      "ready": true,
+      "reprojection_metrics": "NOT_RUN",
+      "schema_version": 1,
+      "stereo_frames": 449,
+      "test_runtime": false,
+      "timing_scope": "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, excludes compositor/display latency"
+    },
+    "summary": {
+      "technical_submission": "PASS",
+      "headset_validation": "NOT_RUN",
+      "doctor_exit": 0,
+      "schema_version": 1,
+      "host_invoked": true,
+      "host_exit": 0,
+      "game_validation": "NOT_RUN",
+      "test_runtime": false,
+      "stereo_frames": 449,
+      "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+      "source_dirty": false
+    },
+    "process_no_longer_present": true,
+    "interpretation": "STOPPING then IDLE observed; no session/device-loss error observed. Host exited 0 at configured timeout. This establishes the tested Link-disconnect path only, not arbitrary GPU removal or runtime crash."
+  },
+  "reconnect_test_run": {
+    "user_observation": "PASS: after reconnecting, correct depth/head tracking and clean finish confirmed",
+    "config": {
+      "schema_version": 1,
+      "debug_layer": false,
+      "duration_seconds": 20,
+      "near_z": 0.05,
+      "far_z": 100
+    },
+    "host": {
+      "application": "OpenDesertVR 0.1.0",
+      "checks": [
+        {
+          "detail": "OpenXR loader reached an active runtime",
+          "name": "runtime_discovery",
+          "status": "PASS"
+        },
+        {
+          "detail": "XR_KHR_D3D12_enable available",
+          "name": "d3d12_extension",
+          "status": "PASS"
+        },
+        {
+          "detail": "HMD system available; visual verification still NOT_RUN",
+          "name": "headset_system",
+          "status": "PASS"
+        },
+        {
+          "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+          "name": "runtime_gpu_device",
+          "status": "PASS"
+        },
+        {
+          "detail": "stereo session, reference space and two eye swapchains created",
+          "name": "session_resources",
+          "status": "PASS"
+        },
+        {
+          "detail": "Synthetic frames submitted; visual correctness UNVERIFIED",
+          "name": "stereo_submission",
+          "status": "PASS"
+        }
+      ],
+      "cpu_frame_ms": {
+        "max": 38.2687,
+        "median": 13.9366,
+        "p95": 27.8841,
+        "samples": 1270,
+        "status": "PASS",
+        "total_samples": 1270
+      },
+      "d3d12_extension": true,
+      "events": [
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 2
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 5
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2624416483,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 120,
+            "left": -0.9424777626991272,
+            "qw": -0.9723951816558838,
+            "qx": -0.13711608946323395,
+            "qy": -0.18388094007968903,
+            "qz": 0.042831726372241974,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.09690821170806885,
+            "y": 0.04353681579232216,
+            "z": 0.1876266747713089
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2624416483,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 120,
+            "left": -0.6981316804885864,
+            "qw": -0.9723951816558838,
+            "qx": -0.13711608946323395,
+            "qy": -0.18388094007968903,
+            "qz": 0.042831726372241974,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.03342142328619957,
+            "y": 0.04128962382674217,
+            "z": 0.16237734258174896
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5757007119,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 240,
+            "left": -0.9424777626991272,
+            "qw": -0.9922140836715698,
+            "qx": -0.08907228708267212,
+            "qy": -0.08038433641195297,
+            "qz": 0.03340289369225502,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.07886290550231934,
+            "y": 0.03515150398015976,
+            "z": 0.16103188693523407
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5757007119,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 240,
+            "left": -0.6981316804885864,
+            "qw": -0.9922140836715698,
+            "qx": -0.08907228708267212,
+            "qy": -0.08038433641195297,
+            "qz": 0.03340289369225502,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.011538449674844742,
+            "y": 0.03159911185503006,
+            "z": 0.1497204452753067
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 7427691717,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 360,
+            "left": -0.9424777626991272,
+            "qw": -0.9481930136680603,
+            "qx": 0.03735847398638725,
+            "qy": 0.3147319257259369,
+            "qz": 0.02186731994152069,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.012386852875351906,
+            "y": 0.006994706112891436,
+            "z": 0.13378962874412537
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 7427691717,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 360,
+            "left": -0.6981316804885864,
+            "qw": -0.9481930136680603,
+            "qx": 0.03735847398638725,
+            "qy": 0.3147319257259369,
+            "qz": 0.02186731994152069,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.06713887304067612,
+            "y": 0.005767425987869501,
+            "z": 0.1747024655342102
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 9098374318,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 480,
+            "left": -0.9424777626991272,
+            "qw": -0.9984321594238281,
+            "qx": 0.020235808566212654,
+            "qy": 0.04881759732961655,
+            "qz": 0.018455039709806442,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.05710786581039429,
+            "y": 0.014067478477954865,
+            "z": 0.14092828333377838
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 9098374318,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 480,
+            "left": -0.6981316804885864,
+            "qw": -0.9984321594238281,
+            "qx": 0.020235808566212654,
+            "qy": 0.04881759732961655,
+            "qz": 0.018455039709806442,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.010880189016461372,
+            "y": 0.011683305725455284,
+            "z": 0.14764325320720673
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 10769057320,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 600,
+            "left": -0.9424777626991272,
+            "qw": -0.9934706091880798,
+            "qx": 0.07851442694664001,
+            "qy": 0.07999546825885773,
+            "qz": 0.021269818767905235,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.0515352301299572,
+            "y": 0.0020088686142116785,
+            "z": 0.13197727501392365
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 10769057320,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 600,
+            "left": -0.6981316804885864,
+            "qw": -0.9934706091880798,
+            "qx": 0.07851442694664001,
+            "qy": 0.07999546825885773,
+            "qz": 0.021269818767905235,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.015888448804616928,
+            "y": -2.1456042304635048E-05,
+            "z": 0.143071249127388
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 12439681419,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 720,
+            "left": -0.9424777626991272,
+            "qw": -0.9983075857162476,
+            "qx": 0.034279655665159225,
+            "qy": 0.04202847555279732,
+            "qz": 0.020991923287510872,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.06041073054075241,
+            "y": 0.01211360190063715,
+            "z": 0.1424829363822937
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 12439681419,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 720,
+            "left": -0.6981316804885864,
+            "qw": -0.9983075857162476,
+            "qx": 0.034279655665159225,
+            "qy": 0.04202847555279732,
+            "qz": 0.020991923287510872,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.007647966966032982,
+            "y": 0.009445401839911938,
+            "z": 0.14831775426864624
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 14110364219,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 840,
+            "left": -0.9424777626991272,
+            "qw": -0.9977939128875732,
+            "qx": 0.03999998793005943,
+            "qy": 0.04840049147605896,
+            "qz": 0.021561210975050926,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.05874896049499512,
+            "y": 0.011089019477367401,
+            "z": 0.14231427013874054
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 14110364219,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 840,
+            "left": -0.6981316804885864,
+            "qw": -0.9977939128875732,
+            "qx": 0.03999998793005943,
+            "qy": 0.04840049147605896,
+            "qz": 0.021561210975050926,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.009227639064192772,
+            "y": 0.008412348106503487,
+            "z": 0.14903493225574493
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 15781013818,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 960,
+            "left": -0.9424777626991272,
+            "qw": -0.9894372820854187,
+            "qx": 0.10682978481054306,
+            "qy": 0.09175509959459305,
+            "qz": 0.034384164959192276,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.04530664160847664,
+            "y": -0.002419169759377837,
+            "z": 0.13441769778728485
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 15781013818,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 960,
+            "left": -0.6981316804885864,
+            "qw": -0.9894372820854187,
+            "qx": 0.10682978481054306,
+            "qy": 0.09175509959459305,
+            "qz": 0.034384164959192276,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.0217411108314991,
+            "y": -0.005730384960770607,
+            "z": 0.14733223617076874
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 17451667719,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 1080,
+            "left": -0.9424777626991272,
+            "qw": -0.9967361092567444,
+            "qx": 0.025176433846354485,
+            "qy": 0.07193779945373535,
+            "qz": 0.026612216606736183,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.04908924549818039,
+            "y": 0.011650443077087402,
+            "z": 0.1311114877462387
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 17451667719,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 1080,
+            "left": -0.6981316804885864,
+            "qw": -0.9967361092567444,
+            "qx": 0.025176433846354485,
+            "qy": 0.07193779945373535,
+            "qz": 0.026612216606736183,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.01846683770418167,
+            "y": 0.008271493017673492,
+            "z": 0.14100639522075653
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 19108427329,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 1200,
+            "left": -0.9424777626991272,
+            "qw": -0.9959577322006226,
+            "qx": 0.04918384924530983,
+            "qy": -0.07207411527633667,
+            "qz": 0.021323131397366524,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.08649462461471558,
+            "y": 0.010401415638625622,
+            "z": 0.14805862307548523
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 19108427329,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 1200,
+            "left": -0.6981316804885864,
+            "qw": -0.9959577322006226,
+            "qx": 0.04918384924530983,
+            "qy": -0.07207411527633667,
+            "qz": 0.021323131397366524,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.01890655606985092,
+            "y": 0.007013223133981228,
+            "z": 0.1383877992630005
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 6
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 8
+          }
+        }
+      ],
+      "frames": 1270,
+      "game_validation": "NOT_RUN",
+      "gpu_eye_ms": [
+        {
+          "max": 0.021504,
+          "median": 0.008192,
+          "p95": 0.009216,
+          "samples": 1214,
+          "status": "PASS",
+          "total_samples": 1214
+        },
+        {
+          "max": 0.019456,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 1214,
+          "status": "PASS",
+          "total_samples": 1214
+        }
+      ],
+      "gpu_stereo_ms": {
+        "max": 0.040959999999999996,
+        "median": 0.015328000000000001,
+        "p95": 0.016384,
+        "samples": 1214,
+        "status": "PASS",
+        "total_samples": 1214
+      },
+      "gpu_timing": "PASS",
+      "headset_validation": "NOT_RUN",
+      "os": "Windows x64",
+      "ready": true,
+      "reprojection_metrics": "NOT_RUN",
+      "schema_version": 1,
+      "stereo_frames": 1214,
+      "test_runtime": false,
+      "timing_scope": "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, excludes compositor/display latency"
+    },
+    "summary": {
+      "technical_submission": "PASS",
+      "headset_validation": "NOT_RUN",
+      "doctor_exit": 0,
+      "schema_version": 1,
+      "host_invoked": true,
+      "host_exit": 0,
+      "game_validation": "NOT_RUN",
+      "test_runtime": false,
+      "stereo_frames": 1214,
+      "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+      "source_dirty": false
+    }
+  },
+  "acceptance": "Core M0 hardware gate PASS for this tested configuration; extended graphics-debug, arbitrary device removal and compositor metrics remain unverified."
 }

@@ -21,3 +21,11 @@ temporary, restored runtime registration on its disposable worker; local
 tests use process environment overrides from a non-elevated shell.
 See m0-hardening-2026-11-04.json for the linked successful Debug/Release run.
 No software test artifact is evidence of a real headset or game render.
+
+Actual Quest Pro evidence (2026-11-05):
+- [User visual observations](m0-quest-pro-2026-11-05.json).
+- [Structured hardware reports, binary provenance, menu/disconnect/reconnect runs](m0-quest-pro-reports-2026-11-05.json).
+- [Separate idle-session attempt](m0-runtime-idle-2026-11-05.json), before the user was wearing the headset.
+
+Core M0 hardware acceptance passed for the tested configuration. Each remaining
+unknown is retained in the records; game compatibility is still unverified.

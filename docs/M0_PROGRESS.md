@@ -46,7 +46,8 @@ No Crimson Desert installation was used.
 | Real headset visual stereo/tracking | User-reported PASS on Meta Quest Pro (2026-11-05); host binary matches packaged 404d38a build |
 | Real headset submission and shutdown | First run: 536 stereo frames, host exit 0, STOPPING then IDLE; second: 747 stereo frames, exit summary missing |
 | Real headset menu return and timed shutdown | PASS: user-confirmed depth/tracking restored and clean finish; 60-second run, 2,833 stereo frames, focus transitions, STOPPING/EXITING and host exit 0 |
-| Real headset disconnect/device loss | NOT_RUN |
+| Quest Link disconnect and fresh-launch recovery | PASS tested path: 449 stereo frames, STOPPING/IDLE, timed exit 0; reconnect run 1,214 stereo frames and exit 0, user confirmed correct viewing |
+| Arbitrary GPU removal/runtime crash | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
 | Hosted GitHub Actions execution | PASS: Debug and Release each 34/34, including D3D12 debug validation; [run 41965528980](https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980) |
 
@@ -89,9 +90,12 @@ The user also confirmed menu return and clean timed finish during a recorded
 60-second run (2,833 stereo frames). CPU frame median/p95/max were
 13.8455/14.1924/29.4084 ms, including runtime waits and non-rendering frames.
 The predicted display period is approximately 72 Hz; no measured display cadence
-or compositor drop/reprojection claim is made. Disconnect/recovery
-and hardware graphics debug validation remain unverified;
-the roadmap's M0 exit gate is still PENDING. No G1 integration work has begun.
+or compositor drop/reprojection claim is made. Quest Link disconnect/recovery
+passed: the host stopped its session and exited 0; after reconnecting, a fresh
+launch rendered 1,214 stereo frames, exited 0 and passed user visual confirmation.
+**Core M0 hardware acceptance passes for this tested configuration.** Hardware
+graphics debug validation, arbitrary GPU removal/runtime crash and compositor
+metrics remain unverified. No G1 integration work has begun.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements
 remain NOT_RUN. D3D12 debug validation is SKIPPED here because Graphics Tools

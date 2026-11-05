@@ -53,6 +53,9 @@ Local MSVC Debug/Release builds each report 33 tests passed, zero failed and
 one skipped (optional D3D12 debug validation unavailable locally). Hosted
 Windows CI passes all 34 checks in both configurations, including debug validation.
 WARP raster/readback verifies separate-eye pixel disparity. The active Meta
-runtime is discoverable; no headset system was available. Actual headset
-acceptance remains PENDING, and no game VR integration exists.
+runtime is discoverable; no headset system was available. On 2026-11-05, core headset acceptance passed on Meta Quest Pro: user-confirmed
+stereo/tracking/comfort/menu return, recorded clean timed shutdown, and tested
+Quest Link disconnect followed by successful fresh-process rendering after
+reconnection. Extended graphics validation and compositor metrics remain
+unverified. No game VR integration exists.
 See `docs/M0_PROGRESS.md` and `docs/M0_ACCEPTANCE.md`.

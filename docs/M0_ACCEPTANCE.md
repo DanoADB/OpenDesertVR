@@ -1,4 +1,16 @@
-# Manual M0 headset acceptance (PENDING)
+# Manual M0 headset acceptance
+
+Core hardware gate: **PASS for the tested Meta Quest Pro configuration,
+2026-11-05**, with clean packaged source 404d38a. User-confirmed depth,
+alternating-eye viewpoint, anchored tracking, comfortable motion, menu return
+and clean finish are supported by actual host reports. A Quest Link disconnect
+led to STOPPING/IDLE and timed exit 0; after reconnecting, a fresh host rendered
+1,214 stereo frames and exited 0, with correct viewing confirmed by the user.
+See [visual observations](evidence/m0-quest-pro-2026-11-05.json) and
+[structured hardware reports](evidence/m0-quest-pro-reports-2026-11-05.json).
+The checklist below remains a reusable template, not a claim that every
+extended check passed. Hardware debug validation, arbitrary GPU removal,
+runtime crash, compositor metrics and runtime version remain unverified.
 
 This package tests synthetic geometry only. No game installation is needed.
 M0 does not pass the roadmap's hardware exit gate until this checklist is
@@ -58,7 +70,7 @@ succeeded; 3 means a requirement is missing; 1/2 indicates execution/usage
 failure. A missing headset is expected to fail readiness, not the build.
 Runtime/driver failures can stall inside vendor calls; record that as a failure.
 
-## Hardware checklist (all NOT_RUN until observed)
+## Hardware checklist template (record each run separately)
 
 - [ ] Record package build-info commit, runtime version/family, non-unique HMD
       and GPU model, refresh rate and connection mode.
@@ -97,6 +109,7 @@ Session loss: restart runtime and host. No game state is touched.
 
 ## Gate and next step
 
-Keep G0/M0 hardware acceptance pending until observations above pass.
-Then begin G1 with a non-invasive version/storefront/permissions and DX12
+Core pose/stereo/orderly-shutdown acceptance is recorded for the tested setup.
+Keep unobserved extended checks and other configurations unverified.
+Begin G1 with a non-invasive version/storefront/permissions and DX12
 presentation evidence record. Do not add game hooks or claim game VR support.

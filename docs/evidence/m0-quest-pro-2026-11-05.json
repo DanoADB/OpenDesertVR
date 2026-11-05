@@ -17,12 +17,12 @@
     "comfortable_motion_without_reported_flicker_or_strong_judder": "PASS",
     "timed_or_requested_orderly_shutdown": "PASS_USER_REPORTED_AND_HOST_EXIT_0",
     "runtime_menu_return": "PASS_USER_REPORTED_AND_FOCUS_TRANSITIONS_RECORDED",
-    "disconnect_and_fresh_process_recovery": "NOT_RUN",
+    "disconnect_and_fresh_process_recovery": "PASS_QUEST_LINK_DISCONNECT_AND_FRESH_LAUNCH",
     "hardware_graphics_debug_validation": "NOT_RUN"
   },
   "frame_timing_report": "m0-quest-pro-reports-2026-11-05.json",
   "host_report": "m0-quest-pro-reports-2026-11-05.json",
-  "m0_exit_gate": "PENDING",
+  "m0_exit_gate": "PASS_TESTED_CONFIGURATION",
   "game_validation": "NOT_RUN",
   "limitations": [
     "Visual observations were reported by the user in chat; no headset capture was inspected.",
