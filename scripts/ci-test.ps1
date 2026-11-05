@@ -27,6 +27,12 @@ try {
 } finally {
     if ($hadValue) { Set-ItemProperty -LiteralPath $registryPath -Name ActiveRuntime -Value $oldValue }
     else { Remove-ItemProperty -LiteralPath $registryPath -Name ActiveRuntime -ErrorAction SilentlyContinue }
+    $restored = Get-ItemProperty -LiteralPath $registryPath -ErrorAction SilentlyContinue
+    $hasValue = $null -ne $restored -and $null -ne $restored.PSObject.Properties['ActiveRuntime']
+    if (($hadValue -and (!$hasValue -or $restored.ActiveRuntime -ne $oldValue)) -or (!$hadValue -and $hasValue)) {
+        throw 'CI runtime registry fixture did not restore the prior selection'
+    }
+    Write-Output 'OpenXR CI runtime selection restored and verified.'
 }
 if ($suiteExit -ne 0) { exit $suiteExit }
 exit $missingExit

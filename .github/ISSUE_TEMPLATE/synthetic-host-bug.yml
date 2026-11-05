@@ -1,0 +1,50 @@
+name: Synthetic host bug
+description: Report a reproducible build, diagnostics, rendering or session problem.
+title: "[M0] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an experimental synthetic stereo host. Game integration is unsupported.
+        Share sanitized JSON and observations; omit device serials, usernames, private paths and game files.
+        Report vulnerabilities privately as described in SECURITY.md.
+  - type: input
+    id: commit
+    attributes:
+      label: Source commit or package build-info source_commit
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence
+    attributes:
+      label: Evidence observed
+      options:
+        - Build or headless deterministic test
+        - WARP or test-only runtime
+        - Real headset synthetic scene
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Windows version, compiler/configuration, GPU/HMD model and runtime version; no serial numbers.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction and expected/observed behavior
+      description: Include the exact command/config and whether it fails consistently.
+    validations:
+      required: true
+  - type: textarea
+    id: reports
+    attributes:
+      label: Sanitized evidence
+      description: Attach doctor.json, host.json or run-summary.json. Explain what was actually seen; automated submission does not prove visual stereo.
+  - type: textarea
+    id: shutdown
+    attributes:
+      label: Shutdown and recovery
+      description: Note session loss, Ctrl+C, runtime restart, hangs or crashes if relevant.

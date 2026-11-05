@@ -20,7 +20,8 @@
   retained/lifetime sample counts.
 - Test-only OpenXR runtime exercising the compiled host with 25 normal/failure
   scenarios, including partial eye failures, session loss, timed exit and
-  repeated image-wait timeouts. No runtime registration is modified.
+  repeated image-wait timeouts. Local tests use per-process runtime overrides;
+  a disposable-runner CI fixture restores its prior registration in finally.
 
 ## Observed locally (Windows x64)
 
@@ -41,7 +42,7 @@ No Crimson Desert installation was used.
 | Real headset visual stereo/tracking | NOT_RUN |
 | Real headset stop/disconnect/device loss | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
-| Hosted GitHub Actions execution | First run compiled both configurations and passed WARP/debug validation; runtime override tests failed under elevated runner. Reduced-privilege harness fix awaiting hosted verification |
+| Hosted GitHub Actions execution | PASS: Debug and Release each 34/34, including D3D12 debug validation; [run 41965528980](https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980) |
 
 Deterministic tests cover asymmetric FOV edges, invalid FOV/pose/quaternion,
 IPD and handedness, clipping depth, geometric disparity, version/schema/config
@@ -62,6 +63,8 @@ cmake --build --preset windows-msvc-release
 ctest --preset windows-msvc-release
 powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
+
+Current hardening evidence: [m0-hardening-2026-11-04.json](evidence/m0-hardening-2026-11-04.json).
 
 Initial build/package evidence (before hardening): [m0-local-2026-11-04.json](evidence/m0-local-2026-11-04.json).
 

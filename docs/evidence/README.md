@@ -13,3 +13,11 @@ Do not commit raw game dumps or account details.
 For manual headset records, include build commit, runtime family/version,
 non-unique GPU/HMD models, duration, pose/depth observations, frame statistics,
 shutdown sequence and any errors. Device serials are unnecessary.
+
+
+The current headless evidence includes the compiled host driven through the
+official loader and a test-only runtime with WARP resources. Hosted CI uses a
+temporary, restored runtime registration on its disposable worker; local
+tests use process environment overrides from a non-elevated shell.
+See m0-hardening-2026-11-04.json for the linked successful Debug/Release run.
+No software test artifact is evidence of a real headset or game render.
