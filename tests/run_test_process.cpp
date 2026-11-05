@@ -69,6 +69,7 @@ int wmain(int argc, wchar_t **argv) {
         const DWORD level = *GetSidSubAuthority(label->Label.Sid, *GetSidSubAuthorityCount(label->Label.Sid) - 1);
         const bool reduce = level > SECURITY_MANDATORY_MEDIUM_RID;
         if (reduce) {
+            std::cerr << "test launcher: reducing elevated parent token\n" << std::flush;
             SID_IDENTIFIER_AUTHORITY nt = SECURITY_NT_AUTHORITY;
             Sid admin;
             checked(AllocateAndInitializeSid(&nt, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0,
@@ -78,6 +79,7 @@ int wmain(int argc, wchar_t **argv) {
             checked(CreateRestrictedToken(token.value, DISABLE_MAX_PRIVILEGE, 1, &disable, 0, nullptr, 0, nullptr,
                                           &restricted.value),
                     "restrict test privileges");
+            std::cerr << "test launcher: restricted token created\n" << std::flush;
             SID_IDENTIFIER_AUTHORITY mandatory = SECURITY_MANDATORY_LABEL_AUTHORITY;
             Sid medium;
             checked(AllocateAndInitializeSid(&mandatory, 1, SECURITY_MANDATORY_MEDIUM_RID, 0, 0, 0, 0, 0, 0, 0,
@@ -89,6 +91,7 @@ int wmain(int argc, wchar_t **argv) {
             checked(SetTokenInformation(restricted.value, TokenIntegrityLevel, &target,
                                         sizeof(target) + GetLengthSid(medium.value)),
                     "lower test integrity");
+            std::cerr << "test launcher: medium integrity token ready\n" << std::flush;
         }
         std::wstring command;
         for (int i = 1; i < argc; ++i) {
@@ -112,10 +115,14 @@ int wmain(int argc, wchar_t **argv) {
                                    &process),
                     "start test");
         Handle child{process.hProcess}, thread{process.hThread};
+        if (reduce)
+            std::cerr << "test launcher: child started\n" << std::flush;
         if (WaitForSingleObject(child.value, INFINITE) != WAIT_OBJECT_0)
             throw std::runtime_error("test process wait failed");
         DWORD result = 1;
         checked(GetExitCodeProcess(child.value, &result), "test exit code");
+        if (result != 0)
+            std::cerr << "test launcher: child exit=0x" << std::hex << result << '\n';
         return static_cast<int>(result);
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

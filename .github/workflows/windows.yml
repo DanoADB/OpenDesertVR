@@ -14,9 +14,9 @@ jobs:
       - name: Configure
         run: cmake --preset ${{ matrix.preset }}
       - name: Build
-        run: cmake --build --preset ${{ matrix.preset }} --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+        run: cmake --build --preset ${{ matrix.preset }} --parallel 4 --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Test
-        run: ctest --preset ${{ matrix.preset }} -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+        run: ctest --preset ${{ matrix.preset }} --parallel 3 -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Stage Release runtime (headset and game tests NOT_RUN)
         if: matrix.preset == 'windows-msvc-release'
         run: |
