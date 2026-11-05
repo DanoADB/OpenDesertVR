@@ -4,7 +4,7 @@
   "evidence_kind": "user_reported_headset_observation",
   "headset_model": "Meta Quest Pro",
   "suggested_build_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
-  "actual_build_commit": null,
+  "actual_build_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
   "runtime_version": null,
   "gpu_model": null,
   "connection_mode": null,
@@ -20,13 +20,13 @@
     "disconnect_and_fresh_process_recovery": "NOT_RUN",
     "hardware_graphics_debug_validation": "NOT_RUN"
   },
-  "frame_timing_report": null,
-  "host_report": null,
+  "frame_timing_report": "m0-quest-pro-reports-2026-11-05.json",
+  "host_report": "m0-quest-pro-reports-2026-11-05.json",
   "m0_exit_gate": "PENDING",
   "game_validation": "NOT_RUN",
   "limitations": [
-    "Visual observations were reported by the user in chat; no hardware report or headset capture was inspected.",
-    "The user was directed to the 404d38a package, but actual build provenance has not been verified.",
+    "Visual observations were reported by the user in chat; no headset capture was inspected.",
+    "Packaged executable SHA256 and clean build-info match the user extracted build; actual host reports are preserved separately.",
     "Unreported checks remain NOT_RUN; they are not inferred from successful viewing."
   ]
 }

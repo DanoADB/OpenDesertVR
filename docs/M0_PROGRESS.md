@@ -43,8 +43,9 @@ No Crimson Desert installation was used.
 | Installed runtime discovery | PASS: Meta runtime exposes XR_KHR_D3D12_enable |
 | Testhost without available headset | Expected FAIL readiness: XR_ERROR_FORM_FACTOR_UNAVAILABLE (-35), zero submitted frames |
 | Extracted Release package smoke | PASS: both programs run; missing headset returns exit 3 |
-| Real headset visual stereo/tracking | User-reported PASS on Meta Quest Pro (2026-11-05); build/report provenance pending |
-| Real headset stop/disconnect/device loss | NOT_RUN |
+| Real headset visual stereo/tracking | User-reported PASS on Meta Quest Pro (2026-11-05); host binary matches packaged 404d38a build |
+| Real headset submission and shutdown | First run: 536 stereo frames, host exit 0, STOPPING then IDLE; second: 747 stereo frames, exit summary missing |
+| Real headset disconnect/device loss | NOT_RUN |
 | Game integration/stereo | NOT_RUN; adapter inactive |
 | Hosted GitHub Actions execution | PASS: Debug and Release each 34/34, including D3D12 debug validation; [run 41965528980](https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980) |
 
@@ -81,7 +82,11 @@ steps and interpretation. Basic GPU discovery runs even without a headset.
 Meta Quest Pro visual depth, alternating-eye viewpoint, world-anchored tracking
 and comfortable motion were reported passing by the user on 2026-11-05.
 See [the observation record](evidence/m0-quest-pro-2026-11-05.json).
-Build/report provenance, timing and orderly shutdown/recovery remain unverified;
+Actual reports verify build provenance, CPU/GPU timings and one successful
+host exit following STOPPING. See [hardware reports](evidence/m0-quest-pro-reports-2026-11-05.json).
+The predicted display period is approximately 72 Hz; no measured display cadence
+or compositor drop/reprojection claim is made. Disconnect/recovery, runtime-menu
+return and hardware graphics debug validation remain unverified;
 the roadmap's M0 exit gate is still PENDING. No G1 integration work has begun.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements

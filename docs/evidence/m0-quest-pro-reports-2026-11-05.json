@@ -1,0 +1,812 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "actual_headset_reports",
+  "headset_model": "Meta Quest Pro (user reported)",
+  "gpu_model": "NVIDIA GeForce RTX 4080 (OS inventory, runtime matched adapter identifier redacted)",
+  "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+  "source_dirty": false,
+  "host_binary_sha256": "588a146e97eac89f2079b23f3e40381a9f42f6df017a3333a7a3b3acfd67a106",
+  "host_binary_matches_packaged_build": true,
+  "runtime_family": "Meta",
+  "runtime_version": null,
+  "display_period_ns": 13888888,
+  "approximate_requested_refresh_hz": 72,
+  "first_run": {
+    "doctor": {
+      "application": "OpenDesertVR 0.1.0",
+      "checks": [
+        {
+          "detail": "D3D12 hardware adapter found; XR match checked separately",
+          "name": "basic_gpu",
+          "status": "PASS"
+        },
+        {
+          "detail": "OpenXR loader reached an active runtime",
+          "name": "runtime_discovery",
+          "status": "PASS"
+        },
+        {
+          "detail": "XR_KHR_D3D12_enable available",
+          "name": "d3d12_extension",
+          "status": "PASS"
+        },
+        {
+          "detail": "HMD system available; visual verification still NOT_RUN",
+          "name": "headset_system",
+          "status": "PASS"
+        },
+        {
+          "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+          "name": "runtime_gpu_device",
+          "status": "PASS"
+        },
+        {
+          "detail": "doctor does not create a presentation session",
+          "name": "session_rendering",
+          "status": "NOT_RUN"
+        }
+      ],
+      "d3d12_extension": true,
+      "game_adapter": {
+        "active": false,
+        "adapter": "CrimsonDesert",
+        "adapter_compatibility": "Unverified",
+        "build": "Unverified",
+        "depth": "Unverified",
+        "frame_ownership": "Unverified",
+        "head_tracking": "Unverified",
+        "hud": "Unverified",
+        "integration": "Unsupported",
+        "motion_control": "Unverified",
+        "motion_vectors": "Unverified",
+        "native_stereo": "Unverified",
+        "per_eye_camera": "Unverified",
+        "reconstructed_depth": "Unverified",
+        "schema_version": 1,
+        "theater": "Unverified"
+      },
+      "game_validation": "NOT_RUN",
+      "gpu": {
+        "d3d12_capable_adapters": 2,
+        "hardware_adapters": 2,
+        "identifiers": "REDACTED"
+      },
+      "headset_validation": "NOT_RUN",
+      "os": "Windows x64",
+      "ready": true,
+      "schema_version": 1,
+      "test_runtime": false
+    },
+    "config": {
+      "schema_version": 1,
+      "debug_layer": false,
+      "duration_seconds": 60,
+      "near_z": 0.05,
+      "far_z": 100
+    },
+    "host": {
+      "application": "OpenDesertVR 0.1.0",
+      "checks": [
+        {
+          "detail": "OpenXR loader reached an active runtime",
+          "name": "runtime_discovery",
+          "status": "PASS"
+        },
+        {
+          "detail": "XR_KHR_D3D12_enable available",
+          "name": "d3d12_extension",
+          "status": "PASS"
+        },
+        {
+          "detail": "HMD system available; visual verification still NOT_RUN",
+          "name": "headset_system",
+          "status": "PASS"
+        },
+        {
+          "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+          "name": "runtime_gpu_device",
+          "status": "PASS"
+        },
+        {
+          "detail": "stereo session, reference space and two eye swapchains created",
+          "name": "session_resources",
+          "status": "PASS"
+        },
+        {
+          "detail": "Synthetic frames submitted; visual correctness UNVERIFIED",
+          "name": "stereo_submission",
+          "status": "PASS"
+        }
+      ],
+      "cpu_frame_ms": {
+        "max": 36.8756,
+        "median": 0.0565,
+        "p95": 13.9891,
+        "samples": 4096,
+        "status": "PASS",
+        "total_samples": 5396
+      },
+      "d3d12_extension": true,
+      "events": [
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 2
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 5
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2502388903,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 4920,
+            "left": -0.9424777626991272,
+            "qw": 0.997676432132721,
+            "qx": -0.009522217325866222,
+            "qy": 0.04061652347445488,
+            "qz": -0.05386475473642349,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.13225364685058594,
+            "y": 0.07396991550922394,
+            "z": 0.2158011496067047
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 2502388903,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 4920,
+            "left": -0.6981316804885864,
+            "qw": 0.997676432132721,
+            "qx": -0.009522217325866222,
+            "qy": 0.04061652347445488,
+            "qz": -0.05386475473642349,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.06442779302597046,
+            "y": 0.06656013429164886,
+            "z": 0.21032395958900452
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 4507276132,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 5040,
+            "left": -0.9424777626991272,
+            "qw": 0.9545505046844482,
+            "qx": -0.2899932563304901,
+            "qy": -0.019054602831602097,
+            "qz": -0.0661390945315361,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.12638992071151733,
+            "y": 0.00391051173210144,
+            "z": 0.19444455206394196
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 4507276132,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 5040,
+            "left": -0.6981316804885864,
+            "qw": 0.9545505046844482,
+            "qx": -0.2899932563304901,
+            "qy": -0.019054602831602097,
+            "qz": -0.0661390945315361,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.05858955532312393,
+            "y": -0.0039758142083883286,
+            "z": 0.19956021010875702
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 6177970835,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 5160,
+            "left": -0.9424777626991272,
+            "qw": 0.9782711863517761,
+            "qx": 0.19432801008224487,
+            "qy": -0.0646771565079689,
+            "qz": -0.032232966274023056,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.11493082344532013,
+            "y": 0.12101844698190689,
+            "z": 0.25292882323265076
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 6177970835,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 5160,
+            "left": -0.6981316804885864,
+            "qw": 0.9782711863517761,
+            "qx": 0.19432801008224487,
+            "qy": -0.0646771565079689,
+            "qz": -0.032232966274023056,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.04719680920243263,
+            "y": 0.11498109251260757,
+            "z": 0.26073309779167175
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 7834745545,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 5280,
+            "left": -0.9424777626991272,
+            "qw": 0.988288164138794,
+            "qx": -0.043501220643520355,
+            "qy": -0.1409047394990921,
+            "qz": -0.039245571941137314,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.08640234172344208,
+            "y": 0.0706615000963211,
+            "z": 0.188333660364151
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 7834745545,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 5280,
+            "left": -0.6981316804885864,
+            "qw": 0.988288164138794,
+            "qx": -0.043501220643520355,
+            "qy": -0.1409047394990921,
+            "qz": -0.039245571941137314,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": -0.020882274955511093,
+            "y": 0.06619091331958771,
+            "z": 0.20763102173805237
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 6
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        }
+      ],
+      "frames": 5396,
+      "game_validation": "NOT_RUN",
+      "gpu_eye_ms": [
+        {
+          "max": 0.021504,
+          "median": 0.008192,
+          "p95": 0.009216,
+          "samples": 536,
+          "status": "PASS",
+          "total_samples": 536
+        },
+        {
+          "max": 0.019456,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 536,
+          "status": "PASS",
+          "total_samples": 536
+        }
+      ],
+      "gpu_stereo_ms": {
+        "max": 0.040959999999999996,
+        "median": 0.015359999999999999,
+        "p95": 0.016384,
+        "samples": 536,
+        "status": "PASS",
+        "total_samples": 536
+      },
+      "gpu_timing": "PASS",
+      "headset_validation": "NOT_RUN",
+      "os": "Windows x64",
+      "ready": true,
+      "reprojection_metrics": "NOT_RUN",
+      "schema_version": 1,
+      "stereo_frames": 536,
+      "test_runtime": false,
+      "timing_scope": "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, excludes compositor/display latency"
+    },
+    "summary": {
+      "technical_submission": "PASS",
+      "headset_validation": "NOT_RUN",
+      "doctor_exit": 0,
+      "schema_version": 1,
+      "host_invoked": true,
+      "host_exit": 0,
+      "game_validation": "NOT_RUN",
+      "test_runtime": false,
+      "stereo_frames": 536,
+      "source_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+      "source_dirty": false
+    }
+  },
+  "second_run": {
+    "config": {
+      "schema_version": 1,
+      "debug_layer": false,
+      "duration_seconds": 60,
+      "near_z": 0.05,
+      "far_z": 100
+    },
+    "host": {
+      "application": "OpenDesertVR 0.1.0",
+      "checks": [
+        {
+          "detail": "OpenXR loader reached an active runtime",
+          "name": "runtime_discovery",
+          "status": "PASS"
+        },
+        {
+          "detail": "XR_KHR_D3D12_enable available",
+          "name": "d3d12_extension",
+          "status": "PASS"
+        },
+        {
+          "detail": "HMD system available; visual verification still NOT_RUN",
+          "name": "headset_system",
+          "status": "PASS"
+        },
+        {
+          "detail": "D3D12 device and queue created on runtime-matched adapter; identifiers redacted",
+          "name": "runtime_gpu_device",
+          "status": "PASS"
+        },
+        {
+          "detail": "stereo session, reference space and two eye swapchains created",
+          "name": "session_resources",
+          "status": "PASS"
+        },
+        {
+          "detail": "Synthetic frames submitted; visual correctness UNVERIFIED",
+          "name": "stereo_submission",
+          "status": "PASS"
+        }
+      ],
+      "cpu_frame_ms": {
+        "max": 56.9337,
+        "median": 13.918,
+        "p95": 14.4276,
+        "samples": 801,
+        "status": "PASS",
+        "total_samples": 801
+      },
+      "d3d12_extension": true,
+      "events": [
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 2
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 5
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 1733522243,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 120,
+            "left": -0.9424777626991272,
+            "qw": -0.9951692223548889,
+            "qx": 0.08248461037874222,
+            "qy": -0.05062923580408096,
+            "qz": 0.016466429457068443,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.41702258586883545,
+            "y": 0.4559316039085388,
+            "z": 0.489100843667984
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 1733522243,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 120,
+            "left": -0.6981316804885864,
+            "qw": -0.9951692223548889,
+            "qx": 0.08248461037874222,
+            "qy": -0.05062923580408096,
+            "qz": 0.016466429457068443,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4850834608078003,
+            "y": 0.45311659574508667,
+            "z": 0.4823892414569855
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 3473817145,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 240,
+            "left": -0.9424777626991272,
+            "qw": -0.9716209769248962,
+            "qx": 0.09078757464885712,
+            "qy": -0.07792241871356964,
+            "qz": 0.2040548324584961,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4340938925743103,
+            "y": 0.47180211544036865,
+            "z": 0.5108509659767151
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 3473817145,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 240,
+            "left": -0.6981316804885864,
+            "qw": -0.9716209769248962,
+            "qx": 0.09078757464885712,
+            "qy": -0.07792241871356964,
+            "qz": 0.2040548324584961,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4960113763809204,
+            "y": 0.4436917304992676,
+            "z": 0.5030223727226257
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5158423945,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 360,
+            "left": -0.9424777626991272,
+            "qw": -0.9991455674171448,
+            "qx": 0.028078017756342888,
+            "qy": -0.029532136395573616,
+            "qz": 0.00690152682363987,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.4061976671218872,
+            "y": 0.4736500084400177,
+            "z": 0.5119466781616211
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 5158423945,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 360,
+            "left": -0.6981316804885864,
+            "qw": -0.9991455674171448,
+            "qx": 0.028078017756342888,
+            "qy": -0.029532136395573616,
+            "qz": 0.00690152682363987,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.47452062368392944,
+            "y": 0.4725925028324127,
+            "z": 0.5079337358474731
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 6829047445,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 480,
+            "left": -0.9424777626991272,
+            "qw": -0.9917910099029541,
+            "qx": 0.1277257204055786,
+            "qy": -0.006054688710719347,
+            "qz": -0.00018012519285548478,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.41044124960899353,
+            "y": 0.4558180570602417,
+            "z": 0.5064768195152283
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 6829047445,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 480,
+            "left": -0.6981316804885864,
+            "qw": -0.9917910099029541,
+            "qx": 0.1277257204055786,
+            "qy": -0.006054688710719347,
+            "qz": -0.00018012519285548478,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.47888514399528503,
+            "y": 0.4557366371154785,
+            "z": 0.5056516528129578
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 8499696744,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 600,
+            "left": -0.9424777626991272,
+            "qw": -0.9857155680656433,
+            "qx": 0.07480545341968536,
+            "qy": -0.15088587999343872,
+            "qz": -0.0015597024466842413,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.3773121237754822,
+            "y": 0.4651084840297699,
+            "z": 0.5208437442779541
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 8499696744,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 600,
+            "left": -0.6981316804885864,
+            "qw": -0.9857155680656433,
+            "qx": 0.07480545341968536,
+            "qy": -0.15088587999343872,
+            "qz": -0.0015597024466842413,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.44264400005340576,
+            "y": 0.4637737572193146,
+            "z": 0.5004669427871704
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 10170266644,
+            "down": -0.9424777626991272,
+            "eye": 0,
+            "frame_index": 720,
+            "left": -0.9424777626991272,
+            "qw": -0.9800089001655579,
+            "qx": 0.19191576540470123,
+            "qy": -0.05216164514422417,
+            "qz": -0.005484475754201412,
+            "right": 0.6981316804885864,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.40750306844711304,
+            "y": 0.41752389073371887,
+            "z": 0.5101415514945984
+          }
+        },
+        {
+          "code": "EYE_GEOMETRY",
+          "fields": {
+            "display_period_ns": 13888888,
+            "display_time_from_start_ns": 10170266644,
+            "down": -0.9424777626991272,
+            "eye": 1,
+            "frame_index": 720,
+            "left": -0.6981316804885864,
+            "qw": -0.9800089001655579,
+            "qx": 0.19191576540470123,
+            "qy": -0.05216164514422417,
+            "qz": -0.005484475754201412,
+            "right": 0.9424777626991272,
+            "up": 0.7330383062362671,
+            "vertices": 108,
+            "x": 0.47557538747787476,
+            "y": 0.4168892800807953,
+            "z": 0.5029993653297424
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 4
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 3
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 6
+          }
+        },
+        {
+          "code": "SESSION_STATE",
+          "fields": {
+            "state": 1
+          }
+        }
+      ],
+      "frames": 801,
+      "game_validation": "NOT_RUN",
+      "gpu_eye_ms": [
+        {
+          "max": 0.02048,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 747,
+          "status": "PASS",
+          "total_samples": 747
+        },
+        {
+          "max": 0.02048,
+          "median": 0.007168,
+          "p95": 0.008192,
+          "samples": 747,
+          "status": "PASS",
+          "total_samples": 747
+        }
+      ],
+      "gpu_stereo_ms": {
+        "max": 0.04096,
+        "median": 0.014336,
+        "p95": 0.016384,
+        "samples": 747,
+        "status": "PASS",
+        "total_samples": 747
+      },
+      "gpu_timing": "PASS",
+      "headset_validation": "NOT_RUN",
+      "os": "Windows x64",
+      "ready": true,
+      "reprojection_metrics": "NOT_RUN",
+      "schema_version": 1,
+      "stereo_frames": 747,
+      "test_runtime": false,
+      "timing_scope": "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, excludes compositor/display latency"
+    },
+    "summary": null
+  },
+  "limitations": [
+    "Visual correctness is separately user-reported; JSON alone does not establish it.",
+    "First run has host exit 0 and STOPPING then IDLE. Second run lacks collector summary; process exit is not inferred.",
+    "CPU distributions include non-rendering frames and runtime waits; do not interpret median as active rendering throughput. GPU values cover calibration eye commands only.",
+    "Refresh is inferred from runtime predicted period, not measured display cadence. Dropped/reprojected frames, runtime version, disconnect recovery and graphics debug validation remain unverified."
+  ]
+}
