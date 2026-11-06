@@ -38,3 +38,18 @@ Raw and virtual section overlaps are rejected. Zero-filled writable data can
 satisfy a global's section classification but cannot be read as file-backed
 bytes. Pointer tables must remain entirely in one read-only file-backed section;
 duplicate candidates remain ambiguous. Function guards must be independent.
+
+## Scoped live association observer
+
+probe_association.py is a separate optional Windows-only observer implementing
+[the reviewed method](../../docs/research/g1-readonly-association-method.md).
+It accepts --pid, --executable, --steam-manifest, --profile and a fresh --output.
+Its CLI accepts only CrimsonDesert.exe, the existing reviewed build gate and
+the specifically pinned external profile. It never launches a process.
+
+association.py uses read-only OS access and compares only the global/object
+first-pointer association in three bounded, bracketed samples (96 bytes maximum).
+It stops on unavailable/changed objects, identity/range/permission failures or
+target exit. Addresses remain in memory; reports retain no PID or location.
+The native API is verified on an owned child process, with no game or headset.
+No result establishes camera semantics, fields, activity, control or stereo.

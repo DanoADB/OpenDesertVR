@@ -45,6 +45,7 @@ class Image:
             raise ValueError("Expected a bounded x64 PE32+ section table")
         self.image_base = struct.unpack_from("<Q", data, pe + 48)[0]
         image_size = struct.unpack_from("<I", data, pe + 80)[0]
+        self.image_size = image_size
         if not image_size or self.image_base + image_size > 0x10000000000000000:
             raise ValueError("Invalid preferred image range")
         self.sections = []
@@ -140,16 +141,16 @@ class Image:
                 "target_is_aligned_writable_data": valid,
                 "target_equals_published_global_rva": target == published_target}
 
-    def vtable_relationship(self, fingerprints, functions, published_table):
+    def vtable_candidates(self, fingerprints, functions):
         slots = [item["slot"] for item in fingerprints]
         if (len(slots) < 2 or any(type(slot) is not int or not 0 <= slot <= 64 for slot in slots) or
                 len(set(slots)) != len(slots)):
             raise ValueError("Require at least two distinct bounded vtable slots")
         if any(len(matches) != 1 for matches in functions):
-            return {"status": "NOT_RUN", "reason": "function_guards_not_unique"}
+            return None, "function_guards_not_unique"
         pointers = [self.image_base + matches[0] for matches in functions]
         if len(set(pointers)) < 2:
-            return {"status": "NOT_RUN", "reason": "function_guards_not_independent"}
+            return None, "function_guards_not_independent"
         anchor = struct.pack("<Q", pointers[0])
         table_size = (max(slots) + 1) * 8
         tables = []
@@ -169,6 +170,12 @@ class Image:
                     if len(tables) > 1024:
                         raise ValueError("Too many matching pointer tables")
                 cursor = hit + 1
+        return tables, None
+
+    def vtable_relationship(self, fingerprints, functions, published_table):
+        tables, reason = self.vtable_candidates(fingerprints, functions)
+        if reason:
+            return {"status": "NOT_RUN", "reason": reason}
         return {"status": "OBSERVED_UNIQUE" if len(tables) == 1 else "AMBIGUOUS" if tables else "MISSING",
                 "matching_readonly_pointer_tables": len(tables),
                 "table_equals_published_vtable_rva": published_table in tables,
