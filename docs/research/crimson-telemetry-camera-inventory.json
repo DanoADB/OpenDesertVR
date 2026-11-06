@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "repository": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry",
+  "revision": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "root_license": "MIT",
+  "execution": "NOT_RUN",
+  "code_adopted": false,
+  "scope": "Selected source review only. Root license is not a complete dependency clearance. Runtime and hardware claims are author observations, not our acceptance.",
+  "files": [
+    {
+      "sha256": "44564e40a50f86a0865061469a8300f419faf02c0d35652550b1b44161b3425f",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/LICENSE",
+      "path": "LICENSE"
+    },
+    {
+      "sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/definitions/build-26448710.json",
+      "path": "definitions/build-26448710.json"
+    },
+    {
+      "sha256": "1724c05f72c652033c9beb979798c895a3753b1f44733b86ee85eb8139652fa6",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs",
+      "path": "src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs"
+    },
+    {
+      "sha256": "7a116636932b0491f6693fc10f5c61a1be841e3a9345e783ee6c5efb23f27cea",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/src/CrimsonDesertTelemetry.Core/SceneConstantsDecoder.cs",
+      "path": "src/CrimsonDesertTelemetry.Core/SceneConstantsDecoder.cs"
+    },
+    {
+      "sha256": "4b4f3e8b6463dc686666badd44c92389e8d2a0399db91f84b310b0c1d9fdcc0b",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/src/CrimsonDesertTelemetry.Core/BuildCompatibility.cs",
+      "path": "src/CrimsonDesertTelemetry.Core/BuildCompatibility.cs"
+    },
+    {
+      "sha256": "1b83cc937460e998181a59ebfdfffaf762688a6f9e36ae5660ca3f2b03d805aa",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/docs/ENGINE_CAMERA_RESEARCH.md",
+      "path": "docs/ENGINE_CAMERA_RESEARCH.md"
+    },
+    {
+      "sha256": "a17a91d88640f007cd0010889f96c228d0564958a5e07955d15f0051c618df91",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/docs/PROVENANCE.md",
+      "path": "docs/PROVENANCE.md"
+    },
+    {
+      "sha256": "81ff453ccfc3e53026ee67041045d9380578766fd09011cc91f5a297da682b6b",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp",
+      "path": "native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp"
+    }
+  ]
+}

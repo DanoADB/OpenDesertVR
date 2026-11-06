@@ -2,6 +2,10 @@
 
 Current advancement decision: [ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md).
 Hold G2/game-adapter implementation; stop repeating the failed capture method.
+The new [native-camera telemetry lead](research/crimson-telemetry-camera-lead.md)
+has a pinned historical exact-hash profile and actual current-file instruction
+guard observations. It enables a targeted offline camera investigation without
+another full-frame capture. Live camera validity and control remain unverified.
 The ADR identifies the missing capabilities and new evidence required to resume
 game-facing work. M0 maintenance and actual headset verification remain useful.
 

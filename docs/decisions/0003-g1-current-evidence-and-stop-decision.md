@@ -59,7 +59,11 @@ depth reconstruction may replace that proof.
 ## Work that remains useful now
 
 Keep the tested M0 package available and maintain its actual evidence grades.
-Perform a new packaged launcher/headset check when the Quest Pro is available.
+The user subsequently requested proceeding without further headset tests;
+leave those checks deferred and unverified until requested again. The
+[new native-camera source lead](../research/crimson-telemetry-camera-lead.md)
+and current-file guard observations supply a concrete offline research direction.
+They do not change the hold on runtime adapter implementation or award G2.
 Do not make another change merely to create work or consume the weekly usage
 allowance. Other runtimes/headsets, compositor metrics and extended graphics
 validation remain explicitly unverified until their prerequisites exist.

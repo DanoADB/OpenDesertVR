@@ -59,6 +59,18 @@ game's resource sizes, and does not establish a memory mitigation.
 
 ## Controlled comparison and current gate
 
+Additional pinned v1.47 source inspection found that PrepareInitialContents
+iterates potentially dirty resources before InsertInitialContentsChunks filters
+unreferenced initial contents. The historical local log reports up to 4,163
+potentially dirty resources in that one request. This is not the number of
+world-pass resources actually used or an allocation-size measurement.
+See [resource_manager.h](https://github.com/baldurk/renderdoc/blob/b0e1370309f7d7bf986a73830446ca39d9b8c1fd/renderdoc/core/resource_manager.h#L1448).
+The base persistency predicate returns false and no D3D12 override was found.
+Searching all 73 D3D12 C++/header files at that revision found no softMemoryLimit
+reference. This narrows the source-level reasoning: refAllResources=false does
+not prevent the initial preparation path, and a soft limit is not an established
+D3D12 mitigation. It still does not identify the actual failed allocation.
+
 Record the original game resolution, texture/graphics preset, ray-tracing and
 upscaling/frame-generation settings from the actual UI before modifying any.
 Temporarily lower memory requirements through ordinary graphics controls,
