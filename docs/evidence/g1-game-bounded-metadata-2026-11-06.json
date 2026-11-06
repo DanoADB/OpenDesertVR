@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_GAME_METADATA",
+  "method_source_commit": "bed1f8cc133977cc0248530afa449327531e2527",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "scene": "title_menu",
+  "observer_version": "bc0ead3-bounded-observer-2",
+  "expected_game_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "api": "d3d12",
+  "swapchain_dimensions": {
+    "width": 1600,
+    "height": 1200
+  },
+  "retained_record_limit": 128,
+  "retained_records": 128,
+  "truncated": true,
+  "methods": {
+    "Dispatch": 128
+  },
+  "known_submission_records": 128,
+  "selected_compute_detail_records": 6,
+  "active_finite_cbv_sizes": [
+    256,
+    512,
+    1280,
+    2048,
+    2816,
+    65536
+  ],
+  "staged_game_files_unchanged": "PASS",
+  "cleanup": "PASS_NORMAL_EXIT_EXACT_FILES_REMOVED",
+  "raw_handles_and_logs": "PRIVATE_ONLY",
+  "game_buffer_bytes_read": "NOT_RUN",
+  "game_buffer_writes": "NOT_RUN",
+  "camera_identification": "UNVERIFIED",
+  "stereo_game_rendering": "NOT_RUN",
+  "headset_validation": "NOT_RUN",
+  "scope": "Actual bounded metadata from the reviewed live game title menu. Prefix was reported as Dispatch by the legacy observer; command kinds were not independently verified. No shader text/bytecode or game payload exported. User requested to load a 3D scene after automated start input did not activate. Normal exit and exact-hash cleanup subsequently verified; original game identity unchanged.",
+  "devkit_asset_files": 0,
+  "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "embedded_renderdoc_prelaunch_diagnostic_retention",
+  "tool": "RenderDoc 1.47 pinned portable",
+  "target_launch": "NOT_RUN",
+  "expected_capture_status": "FAILED",
+  "expected_failure_stage": "NOT_STARTED",
+  "reason": "Deliberately invalid mode rejected before any target launch",
+  "snapshot_bytes": 272,
+  "snapshot_sha256": "7b19a25f256996078e92adf6bf159ac8eec2c4157b3c4616099c71dacd6e168d",
+  "truncated": false,
+  "snapshot_exists_after_helper_exit": true,
+  "owned_file_unit_tests_passed": 5,
+  "scope": "Validates helper log retention only. Target log sharing, game capture, allocation recovery, camera control and stereo are unverified. Raw logs stay local."
+}

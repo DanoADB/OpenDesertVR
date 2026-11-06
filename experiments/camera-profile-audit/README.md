@@ -1,0 +1,78 @@
+# Offline camera-profile audit
+
+Original, optional research code; no production build/install dependency.
+This checks published instruction guards against a fingerprinted executable
+file without loading it or accessing any running process. It does not modify
+the game, resolve a live camera, execute an upstream mod or relocate a profile.
+
+The reviewed lead is ZappendusterFX/CrimsonDesertTelemetry at
+434b3b96646b410ab8396483e31c538e051f3a4e, with an MIT root license. Its
+definitions/build-26448710.json identifies our historical executable exactly.
+That does not establish support for the updated installed build. Keep the
+external source checkout in ignored out/research; no upstream source, offset
+table or dependency is adopted into this experiment.
+
+audit_profile.py requires the expected executable and profile SHA-256 values,
+a fresh output file, a bounded x64 PE image and valid instruction-pattern
+syntax. It counts matches only within executable sections, checks whether the
+published reference RVA matches, and counts the published vtable-function
+fingerprints. It decodes only the pinned guard's RIP-relative MOV reference
+and checks that the target is aligned writable data. For unique function
+matches it counts read-only tables containing the preferred-image function
+addresses in the specified slots. This does not establish a C++ type or a live
+relationship between the global, camera object and pointer table. Reports omit
+instruction bytes, locations, machine paths and proprietary payloads.
+
+Run with Python using --executable, --profile, --expected-executable-sha256,
+--expected-profile-sha256 and --output. Pin and review the external source
+before supplying its profile. Rehash the executable before and after observation;
+any mismatch stops the run. Output creation is exclusive. All fixtures in
+tests/test_camera_profile_audit.py contain owned synthetic PE bytes only.
+
+One or even several unique matches are static leads only. No result awards
+runtime compatibility, camera control or stereo; those remain UNVERIFIED.
+Live process access or camera/render intervention needs a separate scoped review.
+
+PE handling follows Microsoft's documented file/RVA/preferred-base distinction.
+Raw and virtual section overlaps are rejected. Zero-filled writable data can
+satisfy a global's section classification but cannot be read as file-backed
+bytes. Pointer tables must remain entirely in one read-only file-backed section;
+duplicate candidates remain ambiguous. Function guards must be independent.
+
+## Scoped live association observer
+
+probe_association.py is a separate optional Windows-only observer implementing
+[the reviewed method](../../docs/research/g1-readonly-association-method.md).
+It accepts --pid, --executable, --steam-manifest, --profile and a fresh --output.
+Its CLI accepts only CrimsonDesert.exe, the existing reviewed build gate and
+the specifically pinned external profile. It never launches a process.
+
+association.py uses read-only OS access and compares only the global/object
+first-pointer association in three bounded, bracketed samples (96 bytes maximum).
+It stops on unavailable/changed objects, identity/range/permission failures or
+target exit. Addresses remain in memory; reports retain no PID or location.
+The native API is verified on an owned child process, with no game or headset.
+No result establishes camera semantics, fields, activity, control or stereo.
+
+## Candidate field hypothesis
+
+probe_fields.py reuses the association probe's CLI arguments and preflight,
+but implements the separately reviewed
+[candidate-field method](../../docs/research/g1-camera-field-hypothesis-method.md).
+It tests selected historical layout rules as explicit hypotheses, in at most
+three bracketed samples and 1,620 pointer/field payload bytes. It stops on the
+first invalid/torn/replaced/stalled sample; it has no scan or fallback mode.
+Raw memory, coordinates, matrices and counters are never exported. Numeric
+consistency does not validate active camera semantics or control. Selected
+decoder validation rules are adapted from pinned MIT source with full notice;
+see THIRD_PARTY_NOTICES.md. No upstream mod is installed or executed.
+
+## Static function extent experiment
+
+query_function_extents.py is a separate file-only experiment for the three
+existing unique instruction seeds. It uses PE exception records and an explicit
+hash-pinned installed MSVC tool, qualified on original owned executables. No
+process access, hook, camera write or game execution. See
+[the method](../../docs/research/g1-static-function-extents-method.md) for exact
+bounds, qualification and interpretation. Function metadata and linear decoding
+do not establish a producer contract or safe integration callback.

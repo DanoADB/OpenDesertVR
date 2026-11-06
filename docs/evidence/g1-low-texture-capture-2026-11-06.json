@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "observed_title_menu_capture_failure_and_settings_restoration",
+  "capture_source_commit": "a8e638a74c38e347c97b306d64ceec5f8fd667c8",
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "game_ui_version": "2.04.08",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "tool": "RenderDoc 1.47; same pinned, signed portable tools as previous attempt",
+  "scene": "title_start_menu",
+  "requested_frames": 1,
+  "fresh_process": true,
+  "launch_context": "steam_development_appid",
+  "agent_setting_change": {"texture_quality": {"original": "Ultra", "temporary": "Low"}},
+  "capture_session_observed_settings": {
+    "texture_quality": "Low",
+    "resolution": [1600, 1200],
+    "screen_mode": "Borderless Window",
+    "upscale_mode": "Off",
+    "frame_generation": "Off",
+    "nvidia_reflex": "Off"
+  },
+  "comparison_limit": "Capture-session video settings differed from the normal session without agent changes to those controls. Build also changed since the previous attempt. This is not an isolated texture-quality comparison.",
+  "system_memory_before_request": {
+    "available_bytes": 17263017984,
+    "committed_bytes": 37376933888,
+    "commit_limit_bytes": 77013434368
+  },
+  "result": {
+    "status": "FAIL",
+    "overlay_error": "Encountered an out of memory error: Couldn't create readback buffer: HRESULT: E_OUTOFMEMORY",
+    "rdc_files": 0,
+    "helper_final_status": "FAILED",
+    "helper_failure_stage": "CAPTURE_REQUESTED",
+    "helper_failure_reason": "Target disconnected after the observed allocation error and normal game close",
+    "raw_diagnostic_log": "UNAVAILABLE after closing; no matching log retained",
+    "failing_allocation_bytes": "UNVERIFIED",
+    "failing_heap_index_or_resource_branch": "UNVERIFIED",
+    "automatic_retry": false
+  },
+  "restoration": {
+    "normal_steam_launch_without_capture_layer": true,
+    "texture_quality": "Ultra",
+    "apply_confirmation_completed": true,
+    "all_recorded_settings_match_original": true,
+    "game_closed_after_verification": true,
+    "process_exit_code": "NOT_RECORDED"
+  },
+  "capabilities": {
+    "game_frame_replay": "NOT_RUN",
+    "world_render_pass_identity": "UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED"
+  },
+  "scope": "Observed UI, local helper reports and aggregate system memory only. No proprietary capture, raw log, screenshot, account, path, PID or resource data published. Previous-day allocation-log details do not establish this attempt's exact failure branch."
+}

@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "source_commit": "afb7fc1229fcf78bb9e0684b4b62a1ca0d1da77e",
+  "observer_version": "bc0ead3-bounded-observer-2",
+  "addon_sha256": "899f70d64d48a34d238db722f9618f0095e366ddf44788af157ccd68ebce9e91",
+  "input_lock": "experiments/renodx-owned/devkit-bounded-input-lock.json",
+  "cases": {
+    "submission": {
+      "status": "OBSERVED_OWNED_GEOMETRY_BINDINGS",
+      "retained_records": 4,
+      "controller_sha256": "1a959b4dbfc47d3d3a6147adc8264cd1d819068d20ed1a61a97ced52b5c2e009",
+      "pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "input_postflight": "PASS",
+      "owned_exit_code": 0,
+      "devkit_asset_files": 0,
+      "comparison": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": null,
+          "pixel_full_range": true
+        }
+      ]
+    },
+    "record_budget": {
+      "status": "OBSERVED_OWNED_GEOMETRY_BINDINGS",
+      "retained_records": 128,
+      "controller_sha256": "9f85454946cfe139a26567c377d3562102f1421684fb681e672e94b2dfa9b87c",
+      "pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 151,
+        "submittedDrawsPerFrame": 150,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "input_postflight": "PASS",
+      "owned_exit_code": 0,
+      "devkit_asset_files": 0,
+      "comparison": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": true,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": true,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": true,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": true,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        }
+      ]
+    },
+    "bootstrap_redirect": {
+      "status": "OBSERVED_OWNED_GEOMETRY_BINDINGS",
+      "retained_records": 4,
+      "controller_sha256": "ec9200292c52eb9af9c8182ac133ab2f6cd520a13e0461e472152a25ab775774",
+      "pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 5,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "input_postflight": "PASS",
+      "owned_exit_code": 0,
+      "devkit_asset_files": 0,
+      "comparison": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "pixel_size": null,
+          "pixel_full_range": true
+        }
+      ],
+      "bootstrap_ini_unchanged": true
+    }
+  },
+  "scope": "Actual owned software-GPU qualification only. Record cap is a possibly truncated prefix, not a total memory bound. Existing command submission marker does not establish GPU completion.",
+  "game_validation": "NOT_RUN",
+  "headset_validation": "NOT_RUN"
+}

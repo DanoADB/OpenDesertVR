@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "static_official_diagnostic_package_review",
+  "source_commit_before_review": "4d21f51",
+  "download_page": "https://devblogs.microsoft.com/pix/download/",
+  "installer_url": "https://download.microsoft.com/download/bce7dfb5-cf77-4e3d-b5cc-fe649d687a32/PIX-2610.28-Installer-x64.exe",
+  "version": "2610.28",
+  "installer": {
+    "file_version": "26.10.28.1",
+    "bytes": 505682920,
+    "sha256": "4f24facf17dd1e4325a57e0fd00243b3b5ff39a835d7175382ac3eee70f95a04",
+    "authenticode": "Valid",
+    "signer": "Microsoft Corporation"
+  },
+  "embedded_msi": {
+    "sha256": "e56f744de6c8ba36084f4abfd9ca45cbd02554ac7b11a84e8959d5a68aa82103",
+    "authenticode": "Valid",
+    "signer": "Microsoft Corporation",
+    "matches_signed_bundle_manifest_hash": true
+  },
+  "attached_cabinet_matches_signed_bundle_manifest_hash": true,
+  "reviewed_file_hashes": {
+    "PixApiDeviceTypes.h": "ade2cb684eb70f8f018211fd074bb843da221a80f21ef1238341f84f532ce2c0",
+    "PixApiDeviceInterfaces.h": "3f537058d1f4c0fa6cccc82691ba158871581947de464417eb8727e0955c5cc9",
+    "bundle_license_rtf": "932563cccfe9bd4a27e3e94392dddce4e1781554920fdbc79bb2d31f3a1679a1"
+  },
+  "observed_api_contract": {
+    "initial_working_directory_field": true,
+    "target_process_capture_selector": true,
+    "child_instrumentation_opt_out_in_reviewed_launch_flags": false,
+    "possibly_truncated_capture_result_flag": true,
+    "take_gpu_capture_may_wait_for_readiness": true,
+    "cancellation_token_supported": true
+  },
+  "execution": {
+    "setup": "NOT_RUN",
+    "pix_binaries": "NOT_RUN",
+    "owned_fixture_capture": "NOT_RUN",
+    "game_capture": "NOT_RUN",
+    "game_launch_method_qualified": false,
+    "local_only_runtime_behavior": "UNVERIFIED"
+  },
+  "scope": "Static cabinet extraction and read-only MSI database/header/document inspection only. No setup/custom actions, services, registry registration, capture DLL loading, plugin execution or game session. Hashes are locally observed, not independently published vendor checksums. Proprietary tool payloads remain ignored and are not adopted or redistributed. An absent public flag is not proof no other supported control exists."
+}

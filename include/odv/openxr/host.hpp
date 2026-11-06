@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: MIT
+#pragma once
+#include "odv/core/core.hpp"
+#include <stop_token>
+namespace odv::xr {
+Json doctor();
+Json run(const Config &config, std::stop_token stop = {});
+} // namespace odv::xr

@@ -1,0 +1,49 @@
+{
+  "source_lifetime_protocol": "UNVERIFIED",
+  "repository": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry",
+  "payload_coverage": "UNVERIFIED",
+  "producer_publication_contract": "UNVERIFIED",
+  "counter_update_order": "UNVERIFIED",
+  "files": [
+    {
+      "path": "src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs",
+      "sha256": "1724c05f72c652033c9beb979798c895a3753b1f44733b86ee85eb8139652fa6",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs"
+    },
+    {
+      "path": "src/CrimsonDesertTelemetry.Core/SceneConstantsDecoder.cs",
+      "sha256": "7a116636932b0491f6693fc10f5c61a1be841e3a9345e783ee6c5efb23f27cea",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/src/CrimsonDesertTelemetry.Core/SceneConstantsDecoder.cs"
+    },
+    {
+      "path": "native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp",
+      "sha256": "81ff453ccfc3e53026ee67041045d9380578766fd09011cc91f5a297da682b6b",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp"
+    },
+    {
+      "path": "docs/ENGINE_CAMERA_RESEARCH.md",
+      "sha256": "1b83cc937460e998181a59ebfdfffaf762688a6f9e36ae5660ca3f2b03d805aa",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/docs/ENGINE_CAMERA_RESEARCH.md"
+    },
+    {
+      "path": "docs/BUILD-26361232-RECOVERY.md",
+      "sha256": "c6af22054058be9acea3ff6c545c486df9dc7b370f0451b5549106640895e114",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/docs/BUILD-26361232-RECOVERY.md"
+    }
+  ],
+  "camera_to_rendered_frame_association": "UNVERIFIED",
+  "execution": "NOT_RUN",
+  "independent_game_world_render_scheduling": "UNVERIFIED",
+  "camera_control": "UNVERIFIED",
+  "current_game_steam_build": "26480954",
+  "remote_head_at_review": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "evidence_kind": "static_camera_publication_contract_review",
+  "game_probe_justified_by_native_speedup": false,
+  "date": "2026-11-06",
+  "scope": "Selected public source only. Repeated reads, numeric agreement, observer-side locks and GPU readback fences do not establish ordering or lifetime for engine camera writes. No claim that every possible interface has been ruled out. No game access or proprietary payload in this review.",
+  "schema_version": 1,
+  "revision": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "upstream_profile_steam_build": "26448710",
+  "native_batch_game_execution": "NOT_RUN",
+  "new_code_adoption": false
+}

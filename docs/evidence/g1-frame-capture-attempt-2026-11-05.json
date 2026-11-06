@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "controlled_external_frame_capture_attempt",
+  "source_commit": "6f38562f48d5046b7b0b91a57ecacc9251210783",
+  "tool": {
+    "name": "RenderDoc",
+    "version": "1.47"
+  },
+  "owned_api_launch": {
+    "schema_version": 1,
+    "evidence_kind": "controlled_external_frame_capture",
+    "status": "OWNED_LAUNCH_VALIDATED",
+    "game_gpu_capture": "NOT_RUN",
+    "world_render_pass_identity": "UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED",
+    "script_sha256": "5a738e96ae38f7a11fa65d49e80ecd9cc1676e46b6b4dbd3a602b518b33134cc",
+    "mode": "owned_launch",
+    "executable_sha256": "c508e1621a3a02d92f1a0e7bbac8ce88e37e148a9dfc909f47df00d7f8b35602",
+    "capture_sha256": "e2a40478d19529f5566fd4d080590bf4d6d4bb45aa1f56fa64e13ef2c28cc502",
+    "capture_bytes": 1535985,
+    "api": "D3D12"
+  },
+  "owned_replay": {
+    "schema_version": 1,
+    "evidence_kind": "owned_capture_tool_fixture",
+    "capture_sha256": "e2a40478d19529f5566fd4d080590bf4d6d4bb45aa1f56fa64e13ef2c28cc502",
+    "api": "GraphicsAPI.D3D12",
+    "clear_actions": 1,
+    "verified_rgba8_targets": 1,
+    "dimensions": [
+      16,
+      16
+    ],
+    "all_pixels_rgba8": [
+      0,
+      255,
+      255,
+      255
+    ],
+    "status": "PASS",
+    "game_capture": "NOT_RUN",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED"
+  },
+  "game_attempt": {
+    "report": {
+      "schema_version": 1,
+      "evidence_kind": "controlled_external_frame_capture",
+      "status": "FAILED",
+      "game_gpu_capture": "NOT_RUN",
+      "world_render_pass_identity": "UNVERIFIED",
+      "camera_control": "UNVERIFIED",
+      "native_stereo": "UNVERIFIED",
+      "script_sha256": "5a738e96ae38f7a11fa65d49e80ecd9cc1676e46b6b4dbd3a602b518b33134cc",
+      "mode": "game_title",
+      "executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+      "failure_type": "RuntimeError"
+    },
+    "capture_requested": false,
+    "target_control_connected": true,
+    "resulting_game_process_differs_from_initial_target": true,
+    "cause": "UNVERIFIED: process replacement is consistent with launch handoff but does not establish why capture disconnected",
+    "game_executable_sha256_after": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "connection_lost_before_capture_request": true,
+    "resulting_game_started_after_initial_launch": true,
+    "capture_file_count": 0
+  },
+  "scope": "Owned launch/replay PASS; game early-start capture attempt FAILED before a frame request. No game GPU capture, world-pass identity, camera control or native stereo proven. No retry, child/global hook, late attach, Steam launch-option change or protection bypass. Raw/local contexts remain ignored and local."
+}

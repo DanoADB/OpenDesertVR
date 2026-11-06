@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_GAME_SOURCE_HEAPS",
+  "source_commit": "877da26aa3f92cc7d30f1b4329d8eebf90d01fac",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observer_version": "bc0ead3-gpu-constants-4",
+  "observer_sha256": "2a5dbf6249523031dc79c863b57b325ddf1a0f48712b79f16f30774cdcc4c42e",
+  "controller_sha256": "4d3829a7f72d1747939d39839be0786f372c9981a6f1ccbfe5d16702a71726a5",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "scene": "title_menu",
+  "requested_constant_bytes": 2816,
+  "retained_records": 128,
+  "capture_limit": 128,
+  "truncated": true,
+  "originating_sample_tickets_in_all_rows": 0,
+  "attempt_records_in_all_rows": 39,
+  "attempts_truncated_rows": 0,
+  "detail_records_queried": 6,
+  "queried_candidate_attempts": 10,
+  "queried_source_states": {
+    "HEAP_NOT_UPLOAD": 10
+  },
+  "queried_source_heap_types": [
+    1
+  ],
+  "queried_source_allocation_sizes": [
+    65536
+  ],
+  "staged_game_files_unchanged": "PASS",
+  "cleanup": "PASS_NORMAL_EXIT_EXACT_FILES_REMOVED",
+  "camera_identification": "UNVERIFIED",
+  "game_buffer_writes": "NOT_RUN",
+  "stereo_game_rendering": "NOT_RUN",
+  "headset_validation": "NOT_RUN",
+  "interpretation": "The selected finite active2816-byte candidate bindings reference DEFAULT(type1)65536-byte GPU allocations. UPLOAD-only eligibility rejects them. Zero originating sample tickets across all128 retained records; this prefix reported as Dispatch by the legacy observer is not a world-camera observation. No assumption about current DEFAULT resource states is justified. Next owned experiment: match destination candidate ranges to app upload copies and acquire only valid UPLOAD input on the same app queue with an independently fenced owned submission. Such bytes would be upload input, not proof of later per-draw GPU state or camera semantics.",
+  "game_identity_unchanged": "PASS",
+  "devkit_asset_files": 0,
+  "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
+}

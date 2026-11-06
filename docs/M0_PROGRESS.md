@@ -1,28 +1,167 @@
-# M0 Progress & Evidence
+# M0 progress and evidence — 2026-11-04
 
 ## Implemented
-- Native C++20 `odv_math` library with coordinate convention documented in the header.
-- Independent eye pose, quaternion normalization, view matrices and asymmetric OpenXR-style projection with D3D depth mapping.
-- Headless tests checking IPD, head orientation, camera-space origin, clipping depth, disparity falloff and invalid inputs.
-- VS2022 x64 debug/release presets and Windows CI workflow.
 
-## Not yet implemented
-- OpenXR loader, runtime discovery or D3D12 frame submission.
-- DirectX 12 rendering testhost, diagnostics, camera integration, packaging.
-- Real headset tests. No game VR capability exists yet.
+- Native **OpenDesertVR.exe** desktop testing app: readiness, 60-second stereo
+  start, cooperative Stop, local report folders, optional notes and explicit
+  visual observations. Calls the existing XR engine directly, without shell
+  scripts. Work runs off the UI thread; closing requests shutdown and waits
+  for report completion. Simulated runtimes cannot award visual acceptance.
 
-## Developer checks
+- C++20 core: typed errors/results, strict version-1 JSON config, bounded
+  structured events and sanitized reports.
+- Native Windows D3D12/OpenXR host: extension negotiation, runtime-required
+  adapter/feature level, device/queue/fences, session lifecycle, LOCAL space,
+  primary stereo, separate swapchains and predicted-time view location.
+- Independent per-eye geometry: colored cubes at 1/3/8 meters, asymmetric
+  projections, depth-buffered rasterization, GPU completion before release.
+- Doctor/export-report, explicit missing prerequisites and inactive
+  CrimsonDesertAdapter capabilities.
+- Numeric OpenXR runtime version in reports; a later actual-runtime doctor
+  query records 1.208.0. The earlier headset runs used the preceding binary.
+- Revision/hash-pinned Khronos loader and JSON dependency, dependency notices,
+  architecture/safety/research/manual acceptance docs and Release packaging.
+- Windows Debug/Release CI definitions including WARP graphics checks.
+- Packaged report collector gates host startup on doctor readiness, records
+  source provenance, and preserves NOT_RUN for visual validation.
+- Explorer launcher runs the packaged collector without a manually opened
+  terminal. Unique default run folders and rejection of existing report files
+  preserve earlier evidence. Release mock collector checks cover successful
+  submission, missing-headset gating and unchanged files on rejected reuse.
+  An installed-package launcher smoke check passed from an unrelated working
+  directory with spaces and an ampersand in the package path, preserving exit 3
+  and no host invocation for the simulated missing headset. This is software
+  evidence, not another headset acceptance run.
+- Pinned static Cyberpunk VR/REFramework source audit and selected direct
+  license inventory; no mod code/dependencies adopted. Sampled eye events now
+  share frame index and relative predicted display timing, checked by native
+  integration tests.
+- GPU timestamp queries, bounded per-eye/stereo timing summaries and explicit
+  retained/lifetime sample counts.
+- Test-only OpenXR runtime exercising the compiled host with 25 normal/failure
+  scenarios, including partial eye failures, session loss, timed exit and
+  repeated image-wait timeouts. Local tests use per-process runtime overrides;
+  a disposable-runner CI fixture restores its prior registration in finally.
+
+## Observed locally (Windows x64)
+
+MSVC 19.44.35229, Windows SDK 10.0.26100.0, Visual Studio 2022 Build Tools.
+No Crimson Desert installation was used.
+
+| Check | Evidence |
+|---|---|
+| Debug configure/build | PASS |
+| Release configure/build | PASS |
+| CTest Debug | 33 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
+| CTest Release | 33 PASS, 0 FAIL, 1 SKIPPED (debug layer unavailable) |
+| Real D3D12 WARP raster/readback | PASS; near/mid/far pixel disparities 20.1375 / 7 / 4.95688 |
+| Actual loader with absent runtime override | PASS: categorized FAIL readiness, exit 3, sanitized JSON |
+| Installed runtime discovery | PASS: Meta runtime exposes XR_KHR_D3D12_enable |
+| Testhost without available headset | Expected FAIL readiness: XR_ERROR_FORM_FACTOR_UNAVAILABLE (-35), zero submitted frames |
+| Extracted Release package smoke | PASS: both programs run; missing headset returns exit 3 |
+| Real headset visual stereo/tracking | User-reported PASS on Meta Quest Pro (2026-11-05); host binary matches packaged 404d38a build |
+| Real headset submission and shutdown | First run: 536 stereo frames, host exit 0, STOPPING then IDLE; second: 747 stereo frames, exit summary missing |
+| Real headset menu return and timed shutdown | PASS: user-confirmed depth/tracking restored and clean finish; 60-second run, 2,833 stereo frames, focus transitions, STOPPING/EXITING and host exit 0 |
+| Quest Link disconnect and fresh-launch recovery | PASS tested path: 449 stereo frames, STOPPING/IDLE, timed exit 0; reconnect run 1,214 stereo frames and exit 0, user confirmed correct viewing |
+| Arbitrary GPU removal/runtime crash | NOT_RUN |
+| Game integration/stereo | NOT_RUN; adapter inactive |
+| Hosted GitHub Actions execution | PASS: Debug and Release each 34/34, including D3D12 debug validation; [run 41965528980](https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980) |
+
+Deterministic tests cover asymmetric FOV edges, invalid FOV/pose/quaternion,
+IPD and handedness, clipping depth, geometric disparity, version/schema/config
+validation, event bounds/redaction, lifecycle transitions, frame ordering,
+invalid tracking, skipped frames and rendering failure cleanup. Protocol
+mocks cover prerequisite/session failures. Native tests exercise invalid
+adapter LUID and allocation/device HRESULT classification. These injected
+errors are not proof of actual headset recovery or physical device removal.
+
+## Verification commands
+
 ```powershell
 cmake --preset windows-msvc-debug
-cmake --build --preset windows-msvc-debug --config Debug
-ctest --preset windows-msvc-debug -C Debug
+cmake --build --preset windows-msvc-debug
+ctest --preset windows-msvc-debug
+cmake --preset windows-msvc-release
+cmake --build --preset windows-msvc-release
+ctest --preset windows-msvc-release
+powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
 
-For portable Linux Ninja debug:
-```sh
-cmake --preset portable-debug
-cmake --build --preset portable-debug
-ctest --preset portable-debug --output-on-failure
-```
+Current hardening evidence: [m0-hardening-2026-11-04.json](evidence/m0-hardening-2026-11-04.json).
 
-OpenXR uses right-handed axes (+X right,+Y up,-Z forward); matrices are row-major with column vectors; projection depth is D3D [0,1]. More details: `docs/OpenDesertVR_Technical_Specification.md`.
+Current native desktop package: **OpenDesertVR-M0-112cdad-win64.zip**, built
+from clean source 112cdad. Extract it and double-click **OpenDesertVR.exe**;
+no scripts are required. The app provides readiness, Start, Stop, reports and
+explicit visual observations. [Package and validation evidence](evidence/m0-desktop-package-2026-11-06.json)
+records its exact ZIP/executable hashes and successful hosted Debug/Release
+checks: 35 core native, 94 Python and five optional native checks in each.
+Local native checks have 34 passes, zero failures and one optional debug-layer
+skip per configuration. Packaged desktop startup passed; this new build's
+headset and game validation remain NOT_RUN. The earlier Quest Pro acceptance
+does not transfer to it. User-facing device testing is the next priority;
+additional G1 tooling is on hold for this delivery.
+
+Earlier portable collector/Explorer-launcher checks:
+[m0-package-launcher-2026-11-06.json](evidence/m0-package-launcher-2026-11-06.json).
+The historical clean fb1b574 ZIP remains under out/packages with a matching SHA-256
+sidecar. Extract it and double-click Run-Headset-Test.cmd. The extracted doctor
+reported no available headset during that observation; a new visual acceptance run was not
+performed, and this artifact retains NOT_RUN hardware/game fields.
+
+Initial build/package evidence (before hardening): [m0-local-2026-11-04.json](evidence/m0-local-2026-11-04.json).
+
+Build artifacts stay in ignored out/. The package includes build-info.json
+with source commit and dirty flag. See M0_ACCEPTANCE.md for exact hardware
+steps and interpretation. Basic GPU discovery runs even without a headset.
+
+## Remaining gates and limits
+
+[ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md) consolidates
+the G1 advancement decision: no game adapter or G2 until actual camera/render
+capabilities are established. The present full-frame capture method is stopped;
+new game-facing work needs a materially new engineering lead. This is not proof
+that game VR is impossible.
+
+Meta Quest Pro visual depth, alternating-eye viewpoint, world-anchored tracking
+and comfortable motion were reported passing by the user on 2026-11-05.
+See [the observation record](evidence/m0-quest-pro-2026-11-05.json).
+Actual reports verify build provenance, CPU/GPU timings and one successful
+host exit following STOPPING. See [hardware reports](evidence/m0-quest-pro-reports-2026-11-05.json).
+The user also confirmed menu return and clean timed finish during a recorded
+60-second run (2,833 stereo frames). CPU frame median/p95/max were
+13.8455/14.1924/29.4084 ms, including runtime waits and non-rendering frames.
+The predicted display period is approximately 72 Hz; no measured display cadence
+or compositor drop/reprojection claim is made. Quest Link disconnect/recovery
+passed: the host stopped its session and exited 0; after reconnecting, a fresh
+launch rendered 1,214 stereo frames, exited 0 and passed user visual confirmation.
+**Core M0 hardware acceptance passes for this tested configuration.** Hardware
+graphics debug validation, arbitrary GPU removal/runtime crash and compositor
+metrics remain unverified. No production game integration exists. G1 recorded
+presentation and D3D12 execution evidence. The subsequent
+[early-start capture attempt](evidence/g1-frame-capture-attempt-2026-11-05.json)
+lost its game connection before requesting a frame. The owned capture/replay
+fixture passed; game world-pass and camera control remain unverified. The
+first loading method stopped. A later isolated Steam development context kept
+the early-loaded target through D3D12 readiness and a title-menu frame request,
+but the capture failed allocating an initial-state READBACK heap with
+E_OUTOFMEMORY. No game frame was saved. The
+[memory review](research/g1-capture-memory.md) led to a
+[fresh-process Low-texture attempt](evidence/g1-low-texture-capture-2026-11-06.json)
+on updated Steam build 26480954. It also failed with a readback-buffer
+E_OUTOFMEMORY and produced no RDC. Capture-session video settings differed
+without agent changes, limiting comparison. All recorded original settings,
+including Ultra textures, were restored and verified before normal close.
+The helper now retains a bounded per-case diagnostic-log snapshot; five
+owned-file tests and an actual embedded-Python prelaunch rejection passed.
+Review a different capture-memory strategy before another game attempt.
+CPU and GPU eye/stereo timing windows are bounded and report sample counts.
+Runtime dropped/reprojected frame counters and display-latency measurements
+remain NOT_RUN. D3D12 debug validation is SKIPPED here because Graphics Tools
+is unavailable; Windows capability installation requires elevation.
+Single-flight CPU fence waits favor correctness over throughput; performance
+and comfort require measurement on hardware. No automatic session reconnection.
+Vendor calls may block during runtime/driver faults; no hard watchdog guarantee.
+
+After successful hardware acceptance, G1 starts with permitted, non-invasive
+game version/storefront/hash, permissions/protections and DX12 presentation
+evidence. Produce an evidence-backed plan or stop decision before hooks.

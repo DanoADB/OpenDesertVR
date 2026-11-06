@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+  "observer_version": "bc0ead3-native-default-10",
+  "native_contract_version": 1,
+  "custom_reshade_version": "6.7.3.9004 UNOFFICIAL",
+  "custom_reshade_sha256": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+  "addon_sha256": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+  "controls": [
+    {
+      "name": "ordinary-native-DEFAULT",
+      "source_commit": "8e1c22bab52fa228c4edab7e59d65ee6b1499255",
+      "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+      "report_sha256": "d0bc762c955aa0ace60981917f15be6af2bb5cc86886fcd20f91f939ce68fc17",
+      "controller_sha256": "3b1336147371d0a74138c293e215bef8a778d1383128e2b0d09c632267399f0c",
+      "binary_sha256": {
+        "owned_app.exe": "8105eaef2ee35789558f6208646148d1f4182cc8c7d4a7dbde23583c87ae7bb1",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 14,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "empty_present_control": null,
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 4,
+          "native_after_execute_callbacks": 0
+        }
+      ]
+    },
+    {
+      "name": "split-legacy-barriers",
+      "source_commit": "c8741187d3c852fad98ec9ff7c84ef520210d73f",
+      "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+      "report_sha256": "db66812cb1d0a720cb1dd47b2e40ddeba943488c593f91efc245b76201e6d34b",
+      "controller_sha256": "24c2bb8bd49257ec6d5db7486859243420cd59e268f93b2833a1e9d5c23c1b39",
+      "binary_sha256": {
+        "owned_app.exe": "2531550d1f2e3a81ec41d3f5502b8c73933559dc7afba789762eedccac189785",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 15,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "empty_present_control": null,
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 8,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 8,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 8,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 5,
+          "native_after_execute_callbacks": 0
+        }
+      ]
+    },
+    {
+      "name": "two-empty-presentation-intervals",
+      "source_commit": "c8741187d3c852fad98ec9ff7c84ef520210d73f",
+      "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+      "report_sha256": "c91250dab4c9c3a2e814cb11a970d8f0d348fad22a2709fc4b251a11c30e4f77",
+      "controller_sha256": "90d6becdb2b8db8ddb054ae515b4d3f00c8aa178be413f82aa1487d4b2f1fc65",
+      "binary_sha256": {
+        "owned_app.exe": "2531550d1f2e3a81ec41d3f5502b8c73933559dc7afba789762eedccac189785",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 4,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "empty_present_control": {
+        "gate_ready": true,
+        "snapshot_queued_before_release": true,
+        "programmed_empty_present_calls": 2
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 4,
+          "native_after_execute_callbacks": 0
+        }
+      ]
+    },
+    {
+      "name": "missing-native-contract-rejected",
+      "source_commit": "c8741187d3c852fad98ec9ff7c84ef520210d73f",
+      "status": "QUALIFIED_OWNED_NATIVE_MISSING_REJECTED",
+      "report_sha256": "30bd0356d633e2c85c8c0034bb4eecc81a46ef3e4dfad2a629d991830a4fc23c",
+      "controller_sha256": "5c39cd2191d8bed21aa1684015fd2bc2c7f2b71e4ebff55736e727ee4b1dcddc",
+      "binary_sha256": {
+        "owned_app.exe": "2531550d1f2e3a81ec41d3f5502b8c73933559dc7afba789762eedccac189785",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 13,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "empty_present_control": null,
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 0,
+          "native_after_execute_callbacks": 0
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 0,
+          "native_after_execute_callbacks": 0
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 0,
+          "native_after_execute_callbacks": 0
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 0,
+          "native_after_execute_callbacks": 0
+        }
+      ]
+    },
+    {
+      "name": "exact2816-game-options",
+      "source_commit": "a73061c1677356826f5b222758a104edfe73797f",
+      "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+      "report_sha256": "b7a7ccc1223b9f13a6c73ee068b2ae050ab8f7db2be7e3dbf14dc37583613425",
+      "controller_sha256": "99fd0b8168ac4ea52adbe6c74d45e2a55a4f121712632c36a7e8b35f1cffcdb2",
+      "binary_sha256": {
+        "owned_app.exe": "19272fd7cbb67b7580c50eb579d976e0bbb4968e153be7220523cf78acbdfced",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 14,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "configuration": {
+        "ODVConstantBytes": 2816,
+        "ODVConstantMaxBytes": 0,
+        "ODVGraphicsOnly": 1,
+        "ODVUploadInputs": 0,
+        "ODVDefaultConstants": 1
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 2816,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 2816,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 4,
+          "native_after_execute_callbacks": 0
+        }
+      ]
+    }
+  ],
+  "base_component_ci": {
+    "source_commit": "d3a3f428856b9703c679a44f05ecc7ddcd7341ee",
+    "run_id": 42304932196,
+    "Debug": "PASS",
+    "Release": "PASS",
+    "default_test_debug_layer": "ENABLED_BOTH_CONFIGURATIONS_FROM_DOWNLOADED_LOGS"
+  },
+  "qualification_scope": "Original owned WARP fixtures and authored shaders only; exact raw legacy barrier and AFTER-native-execute callback route. Present fallback disabled in native-default mode. No game or headset execution of the new bridge. Enhanced barriers invalidate state; no DEFAULT sampling from unsupported state proof.",
+  "first_case_vertex_flag_caveat": "First controller emitted a fixed vertex flag. All four retained raw bindings were independently checked against ground truth afterward, with PASS. Later control scripts compute and check it directly. The curated records here make no unqualified vertex-flag claim.",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "camera": "UNVERIFIED",
+  "stereo": "NOT_RUN"
+}

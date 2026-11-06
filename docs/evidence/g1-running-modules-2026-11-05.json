@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "os_process_module_metadata",
+  "process": "CrimsonDesert.exe",
+  "executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+  "graphics_module_allowlist": [
+    "d3d12.dll",
+    "d3d12core.dll",
+    "d3d11.dll",
+    "dxgi.dll",
+    "vulkan-1.dll",
+    "opengl32.dll"
+  ],
+  "observed_graphics_modules": [
+    "d3d11.dll",
+    "d3d12.dll",
+    "d3d12core.dll",
+    "dxgi.dll"
+  ],
+  "actual_render_path": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "interpretation": "Windows reports these graphics modules loaded in the running game. Loaded modules alone do not establish which API performs world rendering, camera control, frame ownership or stereo. No module addresses, proprietary bytes, process IDs or absolute paths are exported."
+}

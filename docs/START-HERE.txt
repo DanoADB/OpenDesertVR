@@ -1,0 +1,21 @@
+OpenDesertVR - Windows headset testing app
+
+Double-click OpenDesertVR.exe. No terminal or scripts are required.
+
+1. Connect your Quest Pro through Quest Link and wake the headset.
+2. Click Check readiness. If something is missing, read the checks in the app.
+3. Click Start 60-second test and put on the headset.
+4. Look for red, green and blue cubes at different depths. Gently move your head.
+5. If comfortable, open and close the Meta menu and check that the cubes return.
+6. Let the test finish, or click Stop and wait for reports to be saved.
+7. Tick only the checks you personally completed. Add issue notes if needed.
+8. Click Save observations, then Open reports to find the result files.
+
+The app never starts a test automatically. Reports remain on this PC.
+Each operation gets its own folder; previous test reports are preserved.
+If this folder is not writable, reports use your local application-data folder.
+Open reports finds the current run in either location.
+
+This build tests standalone stereo cubes. Crimson Desert VR is not implemented.
+Earlier Quest Pro results do not count as acceptance of this new build.
+The old command-line tools remain available for troubleshooting.

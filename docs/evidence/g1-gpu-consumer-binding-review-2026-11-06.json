@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "static_gpu_consumer_association_review",
+  "repository": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry",
+  "revision": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "reference_worktree_clean": true,
+  "files": [
+    {
+      "path": "native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp",
+      "sha256": "81ff453ccfc3e53026ee67041045d9380578766fd09011cc91f5a297da682b6b",
+      "git_object_content_sha256": "c97dffc6b769e24165e86b75d0cd5d196cf3dc773d0014884138d0e6530c64a9",
+      "comparison": "Equal after CRLF-to-LF normalization of Windows checkout",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp"
+    },
+    {
+      "path": "native/CrimsonDesertTelemetry.Asi/src/spatial_probe.cpp",
+      "sha256": "909293fd21d2e82bc75a817b1ac4a044d6efc7296c76b2b28c0fb0759b96d265",
+      "git_object_content_sha256": "60b3c4740917125d9065a78329c81523097365ad38a11d156aa280774f4a62ca",
+      "comparison": "Equal after CRLF-to-LF normalization of Windows checkout",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/spatial_probe.cpp"
+    },
+    {
+      "path": "native/CrimsonDesertTelemetry.Asi/src/spatial_readback.cpp",
+      "sha256": "130deda2944842421f963d96730eef0897af84cfe0459bd69dad5a092e2ccfb7",
+      "git_object_content_sha256": "d392c4dc916db1656a27566116f74737e33e6d13aa4c94ba2c3d73445d68a602",
+      "comparison": "Equal after CRLF-to-LF normalization of Windows checkout",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/spatial_readback.cpp"
+    },
+    {
+      "path": "native/CrimsonDesertTelemetry.Asi/src/spatial_readback.h",
+      "sha256": "a086a5aa57eaec97ec4b280e733932e8ca3a9e681b799c3f9acf4828af1a1e3e",
+      "git_object_content_sha256": "275ccd9d4288f6d03eaa2010937e5da86227393d996b566a5dade62ff6e13dcd",
+      "comparison": "Equal after CRLF-to-LF normalization of Windows checkout",
+      "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/spatial_readback.h"
+    }
+  ],
+  "execution": "NOT_RUN",
+  "new_code_adoption": false,
+  "game_access": "NOT_RUN",
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "current_game_build_compatibility": "UNVERIFIED",
+  "camera_buffer_identity": "UNVERIFIED",
+  "camera_to_world_draw_association": "UNVERIFIED",
+  "cpu_camera_to_gpu_frame_association": "UNVERIFIED",
+  "independent_world_render_scheduling": "UNVERIFIED",
+  "findings": [
+    {
+      "source": "render_capture.cpp",
+      "lines": [
+        217,
+        243,
+        387,
+        392,
+        467,
+        492
+      ],
+      "finding": "Scene data is read through the CPU object chain and compared around separately recorded lighting/ambient buffer copies. This does not identify a camera buffer consumed by a world draw."
+    },
+    {
+      "source": "spatial_probe.cpp",
+      "lines": [
+        315,
+        325,
+        746,
+        753,
+        1017,
+        1041
+      ],
+      "finding": "The selected transaction is scoped to an AdaptExposure dispatch. Its own report leaves CPU scene/cache unpaired. No current-build world-geometry draw is identified by these paths."
+    },
+    {
+      "source": "spatial_readback.cpp",
+      "lines": [
+        148,
+        176,
+        186,
+        229,
+        323,
+        350
+      ],
+      "finding": "Tracks root state and list generation/submission, copies explicit GI/exposure resources and signals a fence after the matched submission. Descriptor table handles are retained without resource resolution. The root scan compares addresses with GI/exposure ranges, not an established camera constant buffer."
+    }
+  ],
+  "next_required_evidence": [
+    "A current-build concrete world-render consumer or documented callback/API, with pipeline/draw identity and an exact camera resource/offset/span relationship.",
+    "If descriptors are indirect, an established table/register/resource association rather than treating the table handle as a resource address.",
+    "Applicable resource and binding lifetime plus submission ordering; qualify the actual contract with owned adversarial producer/consumer cases before any game-facing implementation.",
+    "Independent eye-view scheduling, control and temporal-history ownership remain separate G2 requirements."
+  ],
+  "scope": "Four selected immutable public files only, compared with pinned git objects after checkout line-ending normalization. Not an exhaustive engine audit or proof that a usable interface cannot exist. No mod installed, source executed, game process accessed, asset read or shader selected. M0 and its binary package remain unchanged."
+}

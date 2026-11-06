@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_GAME_UPLOAD_INPUT",
+  "source_commit": "055bb7bc70682b9cfc729011aa3389739d1c2f8a",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observer_version": "bc0ead3-command-provenance-8",
+  "observer_sha256": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+  "controller_sha256": "39847fee305cb03f0cfd802aa93f91f4be899a9be43621f10767d1c024eec04e",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "scene": "title_menu",
+  "graphics_only": true,
+  "finite_constant_maximum_bytes": 4096,
+  "retained_records": 128,
+  "truncated": true,
+  "command_origins": {
+    "Draw": 1,
+    "DrawIndexed": 45,
+    "DrawOrDispatchIndirect": 82
+  },
+  "command_domains": {
+    "Draw": 1,
+    "DrawIndexed": 45,
+    "IndirectGraphics": 82
+  },
+  "known_classification_records": 128,
+  "graphics_records_with_cbv_and_rtv": 128,
+  "controller_aggregate_caveat": "The inherited graphics_with_cbv_and_rtv field counts direct methods only; this evidence derives all128graphics records from retained rows.",
+  "candidate_tickets": 6,
+  "detail_records_queried": 6,
+  "attempt_records": 435,
+  "attempts_truncated_rows": 16,
+  "queried_upload_states": {
+    "NO_UPLOAD_WITHIN_WINDOW": 5,
+    "READY_UPLOAD_INPUT": 1
+  },
+  "ready_input_ranges": 1,
+  "ready_input_sizes": [
+    768
+  ],
+  "ready_upload_source_heap_types": [
+    2
+  ],
+  "ready_upload_source_allocation_sizes": [
+    1048576
+  ],
+  "direct_gpu_samples_returned": 0,
+  "values_and_handles": "PRIVATE_ONLY",
+  "staged_game_files_unchanged": "PASS",
+  "cleanup": "PASS",
+  "camera_identification": "UNVERIFIED",
+  "game_buffer_writes": "NOT_RUN",
+  "stereo_game_rendering": "NOT_RUN",
+  "headset_validation": "NOT_RUN",
+  "interpretation": "The corrected observer reaches direct and indirect graphics domains and acquired one768byte subsequent UPLOAD input for a finite CBV candidate. Its originating record has PRE_INDIRECT_ARGUMENTS bindings. Descriptor size/data contents and menu rendering do not prove camera identity, later per-draw DEFAULT contents or a world view. Real scene/movement evidence remains required.",
+  "normal_exit": "PASS",
+  "cleanup_evidence_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+}

@@ -1,0 +1,887 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "QUALIFIED_OWNED_COMMAND_PROVENANCE",
+  "observer_version": "bc0ead3-command-provenance-8",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "source_review": {
+    "revision": "4a50d1eddace85734871d91792ff214f13f66c01",
+    "files": [
+      {
+        "path": "source/d3d12/d3d12_command_list.cpp",
+        "sha256": "17ee1e3b8518ac5e2a215241e86d8c314d38bd957ac1633b39187187beee5443",
+        "url": "https://raw.githubusercontent.com/crosire/reshade/4a50d1eddace85734871d91792ff214f13f66c01/source/d3d12/d3d12_command_list.cpp"
+      },
+      {
+        "path": "LICENSE.md",
+        "sha256": "237ded5b8344f820113efab1e65e91e1f159d9202c5b4856606a0590d3ffdab0",
+        "url": "https://raw.githubusercontent.com/crosire/reshade/4a50d1eddace85734871d91792ff214f13f66c01/LICENSE.md"
+      }
+    ],
+    "scope": "ExecuteIndirect callback argument provenance, SetPipelineState stage flags, direct command callbacks; read-only public source review."
+  },
+  "before": {
+    "observer_version": "bc0ead3-upload-input-7",
+    "qualification_status": "FAILED_BINDING_COMPARISON",
+    "reported_methods": {
+      "Dispatch": 4,
+      "DrawIndexed": 1
+    },
+    "gpu_pixel_control": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "adapter": "WARP",
+      "frames": 6,
+      "pixelsVerifiedPerFrame": 2048,
+      "recordedDrawsPerFrame": 4,
+      "submittedDrawsPerFrame": 3,
+      "fourthColumn": "black",
+      "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+      "headset": "NOT_RUN",
+      "game": "NOT_RUN"
+    },
+    "interpretation": "Three known submitted graphics draws following an owned compute command were mislabelled Dispatch with stale compute shader identity. The never-submitted B graphics list had no prior compute bind and was reported differently."
+  },
+  "after_controls": [
+    {
+      "control": "indirect",
+      "source_commit": "5800c9268c9fd0a052f9a62c80b14b1a0ed8822d",
+      "status": "QUALIFIED_OWNED_INDIRECT_GRAPHICS",
+      "binary_sha256": {
+        "owned_app.exe": "db85724e8591e8b7d1daefcdac811561bbda3b21da39356eb463d93f9f4b288f",
+        "renodx-devkit.addon64": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "script_sha256": "63c6fd98629e202694f576dcbc5a83f19d57ef321efd8da7970ce6433360712a",
+      "source_sha256": {
+        "experiments\\draw-binding-owned\\fixture.cpp": "2d20c34d12f82403610c36d4cdee2da6534db7a41d924590a12734bfb4255881",
+        "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+        "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+        "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+        "experiments\\renodx-owned\\devkit-command-provenance-input-lock.json": "447e502eb455687b9258b1ce10853422228d480a397d05f66ab8e7c719a3328a",
+        "experiments\\renodx-owned\\patches\\command-provenance-observer.patch": "69ad5a92cc48af96baac330d335077b106f9b57e243cf0fd9285f449e7abaf48"
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 0,
+          "upload_state": "NOT_CAPTURED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1024,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1536,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 2048,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "UPLOAD_MATCHED_NOT_SUBMITTED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        }
+      ],
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "command_rows": [
+        {
+          "method": "Dispatch",
+          "odvApiCommand": "Dispatch",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 0
+        }
+      ]
+    },
+    {
+      "control": "graphics_filter",
+      "source_commit": "5800c9268c9fd0a052f9a62c80b14b1a0ed8822d",
+      "status": "QUALIFIED_OWNED_GRAPHICS_FILTER",
+      "binary_sha256": {
+        "owned_app.exe": "db85724e8591e8b7d1daefcdac811561bbda3b21da39356eb463d93f9f4b288f",
+        "renodx-devkit.addon64": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "script_sha256": "9ddac95259a49eee6c5099d78a8921aa0d4600b79f583253c9b6cf2ab18f077c",
+      "source_sha256": {
+        "experiments\\draw-binding-owned\\fixture.cpp": "2d20c34d12f82403610c36d4cdee2da6534db7a41d924590a12734bfb4255881",
+        "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+        "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+        "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+        "experiments\\renodx-owned\\devkit-command-provenance-input-lock.json": "447e502eb455687b9258b1ce10853422228d480a397d05f66ab8e7c719a3328a",
+        "experiments\\renodx-owned\\patches\\command-provenance-observer.patch": "69ad5a92cc48af96baac330d335077b106f9b57e243cf0fd9285f449e7abaf48"
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 0,
+          "upload_state": "NOT_CAPTURED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1024,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1536,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 2048,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "UPLOAD_MATCHED_NOT_SUBMITTED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        }
+      ],
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "command_rows": [
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 0
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 0
+        }
+      ]
+    },
+    {
+      "control": "finite_maximum",
+      "source_commit": "5800c9268c9fd0a052f9a62c80b14b1a0ed8822d",
+      "status": "QUALIFIED_OWNED_FINITE_MAXIMUM",
+      "binary_sha256": {
+        "owned_app.exe": "db85724e8591e8b7d1daefcdac811561bbda3b21da39356eb463d93f9f4b288f",
+        "renodx-devkit.addon64": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "script_sha256": "c79057426b82e86dbdc443e5ac56329fdcaca8ec8a8bfe2bf553cee245893e99",
+      "source_sha256": {
+        "experiments\\draw-binding-owned\\fixture.cpp": "2d20c34d12f82403610c36d4cdee2da6534db7a41d924590a12734bfb4255881",
+        "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+        "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+        "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+        "experiments\\renodx-owned\\devkit-command-provenance-input-lock.json": "447e502eb455687b9258b1ce10853422228d480a397d05f66ab8e7c719a3328a",
+        "experiments\\renodx-owned\\patches\\command-provenance-observer.patch": "69ad5a92cc48af96baac330d335077b106f9b57e243cf0fd9285f449e7abaf48"
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 0,
+          "upload_state": "NOT_CAPTURED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1024,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1536,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 512,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 512,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 0,
+          "upload_state": "NOT_CAPTURED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 768,
+          "pixel_full_range": false
+        }
+      ],
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "command_rows": [
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 512
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 512
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 512
+        },
+        {
+          "method": "Draw",
+          "odvApiCommand": "Draw",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "DIRECT_COMMAND_BINDINGS",
+          "odvGraphicsOnly": false,
+          "odvConstantMaxBytes": 512
+        }
+      ]
+    },
+    {
+      "control": "direct_maximum",
+      "source_commit": "5800c9268c9fd0a052f9a62c80b14b1a0ed8822d",
+      "status": "QUALIFIED_OWNED_DIRECT_MAXIMUM",
+      "binary_sha256": {
+        "owned_app.exe": "db85724e8591e8b7d1daefcdac811561bbda3b21da39356eb463d93f9f4b288f",
+        "renodx-devkit.addon64": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "script_sha256": "8cf4f9efd13147e5afe03afabcd0d7c978ba7dfb7436183282940cd0a84143c6",
+      "source_sha256": {
+        "experiments\\draw-binding-owned\\fixture.cpp": "2d20c34d12f82403610c36d4cdee2da6534db7a41d924590a12734bfb4255881",
+        "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+        "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+        "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+        "experiments\\renodx-owned\\devkit-command-provenance-input-lock.json": "447e502eb455687b9258b1ce10853422228d480a397d05f66ab8e7c719a3328a",
+        "experiments\\renodx-owned\\patches\\command-provenance-observer.patch": "69ad5a92cc48af96baac330d335077b106f9b57e243cf0fd9285f449e7abaf48"
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 2,
+          "source_allocation_bytes": 1024,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 2,
+          "source_allocation_bytes": 1536,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 256,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 2,
+          "source_allocation_bytes": 2048,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        }
+      ],
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 5,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS"
+    },
+    {
+      "control": "combined_game_options",
+      "source_commit": "c902078856b42e02aacce7bde9d5007311e1289c",
+      "status": "QUALIFIED_OWNED_GAME_OPTIONS",
+      "binary_sha256": {
+        "owned_app.exe": "db85724e8591e8b7d1daefcdac811561bbda3b21da39356eb463d93f9f4b288f",
+        "renodx-devkit.addon64": "11beee28f19a165c26f2a4a8cc6ea1757a7c8e83a29cfa69bf6373a254d6585a",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "script_sha256": "01ffb0f1dfac027b96d3aa86e141c6f34c18b7529448387106bff1611b7e53de",
+      "source_sha256": {
+        "experiments\\draw-binding-owned\\fixture.cpp": "2d20c34d12f82403610c36d4cdee2da6534db7a41d924590a12734bfb4255881",
+        "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+        "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+        "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+        "experiments\\renodx-owned\\devkit-command-provenance-input-lock.json": "447e502eb455687b9258b1ce10853422228d480a397d05f66ab8e7c719a3328a",
+        "experiments\\renodx-owned\\patches\\command-provenance-observer.patch": "69ad5a92cc48af96baac330d335077b106f9b57e243cf0fd9285f449e7abaf48"
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 0,
+          "source_heap_type": null,
+          "source_allocation_bytes": null,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 0,
+          "upload_state": "NOT_CAPTURED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": null,
+          "pixel_full_range": true
+        },
+        {
+          "control": "table-green",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1024,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "table-blue",
+          "pixel_identity_match": true,
+          "submission_known": true,
+          "submission_order": 1,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 1536,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "READY_UPLOAD_INPUT",
+          "upload_bytes": 256,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        },
+        {
+          "control": "recorded-yellow",
+          "pixel_identity_match": true,
+          "submission_known": false,
+          "submission_order": 0,
+          "capture_record_limit": 128,
+          "capture_truncated": false,
+          "vertex_identity_match": true,
+          "vertex_binding_count": 1,
+          "vertex_is_stale_root": false,
+          "vertex_used_by_active_shader": [
+            false
+          ],
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_attempt_count": 1,
+          "source_heap_type": 1,
+          "source_allocation_bytes": 2048,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "upload_input_count": 1,
+          "upload_state": "UPLOAD_MATCHED_NOT_SUBMITTED",
+          "upload_bytes": 0,
+          "gpu_constant_bytes": 0,
+          "pixel_size": 256,
+          "pixel_full_range": false
+        }
+      ],
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 5,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "command_rows": [
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 4096
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 4096
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 4096
+        },
+        {
+          "method": "IndirectGraphics",
+          "odvApiCommand": "DrawOrDispatchIndirect",
+          "odvClassificationKnown": true,
+          "odvBindingPhase": "PRE_INDIRECT_ARGUMENTS",
+          "odvGraphicsOnly": true,
+          "odvConstantMaxBytes": 4096
+        }
+      ]
+    }
+  ],
+  "scope": "Latest D3D12 PSO bind point fixes command domain classification. IndirectGraphics does not identify an indexed/nonindexed signature, and bindings are explicitly PRE_INDIRECT_ARGUMENTS. Five owned runtime controls pass pixels, values, bounds, exits and postflight without native device reference warnings. Legacy game labels remain unverified until fresh command-provenance observation."
+}

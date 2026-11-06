@@ -21,6 +21,48 @@ One free, local-first launcher for compatible PC games that selects honest, evid
 
 ## Roadmap and gates
 
+### Active priority: Crimson Desert VR showcase (2026-11-06)
+
+User direction supersedes the earlier delivery note that made further testing
+of the cube app the next priority. Core M0 headset acceptance already exists
+for the tested Quest Pro configuration. New M0 artifacts retain their own
+honest hardware status, but repeating cube acceptance is not a prerequisite
+for continuing game integration research.
+
+The next user-facing milestone is the actual Crimson Desert world rendered
+from distinct left/right viewpoints in the headset. Existing third-party mods
+support feasibility; they do not supply this project's missing camera and
+render integration. No completion date is established yet.
+
+Work in this order:
+
+1. Identify and validate the current game's world camera/render inputs in an
+   actual 3D scene. The corrected observer now reaches direct and indirect
+   graphics commands and has acquired one 768-byte upload input at the title
+   menu. This is a shader-input observation, not an identified camera. Compare
+   static-world and camera-movement data, then test the most credible camera
+   candidate. Resolve capture lifetime problems only as needed to perform this
+   experiment reliably; do not expand the observer into a general toolkit.
+2. Demonstrate a reversible camera/view change affecting actual world
+   geometry, then establish how to render distinct eye views with correct
+   submission and temporal history. Camera discovery alone is not stereo.
+3. Feed those independent game views into the existing OpenXR path and
+   provide a simple launchable showcase build for Quest Pro testing. Initially
+   target third-person gamepad use in a controlled scene; document limitations.
+
+Until that demonstration, defer cube-scene embellishments, launcher expansion,
+cosmetic UI work, broad settings work and unrelated infrastructure. Tests and
+instrumentation should answer a concrete camera/render question or protect
+the integration being changed. Polish, broader gameplay coverage and comfort
+tuning follow the showcase. A flat game display does not satisfy this goal.
+
+**Priority reaffirmed, 2026-11-06:** optimize for the first visible game-world
+stereo demonstration. Existing Crimson Desert VR mods support feasibility;
+our next deliverable must establish our own camera control and eye rendering.
+There is no additional cube acceptance gate. Limit the first showcase to one
+controlled scene and gamepad input, then improve gameplay coverage and polish.
+See [the first live graphics-input result](evidence/g1-game-graphics-input-2026-11-06.json).
+
 ### A. OpenDesertVR M0: independent XR substrate — NOW
 C++20/CMake, headset runtime discovery, D3D12 adapter/queue/fence/swapchain, synthetic **real** per-eye geometry, math tests, health diagnostics, Windows CI. Exit only after actual headset test verifies pose, correct stereo and orderly shutdown. **No launcher yet**.
 
@@ -46,4 +88,28 @@ Documentation, local-first privacy, portable profiles, safe error recovery, cont
 - Record architecture decisions in `docs/decisions` whenever changing core abstractions.
 
 ## Current implementation snapshot (2026-11-04)
-CMake presets, Windows CI configuration, stereo math and headless test source have been committed. They have **not** yet been independently verified by a successful build. OpenXR/D3D12 testhost and actual game integration remain unimplemented. See `docs/M0_PROGRESS.md`.
+
+**Delivery update, 2026-11-06:** clean 112cdad adds a native Windows headset
+testing app with readiness, stereo Start/Stop, reports and visual observations.
+The portable package launches without scripts. Hosted Debug/Release validation
+passes 35 core native checks, 94 Python tests and five optional native checks
+per configuration. Current-build hardware acceptance is NOT_RUN; previous
+Quest Pro results apply to 404d38a. Device testing remains available when the
+user is ready; the active engineering priority above is game integration.
+This app is an M0 test interface, not the VRcade launcher.
+See [package evidence](evidence/m0-desktop-package-2026-11-06.json).
+
+The original foundation snapshot follows:
+
+Standalone OpenXR/D3D12 stereo testhost, diagnostics, configuration, inactive
+game adapter, pinned dependencies, packaging and Windows CI are implemented.
+Local MSVC Debug/Release builds each report 33 tests passed, zero failed and
+one skipped (optional D3D12 debug validation unavailable locally). Hosted
+Windows CI passes all 34 checks in both configurations, including debug validation.
+WARP raster/readback verifies separate-eye pixel disparity. The active Meta
+runtime is discoverable; no headset system was available. On 2026-11-05, core headset acceptance passed on Meta Quest Pro: user-confirmed
+stereo/tracking/comfort/menu return, recorded clean timed shutdown, and tested
+Quest Link disconnect followed by successful fresh-process rendering after
+reconnection. Extended graphics validation and compositor metrics remain
+unverified. No game VR integration exists.
+See `docs/M0_PROGRESS.md` and `docs/M0_ACCEPTANCE.md`.
