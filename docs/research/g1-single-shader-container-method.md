@@ -69,3 +69,24 @@ It does not map CPU candidate fields to GPU constants, establish producer
 ordering/lifetime, identify an active world-camera shader or enable independent
 world renders. Those G1/G2 requirements remain separate. Headset tests stay
 deferred and the portable M0 build is unchanged.
+
+## Actual structural result
+
+The [single-entry observation](../evidence/g1-single-shader-container-2026-11-06.json)
+ran committed source ae20066 once against reviewed Steam build 26480954 and
+the prior exact index/entry-name fingerprints. Both reads of the selected
+4,088-byte range agreed (8,176 archive bytes total). Index, held-file/path and
+game/catalog rechecks passed, exit 0.
+
+The entry is structurally PASC v8 containing 4,052 DXBC bytes, pixel shader
+model 6.6, and seven chunks: SFI0, ISG1, OSG1, PSV0, STAT, HASH and DXIL.
+The STAT bitcode-header check passed. No raw shader, IR or disassembly was
+saved; no compiler or reflection API consumed game data, and no shader ran.
+This establishes availability of a candidate reflection-bearing container,
+not usable reflection content, an active camera shader or a CPU/GPU field map.
+
+Next qualify an isolated bounded reflection reader against owned shaders, then
+consider the same fingerprinted container under that separate scope. Retain
+all input/range checks and expected payload/container hashes; do not choose a
+different shader automatically to seek camera-looking fields. Camera control,
+producer synchronization and independent game rendering remain unverified.
