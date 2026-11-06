@@ -106,3 +106,10 @@ completes all sixteen declarations and final input checks, with zero literal
 new parser contract; it does not rewrite earlier evidence or establish runtime
 bindings. Opaque identifiers remain uninterpreted. The literal-reference branch
 is complete without a shader link; G2 remains held.
+
+The [selective GPU consumer review](../research/g1-gpu-consumer-binding-review.md)
+examines four pinned public native capture files. They qualify neither a
+current-build world-camera buffer identity nor its consumer: the selected
+copies concern lighting/exposure, descriptor tables remain unresolved, and
+CPU scene data remains unpaired. This does not rule out a separately justified
+GPU route, but no game-facing camera readback bridge follows from these files.
