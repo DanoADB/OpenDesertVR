@@ -37,11 +37,12 @@ render integration. No completion date is established yet.
 Work in this order:
 
 1. Identify and validate the current game's world camera/render inputs in an
-   actual 3D scene. The bounded observer has loaded in the game, but its first
-   title-menu snapshot was labelled Dispatch by the legacy observer, whose
-   indirect-command classification is unverified, and proves no world camera.
-   Connect the tested constant-buffer snapshot component to the observer,
-   qualify its submission/lifetime behavior, then compare relevant scene data.
+   actual 3D scene. The corrected observer now reaches direct and indirect
+   graphics commands and has acquired one 768-byte upload input at the title
+   menu. This is a shader-input observation, not an identified camera. Compare
+   static-world and camera-movement data, then test the most credible camera
+   candidate. Resolve capture lifetime problems only as needed to perform this
+   experiment reliably; do not expand the observer into a general toolkit.
 2. Demonstrate a reversible camera/view change affecting actual world
    geometry, then establish how to render distinct eye views with correct
    submission and temporal history. Camera discovery alone is not stereo.
@@ -54,6 +55,13 @@ cosmetic UI work, broad settings work and unrelated infrastructure. Tests and
 instrumentation should answer a concrete camera/render question or protect
 the integration being changed. Polish, broader gameplay coverage and comfort
 tuning follow the showcase. A flat game display does not satisfy this goal.
+
+**Priority reaffirmed, 2026-11-06:** optimize for the first visible game-world
+stereo demonstration. Existing Crimson Desert VR mods support feasibility;
+our next deliverable must establish our own camera control and eye rendering.
+There is no additional cube acceptance gate. Limit the first showcase to one
+controlled scene and gamepad input, then improve gameplay coverage and polish.
+See [the first live graphics-input result](evidence/g1-game-graphics-input-2026-11-06.json).
 
 ### A. OpenDesertVR M0: independent XR substrate — NOW
 C++20/CMake, headset runtime discovery, D3D12 adapter/queue/fence/swapchain, synthetic **real** per-eye geometry, math tests, health diagnostics, Windows CI. Exit only after actual headset test verifies pose, correct stereo and orderly shutdown. **No launcher yet**.
