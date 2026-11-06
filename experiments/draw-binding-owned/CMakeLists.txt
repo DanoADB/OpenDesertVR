@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.24)
+project(OpenDesertOwnedDraws LANGUAGES CXX)
+if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "Owned draw qualification requires Windows x64")
+endif()
+add_executable(odv_draw_fixture fixture.cpp)
+target_compile_features(odv_draw_fixture PRIVATE cxx_std_20)
+target_link_libraries(odv_draw_fixture PRIVATE d3d12 dxgi d3dcompiler)
+if(MSVC)
+  target_compile_options(odv_draw_fixture PRIVATE /W4 /WX /EHsc)
+endif()
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+enable_testing()
+add_test(NAME owned_draw_pixel_controls COMMAND "${Python3_EXECUTABLE}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/baseline.py" "$<TARGET_FILE:odv_draw_fixture>" "${CMAKE_CURRENT_BINARY_DIR}/cases")
+set_tests_properties(owned_draw_pixel_controls PROPERTIES TIMEOUT 50)
+# Optional standalone research only: no install target or M0 runtime linkage.

@@ -65,6 +65,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build out/build/capture-lab --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify original WARP draw pixels and unsubmitted-list control (no capture tool)
+        run: |
+          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/draw-binding-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/draw-binding-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and test optional selected-read batch (owned producers only)
         run: |
           cmake -S experiments/camera-profile-audit/native-batch -B out/build/selected-read -A x64
