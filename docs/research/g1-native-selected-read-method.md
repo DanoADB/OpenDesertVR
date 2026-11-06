@@ -74,3 +74,22 @@ observer-call overhead. The fixed order and stable fixture are not a controlled
 game benchmark; scheduling, load and target behavior differ. There is no speed
 threshold in CI, and faster reads do not establish atomicity or explain the
 earlier game failures. No native-batch game observation has been performed.
+
+## Synchronization gate
+
+An additional owned counterexample in tests/test_camera_fields.py deliberately
+uses a producer token that does not cover geometry changes. The producer has
+two individually valid complete camera states; reads alternate between them,
+collecting the same plausible hybrid twice. All current equality, progression
+and numeric checks pass, yet the hybrid is neither complete producer state.
+This is an explicit limit of the observation grade, not a newly observed game
+behavior or an acceptance check to remove.
+
+Therefore reduced overhead alone does not qualify a game-facing observation
+method for camera use. Before advancing, identify a source-backed producer
+publication/synchronization contract on the actual build: what changes the
+token, which payload it covers, update ordering, source lifetime and frame
+association. Then exercise that contract against adversarial owned producers.
+A bounded observation might later test such a hypothesis, but another faster
+read merely seeking equal copies does not satisfy this gate. No game-facing
+wrapper is justified by the timing comparison alone.

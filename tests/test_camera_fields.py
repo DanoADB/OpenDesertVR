@@ -127,6 +127,45 @@ class FieldTests(unittest.TestCase):
             self.assertEqual(fields.diagnose_copies(first, second, changed),
                              {"status": "NOT_EVALUATED_POINTER_CHAIN_CHANGED"})
 
+    def test_equal_numeric_copies_can_mix_two_valid_producer_states(self):
+        # Counterexample, not a game protocol: this producer's token does not
+        # cover geometry updates. Both complete states are numerically valid.
+        frame = 5
+
+        def states():
+            first, second = buffer(frame), buffer(frame)
+            struct.pack_into("<f", second, 0x80, 11)
+            struct.pack_into("<f", second, 0x410, -11)
+            struct.pack_into("<f", second, 0x4e0, 1.6875)
+            struct.pack_into("<f", second, 0x4e0 + 5 * 4, 3)
+            return first, second
+
+        original, moved = states()
+        first_state, second_state = fields.decode(selected(original))[1], fields.decode(selected(moved))[1]
+        observed = []
+
+        def read(address, size):
+            offset = address - 4000
+            a, b = states()
+            # Each read sees one complete producer state. Only projection is
+            # sampled in state B; all other ranges are sampled in state A.
+            data = b if offset == 0x4e0 else a
+            value = bytes(data[offset:offset + size])
+            observed.append((offset, value))
+            return value
+
+        def advance():
+            nonlocal frame
+            frame += 1
+
+        report = fields.sample_fields(lambda address: {100: 200, 200: 300, 1272: 4000}[address],
+                                      read, 100, 300, 1072, advance)
+        mixture = dict(observed[:len(fields.RANGES)])
+        mixed_state = fields.decode(mixture)[1]
+        self.assertNotIn(mixed_state, (first_state, second_state))
+        self.assertEqual(report["status"], "OBSERVED_NUMERIC_CONSISTENCY")
+        self.assertIn("do not prove", report["scope"])
+
 
 if __name__ == "__main__":
     unittest.main()
