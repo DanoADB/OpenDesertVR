@@ -113,3 +113,10 @@ current-build world-camera buffer identity nor its consumer: the selected
 copies concern lighting/exposure, descriptor tables remain unresolved, and
 CPU scene data remains unpaired. This does not rule out a separately justified
 GPU route, but no game-facing camera readback bridge follows from these files.
+
+A [file-only static seed inspection](../research/g1-static-function-extents-method.md)
+qualifies three existing unique seeds against PE runtime-function metadata and
+installed-tool linear decoding. It identifies bounded regions for further
+engineering questions, not camera writers, complete logical functions or a
+publication protocol. The rejected live acquisition route remains stopped;
+no new process access, callback or game hook is qualified by these metadata.

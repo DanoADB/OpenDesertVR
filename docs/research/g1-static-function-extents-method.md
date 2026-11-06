@@ -65,3 +65,31 @@ establish a C++ type, camera semantics or safe callback. The next design needs
 an actual producer/consumer relationship rather than treating this metadata as
 permission for a live probe. Camera control, extra world rendering and G2 stay
 unverified. Headset tests remain deferred.
+
+## Current-build observation, 2026-11-06
+
+[Source fac6a3d evidence](../evidence/g1-static-function-extents-2026-11-06.json)
+records 248,753 runtime-function entries and three bounded selected regions:
+534, 50 and 467 bytes (1,051 selected bytes in total), with 130, 14 and 131
+accepted instruction lines. All input postflight checks pass. These are selected
+disassembly ranges, not the total number of file bytes read internally by the
+Microsoft tool. No game process was accessed or started.
+
+Each region has a version-1 unwind header. The reference seed is inside its
+region; the two ordered-table seeds are at their region entries. This does not
+prove whole logical-function boundaries: fragments, outgoing calls and branches
+remain untraversed. In particular, the 50-byte region has no accepted return
+mnemonic; do not infer a missing-return defect or invent a whole routine from it.
+
+The observed instruction mixes contain calls and branches but no exported
+operands, so they establish neither writer targets nor publication ordering.
+A future bounded operand/dataflow question would require a separate reviewed
+contract and owned qualification. No new live probe, integration callback,
+call-graph sweep or game-control operation follows from this observation.
+
+Hosted [Debug/Release validation](https://github.com/DanoADB/OpenDesertVR/actions/runs/42264957008)
+passes at fac6a3d: 34 core native checks, 86 Python tests and four optional
+research suites per configuration. The native static-extent qualification
+actually ran in both, along with the four owned PE/parser tests. Release
+staging passes. These are software tests, separate from the file-only current
+executable observation and from deferred headset acceptance.

@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_static_seed_function_extents",
+  "status": "OBSERVED_STATIC_FUNCTION_EXTENTS_AND_LINEAR_DECODING",
+  "stage": "COMPLETE",
+  "input_postflight": "PASS",
+  "source_sha256": {
+    "query_function_extents.py": "5226f5d0013dc542e5b4d91c8db72decdb0f48c5696528d05de610ca8c238170",
+    "function_extents.py": "fb9cb0e1ea9c4f163f12854ca0426c5198062fe621460c32db1b661d46a9d54c",
+    "audit_profile.py": "a9a85cd1625d98217795f978a86a15784ca047aff5c1b3b5555ea97c75dcb2e0"
+  },
+  "game_execution": "NOT_RUN",
+  "process_memory_access": "NOT_RUN",
+  "game_write": "NOT_RUN",
+  "producer_publication_contract": "UNVERIFIED",
+  "camera_control": "UNVERIFIED",
+  "camera_to_rendered_frame_association": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "scope": "Three unique prior static seeds only, bounded by x64 PE exception records. Installed explicit MSVC tool decodes at most 64 KiB per function with a ten-second call timeout. Output accepts at most 1 MiB per call; this is not a tool memory sandbox. Only sizes, code fingerprints and mnemonic counts retained, no bytes, addresses, operands, assembly or raw tool output. No cross-reference sweep, call-graph traversal, mod execution, process access, game launch, game writes or retry. Metadata extents and linear instruction decoding do not establish reachable instructions, all writers, publication ordering, camera semantics or a supported callback.",
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "profile_sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+  "dumpbin_sha256": "cfee7ed764b7b0866aae0be12f9c0ad2a7f5aecc4046ba2b7de26335827ca815",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "function_extents": {
+    "runtime_function_records": 248753,
+    "seeds": [
+      {
+        "seed_role": "global_reference",
+        "function_bytes": 534,
+        "seed_at_function_entry": false,
+        "unwind_header_version": 1,
+        "function_sha256": "6752530640ddcf8f2352af4c2b1c589347c21638325925a73d0465646a16ff02"
+      },
+      {
+        "seed_role": "vtable_slot_1",
+        "function_bytes": 50,
+        "seed_at_function_entry": true,
+        "unwind_header_version": 1,
+        "function_sha256": "e589bfe6551725273e9d6ba8b7600c3d6295a173d31f9813841acb6c8aa688c3"
+      },
+      {
+        "seed_role": "vtable_slot_2",
+        "function_bytes": 467,
+        "seed_at_function_entry": true,
+        "unwind_header_version": 1,
+        "function_sha256": "fd62b0da3cd6e614ef84a8ac877cf4687162cac8aa6ad46eacc7350002d2c729"
+      }
+    ],
+    "scope": "PE exception-directory ranges only. Unwind programs and reachability are not validated; absence of a record does not mean code is absent."
+  },
+  "decoded_seeds": [
+    {
+      "seed_role": "global_reference",
+      "instruction_lines": 130,
+      "mnemonic_counts": {
+        "mov": 36,
+        "push": 5,
+        "lea": 13,
+        "sub": 2,
+        "vmovaps": 6,
+        "xor": 1,
+        "vmovss": 2,
+        "vminss": 1,
+        "vxorps": 3,
+        "vmaxss": 1,
+        "vdivss": 1,
+        "vmulss": 3,
+        "vcvttss2si": 1,
+        "movzx": 4,
+        "cmp": 4,
+        "cmovl": 1,
+        "test": 2,
+        "cmovs": 1,
+        "je": 4,
+        "vmovsd": 5,
+        "call": 12,
+        "and": 3,
+        "movsx": 2,
+        "vcvtsi2ss": 2,
+        "vaddss": 3,
+        "or": 2,
+        "vunpcklps": 1,
+        "nop": 2,
+        "jmp": 1,
+        "pop": 5,
+        "ret": 1
+      },
+      "scope": "Linear tool decoding only; not control-flow reachability, write coverage, function identity or producer semantics."
+    },
+    {
+      "seed_role": "vtable_slot_1",
+      "instruction_lines": 14,
+      "mnemonic_counts": {
+        "mov": 8,
+        "push": 3,
+        "sub": 1,
+        "test": 1,
+        "je": 1
+      },
+      "scope": "Linear tool decoding only; not control-flow reachability, write coverage, function identity or producer semantics."
+    },
+    {
+      "seed_role": "vtable_slot_2",
+      "instruction_lines": 131,
+      "mnemonic_counts": {
+        "push": 1,
+        "sub": 4,
+        "mov": 44,
+        "call": 1,
+        "movsxd": 1,
+        "test": 6,
+        "jne": 8,
+        "xor": 7,
+        "add": 4,
+        "pop": 2,
+        "ret": 2,
+        "vxorps": 1,
+        "cmp": 7,
+        "jl": 1,
+        "lea": 3,
+        "shr": 1,
+        "inc": 1,
+        "je": 5,
+        "vmovss": 10,
+        "jmp": 5,
+        "vcomiss": 5,
+        "jbe": 5,
+        "vmovaps": 5,
+        "jge": 1,
+        "shl": 1
+      },
+      "scope": "Linear tool decoding only; not control-flow reachability, write coverage, function identity or producer semantics."
+    }
+  ],
+  "current_seed_role": "vtable_slot_2",
+  "source_commit": "fac6a3d75d59469ccf6f1817fc0ce70a98123c4d",
+  "source_dirty": false,
+  "exit_code": 0,
+  "case_kind": "ACTUAL_GAME_FILE_ONLY",
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "method": "docs/research/g1-static-function-extents-method.md",
+  "selected_region_bytes": 1051,
+  "total_instruction_lines": 275,
+  "interpretation": "Three existing unique seeds have bounded runtime-function regions and accepted linear decoding. The global-reference region is 534 bytes, and the two table-function seed regions are 50 and 467 bytes. These metadata regions are not a complete logical-function or control-flow graph. Instruction mix does not identify memory destinations, all writers, camera data roles or producer ordering. No live probe or callback is qualified. A future operand/dataflow question must have its own reviewed bounded contract and owned qualification; this result does not justify arbitrary caller or cross-reference traversal.",
+  "hosted_qualification": {
+    "source_commit": "fac6a3d75d59469ccf6f1817fc0ce70a98123c4d",
+    "run_url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42264957008",
+    "debug": "PASS",
+    "release": "PASS",
+    "core_native_checks_per_configuration": 34,
+    "python_tests_per_configuration": 86,
+    "optional_research_suites_per_configuration": 4,
+    "static_extent_owned_actually_ran": true,
+    "scope": "Owned fixtures only; not headset or game execution."
+  }
+}
