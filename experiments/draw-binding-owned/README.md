@@ -35,10 +35,18 @@ attestation of every module Windows may load. Native resource pointers are
 retained only in `ground-truth.private.json`; shader blobs are original owned
 assets. None are installed into the M0 package. Do not publish private handles.
 
-This baseline does **not** execute Devkit, qualify its CBV resource identities,
+An explicit `--loop` mode runs the same offscreen pixel check while presenting
+a separate black 64 by 32 swapchain through a hidden window. It stops on a
+`stop.flag` in the output directory's parent or after 60 seconds, writes
+`ready.flag` after the first verified/presented frame, and keeps all resource
+identities alive until exit. Unlike baseline mode, it permits a local graphics
+proxy so a separately qualified controller can stage its pinned observer.
+Its result labels capture-tool execution as EXTERNAL_OBSERVER_POSSIBLE, never
+as verified by the fixture itself. No loop mode is installed into M0.
+
+The pixel baseline does **not** execute Devkit, qualify its CBV resource identities,
 verify its submission metadata, or observe per-draw GPU constant bytes. No
-headset/game test is run. Next add a bounded presenting mode for this geometry,
-then compare the exact authored shader pair and known bindings through the
+headset/game test is run. Compare the exact authored shader pair and known bindings through the
 already qualified owned Devkit transport. Known pixel buffers must validate
 the native/ReShade handle convention before interpreting other missing/stale
 bindings. A listed draw alone cannot establish GPU submission or completion.

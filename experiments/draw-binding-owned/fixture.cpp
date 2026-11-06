@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <d3d12.h>
@@ -14,6 +15,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string_view>
+#include <type_traits>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -58,9 +60,11 @@ static void barrier(ID3D12GraphicsCommandList *list, ID3D12Resource *resource, D
 }
 int wmain(int argc, wchar_t **argv) {
     try {
-        if (argc != 2 && (argc != 3 || std::wstring_view(argv[2]) != L"--submit-fourth"))
+        if (argc != 2 && (argc != 3 || (std::wstring_view(argv[2]) != L"--submit-fourth" &&
+                                        std::wstring_view(argv[2]) != L"--loop")))
             throw std::runtime_error("provide_fresh_output_directory");
-        const bool submit_fourth = argc == 3;
+        const bool loop = argc == 3 && std::wstring_view(argv[2]) == L"--loop";
+        const bool submit_fourth = argc == 3 && !loop;
         const std::filesystem::path output(argv[1]);
         if (!std::filesystem::is_directory(output) || !std::filesystem::is_empty(output))
             throw std::runtime_error("output_must_be_existing_empty_directory");
@@ -70,8 +74,16 @@ int wmain(int argc, wchar_t **argv) {
             throw std::runtime_error("module_path_failed");
         const auto executable_dir = std::filesystem::path(module).parent_path();
         for (const auto *name : {L"dxgi.dll", L"d3d12.dll", L"ReShade64.dll"})
-            if (std::filesystem::exists(executable_dir / name))
+            if (!loop && std::filesystem::exists(executable_dir / name))
                 throw std::runtime_error("baseline_local_graphics_proxy_present");
+        const auto destroy_window = [](HWND value) { DestroyWindow(value); };
+        std::unique_ptr<std::remove_pointer_t<HWND>, decltype(destroy_window)> window(nullptr, destroy_window);
+        if (loop) {
+            window.reset(CreateWindowW(L"STATIC", L"OpenDesertVR owned draw observer control", WS_OVERLAPPEDWINDOW, 0,
+                                       0, width, height, nullptr, nullptr, GetModuleHandleW(nullptr), nullptr));
+            if (!window)
+                throw std::runtime_error("owned_hidden_window_failed");
+        }
         Com<IDXGIFactory4> factory;
         check(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
         Com<IDXGIAdapter> adapter;
@@ -81,6 +93,24 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12CommandQueue> queue;
         D3D12_COMMAND_QUEUE_DESC q{};
         check(device->CreateCommandQueue(&q, IID_PPV_ARGS(&queue)));
+        Com<IDXGISwapChain3> swap;
+        std::array<Com<ID3D12Resource>, 2> backbuffers;
+        if (loop) {
+            DXGI_SWAP_CHAIN_DESC1 sd{};
+            sd.Width = width;
+            sd.Height = height;
+            sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            sd.SampleDesc.Count = 1;
+            sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+            sd.BufferCount = 2;
+            sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+            Com<IDXGISwapChain1> initial;
+            check(factory->CreateSwapChainForHwnd(queue.Get(), window.get(), &sd, nullptr, nullptr, &initial));
+            check(initial.As(&swap));
+            check(factory->MakeWindowAssociation(window.get(), DXGI_MWA_NO_ALT_ENTER));
+            for (UINT i = 0; i < backbuffers.size(); ++i)
+                check(swap->GetBuffer(i, IID_PPV_ARGS(&backbuffers[i])));
+        }
         Com<ID3DBlob> vs, ps, errors;
         check(D3DCompile(shader, sizeof(shader) - 1, "owned_control", nullptr, nullptr, "vs", "vs_5_1",
                          D3DCOMPILE_ENABLE_STRICTNESS, 0, &vs, &errors));
@@ -185,10 +215,14 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12DescriptorHeap> rtv;
         hd = {};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        hd.NumDescriptors = 1;
+        hd.NumDescriptors = loop ? 3 : 1;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&rtv)));
         const auto view = rtv->GetCPUDescriptorHandleForHeapStart();
         device->CreateRenderTargetView(target.Get(), nullptr, view);
+        const auto rstride = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        if (loop)
+            for (UINT i = 0; i < backbuffers.size(); ++i)
+                device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, {view.ptr + (i + 1) * rstride});
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
         UINT64 total = 0;
         device->GetCopyableFootprints(&td, 0, 1, 0, &footprint, nullptr, nullptr, &total);
@@ -224,7 +258,17 @@ int wmain(int argc, wchar_t **argv) {
         ground.close();
         if (!ground)
             throw std::runtime_error("ground_truth_write_failed");
-        for (UINT frame = 1; frame <= 2; ++frame) {
+        UINT completed = 0;
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
+        for (UINT frame = 1; loop || frame <= 2; ++frame) {
+            if (loop && (std::filesystem::exists(output.parent_path() / L"stop.flag") ||
+                         std::chrono::steady_clock::now() >= deadline))
+                break;
+            MSG message{};
+            while (loop && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&message);
+                DispatchMessageW(&message);
+            }
             for (UINT i = 0; i < lists.size(); ++i) {
                 check(allocators[i]->Reset());
                 check(lists[i]->Reset(allocators[i].Get(), nullptr));
@@ -264,6 +308,14 @@ int wmain(int argc, wchar_t **argv) {
             src.pResource = target.Get();
             src.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
             lists[2]->CopyTextureRegion(&dest, 0, 0, 0, &src, nullptr);
+            if (loop) {
+                const auto index = swap->GetCurrentBackBufferIndex();
+                barrier(lists[2].Get(), backbuffers[index].Get(), D3D12_RESOURCE_STATE_PRESENT,
+                        D3D12_RESOURCE_STATE_RENDER_TARGET);
+                lists[2]->ClearRenderTargetView({view.ptr + (index + 1) * rstride}, black, 0, nullptr);
+                barrier(lists[2].Get(), backbuffers[index].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET,
+                        D3D12_RESOURCE_STATE_PRESENT);
+            }
             check(lists[2]->Close());
             check(lists[0]->Close());
             // Baseline never submits B. The paired control submits B before readback C,
@@ -299,18 +351,30 @@ int wmain(int argc, wchar_t **argv) {
             readback->Unmap(0, &no_write);
             if (!matches)
                 throw std::runtime_error("owned_pixel_control_failed");
+            if (loop)
+                check(swap->Present(1, 0));
+            ++completed;
+            if (loop && completed == 1) {
+                std::ofstream ready(output / L"ready.flag");
+                ready << "owned GPU pixels verified\n";
+                if (!ready)
+                    throw std::runtime_error("owned_readiness_write_failed");
+            }
         }
+        if (!completed)
+            throw std::runtime_error("owned_fixture_rendered_no_frames");
         std::ofstream result(output / "result.json");
-        result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":2,"
-                  "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":4,\"submittedDrawsPerFrame\":"
+        result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":" << completed << ','
+               << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":4,\"submittedDrawsPerFrame\":"
                << (submit_fourth ? 4 : 3) << ",\"fourthColumn\":\"" << (submit_fourth ? "yellow" : "black")
-               << "\",\"captureTool\":\"NOT_RUN\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
+               << "\",\"captureTool\":\"" << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
+               << "\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
                   "RUN\"}";
         result.close();
         if (!result)
             throw std::runtime_error("result_write_failed");
-        std::cout << "PASS: WARP two frames, 2048 pixels each; fourth column " << (submit_fourth ? "yellow" : "black")
-                  << '\n';
+        std::cout << "PASS: WARP " << completed << " frames, 2048 pixels each; fourth column "
+                  << (submit_fourth ? "yellow" : "black") << '\n';
         return 0;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
