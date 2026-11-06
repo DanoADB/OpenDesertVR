@@ -121,5 +121,20 @@
       "path": "experiments/draw-binding-owned/CMakeLists.txt",
       "sha256": "30f354baaa0402e2eb4cd40e1a194b7d7132c4b39b269e2cff142ebe5b8676da"
     }
-  ]
+  ],
+  "hostedValidation": {
+    "status": "PASS",
+    "sourceCommit": "4be273d894d63dc7a5a47dce01e012a87fde5786",
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42273418459",
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "coreNativeChecksPerConfiguration": 34,
+    "pythonTestsPerConfiguration": 94,
+    "optionalNativeChecksPerConfiguration": 5,
+    "ownedDrawPixelControlsActuallyRanInBoth": true,
+    "externalCaptureTool": "NOT_RUN",
+    "logSha256": "8b233758b77855cc2316993f81063a1ce7e424e16e7a53ab6449cbec61354a30"
+  }
 }
