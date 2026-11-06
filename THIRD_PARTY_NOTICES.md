@@ -49,8 +49,14 @@ used by the original bounded readers in experiments/shader-consumer-audit are ad
 Ratty123/CDMW-Full, revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b,
 archive_format.py, models.py and archive_shader_preview.py.
 MIT, Copyright (c) 2026 Ratrider. Full notice: [CDMW-MIT.txt](docs/licenses/CDMW-MIT.txt).
-No upstream application, full archive parser, payload decompression/decryption
-code or dependency is adopted or executed. These readers are separate from
+No upstream application or full archive parser is imported or executed. The
+optional technique_contract.py executes five reviewed pure filename-format
+routines selected from the SHA-pinned archive_format.py. Existing optional local
+cryptography 50.0.2 (Apache-2.0 OR BSD-3-Clause) and lz4 4.4.5 (BSD-3-Clause)
+provide the codec operations for bounded declaration inspection and owned tests.
+No codec binary or game payload is redistributed, and these packages are not M0
+or CI dependencies. This review covers their installed distribution notices,
+not a complete transitive dependency audit. These experiments are separate from
 the native M0 host and do not establish active bindings or camera semantics.
 The original shader_container.py uses structural facts from Microsoft's
 DirectXShaderCompiler DxilContainer.h; its selected source is fingerprinted in

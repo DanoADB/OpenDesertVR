@@ -47,6 +47,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m unittest discover -s tests -p test_shader_reflection_probe.py -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test technique literal-reference contract (owned XML only, no codecs)
+        run: python -m unittest discover -s tests -p test_technique_contract.py -v
       - name: Compile optional owned presenting fixture (no capture tool or game)
         run: |
           cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF
