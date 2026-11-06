@@ -71,3 +71,23 @@ unique device/completed-snapshot output selection. CI runs those tests and
 compiles the original presenting fixture; it does not fetch or run the external
 tool. A later observed transport result must remain separate from actual draw
 binding coverage, shader semantics, GPU completion and the G1/G2 game gates.
+
+## Observed Release transport result, 2026-11-06
+
+[Clean source 07d12e8 evidence](../evidence/g1-owned-devkit-transport-2026-11-06.json)
+records the matching owned-child pipe, completed snapshot, successful fresh
+bridge connection and cooperative target exit zero after six original fixture
+frames. All retained snapshot counts are zero, consistent with clear-only work.
+There are no boot/live/dump asset files, and source/binary postflight passes.
+
+This qualifies only that private build's transport and snapshot lifecycle on
+the selected owned app. Actual geometry draw tracking, vertex-only descriptors,
+submission markers and per-draw constant bytes remain NOT_RUN/unverified. The
+next test needs an owned geometry fixture with those explicit controls.
+
+Hosted [Debug/Release validation](https://github.com/DanoADB/OpenDesertVR/actions/runs/42271236573)
+passes at 07d12e8: 34 core native checks, 94 Python tests and four existing
+optional research suites per configuration. The five new synthetic protocol/
+device/snapshot tests actually ran in both. CI compiles the modified original
+presenting fixture; external Devkit execution remains the separate local
+Release observation, with geometry/draw-binding qualification still untested.

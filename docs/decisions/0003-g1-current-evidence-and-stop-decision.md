@@ -134,3 +134,10 @@ allocation requests and orderly exit qualify that selected loading/cache step
 only. Full devkit draw tracking, vertex-only table coverage, submitted draw
 association and per-draw GPU constants remain unverified. No game instrument,
 camera control or independent world render is qualified by this owned result.
+
+The [owned Devkit transport qualification](../research/g1-owned-devkit-transport-method.md)
+completes on clean source 07d12e8: matching owned-child pipe, empty-frame snapshot,
+fresh bridge reconnect and cooperative shutdown. Zero captured draws are
+consistent with the clear-only fixture and provide no draw-binding pass. The
+next qualification needs actual owned geometry and descriptor/submission
+controls. No game loading method, camera consumer or G2 result is established.
