@@ -6,6 +6,10 @@ The new [native-camera telemetry lead](research/crimson-telemetry-camera-lead.md
 has a pinned historical exact-hash profile and actual current-file instruction
 guard observations. It enables a targeted offline camera investigation without
 another full-frame capture. Live camera validity and control remain unverified.
+The [relationship follow-up](evidence/g1-camera-relationships-2026-11-06.json)
+observes a writable RIP target and one ordered read-only function-pointer table
+on the current file. Their association with a live camera and its field layout
+remain separate unverified questions; no production profile is relocated.
 The ADR identifies the missing capabilities and new evidence required to resume
 game-facing work. M0 maintenance and actual headset verification remain useful.
 

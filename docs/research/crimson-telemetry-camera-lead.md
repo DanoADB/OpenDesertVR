@@ -53,12 +53,31 @@ It does not grant runtime compatibility or change the production adapter.
 
 ## Next narrowly scoped proof
 
-First establish the reference target and multi-slot vtable relationship in a
-separate offline observation, retaining ambiguity and failure results. If that
-succeeds, review a minimal bounded read-only camera observation against the
-exact build, with source replacement/frame-progress and controlled camera-only
-movement checks. Do not carry forward old object-field offsets as proven.
-Any live process access requires its own scoped technical review first.
+The subsequent [offline relationship observation](../evidence/g1-camera-relationships-2026-11-06.json)
+found that the unique guarded RIP-relative load targets an aligned readable,
+writable, non-executable data range. It also found exactly one read-only,
+file-backed pointer table with both unique function addresses in the profile's
+specified slot order. The reference target and table differ from their old
+profile RVAs. No numeric location or proprietary bytes are published.
+
+The original checker uses the executable's preferred ImageBase for stored
+function pointers and distinguishes raw file offsets from virtual addresses,
+following Microsoft's [PE format](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format).
+It rejects overlapping raw/virtual sections, checks signed displacement and
+range bounds, and treats repeated tables as ambiguous. Fourteen owned-PE tests
+and all 36 local Python tests passed. No game/process or headset was used.
+
+These are two separate static relationships, not proof that the global points
+to an object using that table. A matching function-pointer array does not by
+itself establish its C++ class or semantic role. The old raw field offsets,
+source-pointer layout and frame-counter behavior are still unverified on the
+new build. Do not turn these observations into a relocated production profile.
+
+Next establish a reviewed, minimal way to validate that live association and
+the field layout, with bounded read-only access and controlled camera-only
+movement if justified. Retain source replacement/frame-progress and ambiguity
+checks; do not assume them from the historical layout. Any live process access
+requires its own scoped technical review first.
 
 Camera observation alone still leaves projection writes, independent world-view
 scheduling, temporal-history ownership and XR submission unverified. No G2 or

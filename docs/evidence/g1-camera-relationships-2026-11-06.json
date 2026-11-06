@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "offline_camera_guard_observation",
+  "script_sha256": "d777b798a014e5f519f7174239dd4234f02d84ee5a2ad830e6008135b0e50314",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "profile_sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+  "profile_steam_build_id": "26448710",
+  "profile_executable_hash_matches": false,
+  "observation": {
+    "camera_reference_matches_in_executable_sections": 1,
+    "reference_matches_at_published_rva": false,
+    "vtable_function_fingerprint_match_counts": [
+      1,
+      1
+    ],
+    "reference_relationship": {
+      "status": "OBSERVED",
+      "target_is_aligned_writable_data": true,
+      "target_equals_published_global_rva": false
+    },
+    "vtable_relationship": {
+      "status": "OBSERVED_UNIQUE",
+      "matching_readonly_pointer_tables": 1,
+      "table_equals_published_vtable_rva": false,
+      "scope": "Ordered function-pointer table only; C++ type and live camera association remain unverified."
+    },
+    "scope": "Static instruction/data relationships only. Does not validate a live object, relocate a profile or grant runtime compatibility."
+  },
+  "runtime_camera": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "game_execution": "NOT_RUN",
+  "process_memory_access": "NOT_RUN",
+  "date": "2026-11-06",
+  "reference_repository": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry",
+  "reference_commit": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "reference_profile": "definitions/build-26448710.json",
+  "scope": "Separate static instruction-to-data and function-to-pointer-table relationships only. No live global/object/table association, camera layout, object type or compatibility established. No game execution, process access, source adoption, numeric locations or proprietary payload publication."
+}
