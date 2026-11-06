@@ -12,6 +12,21 @@ The testhost renders original red/green/blue cubes at 1/3/8 meters from
 independent runtime eye poses and asymmetric projections. It runs without
 Crimson Desert. Game adapter capabilities stay Unsupported/Unverified.
 
+## Test from the Windows app
+
+Extract the complete portable ZIP and double-click **OpenDesertVR.exe**.
+Connect Quest Link, then choose **Check readiness** or **Start 60-second test**.
+**Stop** requests an orderly exit. After the test, tick the visual checks you
+personally completed, add optional notes, and select **Save observations**.
+**Open reports** opens the current run folder. No terminal, Python or PowerShell
+is needed. The app does not start a test automatically.
+
+Each operation creates a fresh folder under `reports`; if the package folder is
+not writable, reports go to `%LOCALAPPDATA%/OpenDesertVR/reports`.
+Technical results and your observations are separate. Unchecked visual checks
+stay NOT_RUN. The app clearly labels simulated runtimes and disables saving
+headset observations for them. This tests the standalone cubes, not the game.
+
 ## Build and test
 
 Windows x64, Visual Studio 2022 C++ tools/Windows SDK, CMake 3.24+:
@@ -31,9 +46,7 @@ The ZIP includes the OpenXR loader, redistributable MSVC DLLs, config and
 license notices. Install/activate your vendor OpenXR runtime separately.
 See [manual headset checklist](docs/M0_ACCEPTANCE.md) and
 [actual evidence](docs/M0_PROGRESS.md).
-After extracting the ZIP, double-click Run-Headset-Test.cmd to run the standalone
-cubes and collect reports without opening a PowerShell terminal. Each run uses
-a new reports folder; visual stereo and comfort checks remain manual.
+The older Run-Headset-Test.cmd collector remains available for troubleshooting.
 
 ```powershell
 ./out/build/release/Release/odv-cli.exe doctor

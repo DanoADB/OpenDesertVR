@@ -54,6 +54,7 @@ class Host final : public IXrFrame {
     Lifecycle lifecycle;
     Log log;
     Config config;
+    std::stop_token stop;
     DXGI_FORMAT format{};
     XrEnvironmentBlendMode blend = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
     XrFrameState frame_state{XR_TYPE_FRAME_STATE};
@@ -280,7 +281,7 @@ class Host final : public IXrFrame {
         do {
             waited = xrWaitSwapchainImage(eye.swapchain, &wait);
             if (waited == XR_TIMEOUT_EXPIRED) {
-                if (interrupted || std::chrono::steady_clock::now() >= wait_deadline)
+                if (interrupted || stop.stop_requested() || std::chrono::steady_clock::now() >= wait_deadline)
                     throw Failure(ErrorCode::session, "eye image wait cancelled or exceeded five seconds");
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
@@ -411,10 +412,11 @@ Json doctor() {
     }
     return report;
 }
-Json run(const Config &config) {
+Json run(const Config &config, std::stop_token stop) {
     auto report = empty_report();
     Host host;
     host.config = config;
+    host.stop = stop;
     interrupted = false;
     SetConsoleCtrlHandler(control, TRUE);
     try {
@@ -424,7 +426,7 @@ Json run(const Config &config) {
         while (!host.lifecycle.terminal()) {
             host.poll();
             const auto now = std::chrono::steady_clock::now();
-            if (interrupted || now - start >= std::chrono::seconds(config.duration_seconds)) {
+            if (interrupted || stop.stop_requested() || now - start >= std::chrono::seconds(config.duration_seconds)) {
                 if (!host.exit_requested) {
                     if (host.lifecycle.running())
                         xrcheck(xrRequestExitSession(host.session), "request exit");

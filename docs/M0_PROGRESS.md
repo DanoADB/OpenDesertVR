@@ -2,6 +2,12 @@
 
 ## Implemented
 
+- Native **OpenDesertVR.exe** desktop testing app: readiness, 60-second stereo
+  start, cooperative Stop, local report folders, optional notes and explicit
+  visual observations. Calls the existing XR engine directly, without shell
+  scripts. Work runs off the UI thread; closing requests shutdown and waits
+  for report completion. Simulated runtimes cannot award visual acceptance.
+
 - C++20 core: typed errors/results, strict version-1 JSON config, bounded
   structured events and sanitized reports.
 - Native Windows D3D12/OpenXR host: extension negotiation, runtime-required

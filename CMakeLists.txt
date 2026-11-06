@@ -37,14 +37,18 @@ if(WIN32)
   target_link_libraries(odv-cli PRIVATE odv_openxr)
   add_executable(odv-testhost apps/odv-testhost/main.cpp)
   target_link_libraries(odv-testhost PRIVATE odv_openxr)
-  list(APPEND odv_targets odv_d3d12 odv_openxr odv-testhost)
-  foreach(app odv-cli odv-testhost)
+  add_executable(OpenDesertVR WIN32 apps/odv-desktop/main.cpp)
+  target_compile_definitions(OpenDesertVR PRIVATE UNICODE _UNICODE)
+  target_link_libraries(OpenDesertVR PRIVATE odv_openxr user32 gdi32 shell32 ole32)
+  list(APPEND odv_targets odv_d3d12 odv_openxr odv-testhost OpenDesertVR)
+  foreach(app odv-cli odv-testhost OpenDesertVR)
     add_custom_command(TARGET ${app} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:openxr_loader> $<TARGET_FILE_DIR:${app}>)
   endforeach()
-  install(TARGETS odv-cli odv-testhost RUNTIME DESTINATION . COMPONENT Runtime)
+  install(TARGETS odv-cli odv-testhost OpenDesertVR RUNTIME DESTINATION . COMPONENT Runtime)
   install(FILES $<TARGET_FILE:openxr_loader> DESTINATION . COMPONENT Runtime)
   install(DIRECTORY config DESTINATION . COMPONENT Runtime)
   install(FILES README.md LICENSE LICENSE-MIT THIRD_PARTY_NOTICES.md DESTINATION . COMPONENT Runtime)
+  install(FILES docs/START-HERE.txt DESTINATION . COMPONENT Runtime)
   install(DIRECTORY docs DESTINATION . COMPONENT Runtime)
   install(FILES Codex_Master_Prompt.md DESTINATION . COMPONENT Runtime)
   install(FILES scripts/run-headset-test.ps1 scripts/Run-Headset-Test.cmd DESTINATION . COMPONENT Runtime)
@@ -82,6 +86,13 @@ if(BUILD_TESTING)
     target_link_libraries(odv_mock_runtime PRIVATE OpenXR::headers nlohmann_json::nlohmann_json d3d12 dxgi)
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json"
       CONTENT "{\"file_format_version\":\"1.0.0\",\"runtime\":{\"library_path\":\"$<TARGET_FILE:odv_mock_runtime>\"}}")
+    add_executable(odv_stop_tests tests/stop_tests.cpp)
+    target_link_libraries(odv_stop_tests PRIVATE odv_openxr)
+    add_test(NAME odv_xr_cooperative_stop COMMAND ${CMAKE_COMMAND}
+      -DHOST=$<TARGET_FILE:odv_stop_tests>
+      -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/stop.cmake)
+    set_tests_properties(odv_xr_cooperative_stop PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
     foreach(scenario normal request_exit skip_render invalid_tracking all_skip wait_timeout
         session_loss instance_loss missing_headset missing_extension wrong_adapter allocation_failure
         acquire_failure wait_failure release_failure second_acquire_failure second_wait_failure

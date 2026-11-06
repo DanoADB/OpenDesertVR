@@ -47,6 +47,15 @@ Use your headset vendor's normal controls to select the active OpenXR runtime,
 connect/wake the headset in PCVR mode, and enable its PC connection.
 The host does not change your runtime registration.
 
+For the native desktop workflow, double-click **OpenDesertVR.exe**. Check
+readiness, start the 60-second test, and use Stop if you want to finish early.
+Afterward, save the checks you personally completed and any issue notes.
+Open reports takes you to that run's evidence. No scripts or terminal are
+required. A simulated runtime cannot save headset observations. Every run
+retains headset/game validation as NOT_RUN in its technical summary; explicit
+user observations are a separate file. The current desktop build needs its
+own real headset acceptance; earlier Quest Pro passes do not transfer.
+
 ```powershell
 .\odv-cli.exe doctor
 .\odv-cli.exe export-report --output doctor-report.json
