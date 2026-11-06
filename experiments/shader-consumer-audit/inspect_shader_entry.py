@@ -72,8 +72,9 @@ def run(args, report):
         raise ValueError("inputs_changed")
     report["input_postflight"] = "PASS"
     report["stage"] = "CONTAINER"
-    _, description = parse_pasc(payload)
+    container, description = parse_pasc(payload)
     report.update(status="OBSERVED_SINGLE_SHADER_CONTAINER", stage="COMPLETE", container=description)
+    return container
 
 
 def main():

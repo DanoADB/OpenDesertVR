@@ -18,7 +18,8 @@ from test_shader_container import fixture as container_fixture
 
 
 class EntryTests(unittest.TestCase):
-    def owned(self, root, flags=0):
+    @staticmethod
+    def owned(root, flags=0):
         package = root / "0000"
         package.mkdir()
         payload = container_fixture()

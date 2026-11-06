@@ -41,6 +41,12 @@ jobs:
         run: python -m unittest discover -s tests -p test_shader_container.py -v
       - name: Test single-entry range gates (owned files only)
         run: python -m unittest discover -s tests -p test_shader_entry.py -v
+      - name: Test reflection protocol and fingerprint gates (owned/mocked data only)
+        run: |
+          python -m unittest discover -s tests -p test_reflection_query.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_shader_reflection_probe.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile optional owned presenting fixture (no capture tool or game)
         run: |
           cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF
@@ -54,6 +60,14 @@ jobs:
           cmake --build out/build/selected-read --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ctest --test-dir out/build/selected-read -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and test isolated reflection helper (owned shaders only)
+        run: |
+          cmake -S experiments/shader-consumer-audit/reflection -B out/build/shader-reflection -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/shader-reflection --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/shader-reflection -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check optional research-script syntax (no game or GPU capture)
         run: |
