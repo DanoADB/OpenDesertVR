@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -42,6 +44,40 @@ class ConstantSnapshot final {
     static constexpr std::size_t maximum_bytes = 4096;
     static constexpr UINT64 maximum_source_bytes = 64ULL * 1024 * 1024;
     static constexpr uint32_t maximum_pending = 6;
+    struct SourceInfo {
+        const char *state = "INVALID_SOURCE";
+        uint32_t heap_type = 0;
+        UINT64 width = 0;
+        bool supported = false;
+    };
+    // Metadata only, during a callback where the native source is valid.
+    static SourceInfo inspect_source(ID3D12Resource *source, UINT64 offset, std::size_t bytes) {
+        SourceInfo info;
+        if (!source)
+            return info;
+        const auto desc = source->GetDesc();
+        info.width = desc.Width;
+        D3D12_HEAP_PROPERTIES heap{};
+        D3D12_HEAP_FLAGS flags{};
+        if (FAILED(source->GetHeapProperties(&heap, &flags))) {
+            info.state = "HEAP_QUERY_FAILED";
+            return info;
+        }
+        info.heap_type = static_cast<uint32_t>(heap.Type);
+        if (desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER)
+            info.state = "NOT_BUFFER";
+        else if (heap.Type != D3D12_HEAP_TYPE_UPLOAD)
+            info.state = "HEAP_NOT_UPLOAD";
+        else if (desc.Width > maximum_source_bytes)
+            info.state = "SOURCE_ALLOCATION_TOO_LARGE";
+        else if (!bytes || bytes > maximum_bytes || offset > desc.Width || bytes > desc.Width - offset)
+            info.state = "RANGE_REJECTED";
+        else {
+            info.state = "ELIGIBLE_UPLOAD";
+            info.supported = true;
+        }
+        return info;
+    }
     ConstantSnapshot() = default;
     ConstantSnapshot(const ConstantSnapshot &) = delete;
     ConstantSnapshot &operator=(const ConstantSnapshot &) = delete;
@@ -64,12 +100,7 @@ class ConstantSnapshot final {
             return false;
         if (commands->GetType() == D3D12_COMMAND_LIST_TYPE_BUNDLE)
             return false;
-        const auto desc = source->GetDesc();
-        D3D12_HEAP_PROPERTIES heap{};
-        D3D12_HEAP_FLAGS flags{};
-        if (FAILED(source->GetHeapProperties(&heap, &flags)) || heap.Type != D3D12_HEAP_TYPE_UPLOAD ||
-            desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER || desc.Width > maximum_source_bytes ||
-            offset > desc.Width || bytes > desc.Width - offset)
+        if (!inspect_source(source, offset, bytes).supported)
             return false;
         // UPLOAD resources have fixed GENERIC_READ state, including COPY_SOURCE.
         // DEFAULT/unknown states are rejected; no game resource is transitioned.

@@ -6,6 +6,7 @@
 #include <dxgi1_4.h>
 #include <iostream>
 #include <memory>
+#include <string_view>
 
 template <class T> using Com = Microsoft::WRL::ComPtr<T>;
 static void check(HRESULT result) {
@@ -62,6 +63,12 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     Com<ID3D12Resource> gpu_only;
     check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr,
                                           IID_PPV_ARGS(&gpu_only)));
+    const auto default_info = ConstantSnapshot::inspect_source(gpu_only.Get(), 0, sizeof(before));
+    require(!default_info.supported && default_info.heap_type == D3D12_HEAP_TYPE_DEFAULT &&
+            default_info.width == desc.Width && std::string_view(default_info.state) == "HEAP_NOT_UPLOAD");
+    const auto upload_info = ConstantSnapshot::inspect_source(source.Get(), 256, sizeof(before));
+    require(upload_info.supported && upload_info.heap_type == D3D12_HEAP_TYPE_UPLOAD &&
+            std::string_view(upload_info.state) == "ELIGIBLE_UPLOAD");
     require(!invalid.record(device.Get(), commands[0].Get(), gpu_only.Get(), 0, sizeof(before)));
     require(!invalid.record(device.Get(), commands[0].Get(), source.Get(), 1000, sizeof(before)));
     require(!invalid.record(device.Get(), commands[0].Get(), source.Get(), 0, 4097));
@@ -145,10 +152,16 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     // a separate runtime qualification.
     odv::research::ConstantCaptureDriver driver;
     driver.begin_capture();
-    const auto a = driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after));
+    odv::research::ConstantCaptureDriver::RecordStatus record_status;
+    require(!driver.record(1, device.Get(), commands[0].Get(), gpu_only.Get(), 256, sizeof(after), &record_status));
+    require(std::string_view(record_status.state) == "INELIGIBLE_SOURCE" &&
+            std::string_view(record_status.source.state) == "HEAP_NOT_UPLOAD");
+    const auto a = driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after), &record_status);
+    require(std::string_view(record_status.state) == "RECORDED" && record_status.source.supported);
     const auto b = driver.record(2, device.Get(), commands[1].Get(), source.Get(), 256, sizeof(after));
     require(a != nullptr && b != nullptr);
-    require(!driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after)));
+    require(!driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after), &record_status));
+    require(std::string_view(record_status.state) == "DUPLICATE_SOURCE_RANGE");
     check(commands[0]->Close());
     check(commands[1]->Close());
     check(queue->Wait(gate.Get(), 3));

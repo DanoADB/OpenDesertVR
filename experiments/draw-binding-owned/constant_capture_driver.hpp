@@ -32,6 +32,10 @@ class ConstantCaptureDriver final {
         const char *state = "GPU_PENDING";
         std::vector<std::byte> bytes;
     };
+    struct RecordStatus {
+        const char *state = "INVALID_CAPTURE_CONTEXT";
+        ConstantSnapshot::SourceInfo source;
+    };
 
   private:
     std::mutex mutex_;
@@ -63,18 +67,30 @@ class ConstantCaptureDriver final {
         collect_retired();
     }
     Ticket record(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
-                  ID3D12Resource *source, UINT64 offset, std::size_t bytes) {
+                  ID3D12Resource *source, UINT64 offset, std::size_t bytes, RecordStatus *status = nullptr) {
         const std::lock_guard lock(mutex_);
-        collect_retired();
-        if (!list || !capture_ || entries_.size() >= ConstantSnapshot::maximum_pending)
+        RecordStatus result;
+        const auto reject = [&](const char *reason) -> Ticket {
+            result.state = reason;
+            if (status)
+                *status = result;
             return {};
+        };
+        collect_retired();
+        if (!list || !capture_ || !device || !commands)
+            return reject("INVALID_CAPTURE_CONTEXT");
+        if (entries_.size() >= ConstantSnapshot::maximum_pending)
+            return reject("CAPACITY_REACHED");
+        result.source = ConstantSnapshot::inspect_source(source, offset, bytes);
+        if (!result.source.supported)
+            return reject("INELIGIBLE_SOURCE");
         const auto identity = reinterpret_cast<std::uintptr_t>(source);
         // Attach only to the draw that actually recorded this copy. Reusing a
         // ticket on a later draw could mislabel different constant contents.
         for (const auto &entry : entries_)
             if (!entry->retired && entry->list == list && entry->source == identity && entry->offset == offset &&
                 entry->bytes == bytes)
-                return {};
+                return reject("DUPLICATE_SOURCE_RANGE");
         auto entry = std::make_shared<Entry>();
         entry->list = list;
         entry->source = identity;
@@ -86,12 +102,15 @@ class ConstantCaptureDriver final {
         try {
             if (!entry->snapshot.record(device, commands, source, offset, bytes)) {
                 entries_.pop_back();
-                return {};
+                return reject("COPY_NOT_RECORDED");
             }
         } catch (...) {
             entries_.pop_back();
             throw;
         }
+        result.state = "RECORDED";
+        if (status)
+            *status = result;
         return entry;
     }
     void before_execute(std::uintptr_t list, ID3D12CommandQueue *queue) {
