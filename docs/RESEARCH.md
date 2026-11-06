@@ -50,7 +50,10 @@ Further game retries require review of a materially different memory strategy.
 The [PIX candidate review](research/g1-pix-candidate-review.md) separates a
 possible alternative frame-capture implementation from timing/crash diagnostics
 and lists owned-fixture and launch-scope checks required before a game attempt.
-No PIX tool has been installed or executed for that review.
+The later [signed-package inspection](evidence/g1-pix-package-review-2026-11-06.json)
+verified working-directory support but did not establish child-instrumentation
+exclusion or local-only runtime behavior. PIX game launch remains unqualified;
+no PIX tool has been installed or executed.
 The earlier [diagnostic log](evidence/g1-capture-allocation-log-2026-11-05.json)
 narrows the failure to initial-state READBACK heap creation and records a fatal
 OOM handler path; see the [memory review](research/g1-capture-memory.md).
