@@ -6,6 +6,11 @@ MIT root-license identity are retained in the [inventory](cdmw-render-source-inv
 No code/dependencies were adopted or executed; this is not full redistribution
 clearance. No game archive or shader payload was extracted or retained.
 
+That describes the initial review. Subsequent original bounded readers adapt
+selected metadata layout/name-chain/flag rules, with full attribution and
+license retained: see [the resolver method](g1-shader-metadata-method.md).
+No upstream application, full archive parser or payload decoder is executed.
+
 ## Useful direction and limits
 
 The repository's consolidated research reference describes static shader-cache

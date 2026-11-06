@@ -1,8 +1,8 @@
 {
   "game_shader_payload_retained": false,
   "schema_version": 1,
-  "code_adopted": false,
-  "scope": "Selected static source/document review. No complete transitive license clearance; no program/module import, installation, archive extraction, capture, game write or live process observation.",
+  "code_adopted": true,
+  "scope": "Selected static review plus adaptation of metadata layout/name-chain/flag rules. No upstream application modules imported/executed, no full archive parser/payload decoder/decryption code/dependencies adopted. Full MIT notice retained. Runtime capabilities remain unverified.",
   "root_license": "MIT",
   "files": [
     {
@@ -69,6 +69,11 @@
       "path": "cdmw/core/archive_extraction.py",
       "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_extraction.py",
       "sha256": "23e04bc733e1d1566179a23a86ee977365c7ff37fe4a275a0c9b5f33d383b53f"
+    },
+    {
+      "sha256": "5bf4b99dc015e98eaf0a373ef4fe8c80a3934f5686b2449eea009a8d1bce6459",
+      "path": "cdmw/models.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/models.py"
     }
   ],
   "date": "2026-11-06",
@@ -78,6 +83,6 @@
   "root_copyright": "Copyright (c) 2026 Ratrider",
   "repository": "https://github.com/Ratty123/CDMW-Full",
   "selected_header_layout_used": true,
-  "layout_destination": "experiments/shader-consumer-audit/pamt_directory_probe.py (original bounded reader; no upstream parser/decoder execution)",
+  "layout_destination": "experiments/shader-consumer-audit/pamt_directory_probe.py and pamt_metadata.py (original bounded readers adapting selected metadata rules; no upstream parser/decoder execution)",
   "license_notice": "docs/licenses/CDMW-MIT.txt"
 }

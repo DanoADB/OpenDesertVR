@@ -44,10 +44,11 @@ explicit hypothesis on the current game build until actual validation.
 
 ## Optional archive-directory research
 
-The selected PAMT header layout used by the original bounded directory-marker
-probe in experiments/shader-consumer-audit is informed by Ratty123/CDMW-Full,
-revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b, archive_format.py.
+The selected PAMT layouts, metadata name-chain and flag rules used by the original
+bounded readers in experiments/shader-consumer-audit are adapted from
+Ratty123/CDMW-Full, revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b,
+archive_format.py and models.py.
 MIT, Copyright (c) 2026 Ratrider. Full notice: [CDMW-MIT.txt](docs/licenses/CDMW-MIT.txt).
-No upstream application, decoder, decryption code or dependency is adopted or
-executed. This metadata-only locator is separate from the native M0 host and
-does not establish shader identity, active bindings or camera semantics.
+No upstream application, full archive parser, payload decoder, decryption code
+or dependency is adopted or executed. These metadata readers are separate from
+the native M0 host and do not establish active bindings or camera semantics.
