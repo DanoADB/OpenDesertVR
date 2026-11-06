@@ -89,8 +89,11 @@ tests the published historical layout as a hypothesis, with owned geometry and
 coherence tests first. It does not treat pointer association as field validation.
 Its [first actual attempt](../evidence/g1-camera-field-attempt-2026-11-06.json)
 was rejected at the coherence guard; no numeric-layout result was awarded.
-The precise changed component is unknown in that report. No second game
-attempt or relaxed validation followed.
+The precise changed component is unknown in that report. A later, separately
+scoped [attribution check](../evidence/g1-camera-coherence-diagnosis-2026-11-06.json)
+found stable pointer association and changes only in the counter-hypothesis
+range. It also failed coherence; validation was not relaxed and no numeric
+layout result was awarded.
 
 Camera observation alone still leaves projection writes, independent world-view
 scheduling, temporal-history ownership and XR submission unverified. No G2 or

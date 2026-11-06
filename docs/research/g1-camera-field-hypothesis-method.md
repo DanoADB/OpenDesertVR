@@ -74,9 +74,20 @@ responsive. An external-read race is a possible explanation, not an observed
 root cause or evidence that the candidate layout is wrong. Do not relax matrix
 or counter validation merely to obtain a pass.
 
-Subsequent reporting now distinguishes fixed boolean coherence checks and the
-names of changed hypothetical ranges, without values or locations. Owned
-fixtures verify those labels for counter changes and source replacement. No
-additional game observation was performed for that reporting change. The next
-experiment needs a justified acquisition strategy or specifically scoped
-coherence diagnosis before attempting semantic validation.
+Subsequent reporting distinguishes fixed boolean coherence checks and names
+of changed hypothetical ranges, without values or locations. Owned fixtures
+verify those labels for counter changes and source replacement.
+
+One separately scoped [attribution observation](../evidence/g1-camera-coherence-diagnosis-2026-11-06.json)
+then ran committed source 21dcc62 with the same limits and unchanged rejection
+rules. Global, source and table pointers stayed equal; only the hypothetical
+buffer-counter range changed between copies, including its outer bracket.
+No other selected range differed. This is a new observation, not a way to fill
+in missing details of the original report. It also exited 3 without a numeric
+layout result. The game remained responsive.
+
+The byte change does not establish this word's meaning or an exact timing cause.
+The next acquisition design must preserve coherence requirements; do not omit
+the counter check or treat matching geometry alone as a frame-atomic snapshot.
+Separate diagnostic numeric plausibility, if pursued, must not award coherent
+camera validity or relax any acceptance condition.

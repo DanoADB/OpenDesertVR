@@ -18,6 +18,10 @@ The subsequent [selected-field hypothesis check](research/g1-camera-field-hypoth
 was rejected because its sample changed within the coherence bracket. It did
 not validate the layout. Current work must resolve acquisition coherence before
 claiming a usable camera snapshot; no automatic retry or offset fallback occurs.
+A separately scoped attribution check found stable global/source/table pointers
+and changes only in the counter-hypothesis range; it also failed coherence.
+See the method's recorded outcomes. That word's semantics and timing cause
+remain unverified; matching non-counter fields do not establish frame atomicity.
 The ADR identifies the missing capabilities and new evidence required to resume
 game-facing work. M0 maintenance and actual headset verification remain useful.
 
