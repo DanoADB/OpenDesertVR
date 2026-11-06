@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "static_renodx_inspection_contract_review",
+  "revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "inventory": "docs/research/renodx-inspection-source-inventory.json",
+  "execution": "NOT_RUN",
+  "game_access": "NOT_RUN",
+  "new_code_adoption": false,
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "current_build_compatibility": "UNVERIFIED",
+  "camera_consumer_identity": "UNVERIFIED",
+  "camera_constant_values_per_draw": "UNVERIFIED",
+  "independent_world_views": "UNVERIFIED",
+  "findings": [
+    {
+      "source": "src/addons/devkit/addon.cpp",
+      "lines": [
+        2579,
+        2662,
+        2698,
+        2717,
+        4976,
+        4985
+      ],
+      "finding": "Draw summaries associate current tracked pipeline shader hashes with recorded constant-buffer handle/offset/size and slot/space metadata. This is a concrete inspection interface, not camera field identification."
+    },
+    {
+      "source": "src/addons/devkit/addon.cpp",
+      "lines": [
+        5039,
+        5048,
+        5126,
+        5132,
+        5181,
+        5207
+      ],
+      "finding": "Graphics resource-use reflection and descriptor-table visibility filtering target the pixel stage; vertex-only descriptor-table coverage is not established. Fallback range enumeration is capped at 256 slots per range, not a complete table guarantee."
+    },
+    {
+      "source": "src/addons/devkit/addon.cpp",
+      "lines": [
+        9122,
+        9145,
+        9252,
+        9278
+      ],
+      "finding": "Snapshot spans presents and internally tracks submission order; entries with unknown submission remain sorted after known ones. DrawSummary serialization omits the internal submission marker, so an MCP-listed draw alone is not proof of submitted/completed GPU work."
+    },
+    {
+      "source": "src/addons/devkit/mcp/resource_analysis.hpp",
+      "lines": [
+        652,
+        656
+      ],
+      "finding": "The analysis endpoint accepts 2D texture views, not arbitrary constant-buffer readback."
+    },
+    {
+      "source": "src/utils/constants.hpp",
+      "lines": [
+        34,
+        122,
+        175,
+        255,
+        267
+      ],
+      "finding": "Optional CPU-side constant-buffer cache/history follows map/unmap/update events and defaults off. It is not a per-draw GPU byte snapshot; ongoing writes to an already persistent mapping require separate evidence."
+    },
+    {
+      "source": "src/addons/devkit/addon.cpp",
+      "lines": [
+        8839,
+        8840,
+        9332,
+        9353
+      ],
+      "finding": "Startup reads settings and boot/live assets and enables resource replacement infrastructure. The separate Crimson Desert game addon registers pre-draw VRS override callbacks. Do not conflate full addon startup with passive metadata observation."
+    },
+    {
+      "source": "src/utils/ipc/ipc.hpp",
+      "lines": [
+        28,
+        38,
+        511,
+        514
+      ],
+      "finding": "Named pipe rejects remote clients and defaults to a 4 MiB message limit, but its default DACL grants Everyone local generic read/write. Local transport is not an exclusive owner-identity guarantee."
+    }
+  ],
+  "next_owned_qualification": [
+    "Audit and pin required tool/dependency inputs and isolate startup configuration, empty boot/live paths and output directories.",
+    "Use only an explicitly identified owned presenting fixture; prove target/pipe/device identity, timeout/disconnect cleanup and no automatic replacement or dumping.",
+    "Test vertex-only and pixel-only bindings, root CBV and descriptor-table CBV, descriptor rebinding, distinct command-list lifetimes, and a recorded but unsubmitted list.",
+    "Distinguish serialized metadata from exact per-draw bytes and GPU completion; missing stage/submission information must remain unknown.",
+    "A successful owned result still requires a separate reviewed current-game loading and evidence method; neither old game shader hashes nor a VRS override supplies camera control or independent eye scheduling."
+  ],
+  "scope": "Source review supplies a concrete metadata-observation lead with explicit gaps; it neither qualifies current game instrumentation nor rules the approach out. No new archive scan, RenderDoc retry, game probe, bridge registration or configuration change."
+}

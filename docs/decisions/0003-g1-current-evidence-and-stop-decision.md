@@ -120,3 +120,10 @@ installed-tool linear decoding. It identifies bounded regions for further
 engineering questions, not camera writers, complete logical functions or a
 publication protocol. The rejected live acquisition route remains stopped;
 no new process access, callback or game hook is qualified by these metadata.
+
+The [pinned RenoDX inspection review](../research/g1-renodx-inspection-review.md)
+supplies a distinct per-draw shader/resource metadata lead. Its reviewed export
+does not establish vertex-only table coverage, submitted GPU work or per-draw
+constant bytes; startup also has replacement capabilities. Qualify the actual
+tool on owned fixtures with isolated configuration before considering a
+current-game method. No addon or bridge was adopted or executed by the review.

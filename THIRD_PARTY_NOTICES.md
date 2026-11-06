@@ -65,3 +65,13 @@ DirectXShaderCompiler DxilContainer.h; its selected source is fingerprinted in
 docs/research/shader-container-sources.json. No compiler/validator source is
 copied or shipped. The installed Windows SDK DXC compiles an original owned
 fixture only; no game shader is executed by these experiments.
+
+## Source-only diagnostic-tool review
+
+The optional RenoDX inspection review fingerprints public source at revision
+bc0ead39917634e95c534f7e8cfb59ab82880747. Its root MIT notice is retained in
+docs/licenses/RenoDX-MIT.txt; selected devkit headers also state MIT and 2026
+Carlos Lopez notices. No RenoDX/ReShade addon, bridge, replacement shader or
+dependency is adopted, built or executed by this source review. The inventory
+is docs/research/renodx-inspection-source-inventory.json; selected dependency
+Git links are recorded as not yet license-audited, not as approved M0 deps.
