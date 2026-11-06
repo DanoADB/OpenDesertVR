@@ -41,3 +41,13 @@ host or production adapter. No upstream ASI, host, dependencies or game assets
 are adopted. The selected source/notice hashes are inventoried in
 docs/research/crimson-telemetry-camera-inventory.json. Its layout remains an
 explicit hypothesis on the current game build until actual validation.
+
+## Optional archive-directory research
+
+The selected PAMT header layout used by the original bounded directory-marker
+probe in experiments/shader-consumer-audit is informed by Ratty123/CDMW-Full,
+revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b, archive_format.py.
+MIT, Copyright (c) 2026 Ratrider. Full notice: [CDMW-MIT.txt](docs/licenses/CDMW-MIT.txt).
+No upstream application, decoder, decryption code or dependency is adopted or
+executed. This metadata-only locator is separate from the native M0 host and
+does not establish shader identity, active bindings or camera semantics.

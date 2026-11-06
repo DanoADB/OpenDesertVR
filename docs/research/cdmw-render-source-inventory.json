@@ -49,6 +49,26 @@
       "sha256": "bc33585340a91c69ff45d58fd1b817173b7af62f9304e32d6412bf1f21f4f709",
       "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md",
       "path": "cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md"
+    },
+    {
+      "path": "cdmw/core/archive_shader_preview.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_shader_preview.py",
+      "sha256": "5d3f8821c34b2071fa6ff2e80b22585642866230662656e8b75d5eb975a2bebe"
+    },
+    {
+      "path": "tools/pac_shader_consumer_study.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/pac_shader_consumer_study.py",
+      "sha256": "4e846999ea4e23160cc8fa46218fcf44c1bec31f74bfbda69a044b41e19041bd"
+    },
+    {
+      "path": "cdmw/core/archive_format.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_format.py",
+      "sha256": "507a2e252b45abd30205a770a8256b2906ddb333ce852026ac5ad1f5d676d990"
+    },
+    {
+      "path": "cdmw/core/archive_extraction.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_extraction.py",
+      "sha256": "23e04bc733e1d1566179a23a86ee977365c7ff37fe4a275a0c9b5f33d383b53f"
     }
   ],
   "date": "2026-11-06",
@@ -56,5 +76,8 @@
   "execution": "NOT_RUN",
   "revision": "0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b",
   "root_copyright": "Copyright (c) 2026 Ratrider",
-  "repository": "https://github.com/Ratty123/CDMW-Full"
+  "repository": "https://github.com/Ratty123/CDMW-Full",
+  "selected_header_layout_used": true,
+  "layout_destination": "experiments/shader-consumer-audit/pamt_directory_probe.py (original bounded reader; no upstream parser/decoder execution)",
+  "license_notice": "docs/licenses/CDMW-MIT.txt"
 }

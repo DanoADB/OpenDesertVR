@@ -33,6 +33,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_camera_association.py -v
       - name: Test candidate camera field hypotheses (owned data only)
         run: python -m unittest discover -s tests -p test_camera_fields.py -v
+      - name: Test bounded archive-directory locator (owned metadata only)
+        run: python -m unittest discover -s tests -p test_pamt_directory_probe.py -v
       - name: Compile optional owned presenting fixture (no capture tool or game)
         run: |
           cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF
