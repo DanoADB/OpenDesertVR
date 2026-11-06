@@ -38,7 +38,8 @@ Work in this order:
 
 1. Identify and validate the current game's world camera/render inputs in an
    actual 3D scene. The bounded observer has loaded in the game, but its first
-   title-menu snapshot contains compute work and proves no world camera.
+   title-menu snapshot was labelled Dispatch by the legacy observer, whose
+   indirect-command classification is unverified, and proves no world camera.
    Connect the tested constant-buffer snapshot component to the observer,
    qualify its submission/lifetime behavior, then compare relevant scene data.
 2. Demonstrate a reversible camera/view change affecting actual world

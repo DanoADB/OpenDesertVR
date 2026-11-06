@@ -35,7 +35,9 @@
   "camera_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "interpretation": "Observer loaded on the reviewed build. None of the queried draws returned sample tickets. This does not prove zero GPU copies: deduplicated samples attach only to their originating draw, which may be outside the selected details. Add sample counts to summaries and source eligibility diagnostics before inferring rejection or changing capture scope. Title compute prefix is not a world-camera observation.",
+  "interpretation": "Observer loaded on the reviewed build. None of the queried draws returned sample tickets. This does not prove zero GPU copies: deduplicated samples attach only to their originating draw, which may be outside the selected details. Add sample counts to summaries and source eligibility diagnostics before inferring rejection or changing capture scope. Title prefix reported as Dispatch by the legacy observer is not a world-camera observation.",
   "game_identity_unchanged": "PASS",
-  "devkit_asset_files": 0
+  "devkit_asset_files": 0,
+  "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
 }

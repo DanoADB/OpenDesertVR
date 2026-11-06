@@ -38,7 +38,9 @@
   "game_buffer_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "interpretation": "The selected finite active2816-byte candidate bindings reference DEFAULT(type1)65536-byte GPU allocations. UPLOAD-only eligibility rejects them. Zero originating sample tickets across all128 retained records; this compute prefix is not a world-camera observation. No assumption about current DEFAULT resource states is justified. Next owned experiment: match destination candidate ranges to app upload copies and acquire only valid UPLOAD input on the same app queue with an independently fenced owned submission. Such bytes would be upload input, not proof of later per-draw GPU state or camera semantics.",
+  "interpretation": "The selected finite active2816-byte candidate bindings reference DEFAULT(type1)65536-byte GPU allocations. UPLOAD-only eligibility rejects them. Zero originating sample tickets across all128 retained records; this prefix reported as Dispatch by the legacy observer is not a world-camera observation. No assumption about current DEFAULT resource states is justified. Next owned experiment: match destination candidate ranges to app upload copies and acquire only valid UPLOAD input on the same app queue with an independently fenced owned submission. Such bytes would be upload input, not proof of later per-draw GPU state or camera semantics.",
   "game_identity_unchanged": "PASS",
-  "devkit_asset_files": 0
+  "devkit_asset_files": 0,
+  "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
 }

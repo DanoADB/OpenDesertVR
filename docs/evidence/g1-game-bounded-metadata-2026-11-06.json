@@ -41,6 +41,8 @@
   "camera_identification": "UNVERIFIED",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "scope": "Actual bounded metadata from the reviewed live game title menu. Prefix contains compute work, not a proven world-camera pass. No shader text/bytecode or game payload exported. User requested to load a 3D scene after automated start input did not activate. Normal exit and exact-hash cleanup subsequently verified; original game identity unchanged.",
-  "devkit_asset_files": 0
+  "scope": "Actual bounded metadata from the reviewed live game title menu. Prefix was reported as Dispatch by the legacy observer; command kinds were not independently verified. No shader text/bytecode or game payload exported. User requested to load a 3D scene after automated start input did not activate. Normal exit and exact-hash cleanup subsequently verified; original game identity unchanged.",
+  "devkit_asset_files": 0,
+  "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
 }

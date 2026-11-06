@@ -106,3 +106,26 @@ V7 also matches equal-sized whole-buffer `CopyResource` uploads. The
 `--loop-dxil-upload-whole` fixture uses actual DEFAULT destinations and whole
 UPLOAD copies. Both whole and region paths preserve the original app copy;
 only the candidate subrange is sampled. Partial writes are not assembled.
+
+## Command provenance and finite-size selection
+
+`devkit-command-provenance-input-lock.json` pins v8 and its combined patch.
+An actual owned compute-then-indirect-graphics control showed v7 retaining
+the compute shader and misreporting three correctly rendered graphics draws
+as dispatches. Older game snapshots' command labels and chosen shader/root
+domains therefore remain unverified. Raw historical outputs are preserved.
+
+V8 tracks the latest D3D12 PSO bind point for unknown indirect callbacks.
+It reports `IndirectGraphics`, `IndirectCompute` or `IndirectUnclassified`,
+plus `odvApiCommand`, `odvClassificationKnown` and `odvBindingPhase`.
+Classification establishes a shader domain, not a command-signature layout.
+Bindings are explicitly before indirect arguments, which can change state;
+no argument buffer is decoded. Unknown domains cannot produce samples.
+
+Optional `ODVGraphicsOnly=1` retains known graphics work rather than copy and
+compute prefixes. Copy-input matching still operates for existing candidates.
+Optional `ODVConstantMaxBytes` (positive multiple of four, at most 4096)
+selects finite active CBV ranges up to that size, taking precedence over the
+older exact-size setting. Full/unknown ranges stay excluded; six-copy,
+six-target, six-attempt-per-draw and 128-record bounds remain. Summary rows
+report the filter and maximum. Neither option identifies a world camera.

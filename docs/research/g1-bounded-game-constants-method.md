@@ -1,7 +1,7 @@
 # Bounded game constant observation
 
 This follows the first metadata observation on reviewed Steam build 26480954,
-not a camera write or a stereo renderer. The first snapshot's compute-prefix
+not a camera write or a stereo renderer. The first snapshot's legacy-labelled Dispatch-prefix
 CBVs included finite active 2816-byte ranges. That size is a candidate to
 observe, not an inferred camera layout or address.
 
