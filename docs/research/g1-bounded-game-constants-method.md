@@ -46,3 +46,21 @@ First determine whether candidate values can be obtained with proven GPU
 completion, then test matrix/camera behavior against actual scene changes.
 Finish by normal exit and removal of only the two exact files created for
 this case; preserve changed files and report exceptions.
+
+## Diagnostic follow-up
+
+The v3 title-menu observation returned no tickets in twelve queried details
+(six initial plus six cached high-binding-count records, exceeding the planned
+six-detail bound). It did not establish zero GPU copies: deduplication attaches
+a ticket only to the originating draw. The additional reads and this limitation
+are recorded in [game evidence](../evidence/g1-game-constant-observation-2026-11-06.json).
+
+A fresh case may use separately locked `bc0ead3-gpu-constants-4`, qualified in
+[the actual owned runtime](../evidence/g1-owned-constant-diagnostics-2026-11-06.json).
+Its summary sample counts locate originating draws. Query those first, then
+candidate-attempt rows up to six total details per observation. Detailed
+attempts record callback-time source heap/allocation metadata and distinguish
+ineligible sources, duplicate ranges and capacity. At most six candidate
+attempts per draw are inspected and truncation is explicit. No new heap types,
+resource transitions, source writes or shader access are enabled. Retain the
+same bounded snapshot, process identity, staging and cleanup requirements.

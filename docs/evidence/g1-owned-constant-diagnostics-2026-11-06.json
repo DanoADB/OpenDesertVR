@@ -1,0 +1,136 @@
+{
+  "source_commit": "891ff748506834f0c95f4c8b0f887b28ba81bdf2",
+  "source_dirty": false,
+  "status": "QUALIFIED_OWNED_CONSTANT_DIAGNOSTICS",
+  "binary_sha256": {
+    "owned_app.exe": "49318f37c7ae375d83abb39a83e78afddf92957a1849008d570a1d8c3f861484",
+    "renodx-devkit.addon64": "2a5dbf6249523031dc79c863b57b325ddf1a0f48712b79f16f30774cdcc4c42e",
+    "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+    "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+    "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+    "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+    "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+  },
+  "script_sha256": "05884d1b968580e94f2c7eff4eff126c0b1c91809edc1895a00345f72ef1cb8d",
+  "source_sha256": {
+    "experiments\\draw-binding-owned\\fixture.cpp": "867caefc4af65d5bdba51115ef10e7cc183f767661b353c8f12217b7a27d0539",
+    "experiments\\draw-binding-owned\\CMakeLists.txt": "7cf480dbcf34c8f152d094dad27deb7738e15e67900356735732d39936e00082",
+    "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+    "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+    "experiments\\renodx-owned\\devkit-readback-diagnostics-input-lock.json": "512b58d113ed9987515e4480e7c9e16809e0d6c37a980432c2ca70dfb52d7ad7",
+    "experiments\\renodx-owned\\patches\\gpu-constant-diagnostics.patch": "6b7e2c599f05cbed60444009c93501740f8760b99d97fae94d378076106c76a9"
+  },
+  "pipe_server_matches_owned_child": true,
+  "comparisons": [
+    {
+      "control": "root-red",
+      "pixel_identity_match": true,
+      "submission_known": true,
+      "submission_order": 1,
+      "capture_record_limit": 128,
+      "capture_truncated": false,
+      "vertex_identity_match": true,
+      "vertex_binding_count": 1,
+      "vertex_is_stale_root": false,
+      "vertex_used_by_active_shader": [
+        false
+      ],
+      "gpu_constant_sample_count": 0,
+      "gpu_constant_attempt_count": 0,
+      "source_heap_type": null,
+      "source_allocation_bytes": null,
+      "gpu_constant_sample_state": "NOT_CAPTURED",
+      "gpu_constant_bytes": 0,
+      "pixel_size": null,
+      "pixel_full_range": true
+    },
+    {
+      "control": "table-green",
+      "pixel_identity_match": true,
+      "submission_known": true,
+      "submission_order": 1,
+      "capture_record_limit": 128,
+      "capture_truncated": false,
+      "vertex_identity_match": true,
+      "vertex_binding_count": 1,
+      "vertex_is_stale_root": false,
+      "vertex_used_by_active_shader": [
+        false
+      ],
+      "gpu_constant_sample_count": 1,
+      "gpu_constant_attempt_count": 1,
+      "source_heap_type": 2,
+      "source_allocation_bytes": 1024,
+      "gpu_constant_sample_state": "READY",
+      "gpu_constant_bytes": 256,
+      "pixel_size": 256,
+      "pixel_full_range": false
+    },
+    {
+      "control": "table-blue",
+      "pixel_identity_match": true,
+      "submission_known": true,
+      "submission_order": 1,
+      "capture_record_limit": 128,
+      "capture_truncated": false,
+      "vertex_identity_match": true,
+      "vertex_binding_count": 1,
+      "vertex_is_stale_root": false,
+      "vertex_used_by_active_shader": [
+        false
+      ],
+      "gpu_constant_sample_count": 1,
+      "gpu_constant_attempt_count": 1,
+      "source_heap_type": 2,
+      "source_allocation_bytes": 1536,
+      "gpu_constant_sample_state": "READY",
+      "gpu_constant_bytes": 256,
+      "pixel_size": 256,
+      "pixel_full_range": false
+    },
+    {
+      "control": "recorded-yellow",
+      "pixel_identity_match": true,
+      "submission_known": false,
+      "submission_order": 0,
+      "capture_record_limit": 128,
+      "capture_truncated": false,
+      "vertex_identity_match": true,
+      "vertex_binding_count": 1,
+      "vertex_is_stale_root": false,
+      "vertex_used_by_active_shader": [
+        false
+      ],
+      "gpu_constant_sample_count": 1,
+      "gpu_constant_attempt_count": 1,
+      "source_heap_type": 2,
+      "source_allocation_bytes": 2048,
+      "gpu_constant_sample_state": "UNSUBMITTED",
+      "gpu_constant_bytes": 0,
+      "pixel_size": 256,
+      "pixel_full_range": false
+    }
+  ],
+  "gpu_pixel_control": {
+    "schemaVersion": 1,
+    "status": "PASS",
+    "adapter": "WARP",
+    "frames": 5,
+    "pixelsVerifiedPerFrame": 2048,
+    "recordedDrawsPerFrame": 4,
+    "submittedDrawsPerFrame": 3,
+    "fourthColumn": "black",
+    "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+    "headset": "NOT_RUN",
+    "game": "NOT_RUN"
+  },
+  "input_postflight": "PASS",
+  "devkit_asset_files": 0,
+  "owned_exit_code": 0,
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "scope": "Actual owned ReShade runtime: originating sample/attempt counts agree between rows and details; callback heap types and allocation sizes match authored UPLOAD buffers; green/blue GPU samples match all256bytes; recorded unsubmitted yellow has no values; unchanged independent pixel control, normal exit and postflight pass."
+}
