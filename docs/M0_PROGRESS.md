@@ -18,6 +18,14 @@
 - Windows Debug/Release CI definitions including WARP graphics checks.
 - Packaged report collector gates host startup on doctor readiness, records
   source provenance, and preserves NOT_RUN for visual validation.
+- Explorer launcher runs the packaged collector without a manually opened
+  terminal. Unique default run folders and rejection of existing report files
+  preserve earlier evidence. Release mock collector checks cover successful
+  submission, missing-headset gating and unchanged files on rejected reuse.
+  An installed-package launcher smoke check passed from an unrelated working
+  directory with spaces and an ampersand in the package path, preserving exit 3
+  and no host invocation for the simulated missing headset. This is software
+  evidence, not another headset acceptance run.
 - Pinned static Cyberpunk VR/REFramework source audit and selected direct
   license inventory; no mod code/dependencies adopted. Sampled eye events now
   share frame index and relative predicted display timing, checked by native

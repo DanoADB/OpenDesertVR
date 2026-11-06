@@ -21,9 +21,14 @@ function Write-JsonFile($Path, $Value) {
 try {
     $packageRoot = [IO.Path]::GetFullPath($PackageDirectory)
     if (!$OutputDirectory) {
-        $OutputDirectory = Join-Path $packageRoot ('reports/run-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $OutputDirectory = Join-Path $packageRoot ('reports/run-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N'))
     }
     $reportRoot = [IO.Path]::GetFullPath($OutputDirectory)
+    foreach ($name in @('doctor.json', 'host.json', 'test-config.json', 'run-summary.json')) {
+        if (Test-Path -LiteralPath (Join-Path $reportRoot $name)) {
+            throw 'Output already contains test evidence. Choose a fresh output directory.'
+        }
+    }
     [IO.Directory]::CreateDirectory($reportRoot) | Out-Null
     $doctor = Join-Path $packageRoot 'odv-cli.exe'
     $hostProgram = Join-Path $packageRoot 'odv-testhost.exe'
@@ -68,7 +73,7 @@ try {
     Write-JsonFile (Join-Path $reportRoot 'run-summary.json') $summary
     Write-Output "Reports: $reportRoot"
 } catch {
-    [Console]::Error.WriteLine('Test runner failed. Check package paths, writable output directory, and local console errors.')
+    [Console]::Error.WriteLine('Test runner failed. Check package paths and use a fresh writable output directory; existing reports are preserved.')
     $exitCode = 1
 }
 exit $exitCode

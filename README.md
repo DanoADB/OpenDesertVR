@@ -31,6 +31,9 @@ The ZIP includes the OpenXR loader, redistributable MSVC DLLs, config and
 license notices. Install/activate your vendor OpenXR runtime separately.
 See [manual headset checklist](docs/M0_ACCEPTANCE.md) and
 [actual evidence](docs/M0_PROGRESS.md).
+After extracting the ZIP, double-click Run-Headset-Test.cmd to run the standalone
+cubes and collect reports without opening a PowerShell terminal. Each run uses
+a new reports folder; visual stereo and comfort checks remain manual.
 
 ```powershell
 ./out/build/release/Release/odv-cli.exe doctor
