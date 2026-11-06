@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "FAILED",
+  "evidence_kind": "bounded_technique_literal_reference_contract",
+  "owned_qualification": {
+    "status": "PASS",
+    "scope": "Owned stream/hash/name/codec/XML fixtures only",
+    "versions": {
+      "cryptography": "50.0.2",
+      "lz4": "4.4.5"
+    }
+  },
+  "stage": "DECLARATION_XML",
+  "archive_bytes_read": 3476,
+  "source_sha256": {
+    "technique_contract.py": "8de807362b7758eb6d50b7a00ba59dc9173bd24d9cc4c29c72214924f3fc43eb",
+    "pamt_metadata.py": "f153e64f01313b30e4c3a1800d13a79e889d5e73d8db2a00c9606fab0eb5edb5",
+    "pamt_directory_probe.py": "79c253ab6300aa41fe2a0fb42a85f50e5776154b4502fdf84b5d3ff8ad2bba79",
+    "resolve_shader_metadata.py": "09eb59b11d2e2ca42431872f8ae186f3321fbc752ee39296d29268a52c50374f",
+    "inspect_shader_entry.py": "c168521d98deb15557a176893882441e0838690b43d1a925306ade3372bec60b"
+  },
+  "camera_field_layout": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "declaration_ordinal": 0,
+  "decoded_encoding_marker": "UTF8_BOM",
+  "failure_reason": "input_codec_or_contract_rejected",
+  "source_commit": "8cdd34057d32f4c6c0915d27ed7dcca092b3686e",
+  "exit_code": 3,
+  "source_dirty": false,
+  "case_kind": "ACTUAL_GAME_ASSET_REJECTION",
+  "method": "docs/research/g1-technique-contract-method.md",
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "interpretation": "The diagnostic attempt reached XML inspection on declaration ordinal 0 after 3476 archive bytes (two reads of the first 1738-byte stored entry). Decoding met the declared length and had a UTF-8 BOM, but XML inspection rejected it. The remaining fifteen declarations and final input postflight were not reached. No conclusion about literal shader references can be drawn. No alternative shader was selected.",
+  "input_postflight": "NOT_RUN",
+  "further_asset_probe": "STOPPED_PENDING_SPECIFIC_FORMAT_REVIEW",
+  "initial_attempt": {
+    "source_commit": "78e172e751cccaf0b3fd4f40275f8b9acbf993c4",
+    "status": "FAILED",
+    "exit_code": 3,
+    "stage": "NOT_RECORDED",
+    "archive_bytes_read": "NOT_RECORDED",
+    "limitation": "The initial implementation omitted failure-stage and partial-read accounting. Its failure is preserved locally; the separately identified diagnostic run does not replace or upgrade it."
+  }
+}

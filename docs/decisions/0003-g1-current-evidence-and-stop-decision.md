@@ -92,3 +92,9 @@ validation remain explicitly unverified until their prerequisites exist.
 Do not begin the VRcade launcher or silently substitute theater mode for the
 requested game-world stereo milestone. The roadmap permits redesign, but a
 product-scope change needs an explicit decision grounded in the user's intent.
+
+The [bounded technique-declaration check](../research/g1-technique-contract-method.md)
+rejects the first declaration at XML inspection. The other fifteen and final
+input postflight were not reached. It establishes no shader link and does not
+justify another shader selection. The diagnostic records partial-read counts;
+its result does not erase the initial failed attempt's missing accounting.

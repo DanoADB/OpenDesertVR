@@ -57,3 +57,19 @@ references in these sixteen declarations; it does not exclude opaque keys,
 other formats, runtime generation or another interface. G1 camera publication,
 field semantics and runtime association remain unverified; G2 stays held.
 Headset testing remains deferred at the user's request.
+
+## Current-build rejection, 2026-11-06
+
+The [diagnostic evidence](../evidence/g1-technique-contract-rejection-2026-11-06.json)
+records an unsuccessful attempt using source 8cdd340. It reached XML inspection
+of the first declaration after two 1,738-byte archive reads. The decoded size
+matched its declaration and carried a UTF-8 BOM, but the XML contract rejected
+it. The other fifteen declarations and final input postflight were not reached.
+There is no literal-reference result, and successful decoding alone does not
+validate the document. Do not treat this as evidence that references are absent.
+
+The initial 78e172e attempt also failed but omitted rejection-stage and partial
+read accounting. The diagnostic run followed the reporting fix; both attempts
+remain distinct. Stop this asset probe pending a specific format review and
+owned qualification of any parser change, rather than loosening checks or
+retrying until it parses. G2 and the production adapter remain held.
