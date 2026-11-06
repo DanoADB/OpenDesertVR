@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_TECHNIQUE_LITERAL_REFERENCE_CONTRACT",
+  "evidence_kind": "bounded_technique_literal_reference_contract",
+  "owned_qualification": {
+    "status": "PASS",
+    "scope": "Owned stream/hash/name/codec/XML fixtures only",
+    "versions": {
+      "cryptography": "50.0.2",
+      "lz4": "4.4.5"
+    }
+  },
+  "stage": "COMPLETE",
+  "archive_bytes_read": 37146,
+  "source_sha256": {
+    "technique_contract.py": "368b0de6c7e572e1dcff147b11ecd699da55b95e7f5421b475256e61aea9af0f",
+    "pamt_metadata.py": "f153e64f01313b30e4c3a1800d13a79e889d5e73d8db2a00c9606fab0eb5edb5",
+    "pamt_directory_probe.py": "79c253ab6300aa41fe2a0fb42a85f50e5776154b4502fdf84b5d3ff8ad2bba79",
+    "resolve_shader_metadata.py": "09eb59b11d2e2ca42431872f8ae186f3321fbc752ee39296d29268a52c50374f",
+    "inspect_shader_entry.py": "c168521d98deb15557a176893882441e0838690b43d1a925306ade3372bec60b"
+  },
+  "camera_field_layout": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "plan_sha256": "84d4c002d79e2787a351d347586daf539f6ed25c76628d5db2760bde18abcf3a",
+  "shader_index_sha256": "3aacea36345f8fe4ce1170d97bc0cadb916ff70aa59fc41421dd25642ffd55a2",
+  "declaration_ordinal": 15,
+  "decoded_encoding_marker": "UTF8_BOM",
+  "entries": 16,
+  "observations": [
+    {
+      "entry_name_sha256": "330a38243ab9a90ed89045bc50963a8d2839ac77d307834a2eba5b39dfb59cc2",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1738,
+      "decoded_bytes": 8312,
+      "stored_sha256": "db1f98e4054f06ac3d7a99abd9c79ca9f06a9803a27570f55310322e3f11550c",
+      "decoded_sha256": "a98ddb22964e30ed43f7dfb6fd4ea4922a11f52b5426dbdf264730cf93620af1",
+      "xml_nodes": 86,
+      "top_level_elements": 26,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 15,
+        "pipelinebinding": 28
+      },
+      "known_attribute_counts": {
+        "technique": 27
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "39d161d0d32dc45d7ae6c5e2579a9eea84761d7e169f70055c0d453a46ee5023",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 686,
+      "decoded_bytes": 686,
+      "stored_sha256": "b8ef76ef2571e93965f45145d7cf9ddea73210c4846119d990853b9c9b5746cf",
+      "decoded_sha256": "d729f85018d15b28c9eafb1bbf57e347ec7f2bdf7558bc81797be69590fc388f",
+      "xml_nodes": 7,
+      "top_level_elements": 4,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 3,
+        "pipelinebinding": 3
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "f7c84ad2e4665f997ff47e91c3f067502b37d70e1fcc676fc06d6aad0027303a",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 526,
+      "decoded_bytes": 526,
+      "stored_sha256": "7dfbd1ebd1f4a7ae23097b4abe313d9055bb6edf79193a24fa23afd432ca0e32",
+      "decoded_sha256": "d69b6b30dfffae4cf93b4fa48a36e8ea88c801bccff579a5b285f40134892ee2",
+      "xml_nodes": 5,
+      "top_level_elements": 3,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 2,
+        "pipelinebinding": 2
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "0d23d2eed2ffcc77c686eaf9f7eacac44d709c9454cfb3a73b0fc7297b39ce71",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 300,
+      "decoded_bytes": 300,
+      "stored_sha256": "7408a67139d56744061ba845e9f7fb50611b3ba5cecadd7019bf5ffe0b4fccd3",
+      "decoded_sha256": "65a05335d098b893971e9d6a08ff9ec1fecd3eeddd3217b960b384454083575a",
+      "xml_nodes": 4,
+      "top_level_elements": 2,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 1,
+        "pipelinebinding": 1
+      },
+      "known_attribute_counts": {
+        "technique": 1
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "0c30298a9d3e5b6e9b85badae229ef9327c768b3eadcdbe3db86752ba7cc1bcf",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 880,
+      "decoded_bytes": 15659,
+      "stored_sha256": "64e8920ebd5f6ba3e277afe44fd1c1de0f10ae175130077f0dcc41731905cfb1",
+      "decoded_sha256": "61a4aad2c0c526fd831af29544cab2c1bb0f55ab36057431e25b26c4d2f35a5f",
+      "xml_nodes": 104,
+      "top_level_elements": 12,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 11,
+        "pipelinebinding": 92
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "adef2695ee1a94aeba888a1faa01bc99c402e11270634b974df8ca837283c3e0",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 308,
+      "decoded_bytes": 308,
+      "stored_sha256": "a2bbb5b61286238cb24ee17a25014592d3eae53dcfc6d66a5e9ddf0d68e7779f",
+      "decoded_sha256": "8da572ee0e05e35c68aac69379d5b174c2e85cef75e4fac260efd6da388e6d11",
+      "xml_nodes": 4,
+      "top_level_elements": 2,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 1,
+        "pipelinebinding": 1
+      },
+      "known_attribute_counts": {
+        "technique": 1
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "485583d30051a75503efddf2af314f93b7fd7f9f85b025d05745532e220b395c",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 221,
+      "decoded_bytes": 221,
+      "stored_sha256": "9e69b0178ce31e386566f189d5509d959bff5e3076dbc805659f79a8167fbf6b",
+      "decoded_sha256": "71c492e7b7035e97b69e8e8b028235c287346ed3bbfc3d57f055027525c4875a",
+      "xml_nodes": 3,
+      "top_level_elements": 2,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 1,
+        "pipelinebinding": 1
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "8f9a1b61f1673652f08d964fe03d7831a6969e254c6472c1f82a8f04d176976d",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1007,
+      "decoded_bytes": 1007,
+      "stored_sha256": "59e4c53912472ae87f04c5c814b539b00c7951a4e309e08c5cc647b336f93c04",
+      "decoded_sha256": "4120c901f52d872d7a8dfb0dcdb8a4f71832f750e458309c9196db16090e051a",
+      "xml_nodes": 9,
+      "top_level_elements": 4,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 3,
+        "pipelinebinding": 5
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "e8817767553fba88e745676b363d8085962fe491bc62df4b2998979ef517aa66",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 3078,
+      "decoded_bytes": 13988,
+      "stored_sha256": "0039eccf14fec7e77f6925ad4b726cae76c0a735070588d223acfb68088c7a08",
+      "decoded_sha256": "4490ddd1e378719f85309ff12d24e7312f52debe793bb3c829b5308efde1fbec",
+      "xml_nodes": 163,
+      "top_level_elements": 61,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 15,
+        "pipelinebinding": 36
+      },
+      "known_attribute_counts": {
+        "technique": 14
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "01e5c983ec0c484ec16f9c871023a84ba791e279da06231ddeb23cf37a76f78f",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 489,
+      "decoded_bytes": 489,
+      "stored_sha256": "0b38fe9405915143cf5150816700fec28da5e6862736048bf0d339c6aa892d12",
+      "decoded_sha256": "5deef4e1c3a381130e74c0a8299dc936e5cbb4aae1b09f20ab9d0edb05683e5e",
+      "xml_nodes": 4,
+      "top_level_elements": 2,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 1,
+        "pipelinebinding": 1
+      },
+      "known_attribute_counts": {
+        "technique": 1
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "665c19353ee8371b6692cac5a4ca4fce16c6fe231655e3fb7742f2429d7dbdd1",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1089,
+      "decoded_bytes": 4193,
+      "stored_sha256": "370e6223caf0ff37566a4aac4bf7db67212de835cb222b11417cb04bb5b71599",
+      "decoded_sha256": "e4050c516b503963ce871ebaef5e961ce5bef1ce4a1103e30f2adca7b9fd04b9",
+      "xml_nodes": 27,
+      "top_level_elements": 5,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 3,
+        "pipelinebinding": 17
+      },
+      "known_attribute_counts": {
+        "technique": 4
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "189058a82a1de5d611d4433a816006e83f3916ac2af3bc427df0f875f894bac0",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1190,
+      "decoded_bytes": 1190,
+      "stored_sha256": "35de139a1ca9505613642938b14b1dcbdac29e5f5e30c21a104d27c932d71b62",
+      "decoded_sha256": "d32bcf6b433e719d2310b09ff35da65b45b47ba371862fceffae98d1ba3b1170",
+      "xml_nodes": 14,
+      "top_level_elements": 4,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 3,
+        "pipelinebinding": 4
+      },
+      "known_attribute_counts": {
+        "technique": 6
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "7a36fb763f22a4e6152016d218b78059d9286395fc7c8c877aad412e5bd41143",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1310,
+      "decoded_bytes": 9811,
+      "stored_sha256": "43764be8ce4bb7780110a4f18d5ed78328e21dcd35c0c0de8d1b7128693af9b3",
+      "decoded_sha256": "e99a1a77a0976bc92bdf067581b8f0d176dd99c24461a3cd0f31e1f17d5226ea",
+      "xml_nodes": 84,
+      "top_level_elements": 18,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 17,
+        "pipelinebinding": 44
+      },
+      "known_attribute_counts": {
+        "technique": 22
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "83bb66d0791dcfb625319215d463e741c6d4e5ba794081b359ed799f426ce4b4",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 1812,
+      "decoded_bytes": 1812,
+      "stored_sha256": "20f872f17f32159aff77ce63aaf1b51fa8e1d062f81d4a9ad18c27300c2d343d",
+      "decoded_sha256": "21a975cbdbc9bcc02854c30953932870cfd3a5d0bad6b1e1d41d41b98718efed",
+      "xml_nodes": 15,
+      "top_level_elements": 5,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 4,
+        "pipelinebinding": 10
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "5b0e26c753180a5583a15fc04676c6ab5f086395a071ca4bf7ef378b58e6927c",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 539,
+      "decoded_bytes": 539,
+      "stored_sha256": "a3d440471174ca66007b0ad898cdb55837d7de52e87be8f7046b68d1f6ff17e3",
+      "decoded_sha256": "d3a8b4a0270dffb53e21749c8acf8de19f37397cd0e61f99d984f8d052be90c1",
+      "xml_nodes": 5,
+      "top_level_elements": 2,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 1,
+        "pipelinebinding": 3
+      },
+      "known_attribute_counts": {},
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    },
+    {
+      "entry_name_sha256": "7f23e4fb364acb7475c05f0178b942ba65b846febbba5222b611e041c010fb4b",
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "stored_bytes": 3400,
+      "decoded_bytes": 3400,
+      "stored_sha256": "4934dfd73206a168e66937b308fd3bf10a373aef5ec345bbc54c635f71ebe066",
+      "decoded_sha256": "759f3fd74b68444cfcf6db09cffcd5ba770cba75b553176d67efe467687047ab",
+      "xml_nodes": 32,
+      "top_level_elements": 7,
+      "known_tag_counts": {
+        "category": 1,
+        "technique": 6,
+        "pipelinebinding": 18
+      },
+      "known_attribute_counts": {
+        "technique": 7
+      },
+      "scalar_values_containing_padxil": 0,
+      "literal_shader_path_matches": 0,
+      "ambiguous_basename_values": 0,
+      "matched_shader_name_sha256": []
+    }
+  ],
+  "versions": {
+    "cryptography": "50.0.2",
+    "lz4": "4.4.5"
+  },
+  "reference_sha256": "507a2e252b45abd30205a770a8256b2906ddb333ce852026ac5ad1f5d676d990",
+  "scope": "Sixteen identified technique declarations only. Selected reviewed pure format routines and installed codecs, then bounded UTF-8 XML inspection. Literal full-path/unique-basename equality only, no hash/stem inference. Public report omits names, keys, XML and payload; private metadata plan remains local. No shader scan/execution, game process access, writes or retry. Input stability and valid decoding do not authenticate assets or establish runtime bindings.",
+  "source_commit": "b49ab6eaa3e37aa14aa338161216134212a7a992",
+  "source_dirty": false,
+  "exit_code": 0,
+  "input_postflight": "PASS",
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "case_kind": "ACTUAL_GAME_ASSET_METADATA",
+  "method": "docs/research/g1-technique-contract-method.md",
+  "interpretation": "All sixteen explicitly identified declarations satisfy the qualified XML-fragment contract. There are zero scalar values containing .padxil and no literal full-path/unique-basename references to that shader directory. This does not exclude opaque identifiers or other relationships, and it establishes no current runtime binding or camera semantics. No shader selected or executed."
+}

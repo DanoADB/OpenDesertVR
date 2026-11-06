@@ -98,3 +98,11 @@ rejects the first declaration at XML inspection. The other fifteen and final
 input postflight were not reached. It establishes no shader link and does not
 justify another shader selection. The diagnostic records partial-read counts;
 its result does not erase the initial failed attempt's missing accounting.
+
+A subsequent specific pinned-source review justified an XML fragment envelope,
+qualified on owned fixtures before observation. The [fragment observation](../evidence/g1-technique-fragment-contract-2026-11-06.json)
+completes all sixteen declarations and final input checks, with zero literal
+`.padxil` scalar references. This supersedes the incomplete attempt only for the
+new parser contract; it does not rewrite earlier evidence or establish runtime
+bindings. Opaque identifiers remain uninterpreted. The literal-reference branch
+is complete without a shader link; G2 remains held.

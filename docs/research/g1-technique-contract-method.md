@@ -87,3 +87,15 @@ entities, NULs, malformed nesting and all previous size/structure limits. Unlike
 the upstream tolerant path, it never deletes embedded bytes or extracts only
 parseable blocks. Owned tests check both a BOM/declaration/two-element fragment
 and malformed/stray/NUL cases. Prior rejection evidence remains unchanged.
+
+## Qualified fragment observation, 2026-11-06
+
+[Source b49ab6e evidence](../evidence/g1-technique-fragment-contract-2026-11-06.json)
+records completion on the same sixteen explicitly identified declarations:
+37,146 archive bytes across two reads per entry, with final index/plan/game/
+catalog checks passing. All sixteen parse under the strict fragment envelope.
+There are zero scalar values containing `.padxil` and zero literal references
+to the shader directory. No opaque identifier interpretation, alternate shader
+selection or runtime-binding claim follows. Prior failed single-root attempts
+remain preserved and are not relabeled. Stop the literal-reference branch;
+another shader requires a concrete consumer connection from a different lead.
