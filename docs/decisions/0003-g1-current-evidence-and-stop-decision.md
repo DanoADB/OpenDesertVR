@@ -151,3 +151,18 @@ completion for two frames per case. [Evidence](../evidence/g1-owned-draw-pixels-
 does not yet qualify Devkit metadata: capture-tool execution is NOT_RUN for
 this fixture. Presenting-mode binding comparison remains the next step; the
 clear-only transport pass does not cover geometry. Production G2 stays held.
+
+The [bounded geometry observation](../evidence/g1-owned-geometry-observer-2026-11-06.json)
+on source cffb5d6 rejects this observer's descriptor-table association: both
+table draws retain the earlier root draw's vertex and pixel buffers despite
+independent GPU readback verifying green and blue. The recorded, unsubmitted
+yellow control is also listed. This is an actual SM5.1 owned-case failure,
+not a current-game DXIL finding or proof that game VR is impossible. Do not
+use these unqualified table bindings to infer camera data.
+
+The user's priority is now a Crimson Desert VR showcase before further app
+polish. Current-build headset acceptance remains necessary for the delivered
+desktop app, but waiting for another cube test must not block G1 camera/render
+research. The next game-facing milestone is independently rendered stereo
+world views from a live game scene, followed by OpenXR presentation and head
+tracking. No theater substitution or G2 claim is authorized by this decision.
