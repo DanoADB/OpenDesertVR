@@ -78,12 +78,14 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-capture" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-upload-empty")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-empty" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-whole")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
-        const bool upload_control =
-            empty_upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload");
+        const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
+        const bool upload_control = whole_upload_control || empty_upload_control ||
+                                    (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload");
         const bool capture_control =
             upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture");
         const bool dxil =
@@ -343,7 +345,10 @@ int wmain(int argc, wchar_t **argv) {
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
             if (upload_control)
                 for (UINT i : {3u, 5u}) {
-                    lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, 256);
+                    if (whole_upload_control)
+                        lists[0]->CopyResource(gpu_constants[i].Get(), constants[i].Get());
+                    else
+                        lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, 256);
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                             D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
                 }
@@ -379,7 +384,10 @@ int wmain(int argc, wchar_t **argv) {
             // proving that this same recorded draw produces yellow when executed.
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             if (upload_control) {
-                lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, 256);
+                if (whole_upload_control)
+                    lists[1]->CopyResource(gpu_constants[7].Get(), constants[7].Get());
+                else
+                    lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, 256);
                 barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
             }
