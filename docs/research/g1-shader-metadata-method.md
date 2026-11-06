@@ -62,3 +62,30 @@ resources. A separate metadata inspection of the same hash-pinned index found
 one descendant owning the 84,678 records. The subsequent subtree selection is
 explicit and owned-tested; it changes no payload/process access or runtime
 acceptance gate and does not retroactively alter the first report.
+
+The [subsequent subtree observation](../evidence/g1-shader-subtree-metadata-2026-11-06.json)
+ran committed source 203a680 once on the same hash-pinned index and reviewed
+Steam build 26480954. It resolved the compact format, three total folders and
+84,678 file records. The shader root plus one descendant own those entries:
+84,432 .padxil and 246 .pars. The root itself still has zero direct entries.
+Both index hash and game/catalog rechecks passed, exit 0.
+
+Metadata flags declare 84,432 entries unencrypted and 246 encrypted; 82,873
+compressed and 1,805 uncompressed. These aggregate properties do not validate
+any payload or imply that a named candidate is both unencrypted and
+uncompressed. Stored sizes range from 920 to 459,302 bytes. Filename marker
+counts are scene 26, camera 0, view 2 and skinned 5; names are not exported and
+markers do not prove shader semantics. No PAZ/shader payload was accessed.
+
+A subsequent metadata-only classification on the same hash-pinned index
+intersected each fixed filename marker with the extension class. All scene 26,
+view 2 and skinned 5 matches were .pars entries; none were .padxil. Camera
+matched neither class. Thus those words do not select a named compiled shader
+candidate. Root-signature names alone do not identify which shader/pipeline
+uses them; do not treat the aggregate marker counts as a camera-shader map.
+
+Next assess one identifiable candidate's metadata and a bounded container/
+reflection method that can answer a specific camera-field type/layout question.
+Retain input identity, source attribution, no raw-payload distribution and owned
+qualification. Do not perform a bulk shader scan or infer active consumption,
+CPU publication order or an independent world-render path from these counts.

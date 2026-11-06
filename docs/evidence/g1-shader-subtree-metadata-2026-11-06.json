@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_shader_directory_metadata",
+  "status": "OBSERVED_SHADER_DIRECTORY_METADATA",
+  "camera_publication": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "source_sha256": {
+    "resolve_shader_metadata.py": "07ad48622d077c821912bfb7030fdc520a33afabaa1b46d377be2d642c5a492c",
+    "pamt_metadata.py": "f153e64f01313b30e4c3a1800d13a79e889d5e73d8db2a00c9606fab0eb5edb5",
+    "pamt_directory_probe.py": "79c253ab6300aa41fe2a0fb42a85f50e5776154b4502fdf84b5d3ff8ad2bba79"
+  },
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "index_sha256": "3aacea36345f8fe4ce1170d97bc0cadb916ff70aa59fc41421dd25642ffd55a2",
+  "index_bytes": 2755921,
+  "metadata": {
+    "format": "compact",
+    "folder_count": 3,
+    "file_count": 84678,
+    "shader_directory_matches": 1,
+    "selected_entries": 84678,
+    "selected_folder_count": 2,
+    "direct_entries": 0,
+    "descendant_entries": 84678,
+    "extension_classes": {
+      "padxil": 84432,
+      "pars": 246
+    },
+    "metadata_flags": {
+      "unencrypted": 84432,
+      "uncompressed": 1805,
+      "compressed": 82873,
+      "encrypted": 246
+    },
+    "name_marker_counts": {
+      "scene": 26,
+      "camera": 0,
+      "view": 2,
+      "skinned": 5
+    },
+    "minimum_stored_bytes": 920,
+    "maximum_stored_bytes": 459302
+  },
+  "scope": "One resolved metadata directory and its entry records. Flag meanings follow pinned public source, not payload validation. No raw metadata/names/locations exported, PAZ payload access, decryption, extraction, process access, game write or retry. Active shader bindings and CPU/GPU camera mapping remain unverified.",
+  "date": "2026-11-06",
+  "probe_source_commit": "203a680b5e04899d7a6e41fdb8d1c32e46bedbcf",
+  "probe_exit_code": 0,
+  "interpretation": "One explicitly scoped subtree metadata observation, after owned qualification. Exactly one root and one descendant select 84,678 entry records: 84,432 padxil and 246 pars. Counts/flag meanings come from index metadata only; no PAZ/shader payload or process memory was accessed. No active binding, camera-field type/layout, producer synchronization or game stereo established. Earlier zero-direct-entry observation is preserved."
+}
