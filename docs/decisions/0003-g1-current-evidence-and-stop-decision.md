@@ -160,6 +160,17 @@ yellow control is also listed. This is an actual SM5.1 owned-case failure,
 not a current-game DXIL finding or proof that game VR is impossible. Do not
 use these unqualified table bindings to infer camera data.
 
+The [DXIL comparison and correction](../evidence/g1-owned-dxil-cbv-observer-2026-11-06.json)
+uses the same authored geometry compiled as SM6.6. The original observer reports
+correct pixel CBVs but stale vertex-only table CBVs. A two-hunk, separately
+pinned private observer patch exposes CBVs beyond pixel visibility and uses
+the existing bounded enumeration for their table slots. All four owned
+vertex/pixel resource pairs then match, including table rebinding; independent
+GPU readback remains RGB/black. This removes that specific observer defect
+from the camera research route. It does not prove game camera semantics,
+constant-byte capture, resource lifetime, same-slot stage aliasing or GPU
+execution markers. The next game method must address those explicit limits.
+
 The user's priority is now a Crimson Desert VR showcase before further app
 polish. Current-build headset acceptance remains necessary for the delivered
 desktop app, but waiting for another cube test must not block G1 camera/render
