@@ -180,3 +180,11 @@ barrier callback drops native split flags and enhanced buffer ranges, so it
 cannot supply this contract. A native metadata integration must first preserve
 these details, invalidate unsupported cases and pass owned runtime controls.
 Do not pass descriptor usage or a guessed before-state as a substitute.
+
+The separately pinned native bridge now passes four owned callback controls:
+ordinary/split legacy barriers, deterministic empty-present intervals and
+missing-contract rejection. DEFAULT mode uses an exact after-native-execution
+fence callback rather than the present fallback. The generic callback alone
+still supplies no native state proof. Enhanced barriers currently invalidate
+the state. See [the method and runtime evidence](../../docs/research/g1-default-constant-copy-method.md).
+The new bridge has not been used in Crimson Desert.

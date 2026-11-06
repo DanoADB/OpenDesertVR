@@ -36,6 +36,10 @@ Local Debug and Release each pass all three optional native tests. The local
 D3D12 debug layer is unavailable; no debug-layer acceptance is claimed locally.
 The test enables and checks the layer when available on the host.
 
+Hosted CI for d3a3f42 passed Debug and Release. The downloaded logs explicitly
+report debug=ENABLED for the DEFAULT test in both configurations. This is
+owned-resource validation, not game validation.
+
 ## Native integration still required
 
 The pinned ReShade wrapper calls its generic barrier event after the native
@@ -50,6 +54,43 @@ actual callback route on owned resources before any game use. Preserve the
 live observer9 case until normal game exit; do not replace loaded files or
 interrupt unsaved gameplay. Empty snapshots are invalid scene observations,
 even when a legacy collector labels its metadata transaction successful.
+
+## Qualified native bridge
+
+The separately built, hash-pinned ReShade 6.7.3.9004 UNOFFICIAL wrapper now
+forwards native barrier arrays and an event after native ExecuteCommandLists
+returns. A versioned private-data sink is registered on each command-list API
+object. Arrays are borrowed during the synchronous callback only. Reset,
+ClearState, bundle execution and protected-session changes invalidate metadata.
+The addon forgets resource identities on destruction before device-data locks.
+Sink pointers are cleared before command-list state replacement or destruction.
+Registry entries are weak, bounded and contain no COM resource references.
+
+Observer10 enables DEFAULT reads only with explicit ODVDefaultConstants=1.
+Native state is serialized per command recording. Enhanced barriers currently
+invalidate state; their usage masks are never converted into legacy proof.
+Exact after-execute callbacks signal covering fences on the native application
+queue. The present-based fallback is disabled in this mode. A capture can span
+at most four empty presentation intervals before completing with no records;
+the collector must reject an empty scene observation.
+
+Four actual [owned runtime controls](../evidence/g1-owned-native-default-2026-11-06.json)
+passed: ordinary legacy barriers, split legacy transitions, two deterministically
+gated empty Presents before real draws, and rejection with the stock wrapper
+that lacks this native contract. The positive cases returned authored green/blue
+DEFAULT bytes after submission, while recorded unsubmitted yellow returned no
+bytes. The missing-contract case recorded no copies. Every case independently
+verified unchanged RGB/black pixels, normal exit, zero native device-reference
+warnings, source/binary postflight and empty asset directories. Native runtime
+qualification is separate from the component's debug-layer CI result.
+
+Use the pinned native source/patch/dependency/generated-input lock and the
+separate devkit-native-default input lock. These are research builds, not an
+official ReShade binary or an M0 runtime dependency. The live observer9 game
+session remains unchanged until normal exit. Next game observation should use
+graphics-only exact 2816-byte mode, upload-input matching disabled and at most
+six details from the 128-record capture. First establish actual native state
+coverage and byte availability; do not infer camera identity from byte size.
 
 Primary references: [Microsoft resource-state and split-barrier rules](https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12),
 [pinned ReShade native wrapper](https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/source/d3d12/d3d12_command_list.cpp).
