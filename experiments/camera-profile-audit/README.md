@@ -66,3 +66,13 @@ Raw memory, coordinates, matrices and counters are never exported. Numeric
 consistency does not validate active camera semantics or control. Selected
 decoder validation rules are adapted from pinned MIT source with full notice;
 see THIRD_PARTY_NOTICES.md. No upstream mod is installed or executed.
+
+## Static function extent experiment
+
+query_function_extents.py is a separate file-only experiment for the three
+existing unique instruction seeds. It uses PE exception records and an explicit
+hash-pinned installed MSVC tool, qualified on original owned executables. No
+process access, hook, camera write or game execution. See
+[the method](../../docs/research/g1-static-function-extents-method.md) for exact
+bounds, qualification and interpretation. Function metadata and linear decoding
+do not establish a producer contract or safe integration callback.

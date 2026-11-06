@@ -29,6 +29,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_diagnostic_log.py -v
       - name: Test offline camera-profile audit (owned PE bytes only)
         run: python -m unittest discover -s tests -p test_camera_profile_audit.py -v
+      - name: Test static function extents (owned PE bytes only)
+        run: python -m unittest discover -s tests -p test_function_extents.py -v
       - name: Test read-only association (owned process only)
         run: python -m unittest discover -s tests -p test_camera_association.py -v
       - name: Test candidate camera field hypotheses (owned data only)
@@ -71,9 +73,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ctest --test-dir out/build/shader-reflection -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Qualify bounded disassembly (owned executable only)
+        run: |
+          cmake -S experiments/camera-profile-audit/native-static -B out/build/static-owned -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/static-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/static-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check optional research-script syntax (no game or GPU capture)
         run: |
-          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py experiments/frame-capture/diagnostic_log.py
+          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py experiments/frame-capture/diagnostic_log.py experiments/camera-profile-audit/query_function_extents.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $tokens = $null; $errors = $null
           foreach ($script in @('start-probe.ps1', 'test-owned-control.ps1')) {
