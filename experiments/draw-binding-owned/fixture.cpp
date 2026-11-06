@@ -64,9 +64,11 @@ static D3D12_RESOURCE_DESC buffer_desc(UINT64 size) {
     return d;
 }
 static void barrier(ID3D12GraphicsCommandList *list, ID3D12Resource *resource, D3D12_RESOURCE_STATES before,
-                    D3D12_RESOURCE_STATES after) {
+                    D3D12_RESOURCE_STATES after,
+                    D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE) {
     D3D12_RESOURCE_BARRIER b{};
     b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    b.Flags = flags;
     b.Transition = {resource, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, before, after};
     list->ResourceBarrier(1, &b);
 }
@@ -82,14 +84,18 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-whole" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-indirect" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-variable" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-upload-transient")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-transient" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-default-split" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
         const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
-        const bool indirect_control =
-            transient_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect");
+        const bool split_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-split";
+        const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
+        const bool indirect_control = transient_control || split_control || present_gap_control ||
+                                      (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect");
         const bool variable_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-variable";
         const bool upload_control = indirect_control || variable_control || whole_upload_control ||
                                     empty_upload_control ||
@@ -279,6 +285,14 @@ int wmain(int argc, wchar_t **argv) {
         const auto bound_constant = [&](UINT i) {
             return gpu_constants[i] ? gpu_constants[i].Get() : constants[i].Get();
         };
+        const auto constant_ready = [&](ID3D12GraphicsCommandList *list, UINT index) {
+            if (split_control)
+                barrier(list, gpu_constants[index].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY);
+            barrier(list, gpu_constants[index].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                    D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                    split_control ? D3D12_RESOURCE_BARRIER_FLAG_END_ONLY : D3D12_RESOURCE_BARRIER_FLAG_NONE);
+        };
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -363,6 +377,24 @@ int wmain(int argc, wchar_t **argv) {
             if (loop && (std::filesystem::exists(output.parent_path() / L"stop.flag") ||
                          std::chrono::steady_clock::now() >= deadline))
                 break;
+            if (present_gap_control && frame == 2) {
+                {
+                    std::ofstream ready(output / L"present-gap.ready");
+                    ready << "waiting before two empty presentation intervals\n";
+                    if (!ready)
+                        throw std::runtime_error("present_gap_readiness_failed");
+                }
+                // The controller queues exactly one snapshot before releasing
+                // this gate. No app draws occur between the next two Presents.
+                while (!std::filesystem::exists(output.parent_path() / L"present-gap.go") &&
+                       !std::filesystem::exists(output.parent_path() / L"stop.flag") &&
+                       std::chrono::steady_clock::now() < deadline)
+                    Sleep(2);
+                if (!std::filesystem::exists(output.parent_path() / L"present-gap.go"))
+                    break;
+                check(swap->Present(1, 0));
+                check(swap->Present(1, 0));
+            }
             MSG message{};
             while (loop && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
                 TranslateMessage(&message);
@@ -450,8 +482,7 @@ int wmain(int argc, wchar_t **argv) {
                         lists[0]->CopyResource(gpu_constants[i].Get(), constants[i].Get());
                     else
                         lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, constant_bytes(i));
-                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
-                            D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+                    constant_ready(lists[0].Get(), i);
                 }
             for (UINT repeat = 0; repeat < repeats; ++repeat) {
                 draw(lists[0].Get(), 0, false, 0);
@@ -489,8 +520,7 @@ int wmain(int argc, wchar_t **argv) {
                     lists[1]->CopyResource(gpu_constants[7].Get(), constants[7].Get());
                 else
                     lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, constant_bytes(7));
-                barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
-                        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+                constant_ready(lists[1].Get(), 7);
             }
             draw(lists[1].Get(), 3, capture_control, 6);
             if (upload_control)
