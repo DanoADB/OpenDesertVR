@@ -124,3 +124,19 @@ queues: late upload writes, blocked fences, repeated execution, retirement,
 wrong queue/thread rejection and an unsubmitted control. These tests do not
 execute ReShade callbacks or establish actual game-camera contents. Addon
 wiring still requires its own owned runtime qualification before game use.
+
+`owned_constant_copy.hpp` is the next upload-input observation primitive. It
+submits a single exclusively owned copy list on the application's actual
+queue, then signals its own fence after that native submission. It can operate
+on Direct, Compute or Copy queues without waiting for presentation. Queue waits
+already issued by the app remain before the helper copy. Only UPLOAD sources
+qualify. No application recording is modified or reused by this primitive.
+
+The next integration must match a known DEFAULT candidate's destination range
+to an actual application upload copy, retain the valid UPLOAD source, and
+sample it on that same queue before the upcoming application submission.
+This captures upload input, not an arbitrary later DEFAULT-buffer state or
+per-draw camera contents. Partial writes, GPU-written sources and missing
+provenance must stay unavailable. Native tests cover blocked queues and a late
+CPU upload write on all three queue types. No such game upload has been
+observed or intercepted by this component yet.

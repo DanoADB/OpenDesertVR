@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include "constant_capture_driver.hpp"
+#include "owned_constant_copy.hpp"
 #include <array>
 #include <dxgi1_4.h>
 #include <iostream>
@@ -210,6 +211,31 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     require(driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after)) != nullptr);
     commands[0].Reset();
     driver.destroyed(1);
+    // A copy queue never presents. An exclusively owned copy list can obtain
+    // its own causally ordered fence without relying on an app AFTER-present.
+    // This is the next upload-input observation route, not DEFAULT readback.
+    check(queue->Wait(gate.Get(), 4));
+    struct FourthReleaseGate {
+        ID3D12Fence *fence;
+        ~FourthReleaseGate() { fence->Signal(4); }
+    } fourth_release{gate.Get()};
+    odv::research::OwnedConstantCopy owned_copy;
+    require(owned_copy.submit(queue.Get(), source.Get(), 256, sizeof(after)));
+    require(!owned_copy.read_completed());
+    std::array<float, 16> upload_input{};
+    for (unsigned i = 0; i < upload_input.size(); ++i)
+        upload_input[i] = static_cast<float>(200 + i);
+    check(source->Map(0, &empty, &mapped));
+    std::memcpy(static_cast<std::byte *>(mapped) + 256, upload_input.data(), sizeof(upload_input));
+    source->Unmap(0, nullptr);
+    check(gate->Signal(4));
+    check(queue->Signal(fence.Get(), 5));
+    check(fence->SetEventOnCompletion(5, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    const auto &upload_bytes = owned_copy.read_completed();
+    require(upload_bytes && upload_bytes->size() == sizeof(upload_input));
+    require(std::memcmp(upload_bytes->data(), upload_input.data(), sizeof(upload_input)) == 0);
+    require(!owned_copy.submit(queue.Get(), source.Get(), 256, sizeof(after)));
     std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {
