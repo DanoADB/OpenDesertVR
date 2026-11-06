@@ -13,11 +13,27 @@ provenance, and keeps unknown domains unsampled. Known indirect graphics is
 not proof of an indexed signature or of bindings after argument execution.
 See [before/after runtime evidence](../evidence/g1-owned-command-provenance-2026-11-06.json).
 
-For the next game case use separately pinned `bc0ead3-command-provenance-8`,
+The first corrected game case used `bc0ead3-command-provenance-8` and returned
+one 768-byte subsequent UPLOAD input at the title menu. Its normal exit and
+exact staging cleanup passed. Camera identity remains unverified.
+
+For the next game case use separately pinned `bc0ead3-deferred-release-9`,
 its input lock and combined patch. Retain all process identity, reviewed build,
 exclusive bootstrap staging, bounded RPC, no-shader-export and exact cleanup
 requirements from [the upload method](g1-game-upload-input-method.md).
 No in-place addon replacement or unsaved-game interruption is allowed.
+
+The owned transient-allocation control timed out during a detail read with
+observer8. Final resource Release can reenter resource-destruction callbacks
+that acquire device-data locks. Observer9 transfers retired resource references
+to a bounded 64-slot queue without Release under capture locks. Drain before
+OnPresent takes device-data locks and after early primary-swapchain retirement,
+while the device is alive. Queue overflow retains references and applies
+backpressure. Completion and command-recording retirement remain prerequisites.
+Actual owned controls passed for temporary upload sources, replacement DEFAULT
+targets followed by a second snapshot, and direct UPLOAD sampling. All passed
+unchanged GPU pixels, normal exits and zero native device-reference warnings.
+See [before/after evidence](../evidence/g1-owned-transient-release-2026-11-06.json).
 
 Explicitly set `ODVGraphicsOnly=1`, `ODVConstantBytes=0`,
 `ODVConstantMaxBytes=4096`, `ODVUploadInputs=1`. This retains at most 128 known

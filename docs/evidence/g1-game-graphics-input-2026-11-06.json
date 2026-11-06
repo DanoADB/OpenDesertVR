@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-06",
-  "status": "OBSERVED_GAME_UPLOAD_INPUT_CLEANUP_PENDING",
+  "status": "OBSERVED_GAME_UPLOAD_INPUT",
   "source_commit": "055bb7bc70682b9cfc729011aa3389739d1c2f8a",
   "game_identity": {
     "steam_app_id": "3321460",
@@ -52,10 +52,12 @@
   "direct_gpu_samples_returned": 0,
   "values_and_handles": "PRIVATE_ONLY",
   "staged_game_files_unchanged": "PASS",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS",
   "camera_identification": "UNVERIFIED",
   "game_buffer_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "interpretation": "The corrected observer reaches direct and indirect graphics domains and acquired one768byte subsequent UPLOAD input for a finite CBV candidate. Its originating record has PRE_INDIRECT_ARGUMENTS bindings. Descriptor size/data contents and menu rendering do not prove camera identity, later per-draw DEFAULT contents or a world view. Real scene/movement evidence remains required."
+  "interpretation": "The corrected observer reaches direct and indirect graphics domains and acquired one768byte subsequent UPLOAD input for a finite CBV candidate. Its originating record has PRE_INDIRECT_ARGUMENTS bindings. Descriptor size/data contents and menu rendering do not prove camera identity, later per-draw DEFAULT contents or a world view. Real scene/movement evidence remains required.",
+  "normal_exit": "PASS",
+  "cleanup_evidence_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
 }
