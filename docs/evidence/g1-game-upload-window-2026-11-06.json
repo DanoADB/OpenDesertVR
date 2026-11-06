@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-06",
-  "status": "OBSERVED_GAME_UPLOAD_WINDOW_CLEANUP_PENDING",
+  "status": "OBSERVED_GAME_UPLOAD_WINDOW",
   "source_commit": "203a62dfa5c85fc79b9f9756b4a705bd1899d1b9",
   "game_identity": {
     "steam_app_id": "3321460",
@@ -27,12 +27,15 @@
   "returned_upload_bytes": 0,
   "covering_source_metadata_available": false,
   "staged_game_files_unchanged": "PASS",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS_NORMAL_EXIT_EXACT_FILES_REMOVED",
   "camera_identification": "UNVERIFIED",
   "game_source_or_destination_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
   "interpretation": "Observer registered three DEFAULT candidate ranges from the menu prefix reported as Dispatch by the legacy observer. No matching covering region or whole-buffer upload was available in the five-second window; no input values returned. This does not rule out partial writes, GPU writers, one-time initialization, allocation rotation or different camera buffers. Camera identity requires a world scene and observed movement; no camera layouts are inferred from size or this negative result.",
   "command_classification": "UNVERIFIED_LEGACY_INDIRECT_FALLBACK",
-  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified."
+  "command_classification_caveat": "An owned compute-then-graphics ExecuteIndirect control later demonstrated that observer7 and predecessors can report graphics work as Dispatch using retained compute state. These game snapshots lack API-command provenance. Preserve method labels as observed output, not verified GPU command kinds; selected shader/root-domain usage is also unverified.",
+  "shutdown_log_tail_bytes": 1048576,
+  "shutdown_tail_native_device_reference_warnings": 0,
+  "game_identity_unchanged": "PASS"
 }
