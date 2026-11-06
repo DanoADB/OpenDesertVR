@@ -39,7 +39,7 @@ def candidates(data, profile):
     return global_rva, tables[0], image.image_size
 
 
-def run(args, report):
+def run(args, report, sampler=observe_process, result_key="association"):
     executable = args.executable.resolve()
     if executable.name.casefold() != "crimsondesert.exe":
         raise ObservationError("unexpected_executable_name")
@@ -68,13 +68,13 @@ def run(args, report):
     report["process_memory_access"] = "ATTEMPTED"
     with ReadOnlyProcess(args.pid, executable) as reader:
         report["stage"] = "SAMPLING"
-        association = observe_process(reader, global_rva, table_rva, image_size)
+        result = sampler(reader, global_rva, table_rva, image_size)
         report["stage"] = "POSTFLIGHT"
         reader.active()
         if validate_game_build(executable, args.steam_manifest, catalog) != identity or digest(args.profile) != PROFILE_HASH:
             raise ObservationError("inputs_changed_during_observation")
         reader.active()
-    report["association"] = association
+    report[result_key] = result
     report["status"] = "OBSERVED"
     report["stage"] = "COMPLETE"
 

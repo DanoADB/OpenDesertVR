@@ -53,3 +53,16 @@ It stops on unavailable/changed objects, identity/range/permission failures or
 target exit. Addresses remain in memory; reports retain no PID or location.
 The native API is verified on an owned child process, with no game or headset.
 No result establishes camera semantics, fields, activity, control or stereo.
+
+## Candidate field hypothesis
+
+probe_fields.py reuses the association probe's CLI arguments and preflight,
+but implements the separately reviewed
+[candidate-field method](../../docs/research/g1-camera-field-hypothesis-method.md).
+It tests selected historical layout rules as explicit hypotheses, in at most
+three bracketed samples and 1,620 pointer/field payload bytes. It stops on the
+first invalid/torn/replaced/stalled sample; it has no scan or fallback mode.
+Raw memory, coordinates, matrices and counters are never exported. Numeric
+consistency does not validate active camera semantics or control. Selected
+decoder validation rules are adapted from pinned MIT source with full notice;
+see THIRD_PARTY_NOTICES.md. No upstream mod is installed or executed.

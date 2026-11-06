@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import os
+import struct
 from pathlib import Path
 import subprocess
 import sys
@@ -118,6 +119,10 @@ sys.stdin.buffer.read(1)
                 self.assertFalse(reader.rights & (0x20 | 0x8 | 0x2 | 0x1))
                 result = association.sample_association(reader.read_pointer, context["root"], context["table"])
                 self.assertEqual(result["status"], "OBSERVED")
+                self.assertEqual(struct.unpack("<Q", reader.read_bytes(context["root"], 8))[0],
+                                 reader.read_pointer(context["root"]))
+                with self.assertRaisesRegex(association.ObservationError, "invalid_pointer_range"):
+                    reader.read_bytes(context["root"], 256)
                 with self.assertRaisesRegex(association.ObservationError, "memory_not_readable"):
                     reader.read_pointer(context["blocked"])
                 with self.assertRaisesRegex(association.ObservationError, "invalid_pointer"):

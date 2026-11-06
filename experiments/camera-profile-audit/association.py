@@ -114,16 +114,17 @@ class ReadOnlyProcess:
         if not self.handle or self.api.WaitForSingleObject(self.handle, 0) != 258:
             raise ObservationError("target_not_live")
 
-    def region(self, address, image_base=None, writable=None):
+    def region(self, address, image_base=None, writable=None, size=8, alignment=8):
         self.active()
-        if type(address) is not int or address < 65536 or address > 0x7fffffffffff - 8 or address % 8:
+        if (type(address) is not int or not 1 <= size <= 128 or address < 65536 or
+                address > 0x7fffffffffff - size or address % alignment):
             raise ObservationError("invalid_pointer_range")
         info = MemoryInfo()
         if self.api.VirtualQueryEx(self.handle, address, ctypes.byref(info), ctypes.sizeof(info)) != ctypes.sizeof(info):
             raise ObservationError("memory_query_failed")
         protection = info.protect & 0xff
         if (info.state != 0x1000 or info.protect & 0x100 or protection not in {2, 4, 8} or
-                not info.base <= address or address + 8 > info.base + info.size):
+                not info.base <= address or address + size > info.base + info.size):
             raise ObservationError("memory_not_readable_nonexecutable")
         if image_base is not None and (info.kind != 0x1000000 or info.allocation != image_base):
             raise ObservationError("memory_not_expected_image")
@@ -140,6 +141,15 @@ class ReadOnlyProcess:
             raise ObservationError("pointer_read_failed")
         self.active()
         return value.value
+
+    def read_bytes(self, address, size):
+        self.region(address, size=size, alignment=4)
+        value, read = ctypes.create_string_buffer(size), ctypes.c_size_t()
+        if (not self.api.ReadProcessMemory(self.handle, address, value, size, ctypes.byref(read)) or
+                read.value != size):
+            raise ObservationError("field_read_failed")
+        self.active()
+        return value.raw
 
     def close(self):
         if self.handle:

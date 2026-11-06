@@ -5,8 +5,8 @@
   "revision": "434b3b96646b410ab8396483e31c538e051f3a4e",
   "root_license": "MIT",
   "execution": "NOT_RUN",
-  "code_adopted": false,
-  "scope": "Selected source review only. Root license is not a complete dependency clearance. Runtime and hardware claims are author observations, not our acceptance.",
+  "code_adopted": true,
+  "scope": "Selected static source review plus later adaptation of camera validation rules in optional camera_fields.py. No upstream mod execution or dependency adoption. Full MIT notice preserved. Runtime claims remain separate from our evidence.",
   "files": [
     {
       "sha256": "44564e40a50f86a0865061469a8300f419faf02c0d35652550b1b44161b3425f",
@@ -48,5 +48,14 @@
       "url": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry/blob/434b3b96646b410ab8396483e31c538e051f3a4e/native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp",
       "path": "native/CrimsonDesertTelemetry.Asi/src/render_capture.cpp"
     }
-  ]
+  ],
+  "adaptation": {
+    "license_notice": "docs/licenses/CrimsonDesertTelemetry-MIT.txt",
+    "source_files": [
+      "src/CrimsonDesertTelemetry.Core/SceneConstantsDecoder.cs",
+      "src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs"
+    ],
+    "scope": "Selected historical layout/validation rules only",
+    "destination": "experiments/camera-profile-audit/camera_fields.py"
+  }
 }

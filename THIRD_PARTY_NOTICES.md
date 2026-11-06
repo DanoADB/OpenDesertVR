@@ -25,3 +25,17 @@ security certification. No sample source was copied into the host.
 Windows D3D12, DXGI, D3DCompiler and MSVC runtime are Microsoft system/toolchain
 components, not project-owned code. Release packaging includes the toolchain's
 redistributable runtime DLLs under its redistribution terms.
+
+## Optional camera research
+
+experiments/camera-profile-audit/camera_fields.py adapts selected direct-layout
+validation rules from ZappendusterFX/CrimsonDesertTelemetry, revision
+434b3b96646b410ab8396483e31c538e051f3a4e, specifically SceneConstantsDecoder.cs
+and EngineCameraReader.cs. MIT, Copyright (c) 2026 CrimsonDesertTelemetry
+contributors. The full notice is preserved in
+[CrimsonDesertTelemetry-MIT.txt](docs/licenses/CrimsonDesertTelemetry-MIT.txt).
+This is an optional Python research validator, not a dependency of the native
+host or production adapter. No upstream ASI, host, dependencies or game assets
+are adopted. The selected source/notice hashes are inventoried in
+docs/research/crimson-telemetry-camera-inventory.json. Its layout remains an
+explicit hypothesis on the current game build until actual validation.

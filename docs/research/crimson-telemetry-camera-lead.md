@@ -3,8 +3,11 @@
 Reviewed 2026-11-06 at ZappendusterFX/CrimsonDesertTelemetry revision
 434b3b96646b410ab8396483e31c538e051f3a4e. The root license is MIT. Selected
 files and hashes are recorded in crimson-telemetry-camera-inventory.json.
-No upstream source was built, executed, installed or adopted. Its root license
-does not complete the dependency audit for a future integration.
+No upstream program was built, executed or installed. Later selected decoder
+validation rules were adapted in the optional camera_fields.py research helper,
+with attribution and the full MIT notice preserved. No upstream host, ASI or
+dependency is adopted. The root license does not complete a broader dependency
+audit for a future integration.
 
 ## What changed the investigation
 
@@ -81,6 +84,9 @@ the field layout. Next review a bounded way to validate the candidate's fields
 and controlled camera-only motion. Retain source replacement/frame-progress and
 ambiguity checks; do not assume them from the historical layout. Each additional
 process-memory scope requires its own technical review first.
+The next [selected-field method](g1-camera-field-hypothesis-method.md) explicitly
+tests the published historical layout as a hypothesis, with owned geometry and
+coherence tests first. It does not treat pointer association as field validation.
 
 Camera observation alone still leaves projection writes, independent world-view
 scheduling, temporal-history ownership and XR submission unverified. No G2 or
