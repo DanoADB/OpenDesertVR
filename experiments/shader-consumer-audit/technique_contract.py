@@ -195,7 +195,8 @@ def verify_record(index, digest, entry):
         raise ValueError("metadata_record_not_unique_and_exact")
 
 
-def run(args, codec):
+def run(args, codec, report):
+    report["stage"] = "INPUT_PREFLIGHT"
     from game_build_gate import validate_game_build
     root = args.game_root.resolve(strict=True)
     catalog = Path(__file__).resolve().parents[1] / "frame-capture/reviewed-builds.json"
@@ -217,12 +218,14 @@ def run(args, codec):
     if len({record["entry"][0] for record in records}) != 16:
         raise ValueError("duplicate_technique_records")
     checked_location(argparse.Namespace(game_root=root, index=args.shader_index, index_sha256=args.shader_index_sha256))
+    report["stage"] = "SHADER_METADATA"
     shader_data, shader_hash = read_index(args.shader_index)
     if shader_hash != args.shader_index_sha256:
         raise ValueError("shader_index_changed")
     shader_paths = {item[0].casefold() for item in resolve_metadata(shader_data)["_entries"] if item[0].casefold().endswith(".padxil")}
     observations = []
-    for record in records:
+    for ordinal, record in enumerate(records):
+        report.update(stage="DECLARATION_METADATA", declaration_ordinal=ordinal)
         index = Path(record["index_path"])
         checked_location(argparse.Namespace(game_root=root, index=index, index_sha256=record["index_sha256"]))
         entry = record["entry"]
@@ -237,6 +240,7 @@ def run(args, codec):
         archive_path = index.with_name(f"{archive}.paz")
         if archive_path.is_symlink() or not archive_path.is_file():
             raise ValueError("unexpected_archive_path")
+        report["stage"] = "DECLARATION_READ"
         with archive_path.open("rb") as stream:
             before = os.fstat(stream.fileno())
             if offset < 0 or offset + stored > before.st_size:
@@ -247,10 +251,17 @@ def run(args, codec):
             again = stream.read(stored)
             if len(raw) != stored or raw != again or file_identity(before) != file_identity(os.fstat(stream.fileno())) or file_identity(before) != file_identity(archive_path.stat()):
                 raise ValueError("archive_changed_or_short_read")
+        report["archive_bytes_read"] += len(raw) + len(again)
+        report["stage"] = "DECLARATION_DECODE"
         decoded = codec[0](raw, path.rsplit("/", 1)[-1], original, flags)
+        report["stage"] = "DECLARATION_XML"
+        report["decoded_encoding_marker"] = ("UTF16_LE_BOM" if decoded.startswith(b"\xff\xfe") else
+                                             "UTF16_BE_BOM" if decoded.startswith(b"\xfe\xff") else
+                                             "UTF8_BOM" if decoded.startswith(b"\xef\xbb\xbf") else "NO_BOM")
         observations.append({"entry_name_sha256": sha(path.encode()), "index_sha256": record["index_sha256"],
                              "stored_bytes": stored, "decoded_bytes": len(decoded), "stored_sha256": sha(raw),
                              "decoded_sha256": sha(decoded), **inspect_xml(decoded, shader_paths)})
+    report["stage"] = "POSTFLIGHT"
     for record in records:
         if read_index(Path(record["index_path"]))[1] != record["index_sha256"]:
             raise ValueError("index_changed_postflight")
@@ -258,7 +269,7 @@ def run(args, codec):
             sha(catalog.read_bytes()) != catalog_hash or
             validate_game_build(root / "bin64/CrimsonDesert.exe", args.steam_manifest, catalog) != identity):
         raise ValueError("inputs_changed_postflight")
-    return {**identity, "status": "OBSERVED_TECHNIQUE_LITERAL_REFERENCE_CONTRACT", "entries": len(observations),
+    return {**identity, "stage": "COMPLETE", "status": "OBSERVED_TECHNIQUE_LITERAL_REFERENCE_CONTRACT", "entries": len(observations),
             "archive_bytes_read": 2 * sum(item["stored_bytes"] for item in observations), "observations": observations,
             "versions": codec[3], "reference_sha256": REFERENCE_SHA256,
             "plan_sha256": args.plan_sha256, "shader_index_sha256": shader_hash, "reviewed_catalog_sha256": catalog_hash,
@@ -285,11 +296,14 @@ def main():
         parser.error("All explicit input identities and a fresh output are required")
     with args.output.open("x", encoding="utf-8") as output:
         report = {"schema_version": 1, "status": "FAILED", "evidence_kind": "bounded_technique_literal_reference_contract",
-                  "owned_qualification": qualified, "source_sha256": sha(Path(__file__).read_bytes()),
+                  "owned_qualification": qualified, "stage": "PREFLIGHT", "archive_bytes_read": 0,
+                  "source_sha256": {name: sha(Path(__file__).with_name(name).read_bytes()) for name in
+                                    ("technique_contract.py", "pamt_metadata.py", "pamt_directory_probe.py",
+                                     "resolve_shader_metadata.py", "inspect_shader_entry.py")},
                   "camera_field_layout": "UNVERIFIED", "native_stereo": "UNVERIFIED"}
         code = 3
         try:
-            report.update(run(args, codec))
+            report.update(run(args, codec, report))
             code = 0
         except Exception:
             report["failure_reason"] = "input_codec_or_contract_rejected"
