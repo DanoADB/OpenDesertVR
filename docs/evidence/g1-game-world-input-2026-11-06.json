@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_WORLD_GRAPHICS_INPUT",
+  "source_commit": "fff47225fea5e43361b063373c136259ff072526",
+  "observer_version": "bc0ead3-deferred-release-9",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "scene": "world_static",
+  "scene_user_confirmed": true,
+  "scene_visual_observation": "3D gameplay scene visible behind unrelated desktop utility; foreground activation failed. User was asked to bring game forward for movement comparison.",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "retained_records": 128,
+  "truncated": true,
+  "known_submission_records": 128,
+  "command_origins": {
+    "DrawIndexed": 8,
+    "DrawOrDispatchIndirect": 120
+  },
+  "command_domains": {
+    "DrawIndexed": 8,
+    "IndirectGraphics": 120
+  },
+  "graphics_with_cbv_and_rtv": 128,
+  "details_queried": 6,
+  "upload_candidates": 6,
+  "queried_upload_states": {
+    "NO_UPLOAD_WITHIN_WINDOW": 5,
+    "READY_UPLOAD_INPUT": 1
+  },
+  "ready_input_sizes": [
+    768
+  ],
+  "direct_gpu_samples": 0,
+  "active_2816_unique_ranges": 2,
+  "active_2816_source_heap": "DEFAULT",
+  "active_2816_source_allocation_bytes": 65536,
+  "private_report_sha256": "be2415eef27429a19bdf6458ff6a4cc1d05a0b9e825aeecc5e71913eb916b8b5",
+  "private_details_sha256": "7133c84fa1cdf67962170f5f6bf7501d8fb1a450d4c5b288dc3ac93230915eda",
+  "values_handles_and_shader_bytes": "NOT_PUBLISHED",
+  "camera_identification": "UNVERIFIED",
+  "camera_movement_comparison": "PENDING",
+  "game_buffer_writes": "NOT_RUN",
+  "stereo_game_rendering": "NOT_RUN",
+  "headset_test": "NOT_RUN",
+  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "interpretation": "Actual world scene graphics and one subsequent UPLOAD input were observed. Both shared2816byte candidates remain unread by the bounded covering-upload path. These observations establish neither a camera buffer nor independently rendered eyes."
+}
