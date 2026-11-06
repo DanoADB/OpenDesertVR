@@ -17,6 +17,14 @@ The first corrected game case used `bc0ead3-command-provenance-8` and returned
 one 768-byte subsequent UPLOAD input at the title menu. Its normal exit and
 exact staging cleanup passed. Camera identity remains unverified.
 
+The same six details contain two unique active 2816-byte ranges. One occurs
+in six records at b14/b17, space35; the other occurs in five at b18/b21,
+space35. Both also occur on the retained direct indexed draw, not only in
+pre-indirect bindings. These are shared-data candidates to compare during
+world-camera movement, not identified camera buffers. Both returned no upload
+input within the menu observation window; the ready 768-byte range is different.
+See [derived binding evidence](../evidence/g1-game-shared-constant-candidates-2026-11-06.json).
+
 For the next game case use separately pinned `bc0ead3-deferred-release-9`,
 its input lock and combined patch. Retain all process identity, reviewed build,
 exclusive bootstrap staging, bounded RPC, no-shader-export and exact cleanup
