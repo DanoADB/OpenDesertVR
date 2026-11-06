@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_readonly_pointer_association",
+  "status": "OBSERVED",
+  "stage": "COMPLETE",
+  "process_memory_access": "ATTEMPTED",
+  "runtime_camera_semantics": "UNVERIFIED",
+  "camera_field_layout": "UNVERIFIED",
+  "camera_control": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "scope": "Only a global/object first-pointer association. File identity/path/module size are checked; the loaded image is not cryptographically hashed. Bracketed reads do not guarantee atomicity. No game launch, hooks, writes, debugger, privilege adjustment, field offsets or automatic retry.",
+  "source_sha256": {
+    "probe_association.py": "67cc58fdece23035b88f7be3ff32bdb085e9c90f6e78d9bdbe6d807e1d8550a7",
+    "association.py": "828d9bd93c1b2fe21cbac20813576f49317cfc48932759c67b06b681445c572c",
+    "audit_profile.py": "a9a85cd1625d98217795f978a86a15784ca047aff5c1b3b5555ea97c75dcb2e0"
+  },
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "profile_sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "association": {
+    "status": "OBSERVED",
+    "stable_bracketed_samples": 3,
+    "pointer_reads": 12,
+    "bytes_read": 96,
+    "scope": "Global/object first-pointer association only; camera semantics, fields, activity, pose and control remain unverified."
+  },
+  "date": "2026-11-06",
+  "probe_source_commit": "c79f7058b06c183eb3de82bcca25866f3bf05933",
+  "probe_exit_code": 0,
+  "launch_context": "normal_steam_uri",
+  "scene": "UNVERIFIED",
+  "post_observation": {
+    "game_process_left_running": true,
+    "responding": true,
+    "original_process_live": true,
+    "process_handle_close_invoked": true,
+    "os_close_return_checked": false
+  }
+}

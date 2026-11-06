@@ -63,6 +63,10 @@ The user subsequently requested proceeding without further headset tests;
 leave those checks deferred and unverified until requested again. The
 [new native-camera source lead](../research/crimson-telemetry-camera-lead.md)
 and current-file guard observations supply a concrete offline research direction.
+The [subsequent bounded read-only observation](../research/g1-readonly-association-method.md)
+establishes a current-process global/object-first-pointer association only.
+Camera field layout, semantics and control remain unverified; no old field
+offset is thereby validated.
 They do not change the hold on runtime adapter implementation or award G2.
 Do not make another change merely to create work or consume the weekly usage
 allowance. Other runtimes/headsets, compositor metrics and extended graphics

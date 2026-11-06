@@ -73,11 +73,14 @@ itself establish its C++ class or semantic role. The old raw field offsets,
 source-pointer layout and frame-counter behavior are still unverified on the
 new build. Do not turn these observations into a relocated production profile.
 
-Next establish a reviewed, minimal way to validate that live association and
-the field layout, with bounded read-only access and controlled camera-only
-movement if justified. Retain source replacement/frame-progress and ambiguity
-checks; do not assume them from the historical layout. Any live process access
-requires its own scoped technical review first.
+The later [reviewed read-only association method](g1-readonly-association-method.md)
+and [actual game observation](../evidence/g1-live-association-2026-11-06.json)
+establish that global/object-first-pointer association during three bracketed
+samples on the current build. They do not establish active-camera semantics or
+the field layout. Next review a bounded way to validate the candidate's fields
+and controlled camera-only motion. Retain source replacement/frame-progress and
+ambiguity checks; do not assume them from the historical layout. Each additional
+process-memory scope requires its own technical review first.
 
 Camera observation alone still leaves projection writes, independent world-view
 scheduling, temporal-history ownership and XR submission unverified. No G2 or

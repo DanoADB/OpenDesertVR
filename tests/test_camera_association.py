@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 
 script = Path(__file__).resolve().parents[1] / "experiments/camera-profile-audit/association.py"
@@ -61,6 +62,18 @@ class AssociationTests(unittest.TestCase):
         with self.assertRaisesRegex(association.ObservationError, "pointer_read_failed"):
             association.sample_association(read, 100, 300)
         self.assertEqual(calls, [100])
+
+    def test_failed_handle_close_is_not_reported_as_closed(self):
+        reader = object.__new__(association.ReadOnlyProcess)
+        reader.handle = 123
+        reader.api = SimpleNamespace(CloseHandle=lambda _: False)
+        with self.assertRaisesRegex(association.ObservationError, "process_handle_close_failed"):
+            reader.close()
+        self.assertEqual(reader.handle, 123)
+        reader.api = SimpleNamespace(CloseHandle=lambda _: True)
+        reader.close()
+        self.assertIsNone(reader.handle)
+        reader.close()
 
     def test_cli_rejects_before_process_access_and_preserves_existing_output(self):
         probe = script.with_name("probe_association.py")

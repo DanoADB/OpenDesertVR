@@ -143,7 +143,8 @@ class ReadOnlyProcess:
 
     def close(self):
         if self.handle:
-            self.api.CloseHandle(self.handle)
+            if not self.api.CloseHandle(self.handle):
+                raise ObservationError("process_handle_close_failed")
             self.handle = None
 
     def __enter__(self):

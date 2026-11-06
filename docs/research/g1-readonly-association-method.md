@@ -37,7 +37,8 @@ properties stop the experiment. No game/protection check is patched or forced.
 5. Take three bracketed samples: global, object first pointer twice, global
    again. Require the global and object pointer values to agree within and
    between samples and equal the expected table. Only twelve eight-byte values
-   are read, at most 96 bytes. No pose, source-pointer or counter fields are read.
+   are read, at most 96 explicit pointer-payload bytes, separate from OS module
+   metadata queries. No pose, source-pointer or counter fields are read.
 6. Reject null/invalid pointers, unreadable/guarded/executable memory, short
    reads, mismatches, replacement, target exit or deadline expiration. Do not
    retry failure or alter permissions. Sampling has a one-second cooperative
@@ -69,3 +70,24 @@ The separate full ASI/lighting package is not needed, installed or executed.
 The method observes normal process memory and leaves the game unmodified.
 Any later camera-field observation or intervention needs its own scope review
 and actual evidence; this result cannot authorize guessed layout assumptions.
+
+## Actual game observation
+
+The [recorded run](../evidence/g1-live-association-2026-11-06.json) used committed
+probe source c79f705 against reviewed Steam build 26480954 and executable
+SHA-256 c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f.
+A normal Steam URI launch supplied the game process; the probe itself did not
+launch it. The same process was checked before sampling and remained responsive
+afterward. D3D12 was loaded and RenderDoc was absent. No UI inspection established
+the scene, so the record leaves it unverified.
+
+All three bracketed samples observed a stable global/object-first-pointer
+association with the current file-derived table. The probe exited 0 after
+twelve pointer reads. No camera fields, position, orientation, projection or
+frame counters were read, and no capability beyond that association is awarded.
+The normal game process remains available for later separately scoped research.
+
+The original probe invoked handle cleanup but did not check the native close
+return. The evidence preserves that limitation. Subsequent cleanup hardening
+now reports a failed CloseHandle rather than pretending the handle closed;
+both its failure path and the actual owned-process success path pass tests.
