@@ -140,3 +140,20 @@ per-draw camera contents. Partial writes, GPU-written sources and missing
 provenance must stay unavailable. Native tests cover blocked queues and a late
 CPU upload write on all three queue types. No such game upload has been
 observed or intercepted by this component yet.
+
+`upload_input_observer.hpp` matches covering uploads to at most six registered
+DEFAULT candidate ranges. It keeps valid strong resource references, rejects
+partial/overflowing ranges and non-UPLOAD inputs, and submits the owned copy
+on the actual application's queue before that list executes. Registration
+permits matching for five seconds; it does not impose a hard driver timeout.
+Only the originating candidate draw owns the ticket. Reset followed by new
+recording or Close retires an unsubmitted match; an empty replacement list
+cannot grant stale data. Completed samples are upload inputs, not proof of
+the destination's later contents or camera semantics.
+
+`--loop-dxil-upload` gives green/blue and unsubmitted yellow real DEFAULT PS
+buffers, populated from original UPLOAD controls via explicit application
+copies and barriers. RGB/black pixels are checked independently. Native
+Direct/Compute/Copy tests also compare a matched subrange against the actual
+DEFAULT destination readback and reject an unsubmitted/empty-reset control.
+Separate addon callback qualification is still required before game use.

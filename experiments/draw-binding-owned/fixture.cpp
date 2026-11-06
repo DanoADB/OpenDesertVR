@@ -76,10 +76,13 @@ int wmain(int argc, wchar_t **argv) {
             (argc != 3 ||
              (std::wstring_view(argv[2]) != L"--submit-fourth" && std::wstring_view(argv[2]) != L"--loop" &&
               std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-capture")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-capture" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
-        const bool capture_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture";
+        const bool upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload";
+        const bool capture_control =
+            upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture");
         const bool dxil =
             capture_control || budget_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil");
         const UINT repeats = budget_control ? 50 : 1;
@@ -210,6 +213,20 @@ int wmain(int argc, wchar_t **argv) {
             std::memcpy(mapped, values[i], sizeof(values[i]));
             // Deliberately persistently mapped; no writes after initialization.
         }
+        std::array<Com<ID3D12Resource>, 8> gpu_constants;
+        if (upload_control) {
+            D3D12_HEAP_PROPERTIES gpu_heap{};
+            gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+            for (UINT i : {3u, 5u, 7u}) {
+                const auto desc = constants[i]->GetDesc();
+                check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc,
+                                                      D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                      IID_PPV_ARGS(&gpu_constants[i])));
+            }
+        }
+        const auto bound_constant = [&](UINT i) {
+            return gpu_constants[i] ? gpu_constants[i].Get() : constants[i].Get();
+        };
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -220,7 +237,7 @@ int wmain(int argc, wchar_t **argv) {
         const auto cpu = cbheap->GetCPUDescriptorHandleForHeapStart();
         const auto gpu = cbheap->GetGPUDescriptorHandleForHeapStart();
         for (UINT i = 0; i < hd.NumDescriptors; ++i) {
-            D3D12_CONSTANT_BUFFER_VIEW_DESC c{constants[i + 2]->GetGPUVirtualAddress(), 256};
+            D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(i + 2)->GetGPUVirtualAddress(), 256};
             device->CreateConstantBufferView(&c, {cpu.ptr + i * cstride});
         }
         Com<ID3D12Resource> target;
@@ -276,7 +293,7 @@ int wmain(int argc, wchar_t **argv) {
         for (UINT i = 0; i < 8; ++i) {
             if (i)
                 ground << ',';
-            ground << "{\"index\":" << i << ",\"nativeHandle\":" << reinterpret_cast<std::uintptr_t>(constants[i].Get())
+            ground << "{\"index\":" << i << ",\"nativeHandle\":" << reinterpret_cast<std::uintptr_t>(bound_constant(i))
                    << ",\"bytes\":" << 256 * (i + 1) << '}';
         }
         ground << "]}";
@@ -321,11 +338,21 @@ int wmain(int argc, wchar_t **argv) {
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
+            if (upload_control)
+                for (UINT i : {3u, 5u}) {
+                    lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, 256);
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                            D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+                }
             for (UINT repeat = 0; repeat < repeats; ++repeat) {
                 draw(lists[0].Get(), 0, false, 0);
                 draw(lists[0].Get(), 1, true, 2);
                 draw(lists[0].Get(), 2, true, 4);
             }
+            if (upload_control)
+                for (UINT i : {3u, 5u})
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                            D3D12_RESOURCE_STATE_COPY_DEST);
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dest{};
             dest.pResource = readback.Get();
@@ -348,7 +375,15 @@ int wmain(int argc, wchar_t **argv) {
             // Baseline never submits B. The paired control submits B before readback C,
             // proving that this same recorded draw produces yellow when executed.
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+            if (upload_control) {
+                lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, 256);
+                barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                        D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+            }
             draw(lists[1].Get(), 3, capture_control, 6);
+            if (upload_control)
+                barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                        D3D12_RESOURCE_STATE_COPY_DEST);
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             check(lists[1]->Close());
             ID3D12CommandList *baseline[] = {lists[0].Get(), lists[2].Get()};

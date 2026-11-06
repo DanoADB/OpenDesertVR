@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include "constant_capture_driver.hpp"
 #include "owned_constant_copy.hpp"
+#include "upload_input_observer.hpp"
 #include <array>
 #include <dxgi1_4.h>
 #include <iostream>
@@ -236,6 +237,84 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     require(upload_bytes && upload_bytes->size() == sizeof(upload_input));
     require(std::memcmp(upload_bytes->data(), upload_input.data(), sizeof(upload_input)) == 0);
     require(!owned_copy.submit(queue.Get(), source.Get(), 256, sizeof(after)));
+    odv::research::UploadInputObserver uploads;
+    uploads.begin_capture();
+    require(!uploads.register_target(source.Get(), 16, 16)); // DEFAULT candidates only.
+    const auto target_a = uploads.register_target(gpu_only.Get(), 16, 16);
+    const auto target_b = uploads.register_target(gpu_only.Get(), 128, 16);
+    require(target_a && target_b && !uploads.register_target(gpu_only.Get(), 16, 16));
+    uploads.observe_copy(10, source.Get(), 256, gpu_only.Get(), 0, 8);
+    require(uploads.read(target_a).bytes.empty()); // Partial copy cannot cover target.
+    uploads.observe_copy(10, source.Get(), UINT64_MAX - 8, gpu_only.Get(), 0, 64);
+    require(uploads.read(target_a).bytes.empty()); // Source-offset overflow rejected.
+    uploads.observe_copy(10, gpu_only.Get(), 256, gpu_only.Get(), 0, 64);
+    require(std::string_view(uploads.read(target_a).state) == "UPLOAD_SOURCE_INELIGIBLE");
+    std::array<Com<ID3D12CommandAllocator>, 2> app_allocators;
+    std::array<Com<ID3D12GraphicsCommandList>, 2> app_lists;
+    for (unsigned i = 0; i < 2; ++i) {
+        check(device->CreateCommandAllocator(queue_type, IID_PPV_ARGS(&app_allocators[i])));
+        check(device->CreateCommandList(0, queue_type, app_allocators[i].Get(), nullptr, IID_PPV_ARGS(&app_lists[i])));
+    }
+    const auto transition = [&](ID3D12GraphicsCommandList *list, D3D12_RESOURCE_STATES before_state,
+                                D3D12_RESOURCE_STATES after_state) {
+        D3D12_RESOURCE_BARRIER barrier{};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Transition = {gpu_only.Get(), D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, before_state, after_state};
+        list->ResourceBarrier(1, &barrier);
+    };
+    D3D12_HEAP_PROPERTIES cpu_read{};
+    cpu_read.Type = D3D12_HEAP_TYPE_READBACK;
+    auto read_desc = desc;
+    read_desc.Width = 16;
+    Com<ID3D12Resource> default_readback;
+    check(device->CreateCommittedResource(&cpu_read, D3D12_HEAP_FLAG_NONE, &read_desc, D3D12_RESOURCE_STATE_COPY_DEST,
+                                          nullptr, IID_PPV_ARGS(&default_readback)));
+    transition(app_lists[0].Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+    uploads.observe_copy(10, source.Get(), 256, gpu_only.Get(), 0, 64);
+    app_lists[0]->CopyBufferRegion(gpu_only.Get(), 0, source.Get(), 256, 64);
+    transition(app_lists[0].Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    app_lists[0]->CopyBufferRegion(default_readback.Get(), 0, gpu_only.Get(), 16, 16);
+    check(app_lists[0]->Close());
+    transition(app_lists[1].Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
+    uploads.observe_copy(11, source.Get(), 256, gpu_only.Get(), 128, 64);
+    app_lists[1]->CopyBufferRegion(gpu_only.Get(), 128, source.Get(), 256, 64);
+    transition(app_lists[1].Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    check(app_lists[1]->Close());
+    require(std::string_view(uploads.read(target_b).state) == "UPLOAD_MATCHED_NOT_SUBMITTED");
+    check(queue->Wait(gate.Get(), 5));
+    struct FifthReleaseGate {
+        ID3D12Fence *fence;
+        ~FifthReleaseGate() { fence->Signal(5); }
+    } fifth_release{gate.Get()};
+    uploads.before_execute(10, queue.Get());
+    ID3D12CommandList *app_execute[] = {app_lists[0].Get()};
+    queue->ExecuteCommandLists(1, app_execute);
+    require(uploads.read(target_a).bytes.empty());
+    check(gate->Signal(5));
+    check(queue->Signal(fence.Get(), 6));
+    check(fence->SetEventOnCompletion(6, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    const auto observed_input = uploads.read(target_a);
+    require(std::string_view(observed_input.state) == "READY_UPLOAD_INPUT" && observed_input.bytes.size() == 16);
+    require(std::memcmp(observed_input.bytes.data(), upload_input.data() + 4, 16) == 0);
+    const D3D12_RANGE mapped_range{0, 16};
+    check(default_readback->Map(0, &mapped_range, &mapped));
+    const bool equals_default = std::memcmp(mapped, observed_input.bytes.data(), 16) == 0;
+    default_readback->Unmap(0, &empty);
+    require(equals_default); // Independently read actual application DEFAULT result.
+    require(uploads.read(target_b).bytes.empty());
+    uploads.before_reset(11);
+    check(app_allocators[1]->Reset());
+    check(app_lists[1]->Reset(app_allocators[1].Get(), nullptr));
+    uploads.recording_resumed(11); // Next callback is Close on an EMPTY new recording.
+    check(app_lists[1]->Close());
+    uploads.before_execute(11, queue.Get());
+    app_execute[0] = app_lists[1].Get();
+    queue->ExecuteCommandLists(1, app_execute);
+    check(queue->Signal(fence.Get(), 7));
+    check(fence->SetEventOnCompletion(7, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    require(uploads.read(target_b).bytes.empty()); // Empty resubmission cannot grant stale data.
     std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {
