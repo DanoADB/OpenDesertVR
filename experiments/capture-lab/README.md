@@ -73,3 +73,6 @@ tests, including disconnect and timeout. See the
 It stays outside the main build and install. CI compiles it independently with
 ODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF, which requires no RenderDoc header or
 download. Hosted compilation is not evidence of capture/replay execution.
+An optional third argument, --hidden, suppresses window showing for owned local
+transport tests. Rendering/presentation and the existing stop.flag/60-second
+deadline remain in use. This clear-only fixture does not issue geometry draws.

@@ -25,6 +25,12 @@ jobs:
         run: python -m unittest discover -s tests -p test_owned_descriptor_result.py -v
       - name: Test presentation-summary filtering and statistics
         run: python -m unittest discover -s tests -p test_presentmon_summary.py -v
+      - name: Test owned Devkit protocol and identity gates (synthetic data only)
+        run: |
+          python -m unittest discover -s tests -p test_devkit_bridge_client.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_devkit_transport_contract.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test diagnostic game-build identity gate (owned test bytes only)
         run: python -m unittest discover -s tests -p test_game_build_gate.py -v
       - name: Test bounded local diagnostic-log snapshots

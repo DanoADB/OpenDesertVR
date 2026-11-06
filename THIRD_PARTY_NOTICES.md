@@ -88,3 +88,12 @@ notices. Full root texts are in docs/licenses/ReShade-BSD-3-Clause.txt and
 GTL-Apache-2.0.txt, alongside RenoDX-MIT.txt. Exact paths/revisions and source
 hashes are in experiments/renodx-owned/input-lock.json. This selected direct-input
 audit does not claim exhaustive review of every dependency in the tool binary.
+
+The separate owned Devkit transport qualification builds the pinned external
+devkit and bridge for an original owned app only. Its expanded reference lock
+is experiments/renodx-owned/devkit-input-lock.json. Additional selected inputs
+include Detours MIT, ImGui MIT, nlohmann/json MIT, frozen Apache-2.0 and the
+MinHook/HDE BSD-family notices, retained as RenoDX-prefixed files in docs/licenses.
+These remain external diagnostic-tool inputs, with no main-runtime dependency
+or binary installation target. The full source inventory is not an exhaustive
+per-line/transitive audit. Camera/game compatibility is not implied.

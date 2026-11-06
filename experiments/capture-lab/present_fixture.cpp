@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <windows.h>
@@ -27,8 +28,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
 }
 int wmain(int argc, wchar_t **argv) {
     try {
-        if (argc != 2)
-            throw std::runtime_error("Provide a local capture prefix");
+        if (argc != 2 && (argc != 3 || std::wstring_view(argv[2]) != L"--hidden"))
+            throw std::runtime_error("Provide a local capture prefix and optional --hidden");
         const auto stop = std::filesystem::path(argv[1]).parent_path() / "stop.flag";
         WNDCLASSW wc{};
         wc.lpfnWndProc = window_proc;
@@ -104,7 +105,8 @@ int wmain(int argc, wchar_t **argv) {
                                                                   CloseHandle);
         if (!event)
             throw std::runtime_error("Could not create fence event");
-        ShowWindow(window.get(), SW_SHOWNOACTIVATE);
+        if (argc == 2)
+            ShowWindow(window.get(), SW_SHOWNOACTIVATE);
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
         UINT64 frame = 0;
         while (std::chrono::steady_clock::now() < deadline && !std::filesystem::exists(stop)) {
