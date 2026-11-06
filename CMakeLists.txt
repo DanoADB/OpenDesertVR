@@ -99,7 +99,8 @@ if(BUILD_TESTING)
         -DRUNNER=${CMAKE_CURRENT_SOURCE_DIR}/scripts/run-headset-test.ps1
         -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
         -DSCENARIO=${scenario} -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/collector.cmake)
-      set_tests_properties(odv_collector_${scenario} PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
+      # Two PowerShell processes include cold startup on shared CI workers.
+      set_tests_properties(odv_collector_${scenario} PROPERTIES TIMEOUT 100 LABELS "mock-runtime")
     endforeach()
   endif()
 endif()
