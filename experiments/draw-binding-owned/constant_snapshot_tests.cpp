@@ -319,6 +319,31 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     require(std::string_view(uploads.read(target_a).state) == "DEVICE_CLOSED");
     require(std::string_view(uploads.read(target_b).state) == "DEVICE_CLOSED");
     require(uploads.read(target_a).bytes.empty() && uploads.read(target_b).bytes.empty());
+    uploads.begin_capture();
+    const auto whole_target = uploads.register_target(gpu_only.Get(), 256, sizeof(upload_input));
+    require(whole_target != nullptr);
+    check(app_allocators[0]->Reset());
+    check(app_lists[0]->Reset(app_allocators[0].Get(), nullptr));
+    transition(app_lists[0].Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
+    uploads.observe_whole_copy(20, source.Get(), gpu_only.Get());
+    app_lists[0]->CopyResource(gpu_only.Get(), source.Get());
+    transition(app_lists[0].Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    app_lists[0]->CopyBufferRegion(default_readback.Get(), 0, gpu_only.Get(), 256, 16);
+    check(app_lists[0]->Close());
+    uploads.before_execute(20, queue.Get());
+    app_execute[0] = app_lists[0].Get();
+    queue->ExecuteCommandLists(1, app_execute);
+    check(queue->Signal(fence.Get(), 8));
+    check(fence->SetEventOnCompletion(8, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    const auto whole_input = uploads.read(whole_target);
+    require(whole_input.bytes.size() == sizeof(upload_input));
+    require(std::memcmp(whole_input.bytes.data(), upload_input.data(), sizeof(upload_input)) == 0);
+    check(default_readback->Map(0, &mapped_range, &mapped));
+    const bool whole_equals_default = std::memcmp(mapped, whole_input.bytes.data(), 16) == 0;
+    default_readback->Unmap(0, &empty);
+    require(whole_equals_default);
+    uploads.release_device(device.Get());
     std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {

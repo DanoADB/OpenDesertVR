@@ -123,6 +123,24 @@ class UploadInputObserver final {
             entry->state = "UPLOAD_MATCHED_NOT_SUBMITTED";
         }
     }
+    void observe_whole_copy(std::uintptr_t list, ID3D12Resource *source, ID3D12Resource *destination) {
+        if (!source || !destination)
+            return;
+        {
+            const std::lock_guard lock(mutex_);
+            const bool wanted = std::any_of(entries_.begin(), entries_.end(), [&](const Ticket &entry) {
+                return entry->capture == capture_ && !entry->matched && !entry->submitted &&
+                       entry->target.Get() == destination;
+            });
+            if (!wanted)
+                return;
+        }
+        // Valid resources supplied by the application's CopyResource callback.
+        const auto src = source->GetDesc(), dst = destination->GetDesc();
+        if (src.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER && dst.Dimension == src.Dimension &&
+            src.Width == dst.Width)
+            observe_copy(list, source, 0, destination, 0, src.Width);
+    }
     // Invoke before the application's native execution on its actual queue.
     // The owned list executes and signals its OWN fence here. No completion
     // claim is made about the application list that will execute afterward.
