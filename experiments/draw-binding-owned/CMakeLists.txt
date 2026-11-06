@@ -14,4 +14,12 @@ enable_testing()
 add_test(NAME owned_draw_pixel_controls COMMAND "${Python3_EXECUTABLE}"
   "${CMAKE_CURRENT_SOURCE_DIR}/baseline.py" "$<TARGET_FILE:odv_draw_fixture>" "${CMAKE_CURRENT_BINARY_DIR}/cases")
 set_tests_properties(owned_draw_pixel_controls PROPERTIES TIMEOUT 50)
+add_executable(odv_constant_snapshot_tests constant_snapshot_tests.cpp)
+target_compile_features(odv_constant_snapshot_tests PRIVATE cxx_std_20)
+target_link_libraries(odv_constant_snapshot_tests PRIVATE d3d12 dxgi)
+if(MSVC)
+  target_compile_options(odv_constant_snapshot_tests PRIVATE /W4 /WX /EHsc)
+endif()
+add_test(NAME owned_gpu_constant_snapshot COMMAND odv_constant_snapshot_tests)
+set_tests_properties(owned_gpu_constant_snapshot PROPERTIES TIMEOUT 15)
 # Optional standalone research only: no install target or M0 runtime linkage.

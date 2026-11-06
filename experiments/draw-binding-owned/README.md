@@ -1,5 +1,37 @@
 # Owned draw ground truth
 
+## GPU constant snapshots
+
+`constant_snapshot.hpp` is an original experimental component for the next
+camera-value acquisition step. It records a GPU copy of up to 4 KiB from a
+valid UPLOAD buffer, retaining its resource reference. Other heap types, bundle
+command lists, oversized sources/ranges and more than six pending captures are
+rejected. No source resource is written or transitioned.
+
+The integration must supply a fence causally ordered **after actual execution
+submission of that copy**. `submitted_after_execute` records this caller
+assertion; it cannot detect an unrelated fence. A before-execute observer
+callback or a listed draw is insufficient. `read_completed` refuses data until
+that fence completes. `discard_unsubmitted` is valid only when the caller has
+proved the recording will never execute. These obligations still need a
+separately reviewed game integration; this component is not loaded in the game.
+
+Unknown completion quarantines resource references and retains the capacity
+slot instead of freeing GPU-referenced memory. Capture stops once six such
+slots are occupied. Sources are limited to 64 MiB each; retaining a reference
+can prolong an existing allocation's lifetime. This behavior is an experimental
+failure containment measure, not production resource recovery or a watchdog.
+
+The native `owned_gpu_constant_snapshot` check runs Direct, Compute and Copy
+queues on WARP. It records a copy, then changes the upload data before
+submission: GPU readback must contain the late values rather than the earlier
+CPU sample. A queue gate verifies pending-fence reads stay unavailable. An
+unsubmitted second list stays unread even after the first list's fence
+completes. Default heaps, invalid ranges and capacity overflow are rejected.
+This validates owned GPU acquisition semantics, not game camera values.
+
+## Draw controls
+
 This optional original SDK-only project establishes software-GPU pixel ground
 truth before Devkit draw metadata is compared. It has no install target, M0
 runtime linkage, game access, OpenXR, capture callbacks or external source.
