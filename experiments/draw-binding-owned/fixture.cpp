@@ -40,6 +40,18 @@ static void write_blob(const std::filesystem::path &path, ID3DBlob *blob) {
     if (!out)
         throw std::runtime_error("owned_shader_write_failed");
 }
+static Com<ID3DBlob> load_owned_blob(const std::filesystem::path &path) {
+    const auto size = std::filesystem::file_size(path);
+    if (size < 32 || size > 65536)
+        throw std::runtime_error("owned_dxil_size_invalid");
+    Com<ID3DBlob> blob;
+    check(D3DCreateBlob(static_cast<SIZE_T>(size), &blob));
+    std::ifstream input(path, std::ios::binary);
+    input.read(static_cast<char *>(blob->GetBufferPointer()), static_cast<std::streamsize>(size));
+    if (!input || std::memcmp(blob->GetBufferPointer(), "DXBC", 4))
+        throw std::runtime_error("owned_dxil_container_invalid");
+    return blob;
+}
 static D3D12_RESOURCE_DESC buffer_desc(UINT64 size) {
     D3D12_RESOURCE_DESC d{};
     d.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -60,10 +72,12 @@ static void barrier(ID3D12GraphicsCommandList *list, ID3D12Resource *resource, D
 }
 int wmain(int argc, wchar_t **argv) {
     try {
-        if (argc != 2 && (argc != 3 || (std::wstring_view(argv[2]) != L"--submit-fourth" &&
-                                        std::wstring_view(argv[2]) != L"--loop")))
+        if (argc != 2 &&
+            (argc != 3 || (std::wstring_view(argv[2]) != L"--submit-fourth" &&
+                           std::wstring_view(argv[2]) != L"--loop" && std::wstring_view(argv[2]) != L"--loop-dxil")))
             throw std::runtime_error("provide_fresh_output_directory");
-        const bool loop = argc == 3 && std::wstring_view(argv[2]) == L"--loop";
+        const bool dxil = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil";
+        const bool loop = dxil || (argc == 3 && std::wstring_view(argv[2]) == L"--loop");
         const bool submit_fourth = argc == 3 && !loop;
         const std::filesystem::path output(argv[1]);
         if (!std::filesystem::is_directory(output) || !std::filesystem::is_empty(output))
@@ -112,10 +126,15 @@ int wmain(int argc, wchar_t **argv) {
                 check(swap->GetBuffer(i, IID_PPV_ARGS(&backbuffers[i])));
         }
         Com<ID3DBlob> vs, ps, errors;
-        check(D3DCompile(shader, sizeof(shader) - 1, "owned_control", nullptr, nullptr, "vs", "vs_5_1",
-                         D3DCOMPILE_ENABLE_STRICTNESS, 0, &vs, &errors));
-        check(D3DCompile(shader, sizeof(shader) - 1, "owned_control", nullptr, nullptr, "ps", "ps_5_1",
-                         D3DCOMPILE_ENABLE_STRICTNESS, 0, &ps, &errors));
+        if (dxil) {
+            vs = load_owned_blob(executable_dir / L"owned.dxil.vs.cso");
+            ps = load_owned_blob(executable_dir / L"owned.dxil.ps.cso");
+        } else {
+            check(D3DCompile(shader, sizeof(shader) - 1, "owned_control", nullptr, nullptr, "vs", "vs_5_1",
+                             D3DCOMPILE_ENABLE_STRICTNESS, 0, &vs, &errors));
+            check(D3DCompile(shader, sizeof(shader) - 1, "owned_control", nullptr, nullptr, "ps", "ps_5_1",
+                             D3DCOMPILE_ENABLE_STRICTNESS, 0, &ps, &errors));
+        }
         write_blob(output / "owned.vs.cso", vs.Get());
         write_blob(output / "owned.ps.cso", ps.Get());
         std::array<Com<ID3D12RootSignature>, 2> roots;

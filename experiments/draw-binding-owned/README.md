@@ -44,6 +44,14 @@ proxy so a separately qualified controller can stage its pinned observer.
 Its result labels capture-tool execution as EXTERNAL_OBSERVER_POSSIBLE, never
 as verified by the fixture itself. No loop mode is installed into M0.
 
+`--loop-dxil` uses the same control geometry with fixed local files
+`owned.dxil.vs.cso` and `owned.dxil.ps.cso` beside the executable instead of
+the built-in FXC compilation. They must be generated from this fixture's
+original HLSL by a separately fingerprinted compiler and staged/hash-checked
+by the qualification controller. Reads are bounded to 64 KiB per shader.
+This isolates SM6.6/DXIL binding behavior from the older SM5.1 parser; it is
+not an arbitrary shader or game-asset test. Default CI controls remain SM5.1.
+
 The pixel baseline does **not** execute Devkit, qualify its CBV resource identities,
 verify its submission metadata, or observe per-draw GPU constant bytes. No
 headset/game test is run. Compare the exact authored shader pair and known bindings through the
