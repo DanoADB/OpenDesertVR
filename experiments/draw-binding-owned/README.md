@@ -52,6 +52,11 @@ by the qualification controller. Reads are bounded to 64 KiB per shader.
 This isolates SM6.6/DXIL binding behavior from the older SM5.1 parser; it is
 not an arbitrary shader or game-asset test. Default CI controls remain SM5.1.
 
+`--loop-dxil-budget` records 150 submitted geometry draws per frame by repeating
+the same red/green/blue controls 50 times, plus the unsubmitted yellow draw.
+The expected pixels remain RGB/black. This exercises a metadata observer's
+retained-record cap without increasing image dimensions or changing resources.
+
 The pixel baseline does **not** execute Devkit, qualify its CBV resource identities,
 verify its submission metadata, or observe per-draw GPU constant bytes. No
 headset/game test is run. Compare the exact authored shader pair and known bindings through the

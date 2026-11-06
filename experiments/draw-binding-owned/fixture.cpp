@@ -73,10 +73,13 @@ static void barrier(ID3D12GraphicsCommandList *list, ID3D12Resource *resource, D
 int wmain(int argc, wchar_t **argv) {
     try {
         if (argc != 2 &&
-            (argc != 3 || (std::wstring_view(argv[2]) != L"--submit-fourth" &&
-                           std::wstring_view(argv[2]) != L"--loop" && std::wstring_view(argv[2]) != L"--loop-dxil")))
+            (argc != 3 ||
+             (std::wstring_view(argv[2]) != L"--submit-fourth" && std::wstring_view(argv[2]) != L"--loop" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget")))
             throw std::runtime_error("provide_fresh_output_directory");
-        const bool dxil = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil";
+        const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
+        const bool dxil = budget_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil");
+        const UINT repeats = budget_control ? 50 : 1;
         const bool loop = dxil || (argc == 3 && std::wstring_view(argv[2]) == L"--loop");
         const bool submit_fourth = argc == 3 && !loop;
         const std::filesystem::path output(argv[1]);
@@ -315,9 +318,11 @@ int wmain(int argc, wchar_t **argv) {
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
-            draw(lists[0].Get(), 0, false, 0);
-            draw(lists[0].Get(), 1, true, 2);
-            draw(lists[0].Get(), 2, true, 4);
+            for (UINT repeat = 0; repeat < repeats; ++repeat) {
+                draw(lists[0].Get(), 0, false, 0);
+                draw(lists[0].Get(), 1, true, 2);
+                draw(lists[0].Get(), 2, true, 4);
+            }
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dest{};
             dest.pResource = readback.Get();
@@ -384,9 +389,10 @@ int wmain(int argc, wchar_t **argv) {
             throw std::runtime_error("owned_fixture_rendered_no_frames");
         std::ofstream result(output / "result.json");
         result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":" << completed << ','
-               << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":4,\"submittedDrawsPerFrame\":"
-               << (submit_fourth ? 4 : 3) << ",\"fourthColumn\":\"" << (submit_fourth ? "yellow" : "black")
-               << "\",\"captureTool\":\"" << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
+               << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":" << repeats * 3 + 1
+               << ",\"submittedDrawsPerFrame\":" << repeats * 3 + (submit_fourth ? 1 : 0) << ",\"fourthColumn\":\""
+               << (submit_fourth ? "yellow" : "black") << "\",\"captureTool\":\""
+               << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
                << "\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
                   "RUN\"}";
         result.close();

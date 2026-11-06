@@ -1,0 +1,127 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -114,6 +114,7 @@
+ 
+ inline constexpr std::wstring_view DEVKIT_MCP_PIPE_PREFIX = L"renodx-devkit-mcp";
+ 
++static constexpr uint32_t ODV_SNAPSHOT_RECORD_LIMIT = 128u;
+ std::atomic<reshade::api::device*> snapshot_device = nullptr;
+ std::atomic<reshade::api::device*> snapshot_queued_device = nullptr;
+ std::atomic<uint32_t> snapshot_submission_counter = 0u;
+@@ -238,6 +239,7 @@
+   uint64_t cmd_list_handle = 0u;
+   uint32_t cmd_list_draw_index = 0u;
+   uint32_t submission_order = 0u;
++  bool capture_truncated = false;
+   std::map<std::pair<uint32_t, uint32_t>, ResourceViewDetails> srv_binds;
+   std::map<std::pair<uint32_t, uint32_t>, ResourceViewDetails> uav_binds;
+   std::map<std::pair<uint32_t, uint32_t>, reshade::api::buffer_range> constants;
+@@ -397,6 +399,7 @@
+   std::unordered_map<uint32_t, ShaderDetails> shader_details;
+   // std::vector<CommandListData> command_list_data;
+   std::vector<DrawDetails> draw_details_list;
++  bool capture_truncated = false;
+   std::unordered_map<uint64_t, std::vector<size_t>> draw_detail_indexes_by_cmd_list;
+   std::unordered_set<uint64_t> live_pipelines;
+   std::unordered_map<uint64_t, std::unordered_map<reshade::api::format, reshade::api::resource_view>> preview_srvs;
+@@ -2591,6 +2594,10 @@
+       .timestamp_ms = std::chrono::duration_cast<std::chrono::milliseconds>(draw_details.timestamp.time_since_epoch()).count(),
+       .srv_count = draw_details.srv_binds.size(),
+       .uav_count = draw_details.uav_binds.size(),
++      .submission_order = draw_details.submission_order,
++      .submission_known = draw_details.submission_order != 0u,
++      .capture_record_limit = ODV_SNAPSHOT_RECORD_LIMIT,
++      .capture_truncated = draw_details.capture_truncated,
+       .constant_count = draw_details.constants.size(),
+       .render_target_count = draw_details.render_targets.size(),
+       .pipeline_count = draw_details.pipeline_binds.size(),
+@@ -4652,6 +4659,10 @@
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
+     }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
++    }
+     const auto draw_index = device_data->draw_details_list.size();
+     device_data->draw_details_list.push_back(std::move(draw_details));
+     if (SupportsSnapshotSubmissionOrder(device->get_api()) && device_data->draw_details_list.back().cmd_list_handle != 0u) {
+@@ -4697,6 +4708,10 @@
+     std::unique_lock lock(device_data->mutex);
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
++    }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
+     }
+     const auto draw_index = device_data->draw_details_list.size();
+     device_data->draw_details_list.push_back(std::move(draw_details));
+@@ -5128,6 +5143,7 @@
+                   continue;
+                 }
+                 if (draw_method != DrawDetails::DrawMethods::DISPATCH
++                    && range.type != reshade::api::descriptor_type::constant_buffer
+                     && !renodx::utils::bitwise::HasFlag(range.visibility, reshade::api::shader_stage::pixel)) {
+                   continue;
+                 }
+@@ -5178,7 +5194,7 @@
+                 const bool is_vulkan = device->get_api() == reshade::api::device_api::vulkan;
+                 const uint32_t range_slot = is_vulkan ? range.binding : range.dx_register_index;
+                 const uint32_t range_space = is_vulkan ? param_index : range.dx_register_space;
+-                if (has_reflected_resource_binds) {
++                if (has_reflected_resource_binds && range_bind_type != ResourceBind::BindType::CBV) {
+                   candidate_slots.reserve(draw_details.resource_binds->size());
+                   for (const auto& bind : *draw_details.resource_binds) {
+                     if (bind.type != range_bind_type) continue;
+@@ -5277,6 +5293,10 @@
+     // device_data->command_list_data.push_back(*command_list_data);
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
++    }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
+     }
+     const auto draw_index = device_data->draw_details_list.size();
+     const auto cmd_list_handle = draw_details.cmd_list_handle;
+@@ -9255,6 +9275,7 @@
+       auto* device_data = get_data();
+       std::unique_lock lock(device_data->mutex);
+       device_data->draw_details_list.clear();
++      device_data->capture_truncated = false;
+       device_data->draw_detail_indexes_by_cmd_list.clear();
+       device_data->resource_usage_by_handle.clear();
+       device_data->snapshot_rows.clear();
+@@ -9269,6 +9290,7 @@
+     snapshot_device = nullptr;
+     auto* device_data = get_data();
+     std::unique_lock lock(device_data->mutex);
++    for (auto& draw : device_data->draw_details_list) draw.capture_truncated = device_data->capture_truncated;
+     std::ranges::sort(device_data->draw_details_list, [](const DrawDetails& a, const DrawDetails& b) {
+       const bool a_unknown_submission = a.submission_order == 0u;
+       const bool b_unknown_submission = b.submission_order == 0u;
+--- a/src/addons/devkit/mcp/draw_summary.hpp
++++ b/src/addons/devkit/mcp/draw_summary.hpp
+@@ -156,6 +156,10 @@
+   std::int64_t timestamp_ms = 0;
+   std::size_t srv_count = 0u;
+   std::size_t uav_count = 0u;
++  std::uint32_t submission_order = 0u;
++  bool submission_known = false;
++  std::uint32_t capture_record_limit = 0u;
++  bool capture_truncated = false;
+   std::size_t constant_count = 0u;
+   std::size_t render_target_count = 0u;
+   std::size_t pipeline_count = 0u;
+@@ -180,6 +184,10 @@
+       {"timestampMs", value.timestamp_ms},
+       {"srvCount", value.srv_count},
+       {"uavCount", value.uav_count},
++      {"submissionOrder", value.submission_order},
++      {"submissionKnown", value.submission_known},
++      {"captureRecordLimit", value.capture_record_limit},
++      {"captureTruncated", value.capture_truncated},
+       {"constantCount", value.constant_count},
+       {"renderTargetCount", value.render_target_count},
+       {"pipelineCount", value.pipeline_count},
