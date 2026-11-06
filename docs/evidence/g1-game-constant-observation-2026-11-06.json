@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_GAME_CONSTANT_METHOD_CLEANUP_PENDING",
+  "source_commit": "e7e0462084bcd8eb7c2efd8270e2506f65552562",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observer_version": "bc0ead3-gpu-constants-3",
+  "observer_sha256": "0ff10b126541f6cc4e307babc8ab8b5dbaf3b2e0cb31b2bf45d944715e591742",
+  "controller_sha256": "0d38faa977db76ded12e93593c0886e4a9c1127e14c57ac4ea774142d15f4583",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "scene": "title_menu",
+  "requested_constant_bytes": 2816,
+  "retained_record_limit": 128,
+  "retained_records": 128,
+  "truncated": true,
+  "methods": {
+    "Dispatch": 128
+  },
+  "detail_records_queried": 12,
+  "active_finite_candidate_bindings_in_queried_details": 7,
+  "samples_returned_in_queried_details": 0,
+  "game_values_returned_in_queried_details": 0,
+  "game_gpu_copy_attempt_count": "UNVERIFIED",
+  "source_heap_rejection_reason": "UNVERIFIED",
+  "observation_budget_deviation": "Initial six details were followed by six cached high-constant-count compute details. Twelve detail queries total, one snapshot, bounded separate bridge sessions; no shader text or extra capture.",
+  "staged_game_files_unchanged": "PASS",
+  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "private_values_and_handles": "NOT_PUBLISHED",
+  "camera_identification": "UNVERIFIED",
+  "camera_writes": "NOT_RUN",
+  "stereo_game_rendering": "NOT_RUN",
+  "headset_validation": "NOT_RUN",
+  "interpretation": "Observer loaded on the reviewed build. None of the queried draws returned sample tickets. This does not prove zero GPU copies: deduplicated samples attach only to their originating draw, which may be outside the selected details. Add sample counts to summaries and source eligibility diagnostics before inferring rejection or changing capture scope. Title compute prefix is not a world-camera observation."
+}
