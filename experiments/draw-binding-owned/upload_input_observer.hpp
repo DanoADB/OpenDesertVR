@@ -45,7 +45,7 @@ class UploadInputObserver final {
         try {
             if (entry->copy->read_completed()) {
                 entry->state = "READY_UPLOAD_INPUT";
-                entry->source.Reset();
+                (void)DeferredResourceRelease::defer(entry->source);
                 return true;
             }
         } catch (...) {
@@ -59,7 +59,13 @@ class UploadInputObserver final {
     void begin_capture() {
         const std::lock_guard lock(mutex_);
         ++capture_;
-        std::erase_if(entries_, [](const Ticket &entry) { return !entry->submitted || poll(entry); });
+        std::erase_if(entries_, [](const Ticket &entry) {
+            if (entry->submitted && (!poll(entry) || !entry->copy->resources_retired()))
+                return false;
+            // Tickets may also remain in captured draw details. Empty their
+            // tracked COM references before either container drops a ticket.
+            return DeferredResourceRelease::defer(entry->source, entry->target);
+        });
     }
     Ticket register_target(ID3D12Resource *target, UINT64 offset, std::size_t bytes,
                            ID3D12Device *native_device = nullptr) {
@@ -179,7 +185,11 @@ class UploadInputObserver final {
             if (entry->list != list || entry->submitted || (!entry->reset_pending && !destroyed))
                 continue;
             entry->matched = false;
-            entry->source.Reset();
+            if (!DeferredResourceRelease::defer(entry->source)) {
+                entry->failed = true;
+                entry->state = "RELEASE_QUEUE_FULL";
+                continue;
+            }
             entry->list = 0;
             entry->reset_pending = false;
             entry->state = "UNSUBMITTED_RECORDING_RETIRED";

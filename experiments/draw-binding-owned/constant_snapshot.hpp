@@ -3,6 +3,7 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+#include "deferred_resource_release.hpp"
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -189,8 +190,8 @@ class ConstantSnapshot final {
         const auto completed = fence_->GetCompletedValue();
         if (completed == UINT64_MAX || completed < fence_value_)
             return false;
-        source_.Reset();
-        readback_.Reset();
+        if (!DeferredResourceRelease::defer(source_, readback_))
+            return false;
         fence_.Reset();
         phase_ = Phase::discarded;
         release_count();
@@ -200,9 +201,9 @@ class ConstantSnapshot final {
     bool discard_unsubmitted() noexcept {
         if (phase_ != Phase::recorded || execution_observed_)
             return false;
+        if (!DeferredResourceRelease::defer(source_, readback_))
+            return false;
         phase_ = Phase::discarded;
-        source_.Reset();
-        readback_.Reset();
         release_count();
         return true;
     }

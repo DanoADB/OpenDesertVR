@@ -73,5 +73,6 @@ class OwnedConstantCopy final {
         }
         return data;
     }
+    bool resources_retired() const noexcept { return retired_; }
 };
 } // namespace odv::research

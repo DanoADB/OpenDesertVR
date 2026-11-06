@@ -145,6 +145,19 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     require(!unsubmitted.read_completed());
     check(allocators[1]->Reset());
     check(commands[1]->Reset(allocators[1].Get(), nullptr));
+    using odv::research::DeferredResourceRelease;
+    DeferredResourceRelease::drain(); // Native caller holds no observer locks.
+    for (std::size_t i = 0; i < DeferredResourceRelease::capacity - 1; ++i) {
+        Com<ID3D12Resource> retained = source;
+        require(DeferredResourceRelease::defer(retained) && !retained);
+    }
+    Com<ID3D12Resource> first = source, second = source;
+    require(!DeferredResourceRelease::defer(first, second));
+    require(first.Get() == source.Get() && second.Get() == source.Get()); // All-or-none.
+    require(DeferredResourceRelease::defer(first) && !first);
+    require(!unsubmitted.discard_unsubmitted()); // Full queue retains ownership/capacity.
+    DeferredResourceRelease::drain();
+    require(DeferredResourceRelease::defer(first, second) && !first && !second);
     require(unsubmitted.discard_unsubmitted());
     for (auto &snapshot : pending)
         require(snapshot->discard_unsubmitted());
@@ -344,6 +357,7 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     default_readback->Unmap(0, &empty);
     require(whole_equals_default);
     uploads.release_device(device.Get());
+    DeferredResourceRelease::drain();
     std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {
