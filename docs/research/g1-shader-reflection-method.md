@@ -72,3 +72,27 @@ must not trigger another shader selection. All camera layout, active binding,
 publication, control and stereo capability fields remain UNVERIFIED regardless
 of matching declarations. G2 still needs independently rendered world views;
 synthetic M0 acceptance does not supply that missing engine interface.
+
+## Actual same-container result
+
+The [observation](../evidence/g1-single-shader-reflection-2026-11-06.json) ran
+committed source 641385d once on reviewed build 26480954, using the exact prior
+index, entry, payload and container fingerprints. The same 4,088-byte range
+was read twice; the original range/file/index/game/catalog checks and helper/
+SDK-library hash checks passed. Native Release helper SHA-256 and SDK-library
+SHA-256 are recorded independently of reader source hashes. Exit 0.
+
+The SDK reports zero constant buffers, one bound resource, zero reflected
+variables and no query matches. This establishes that this individual container
+can be reflected with this SDK, while supplying no queried camera-field
+declarations. Do not generalize that table result to other shaders, unresolved
+resource access paths, active game bindings or absence of a camera interface.
+Raw payload, names, IR and disassembly were not saved, and no shader was
+submitted to a GPU. The game process was not accessed or modified.
+
+Stop observations on this witness here. Further selection needs concrete
+current-build evidence connecting a shader to a relevant material/pass or
+render-camera consumer, or another verified producer/consumer interface.
+Do not switch arbitrary entries or scan until camera-looking declarations
+appear. This reflection tool is research infrastructure, not a game adapter;
+the publication, control, world-render and stereo gates remain unchanged.

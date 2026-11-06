@@ -79,6 +79,11 @@ finds no engine writer-order/lifetime contract in the five selected pinned
 sources. A native speedup alone does not qualify a new game probe. A documented
 current-build producer/consumer relationship is the missing evidence for this
 acquisition route; observer-owned transport synchronization does not supply it.
+An [offline same-container reflection observation](../research/g1-shader-reflection-method.md)
+qualifies the SDK query mechanism but reports no queried constant-buffer
+declarations for that witness. It does not supply a camera-field mapping or
+runtime binding. Further shader selection needs a concrete material/pass or
+camera-consumer connection; no arbitrary shader scan or retry-until-match.
 They do not change the hold on runtime adapter implementation or award G2.
 Do not make another change merely to create work or consume the weekly usage
 allowance. Other runtimes/headsets, compositor metrics and extended graphics
