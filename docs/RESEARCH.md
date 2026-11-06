@@ -47,6 +47,10 @@ evidence, not camera control or G2. The later
 [updated-build Low-texture attempt](research/g1-updated-build-2026-11-06.md)
 also failed with E_OUTOFMEMORY and no RDC; original settings were restored.
 Further game retries require review of a materially different memory strategy.
+The [PIX candidate review](research/g1-pix-candidate-review.md) separates a
+possible alternative frame-capture implementation from timing/crash diagnostics
+and lists owned-fixture and launch-scope checks required before a game attempt.
+No PIX tool has been installed or executed for that review.
 The earlier [diagnostic log](evidence/g1-capture-allocation-log-2026-11-05.json)
 narrows the failure to initial-state READBACK heap creation and records a fatal
 OOM handler path; see the [memory review](research/g1-capture-memory.md).

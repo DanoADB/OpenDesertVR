@@ -83,6 +83,13 @@ powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 
 Current hardening evidence: [m0-hardening-2026-11-04.json](evidence/m0-hardening-2026-11-04.json).
 
+Latest portable collector/Explorer-launcher checks:
+[m0-package-launcher-2026-11-06.json](evidence/m0-package-launcher-2026-11-06.json).
+The clean fb1b574 ZIP is available under out/packages with a matching SHA-256
+sidecar. Extract it and double-click Run-Headset-Test.cmd. The extracted doctor
+currently reports no available headset; a new visual acceptance run was not
+performed, and this artifact retains NOT_RUN hardware/game fields.
+
 Initial build/package evidence (before hardening): [m0-local-2026-11-04.json](evidence/m0-local-2026-11-04.json).
 
 Build artifacts stay in ignored out/. The package includes build-info.json
