@@ -141,3 +141,13 @@ fresh bridge reconnect and cooperative shutdown. Zero captured draws are
 consistent with the clear-only fixture and provide no draw-binding pass. The
 next qualification needs actual owned geometry and descriptor/submission
 controls. No game loading method, camera consumer or G2 result is established.
+
+The original [owned draw fixture](../../experiments/draw-binding-owned/README.md)
+now establishes independent WARP pixel ground truth in local Debug and Release
+on clean source 4be273d. Three submitted root/table draws produce RGB, while a
+fourth recorded but unsubmitted list leaves black. Submitting that same fourth
+list in a paired control produces yellow. Every pixel is checked after fence
+completion for two frames per case. [Evidence](../evidence/g1-owned-draw-pixels-2026-11-06.json)
+does not yet qualify Devkit metadata: capture-tool execution is NOT_RUN for
+this fixture. Presenting-mode binding comparison remains the next step; the
+clear-only transport pass does not cover geometry. Production G2 stays held.
