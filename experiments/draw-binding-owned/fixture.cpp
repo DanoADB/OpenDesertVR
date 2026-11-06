@@ -211,13 +211,13 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12Resource> indirect_arguments;
         if (indirect_control) {
             D3D12_ROOT_SIGNATURE_DESC empty_root{};
-            Com<ID3DBlob> root_blob, errors, compute_blob;
-            check(D3D12SerializeRootSignature(&empty_root, D3D_ROOT_SIGNATURE_VERSION_1, &root_blob, &errors));
+            Com<ID3DBlob> root_blob, compute_errors, compute_blob;
+            check(D3D12SerializeRootSignature(&empty_root, D3D_ROOT_SIGNATURE_VERSION_1, &root_blob, &compute_errors));
             check(device->CreateRootSignature(0, root_blob->GetBufferPointer(), root_blob->GetBufferSize(),
                                               IID_PPV_ARGS(&compute_root)));
             constexpr char noop[] = "[numthreads(1,1,1)] void main() {}";
             check(D3DCompile(noop, sizeof(noop) - 1, nullptr, nullptr, nullptr, "main", "cs_5_1", 0, 0, &compute_blob,
-                             &errors));
+                             &compute_errors));
             D3D12_COMPUTE_PIPELINE_STATE_DESC cp{};
             cp.pRootSignature = compute_root.Get();
             cp.CS = {compute_blob->GetBufferPointer(), compute_blob->GetBufferSize()};
