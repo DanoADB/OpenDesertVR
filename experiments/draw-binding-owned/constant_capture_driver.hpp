@@ -68,6 +68,18 @@ class ConstantCaptureDriver final {
     }
     Ticket record(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
                   ID3D12Resource *source, UINT64 offset, std::size_t bytes, RecordStatus *status = nullptr) {
+        return record_impl(list, device, commands, source, offset, bytes, nullptr, status);
+    }
+    Ticket record_default(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
+                          ID3D12Resource *source, UINT64 offset, std::size_t bytes, const KnownBufferStates &states,
+                          RecordStatus *status = nullptr) {
+        return record_impl(list, device, commands, source, offset, bytes, &states, status);
+    }
+
+  private:
+    Ticket record_impl(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
+                       ID3D12Resource *source, UINT64 offset, std::size_t bytes, const KnownBufferStates *states,
+                       RecordStatus *status) {
         const std::lock_guard lock(mutex_);
         RecordStatus result;
         const auto reject = [&](const char *reason) -> Ticket {
@@ -81,7 +93,8 @@ class ConstantCaptureDriver final {
             return reject("INVALID_CAPTURE_CONTEXT");
         if (entries_.size() >= ConstantSnapshot::maximum_pending)
             return reject("CAPACITY_REACHED");
-        result.source = ConstantSnapshot::inspect_source(source, offset, bytes);
+        result.source = states ? ConstantSnapshot::inspect_default_source(source, offset, bytes, *states)
+                               : ConstantSnapshot::inspect_source(source, offset, bytes);
         if (!result.source.supported)
             return reject("INELIGIBLE_SOURCE");
         const auto identity = reinterpret_cast<std::uintptr_t>(source);
@@ -100,7 +113,10 @@ class ConstantCaptureDriver final {
         // Allocate tracking storage BEFORE inserting a native GPU command.
         entries_.push_back(entry);
         try {
-            if (!entry->snapshot.record(device, commands, source, offset, bytes)) {
+            const bool recorded = states
+                                      ? entry->snapshot.record_default(device, commands, source, offset, bytes, *states)
+                                      : entry->snapshot.record(device, commands, source, offset, bytes);
+            if (!recorded) {
                 entries_.pop_back();
                 return reject("COPY_NOT_RECORDED");
             }
@@ -113,6 +129,8 @@ class ConstantCaptureDriver final {
             *status = result;
         return entry;
     }
+
+  public:
     void before_execute(std::uintptr_t list, ID3D12CommandQueue *queue) {
         const std::lock_guard lock(mutex_);
         for (const auto &entry : entries_) {
@@ -130,11 +148,20 @@ class ConstantCaptureDriver final {
             (void)entry->snapshot.before_execute();
         }
     }
-    void after_present(ID3D12CommandQueue *queue) {
+    void after_present(ID3D12CommandQueue *queue) { after_submission(queue, std::nullopt); }
+    // Call only from an actual AFTER-native-ExecuteCommandLists callback for
+    // this recording. Present timing and a later frame are not prerequisites.
+    void after_execute(std::uintptr_t list, ID3D12CommandQueue *queue) {
+        if (list)
+            after_submission(queue, list);
+    }
+
+  private:
+    void after_submission(ID3D12CommandQueue *queue, std::optional<std::uintptr_t> list) {
         const std::lock_guard lock(mutex_);
         for (const auto &entry : entries_) {
             if (!queue || !entry->pending || entry->ambiguous || entry->failed || entry->queue.Get() != queue ||
-                entry->thread != std::this_thread::get_id())
+                entry->thread != std::this_thread::get_id() || (list && entry->list != *list))
                 continue;
             Com<ID3D12Device> device;
             Com<ID3D12Fence> fence;
@@ -144,8 +171,8 @@ class ConstantCaptureDriver final {
                 entry->failed = true;
                 continue;
             }
-            // Same CPU thread reached AFTER-present after returning from its
-            // earlier native ExecuteCommandLists. Signal follows the copy.
+            // Caller has returned from native execution submission, either via
+            // the exact callback or the qualified same-thread present route.
             if (!entry->snapshot.submitted_after_execute(fence.Get(), 1)) {
                 entry->failed = true;
                 continue;
@@ -154,6 +181,8 @@ class ConstantCaptureDriver final {
         }
         collect_retired();
     }
+
+  public:
     void before_reset(std::uintptr_t list) {
         const std::lock_guard lock(mutex_);
         for (const auto &entry : entries_)

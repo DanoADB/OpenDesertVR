@@ -81,6 +81,26 @@ class ConstantSnapshot final {
         }
         return info;
     }
+    static SourceInfo inspect_default_source(ID3D12Resource *source, UINT64 offset, std::size_t bytes,
+                                             const KnownBufferStates &states) {
+        auto info = inspect_source(source, offset, bytes);
+        info.supported = false;
+        if (info.heap_type != D3D12_HEAP_TYPE_DEFAULT) {
+            info.state = "HEAP_NOT_DEFAULT";
+        } else if (std::strcmp(info.state, "HEAP_NOT_UPLOAD") != 0) {
+            return info; // Buffer/heap query already failed.
+        } else if (info.width > maximum_source_bytes) {
+            info.state = "SOURCE_ALLOCATION_TOO_LARGE";
+        } else if (!bytes || bytes > maximum_bytes || offset > info.width || bytes > info.width - offset) {
+            info.state = "RANGE_REJECTED";
+        } else if (!states.constant_read_state(source)) {
+            info.state = "DEFAULT_STATE_UNVERIFIED";
+        } else {
+            info.state = "ELIGIBLE_DEFAULT_KNOWN_READ_STATE";
+            info.supported = true;
+        }
+        return info;
+    }
     ConstantSnapshot() = default;
     ConstantSnapshot(const ConstantSnapshot &) = delete;
     ConstantSnapshot &operator=(const ConstantSnapshot &) = delete;
@@ -124,8 +144,8 @@ class ConstantSnapshot final {
             D3D12_HEAP_PROPERTIES heap{};
             D3D12_HEAP_FLAGS flags{};
             if (FAILED(source->GetHeapProperties(&heap, &flags)) || heap.Type != D3D12_HEAP_TYPE_DEFAULT ||
-                desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER || desc.Width > maximum_source_bytes ||
-                offset > desc.Width || bytes > desc.Width - offset)
+                (flags & D3D12_HEAP_FLAG_HARDWARE_PROTECTED) || desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER ||
+                desc.Width > maximum_source_bytes || offset > desc.Width || bytes > desc.Width - offset)
                 return false;
         } else if (!inspect_source(source, offset, bytes).supported) {
             return false;

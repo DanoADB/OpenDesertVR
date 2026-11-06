@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include "constant_snapshot.hpp"
+#include "constant_capture_driver.hpp"
 #include <array>
 #include <d3d12sdklayers.h>
 #include <dxgi1_4.h>
@@ -121,8 +121,13 @@ int main() {
         const auto close = [](void *handle) { CloseHandle(handle); };
         std::unique_ptr<void, decltype(close)> event(CreateEventW(nullptr, FALSE, FALSE, nullptr), close);
         require(event != nullptr);
+        odv::research::ConstantCaptureDriver driver;
+        driver.begin_capture();
         for (UINT64 pass = 1; pass <= 2; ++pass) {
             odv::research::ConstantSnapshot capture;
+            odv::research::ConstantCaptureDriver::Ticket ticket;
+            require(
+                !driver.record_default(123, device.Get(), commands.Get(), source.Get(), 64, sizeof(expected), states));
             require(!capture.record_default(device.Get(), commands.Get(), source.Get(), 64, sizeof(expected), states));
             if (pass == 1) {
                 commands->CopyBufferRegion(source.Get(), 64, upload.Get(), 0, sizeof(expected));
@@ -144,6 +149,14 @@ int main() {
             require(
                 !capture.record_default(device.Get(), commands.Get(), source.Get(), 1000, sizeof(expected), states));
             require(capture.record_default(device.Get(), commands.Get(), source.Get(), 64, sizeof(expected), states));
+            if (pass == 2) {
+                odv::research::ConstantCaptureDriver::RecordStatus status;
+                ticket = driver.record_default(123, device.Get(), commands.Get(), source.Get(), 64, sizeof(expected),
+                                               states, &status);
+                require(ticket && status.source.supported && status.source.heap_type == D3D12_HEAP_TYPE_DEFAULT);
+                require(!driver.record_default(123, device.Get(), commands.Get(), source.Get(), 64, sizeof(expected),
+                                               states)); // Duplicate range.
+            }
             // This before-state assertion is checked by the D3D12 debug layer:
             // the capture must have restored exactly the application's state.
             transition(expected_state, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -161,25 +174,38 @@ int main() {
             } unblock{gate.Get(), pass};
             checked(queue->Wait(gate.Get(), pass));
             require(capture.before_execute());
+            driver.before_execute(123, queue.Get());
             ID3D12CommandList *execute[] = {commands.Get()};
             queue->ExecuteCommandLists(1, execute);
-            checked(queue->Signal(fence.Get(), pass));
-            require(capture.submitted_after_execute(fence.Get(), pass));
+            checked(queue->Signal(fence.Get(), pass * 2));
+            require(capture.submitted_after_execute(fence.Get(), pass * 2));
+            driver.after_execute(999, queue.Get()); // A different recording grants nothing.
+            require(driver.read(ticket).bytes.empty());
+            driver.after_execute(123, queue.Get()); // Actual native Execute has returned; no Present needed.
+            checked(queue->Signal(fence.Get(), pass * 2 + 1));
             require(!capture.read_completed());
+            require(driver.read(ticket).bytes.empty());
             checked(gate->Signal(pass));
-            checked(fence->SetEventOnCompletion(pass, event.get()));
+            checked(fence->SetEventOnCompletion(pass * 2 + 1, event.get()));
             require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
             const auto &data = capture.read_completed();
             require(data && data->size() == sizeof(expected) &&
                     std::memcmp(data->data(), expected.data(), sizeof(expected)) == 0);
+            if (ticket) {
+                const auto copied = driver.read(ticket);
+                require(copied.bytes.size() == sizeof(expected) &&
+                        std::memcmp(copied.bytes.data(), expected.data(), sizeof(expected)) == 0);
+            }
             const D3D12_RANGE range{0, sizeof(expected)};
             void *pixels = nullptr;
             checked(independent->Map(0, &range, &pixels));
             const bool unchanged = std::memcmp(pixels, expected.data(), sizeof(expected)) == 0;
             independent->Unmap(0, &empty);
             require(unchanged);
+            driver.before_reset(123);
             checked(allocator->Reset());
             checked(commands->Reset(allocator.Get(), nullptr));
+            driver.recording_resumed(123);
             states.reset();
             require(!states.constant_read_state(source.Get()));
             require(capture.release_retired());
