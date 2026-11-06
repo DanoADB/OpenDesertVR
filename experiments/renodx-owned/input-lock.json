@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "upstream_revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "reference_directory": "renodx-bc0ead3",
+  "files": [
+    {
+      "path": "src/utils/descriptor.hpp",
+      "sha256": "db5928fddc3267c7b48b1206edaaa31e31488cfea914b09cbd087c34d1406db9",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/descriptor.hpp"
+    },
+    {
+      "path": "src/utils/cross_addon.hpp",
+      "sha256": "323a686a87f9123ed57cea5ff93a548bfb798c3cedbdec9dc116d337b2a30bbb",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/cross_addon.hpp"
+    },
+    {
+      "path": "src/utils/data.hpp",
+      "sha256": "b0da0fa95b843a937867abad428cf6ada7eca03a990a3df1a648482337cbdb91",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/data.hpp"
+    },
+    {
+      "path": "src/utils/hash.hpp",
+      "sha256": "d09d0e169aea233138451604721b568890354624ce997997c839e21be2d8b87f",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/hash.hpp"
+    },
+    {
+      "path": "src/utils/format.hpp",
+      "sha256": "0258799928902006636d4ce2ccffa2a1286d152d53c338000ce465aa2b6a8c1c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/format.hpp"
+    },
+    {
+      "path": "src/utils/platform.hpp",
+      "sha256": "48ed56ca868417b756375e6f6dee9e7501f095685b2b3d6cd31de0ae1a84c77b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/platform.hpp"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "e9e2da3991a48d9c09b710c9ddbf5673275b6d569c976bcffab3111d0c509d51",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/LICENSE"
+    },
+    {
+      "path": "external/reshade/include/reshade.hpp",
+      "sha256": "dcb22f29ca7d7b2e4a9ea2f19cf98ce2911141659e525d3417f5ffada75899c8",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_events.hpp",
+      "sha256": "64608864e68faf8e01b896b7726a1b0fc5aec3cd802b49ba19e1b58f2bcebdfe",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_events.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_overlay.hpp",
+      "sha256": "ed914b12fbc41ed038287b0163c0bc934772afcff2c22392044c6008adc5ae79",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_overlay.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api.hpp",
+      "sha256": "8d83ec8a620c48da7a20d975bd27b3345b24d3f0d5b78ae4c4fe633d61b804eb",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_device.hpp",
+      "sha256": "36d8970c360a96d47a8a454899420d80cb5a98fba180123d375a35de5f35d46d",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_device.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_pipeline.hpp",
+      "sha256": "a08260c70bab82f2c149c34ae9fcfbb50b4d30f6aee848fc22a9d9ffed7ec7db",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_pipeline.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_resource.hpp",
+      "sha256": "c5e2f458dffbebab2c840fd0830e529d62e003e17d6fbd27be0c5297b6293944",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_resource.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_format.hpp",
+      "sha256": "68caa17fef712043e810ab88770c15af009aa3c7693e5c115ddc324f2d0809a7",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_format.hpp"
+    },
+    {
+      "path": "external/reshade/LICENSE.md",
+      "sha256": "237ded5b8344f820113efab1e65e91e1f159d9202c5b4856606a0590d3ffdab0",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/LICENSE.md"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap.hpp",
+      "sha256": "a3457cc7dedd09f9904ffa0c4555c18470e72dbb9afc760e947eb69079294414",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/gtl_config.hpp",
+      "sha256": "d0e6aace806b3b572118a6e609070f8ac72f94c5bbe36b92818f9f43de01e144",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/gtl_config.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/gtl_base.hpp",
+      "sha256": "1efb9d481946a8278564943e3ddd87a4dc8ca36d8d0b7e976281a92566e2b377",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/gtl_base.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap_fwd_decl.hpp",
+      "sha256": "d991056c77c974bffc7348b75eb23b68449af7be297e2b85ad4df64c857a715e",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap_fwd_decl.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap_utils.hpp",
+      "sha256": "8d552d72924bced08573edc58af2f999dd67195bc2e50ba2ecf6cb16acd760c4",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap_utils.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/bits.hpp",
+      "sha256": "39fbb48aaeb008a6ea7eb90867a4b5b2783bf50f2eb95d5e193362c789b0324c",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/bits.hpp"
+    },
+    {
+      "path": "external/gtl/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/LICENSE"
+    },
+    {
+      "path": "test/descriptor_cache_race/addon.cpp",
+      "sha256": "c303a8d3fc6b98b3af75c9c937844b5de84d4311af42494d259640df1ea71139",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/test/descriptor_cache_race/addon.cpp"
+    },
+    {
+      "path": "test/descriptor_cache_race/dx12_app.cpp",
+      "sha256": "e1760dae86a7acfe41b2a5d5c8ae3755c26581017db33e9b20012dcee8597d72",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/test/descriptor_cache_race/dx12_app.cpp"
+    }
+  ],
+  "reshade_dll_sha256": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25",
+  "scope": "Minimal external owned descriptor-cache regression inputs only. No full Devkit or game replacement shaders."
+}

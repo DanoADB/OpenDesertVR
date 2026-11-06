@@ -75,3 +75,16 @@ Carlos Lopez notices. No RenoDX/ReShade addon, bridge, replacement shader or
 dependency is adopted, built or executed by this source review. The inventory
 is docs/research/renodx-inspection-source-inventory.json; selected dependency
 Git links are recorded as not yet license-audited, not as approved M0 deps.
+
+## Optional owned external-tool qualification
+
+experiments/renodx-owned builds the selected upstream MIT descriptor-cache
+regression from an external, hash-locked reference tree for owned-process tests.
+No upstream source is vendored and no resulting binary is installed into M0.
+Selected RenoDX helpers retain their source notices; ReShade API headers state
+BSD-3-Clause OR MIT, while the local ReShade runtime has the BSD-3-Clause root
+notice. Selected GTL headers use Apache-2.0 and retain Gregory Popovitch/Abseil
+notices. Full root texts are in docs/licenses/ReShade-BSD-3-Clause.txt and
+GTL-Apache-2.0.txt, alongside RenoDX-MIT.txt. Exact paths/revisions and source
+hashes are in experiments/renodx-owned/input-lock.json. This selected direct-input
+audit does not claim exhaustive review of every dependency in the tool binary.

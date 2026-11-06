@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+cmake_minimum_required(VERSION 3.24)
+project(OpenDesertExternalOwnedDescriptor LANGUAGES CXX)
+if(NOT WIN32 OR NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "This external owned regression requires Windows MSVC x64")
+endif()
+set(ODV_RENODX_REFERENCE "${CMAKE_CURRENT_SOURCE_DIR}/../../out/research/renodx-bc0ead3" CACHE PATH "Prepared pinned source/header reference, no automatic download")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+add_library(descriptor_cache_race_addon MODULE "${ODV_RENODX_REFERENCE}/test/descriptor_cache_race/addon.cpp")
+target_compile_features(descriptor_cache_race_addon PRIVATE cxx_std_20)
+target_compile_definitions(descriptor_cache_race_addon PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_include_directories(descriptor_cache_race_addon PRIVATE "${ODV_RENODX_REFERENCE}" "${ODV_RENODX_REFERENCE}/external/reshade" "${ODV_RENODX_REFERENCE}/external/gtl/include")
+target_link_libraries(descriptor_cache_race_addon PRIVATE version)
+set_target_properties(descriptor_cache_race_addon PROPERTIES PREFIX "" SUFFIX ".addon64")
+add_executable(descriptor_cache_race_app "${ODV_RENODX_REFERENCE}/test/descriptor_cache_race/dx12_app.cpp")
+target_compile_features(descriptor_cache_race_app PRIVATE cxx_std_20)
+target_compile_definitions(descriptor_cache_race_app PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_link_libraries(descriptor_cache_race_app PRIVATE d3d12 dxgi)
+# No install target, game loading or linkage to M0. The original controller
+# checks the explicit lock and binary fingerprints before any owned execution.
