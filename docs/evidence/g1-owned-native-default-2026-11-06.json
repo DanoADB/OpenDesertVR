@@ -315,6 +315,88 @@
           "native_after_execute_callbacks": 0
         }
       ]
+    },
+    {
+      "name": "exact2816-game-options",
+      "source_commit": "a73061c1677356826f5b222758a104edfe73797f",
+      "status": "QUALIFIED_OWNED_NATIVE_DEFAULT",
+      "report_sha256": "b7a7ccc1223b9f13a6c73ee068b2ae050ab8f7db2be7e3dbf14dc37583613425",
+      "controller_sha256": "99fd0b8168ac4ea52adbe6c74d45e2a55a4f121712632c36a7e8b35f1cffcdb2",
+      "binary_sha256": {
+        "owned_app.exe": "19272fd7cbb67b7580c50eb579d976e0bbb4968e153be7220523cf78acbdfced",
+        "renodx-devkit.addon64": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxgi.dll": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8"
+      },
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 14,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "configuration": {
+        "ODVConstantBytes": 2816,
+        "ODVConstantMaxBytes": 0,
+        "ODVGraphicsOnly": 1,
+        "ODVUploadInputs": 0,
+        "ODVDefaultConstants": 1
+      },
+      "comparisons": [
+        {
+          "control": "root-red",
+          "submission_known": true,
+          "gpu_constant_sample_count": 0,
+          "gpu_constant_sample_state": "NOT_CAPTURED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": null,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-green",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 2816,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "table-blue",
+          "submission_known": true,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "READY",
+          "gpu_constant_bytes": 2816,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 6,
+          "native_after_execute_callbacks": 1
+        },
+        {
+          "control": "recorded-yellow",
+          "submission_known": false,
+          "gpu_constant_sample_count": 1,
+          "gpu_constant_sample_state": "UNSUBMITTED",
+          "gpu_constant_bytes": 0,
+          "source_heap_type": 1,
+          "native_legacy_callbacks": 4,
+          "native_after_execute_callbacks": 0
+        }
+      ]
     }
   ],
   "base_component_ci": {
