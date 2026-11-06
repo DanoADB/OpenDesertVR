@@ -57,7 +57,7 @@ these defaults and did not modify those fields. New capture reports record
 the supported values explicitly. This audits scope settings, not the live
 game's resource sizes, and does not establish a memory mitigation.
 
-## Next controlled comparison
+## Controlled comparison and current gate
 
 Record the original game resolution, texture/graphics preset, ray-tracing and
 upscaling/frame-generation settings from the actual UI before modifying any.
@@ -66,8 +66,22 @@ record the exact changed values and use a fresh early-start context. This is
 a mitigation hypothesis, not a verified fix. Request one title-menu frame and
 retain the actual outcome without automatic retries or changing protections.
 Restore the original settings and verify restoration after the experiment.
-The game has not responded to automated menu input; the user has been asked
-to open its graphics settings manually. No graphics setting has been changed.
+On 2026-11-06 normal-session mouse input worked. The
+[updated-build experiment](g1-updated-build-2026-11-06.md) verified Low textures
+in a fresh title-menu process, but one capture still failed creating a readback
+buffer with E_OUTOFMEMORY and saved no RDC. The capture session also displayed
+different upscaling/frame-generation/Reflex values without agent changes.
+Original settings, including Ultra textures, were restored and verified in a
+normal session. No manual menu-input gate remains. A repeated blind retry is
+not justified; review a materially different capture-memory strategy first.
+
+The latest run did not retain a matching raw log, so its exact allocation branch
+is unknown. The helper now uses the supported
+[SetDebugLogFile API](https://github.com/baldurk/renderdoc/blob/v1.47/renderdoc/api/replay/renderdoc_replay.h#L2236)
+to select a local per-case log shared by analysis and captured programs before
+launch, then retains a bounded snapshot before helper exit. Diagnostic contents
+remain local; only size, hash and truncation metadata enter the report. An
+embedded-Python prelaunch failure check verified retention, not target logging.
 
 Even a successful title-menu capture would not prove world rendering, camera
 control or stereo. The next evidence gate remains a locally replayable frame

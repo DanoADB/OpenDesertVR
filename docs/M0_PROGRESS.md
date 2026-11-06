@@ -106,8 +106,15 @@ first loading method stopped. A later isolated Steam development context kept
 the early-loaded target through D3D12 readiness and a title-menu frame request,
 but the capture failed allocating an initial-state READBACK heap with
 E_OUTOFMEMORY. No game frame was saved. The
-[memory review](research/g1-capture-memory.md) requires original graphics settings
-recorded before a temporary lower-memory comparison in a fresh game process.
+[memory review](research/g1-capture-memory.md) led to a
+[fresh-process Low-texture attempt](evidence/g1-low-texture-capture-2026-11-06.json)
+on updated Steam build 26480954. It also failed with a readback-buffer
+E_OUTOFMEMORY and produced no RDC. Capture-session video settings differed
+without agent changes, limiting comparison. All recorded original settings,
+including Ultra textures, were restored and verified before normal close.
+The helper now retains a bounded per-case diagnostic-log snapshot; five
+owned-file tests and an actual embedded-Python prelaunch rejection passed.
+Review a different capture-memory strategy before another game attempt.
 CPU and GPU eye/stereo timing windows are bounded and report sample counts.
 Runtime dropped/reprojected frame counters and display-latency measurements
 remain NOT_RUN. D3D12 debug validation is SKIPPED here because Graphics Tools

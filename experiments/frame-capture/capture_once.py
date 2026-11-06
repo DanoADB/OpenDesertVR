@@ -197,6 +197,7 @@ def run(config, report, report_path):
 
 
 report_path = None
+diagnostic_source = None
 report = {"schema_version": 1, "evidence_kind": "controlled_external_frame_capture",
           "status": "NOT_STARTED", "game_gpu_capture": "NOT_RUN",
           "world_render_pass_identity": "UNVERIFIED", "camera_control": "UNVERIFIED",
@@ -206,6 +207,15 @@ try:
     config = json.loads(config_path.read_text(encoding="utf-8-sig"))
     report_path = config_path.parent / "capture-info.json"
     report["script_sha256"] = digest(Path(config["script"]))
+    sys.path.insert(0, str(Path(config["script"]).resolve().parent))
+    from diagnostic_log import snapshot_log
+    log_path = config_path.parent / "local-renderdoc.log"
+    if log_path.exists():
+        raise RuntimeError("Use a fresh diagnostic log path")
+    # Supported API: this log is shared by the analysis and captured programs.
+    # Select it before launch, then retain a bounded snapshot before qrenderdoc exits.
+    rd.SetDebugLogFile(str(log_path))
+    diagnostic_source = log_path
     run(config, report, report_path)
 except Exception as error:
     traceback.print_exc()
@@ -215,5 +225,12 @@ except Exception as error:
                        "failure_type": type(error).__name__})
         save(report_path, report)
 finally:
+    if diagnostic_source is not None and report_path is not None:
+        try:
+            report["diagnostic_log"] = snapshot_log(
+                diagnostic_source, report_path.parent / "local-renderdoc-snapshot.log")
+        except Exception as log_error:
+            report["diagnostic_log"] = {"status": "FAILED", "failure_type": type(log_error).__name__}
+        save(report_path, report)
     # qrenderdoc owns replay lifetime. Its process exit alone does not prove success.
     sys.exit()

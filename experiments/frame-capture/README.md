@@ -131,7 +131,9 @@ cannot satisfy a new request. The prior failure record remains unchanged.
 One owned timeout/reconnect/capture/replay check passed on the same live process
 and verified all 256 pixels before normal exit 0; see
 [its evidence](../../docs/evidence/g1-owned-reconnect-2026-11-05.json).
-The game's lower-memory retry remains NOT_RUN pending graphics-settings review.
+The [Low-texture game attempt](../../docs/research/g1-updated-build-2026-11-06.md)
+also failed with a readback-buffer allocation error and no RDC. All original
+settings were restored and verified; review a different strategy before retrying.
 Reconnection after an owned polling timeout does not demonstrate recovery from
 the game's allocation error. The [memory-failure review](../../docs/research/g1-capture-memory.md)
 recommends a fresh controlled game launch for the graphics-settings comparison.
@@ -151,3 +153,16 @@ The owned fixture produced two clears, one present, zero draw calls, a 16x16
 target and a 320x180 target. This matches the ordinary fixture's structure;
 independent pixel replay is separate. No game frame has yet been replayed.
 REPLAYED does not assert image fidelity, world-pass identity or camera control.
+
+## Local diagnostic retention
+
+Before launch, capture_once.py selects local-renderdoc.log inside its fresh case
+using the supported SetDebugLogFile API. Before helper exit it creates an
+exclusive local-renderdoc-snapshot.log containing at most the first 16 MiB of
+the initially observed log size. The report records bytes, SHA-256, truncation
+and unavailable/failure status. A log failure cannot turn a failed capture into
+success. Both log files can contain paths and proprietary diagnostic details;
+keep their contents local. Snapshot metadata alone does not prove the target
+wrote to the log or identify a failing resource. Unit tests use owned bytes;
+an embedded-Python prelaunch rejection also verified a retained snapshot without
+launching a target. No additional game capture was performed for that check.

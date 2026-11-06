@@ -34,9 +34,8 @@ still stops the experiment; no arbitrary fingerprint override is added.
 
 The original Texture Quality value Ultra was recorded before changing it to
 Low through ordinary Settings and its Apply confirmation. Other settings were
-left unchanged. The intended experiment is one title-menu capture from a fresh
-process using the reviewed isolated Steam context. Record the actual outcome,
-then restore Ultra and verify restoration in the normal game UI. The setting
+left unchanged. The experiment requested one title-menu capture from a fresh
+process using the reviewed isolated Steam context. The setting
 change is a memory-reduction hypothesis, not a measured memory saving or a fix.
 
 Because this build and the observed display configuration differ from the
@@ -45,3 +44,32 @@ causal comparison against that historical failure. No raw game capture, user
 config, memory contents or proprietary assets are committed. Independently
 rendered world views and camera control remain unverified regardless of the
 capture outcome.
+
+## Observed result and restoration
+
+The [attempt record](../evidence/g1-low-texture-capture-2026-11-06.json)
+records Low textures verified in the fresh title-menu process, one request,
+the readback-buffer E_OUTOFMEMORY overlay and zero RDC files. Capture-session
+Video settings showed upscaling, frame generation and Reflex off without agent
+changes to those controls. This additional difference prevents treating the
+run as a texture-only comparison. Available system memory before the request
+does not identify the failing allocation or establish its cause.
+
+The game was closed normally after the observed error. The helper then recorded
+disconnection at CAPTURE_REQUESTED. No matching diagnostic log was retained
+after closing; this attempt's exact heap/resource branch remains unverified.
+The previous day's log does not supply missing evidence for this build.
+
+A normal Steam session without the capture layer again showed the original
+DLSS Performance, frame-generation and Reflex settings. Ultra textures were
+restored, applied and verified; all recorded settings matched the original
+snapshot before normal close. No further game capture was requested.
+
+The helper now selects a per-case local diagnostic log through RenderDoc's
+documented SetDebugLogFile API before launch and snapshots at most 16 MiB before
+tool exit. Five owned-file tests verify bounds, fingerprints and preservation.
+An actual embedded-Python rejection before any target launch retained a
+272-byte snapshot after helper exit. This checks diagnostic retention only;
+it does not test target logging, game capture or allocation recovery. Both raw
+logs remain local. Next review the capture-memory strategy before any new
+game attempt; lowering textures alone has not produced a replayable frame.

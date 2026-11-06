@@ -25,6 +25,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_presentmon_summary.py -v
       - name: Test diagnostic game-build identity gate (owned test bytes only)
         run: python -m unittest discover -s tests -p test_game_build_gate.py -v
+      - name: Test bounded local diagnostic-log snapshots
+        run: python -m unittest discover -s tests -p test_diagnostic_log.py -v
       - name: Compile optional owned presenting fixture (no capture tool or game)
         run: |
           cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF
@@ -33,7 +35,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check optional research-script syntax (no game or GPU capture)
         run: |
-          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py
+          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py experiments/frame-capture/diagnostic_log.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $tokens = $null; $errors = $null
           foreach ($script in @('start-probe.ps1', 'test-owned-control.ps1')) {
