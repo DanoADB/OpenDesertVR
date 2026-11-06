@@ -81,12 +81,15 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-empty" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-whole" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-indirect" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-upload-variable")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-variable" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-transient")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
-        const bool indirect_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect";
+        const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
+        const bool indirect_control =
+            transient_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect");
         const bool variable_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-variable";
         const bool upload_control = indirect_control || variable_control || whole_upload_control ||
                                     empty_upload_control ||
@@ -359,6 +362,25 @@ int wmain(int argc, wchar_t **argv) {
             while (loop && PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
                 TranslateMessage(&message);
                 DispatchMessageW(&message);
+            }
+            if (transient_control) {
+                // The previous frame's fence completed before reaching here.
+                // Drop the app's reference to each previous upload allocation;
+                // the observer may now own its final reference when read later.
+                // Bound DEFAULT targets and authored pixels remain unchanged.
+                for (UINT i : {3u, 5u, 7u}) {
+                    const auto desc = constants[i]->GetDesc();
+                    Com<ID3D12Resource> replacement;
+                    check(device->CreateCommittedResource(&upload, D3D12_HEAP_FLAG_NONE, &desc,
+                                                          D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+                                                          IID_PPV_ARGS(&replacement)));
+                    void *mapped = nullptr;
+                    const D3D12_RANGE empty{};
+                    check(replacement->Map(0, &empty, &mapped));
+                    std::memset(mapped, 0, static_cast<size_t>(desc.Width));
+                    std::memcpy(mapped, values[i], sizeof(values[i]));
+                    constants[i] = std::move(replacement);
+                }
             }
             for (UINT i = 0; i < lists.size(); ++i) {
                 check(allocators[i]->Reset());
