@@ -4,6 +4,7 @@
 #define NOMINMAX
 #endif
 #include "deferred_resource_release.hpp"
+#include "known_buffer_states.hpp"
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -11,11 +12,12 @@
 #include <d3d12.h>
 #include <optional>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 #include <wrl/client.h>
 
 namespace odv::research {
-// Experimental GPU copy for an UPLOAD constant-buffer range. The caller must
+// Experimental GPU copy for a bounded constant-buffer range. The caller must
 // establish actual submission and a fence ordered AFTER this copy; a recorded
 // command or a before-execute callback alone does not establish that ordering.
 class ConstantSnapshot final {
@@ -97,14 +99,40 @@ class ConstantSnapshot final {
     }
     bool record(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source, UINT64 offset,
                 std::size_t bytes) {
+        return record_copy(device, commands, source, offset, bytes, std::nullopt);
+    }
+    // Experimental DEFAULT path. Requires exact native state observations in
+    // THIS command recording; never infer states from descriptors or CBV use.
+    // Current interop addon does NOT supply this contract and remains UPLOAD-only.
+    bool record_default(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source,
+                        UINT64 offset, std::size_t bytes, const KnownBufferStates &states) {
+        const auto state = states.constant_read_state(source);
+        if (!state || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
+            return false;
+        return record_copy(device, commands, source, offset, bytes, state);
+    }
+
+  private:
+    bool record_copy(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source, UINT64 offset,
+                     std::size_t bytes, std::optional<D3D12_RESOURCE_STATES> default_state) {
         if (phase_ != Phase::empty || !device || !commands || !source || !bytes || bytes > maximum_bytes)
             return false;
         if (commands->GetType() == D3D12_COMMAND_LIST_TYPE_BUNDLE)
             return false;
-        if (!inspect_source(source, offset, bytes).supported)
+        if (default_state) {
+            const auto desc = source->GetDesc();
+            D3D12_HEAP_PROPERTIES heap{};
+            D3D12_HEAP_FLAGS flags{};
+            if (FAILED(source->GetHeapProperties(&heap, &flags)) || heap.Type != D3D12_HEAP_TYPE_DEFAULT ||
+                desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER || desc.Width > maximum_source_bytes ||
+                offset > desc.Width || bytes > desc.Width - offset)
+                return false;
+        } else if (!inspect_source(source, offset, bytes).supported) {
             return false;
+        }
         // UPLOAD resources have fixed GENERIC_READ state, including COPY_SOURCE.
-        // DEFAULT/unknown states are rejected; no game resource is transitioned.
+        // The separate DEFAULT path temporarily adds COPY_SOURCE to an exact
+        // known read state and restores that state in the same recording.
         if (pending_.fetch_add(1) >= maximum_pending) {
             --pending_;
             return false;
@@ -125,7 +153,21 @@ class ConstantSnapshot final {
                                                     D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&readback_)));
             source_ = source;
             bytes_ = bytes;
+            D3D12_RESOURCE_BARRIER barrier{};
+            const bool transition = default_state && !(*default_state & D3D12_RESOURCE_STATE_COPY_SOURCE);
+            if (transition) {
+                barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+                barrier.Transition.pResource = source;
+                barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+                barrier.Transition.StateBefore = *default_state;
+                barrier.Transition.StateAfter = *default_state | D3D12_RESOURCE_STATE_COPY_SOURCE;
+                commands->ResourceBarrier(1, &barrier);
+            }
             commands->CopyBufferRegion(readback_.Get(), 0, source_.Get(), offset, bytes);
+            if (transition) {
+                std::swap(barrier.Transition.StateBefore, barrier.Transition.StateAfter);
+                commands->ResourceBarrier(1, &barrier);
+            }
             phase_ = Phase::recorded;
             return true;
         } catch (...) {
@@ -135,6 +177,8 @@ class ConstantSnapshot final {
             throw;
         }
     }
+
+  public:
     // Invoke before EVERY native execution, while excluding concurrent reads.
     // No new read is permitted until an after-execute fence covers this call.
     // A previously copied CPU sample stays immutable across resubmission.

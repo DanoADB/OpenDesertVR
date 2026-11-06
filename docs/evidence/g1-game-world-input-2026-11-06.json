@@ -43,10 +43,41 @@
   "private_details_sha256": "7133c84fa1cdf67962170f5f6bf7501d8fb1a450d4c5b288dc3ac93230915eda",
   "values_handles_and_shader_bytes": "NOT_PUBLISHED",
   "camera_identification": "UNVERIFIED",
-  "camera_movement_comparison": "PENDING",
+  "camera_movement_comparison": "CHANGED_VIEW_ONLY_NOT_CONTINUOUS_PAN",
   "game_buffer_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_test": "NOT_RUN",
   "cleanup": "PENDING_NORMAL_GAME_EXIT",
-  "interpretation": "Actual world scene graphics and one subsequent UPLOAD input were observed. Both shared2816byte candidates remain unread by the bounded covering-upload path. These observations establish neither a camera buffer nor independently rendered eyes."
+  "interpretation": "The continuous-pan attempt returned zero records and is rejected despite its legacy collector status. A non-overwriting third observation of the changed world view retained128submitted graphics records and returned the same768byte input binding/shaderpair with10of192floatwords changed. Elapsed time, animation and other updates are confounders; this does not identify a camera. Larger DEFAULT candidates remain unread by this upload-input method. No additional user camera motion is needed for the next owned GPU-copy development step.",
+  "empty_pan_attempt": {
+    "classification": "REJECTED_EMPTY_SNAPSHOT",
+    "reported_status": "OBSERVED_GAME_METADATA",
+    "retained_records": 0,
+    "cause": "UNVERIFIED",
+    "private_report_sha256": "bb788a53a69994fb0f36f82f710bc6896d140789d30724ab10a573d1806801e0"
+  },
+  "after_turn": {
+    "scene": "world_after_turn",
+    "retained_records": 128,
+    "known_submission_records": 128,
+    "command_origins": {
+      "DrawIndexed": 8,
+      "DrawOrDispatchIndirect": 120
+    },
+    "queried_upload_states": {
+      "NO_UPLOAD_WITHIN_WINDOW": 5,
+      "READY_UPLOAD_INPUT": 1
+    },
+    "ready_input_sizes": [
+      768
+    ],
+    "same_ready_input_shader_pair": true,
+    "same_ready_input_register": true,
+    "changed_ready_input_float_words": 10,
+    "input_float_words": 192,
+    "private_report_sha256": "ad98bfc652519f3db9fa618d99719141b072e7b980dde475eaeee9df190613a9",
+    "supplemental_controller_sha256": "be15b7961490f0f3c9a5e92b33220f89d3e19f882079c07ddf7d9cde1d06cfc0",
+    "observation_bound": 3,
+    "camera_semantics": "UNVERIFIED"
+  }
 }

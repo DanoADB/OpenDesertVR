@@ -138,8 +138,10 @@ sample it on that same queue before the upcoming application submission.
 This captures upload input, not an arbitrary later DEFAULT-buffer state or
 per-draw camera contents. Partial writes, GPU-written sources and missing
 provenance must stay unavailable. Native tests cover blocked queues and a late
-CPU upload write on all three queue types. No such game upload has been
-observed or intercepted by this component yet.
+CPU upload write on all three queue types. The separate pinned observer has
+since returned one 768-byte subsequent upload input in an actual world scene;
+camera semantics remain unverified. See
+[world evidence](../../docs/evidence/g1-game-world-input-2026-11-06.json).
 
 `upload_input_observer.hpp` matches covering uploads to at most six registered
 DEFAULT candidate ranges. It keeps valid strong resource references, rejects
@@ -157,3 +159,24 @@ copies and barriers. RGB/black pixels are checked independently. Native
 Direct/Compute/Copy tests also compare a matched subrange against the actual
 DEFAULT destination readback and reject an unsubmitted/empty-reset control.
 Separate addon callback qualification is still required before game use.
+
+`KnownBufferStates` and `ConstantSnapshot::record_default` add an experimental
+owned-only route to read a DEFAULT constant range directly. Exact native legacy
+barrier records establish a same-recording read state. The copy temporarily
+adds COPY_SOURCE when needed and restores the original read state. Unknown,
+COMMON, write, incomplete split and invalidated states are rejected. Aliasing,
+destruction, unsupported barrier APIs, recording replacement and overflow must
+invalidate the appropriate state proof. This does not track global queue state.
+
+The actual WARP control verifies late upload data reaching DEFAULT, split BEGIN
+rejection and matched END acceptance, blocked-fence rejection, exact readback
+and an independent application copy after state restoration. A second pass
+uses an already copy-readable state. Debug-layer errors are rejected when the
+layer is available; availability is reported explicitly. Separate metadata
+controls reject missing/mismatched split endings and invalidated/write states.
+
+This route is NOT integrated into the game observer. The pinned ReShade generic
+barrier callback drops native split flags and enhanced buffer ranges, so it
+cannot supply this contract. A native metadata integration must first preserve
+these details, invalidate unsupported cases and pass owned runtime controls.
+Do not pass descriptor usage or a guessed before-state as a substitute.
