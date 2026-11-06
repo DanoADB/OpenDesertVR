@@ -340,18 +340,23 @@ int wmain(int argc, wchar_t **argv) {
         std::unique_ptr<void, decltype(close_handle)> event(CreateEventW(nullptr, FALSE, FALSE, nullptr), close_handle);
         if (!event)
             throw std::runtime_error("fence_event_failed");
-        std::ofstream ground(output / "ground-truth.private.json");
-        ground << "{\"schemaVersion\":1,\"adapter\":\"WARP\",\"resources\":[";
-        for (UINT i = 0; i < 8; ++i) {
-            if (i)
-                ground << ',';
-            ground << "{\"index\":" << i << ",\"nativeHandle\":" << reinterpret_cast<std::uintptr_t>(bound_constant(i))
-                   << ",\"bytes\":" << 256 * (i + 1) << '}';
-        }
-        ground << "]}";
-        ground.close();
-        if (!ground)
-            throw std::runtime_error("ground_truth_write_failed");
+        const auto write_ground = [&](const wchar_t *name) {
+            std::ofstream ground(output / name);
+            ground << "{\"schemaVersion\":1,\"adapter\":\"WARP\",\"resources\":[";
+            for (UINT i = 0; i < 8; ++i) {
+                if (i)
+                    ground << ',';
+                ground << "{\"index\":" << i
+                       << ",\"nativeHandle\":" << reinterpret_cast<std::uintptr_t>(bound_constant(i))
+                       << ",\"bytes\":" << 256 * (i + 1) << '}';
+            }
+            ground << "]}";
+            ground.close();
+            if (!ground)
+                throw std::runtime_error("ground_truth_write_failed");
+        };
+        write_ground(L"ground-truth.private.json");
+        bool rolled_over = false;
         UINT completed = 0;
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
         for (UINT frame = 1; loop || frame <= 2; ++frame) {
@@ -385,6 +390,26 @@ int wmain(int argc, wchar_t **argv) {
             for (UINT i = 0; i < lists.size(); ++i) {
                 check(allocators[i]->Reset());
                 check(lists[i]->Reset(allocators[i].Get(), nullptr));
+            }
+            const bool rollover =
+                transient_control && !rolled_over && std::filesystem::exists(output.parent_path() / L"rollover.flag");
+            if (rollover) {
+                // Completed GPU use and retired command recordings: simulate
+                // scene resource replacement while old capture tickets exist.
+                D3D12_HEAP_PROPERTIES gpu_heap{};
+                gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+                for (UINT i : {3u, 5u, 7u}) {
+                    const auto desc = gpu_constants[i]->GetDesc();
+                    Com<ID3D12Resource> replacement;
+                    check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc,
+                                                          D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                          IID_PPV_ARGS(&replacement)));
+                    gpu_constants[i] = std::move(replacement);
+                    D3D12_CONSTANT_BUFFER_VIEW_DESC cbv{bound_constant(i)->GetGPUVirtualAddress(), constant_bytes(i)};
+                    device->CreateConstantBufferView(&cbv, {cpu.ptr + (i - 2) * cstride});
+                }
+                write_ground(L"rollover-ground-truth.private.json");
+                rolled_over = true;
             }
             if (indirect_control) {
                 // Leave a cached compute pipeline before binding graphics PSOs.
@@ -509,6 +534,12 @@ int wmain(int argc, wchar_t **argv) {
                 throw std::runtime_error("owned_pixel_control_failed");
             if (loop)
                 check(swap->Present(1, 0));
+            if (rollover) {
+                std::ofstream ready(output / L"rollover.ready");
+                ready << "replacement DEFAULT resources and GPU pixels verified\n";
+                if (!ready)
+                    throw std::runtime_error("owned_rollover_write_failed");
+            }
             ++completed;
             if (loop && completed == 1) {
                 std::ofstream ready(output / L"ready.flag");
