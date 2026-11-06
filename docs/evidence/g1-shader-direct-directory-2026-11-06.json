@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_shader_directory_metadata",
+  "status": "OBSERVED_SHADER_DIRECTORY_METADATA",
+  "camera_publication": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "source_sha256": {
+    "resolve_shader_metadata.py": "07ad48622d077c821912bfb7030fdc520a33afabaa1b46d377be2d642c5a492c",
+    "pamt_metadata.py": "0df8a572829109e1d0ad7563303fd1226d918845f0058bc29b0a6e243fcb3c83",
+    "pamt_directory_probe.py": "79c253ab6300aa41fe2a0fb42a85f50e5776154b4502fdf84b5d3ff8ad2bba79"
+  },
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "index_sha256": "3aacea36345f8fe4ce1170d97bc0cadb916ff70aa59fc41421dd25642ffd55a2",
+  "index_bytes": 2755921,
+  "metadata": {
+    "format": "compact",
+    "folder_count": 3,
+    "file_count": 84678,
+    "shader_directory_matches": 1,
+    "selected_entries": 0,
+    "extension_classes": {},
+    "metadata_flags": {},
+    "name_marker_counts": {},
+    "minimum_stored_bytes": null,
+    "maximum_stored_bytes": 0
+  },
+  "scope": "One resolved metadata directory and its entry records. Flag meanings follow pinned public source, not payload validation. No raw metadata/names/locations exported, PAZ payload access, decryption, extraction, process access, game write or retry. Active shader bindings and CPU/GPU camera mapping remain unverified.",
+  "date": "2026-11-06",
+  "probe_source_commit": "d1beb56cadfbdd0e3d7c54fb1f5b490f9cd0e7e8",
+  "probe_exit_code": 0,
+  "interpretation": "First exact-directory-only observation: root shader directory resolved but has zero direct entries. Does not establish absent shader resources; descendants were outside this version of the selection method. No PAZ payload or process access."
+}

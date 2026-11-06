@@ -24,16 +24,22 @@ def record(text, parent=0xffffffff, compact=False, offset=0):
     return bytes(prefix) + bytes([len(raw)]) + raw
 
 
-def fixture(compact=False, overlapping=False):
+def fixture(compact=False, overlapping=False, descendant=None):
     directories = record("shadercache__/", compact=compact)
     child = len(directories)
     directories += record("d3d12/", parent=0, compact=compact, offset=child)
     other = len(directories)
     directories += record("other/", compact=compact)
+    nested = len(directories)
+    if descendant is not None:
+        directories += record("variant/" if descendant else "d3d12_other/", parent=child if descendant else 0,
+                              compact=compact, offset=nested)
     filenames = record("owned_a" if compact else "owned_a.padxil", compact=compact)
     second = len(filenames)
     filenames += record("owned_b" if compact else "owned_b.pars", compact=compact)
-    folders = struct.pack("<IIII", 0, child, 0, 2)
+    folders = struct.pack("<IIII", 0, child, 0, 2 if descendant is None else 0)
+    if descendant is not None:
+        folders += struct.pack("<IIII", 0, nested, 0, 2)
     if overlapping:
         folders += struct.pack("<IIII", 0, other, 1, 1)
     files = (struct.pack("<IIIIHH", 0, 100, 80, 80, 0, 0x100 if compact else 0) +
@@ -48,6 +54,35 @@ def fixture(compact=False, overlapping=False):
 
 
 class MetadataTests(unittest.TestCase):
+    def test_same_basename_in_distinct_selected_folders_is_not_a_duplicate_path(self):
+        for compact in (False, True):
+            data = bytearray(fixture(compact, descendant=True))
+            cursor = 24
+            for _ in range(2):
+                length = struct.unpack_from("<I", data, cursor)[0]
+                cursor += 4 + length
+            folder_start = cursor + 4
+            struct.pack_into("<I", data, folder_start + 12, 1)
+            struct.pack_into("<I", data, folder_start + 16 + 8, 1)
+            struct.pack_into("<I", data, folder_start + 16 + 12, 1)
+            file_start = folder_start + 32 + 4
+            struct.pack_into("<I", data, file_start + 20, 0)
+            if compact:
+                struct.pack_into("<H", data, file_start + 20 + 18, 0x112)
+            result = resolve_metadata(data)
+            self.assertEqual(result["selected_entries"], 2)
+            self.assertEqual(result["extension_classes"], {"padxil": 2})
+
+    def test_exact_root_subtree_includes_descendants_but_not_prefix_siblings(self):
+        for compact in (False, True):
+            nested = resolve_metadata(fixture(compact, descendant=True))
+            self.assertEqual(nested["direct_entries"], 0)
+            self.assertEqual(nested["descendant_entries"], 2)
+            self.assertEqual(nested["selected_folder_count"], 2)
+            sibling = resolve_metadata(fixture(compact, descendant=False))
+            self.assertEqual(sibling["selected_entries"], 0)
+            self.assertEqual(sibling["selected_folder_count"], 1)
+
     def test_owned_legacy_and_compact_indices_resolve_the_same_directory(self):
         for compact in (False, True):
             metadata = resolve_metadata(fixture(compact))

@@ -2,7 +2,7 @@
 
 The [directory-marker observation](g1-shader-directory-method.md) identified one
 candidate index. This next method resolves its virtual folder path and classifies
-only entry metadata in that folder. It does not read PAZ payloads, extract or
+only entry metadata in that exact root and its bounded descendants. It does not read PAZ payloads, extract or
 decode shaders, access the game process or establish active bindings.
 
 ## Original bounded implementation
@@ -23,8 +23,11 @@ folder paths, overlapping nonempty folder ranges, out-of-range file spans,
 invalid archive IDs/extensions and selected stored/original sizes outside
 1..64 MiB. No checksum, PAZ range or complete-format validity is inferred.
 
-Require exactly one resolved shadercache__/d3d12 directory. Only its filenames
-are resolved. Classify padXIL/root-signature/other extensions, declared
+Require exactly one resolved shadercache__/d3d12 directory. Select that root and
+paths with its exact slash-delimited prefix; similarly named siblings do not
+match. Only selected filenames are resolved, with the same total entry bound
+across the subtree. Report direct versus descendant entry counts separately.
+Classify padXIL/root-signature/other extensions, declared
 compression/encryption flags, stored-size range and four fixed name-marker
 counts. These metadata flags are not payload validation. Raw paths, records and
 names stay in memory and are omitted from summary output; no asset list is
@@ -40,7 +43,8 @@ index hash and game/catalog identity after resolution. This detects observed
 changes, not an atomic installation snapshot. Open evidence exclusively;
 sanitized failures exit 3 without overwriting prior files or retrying.
 
-Five owned tests exercise both encodings, valid flags/classes, path cycles,
+Seven owned tests exercise both encodings, direct/subtree/sibling selection,
+same basenames in distinct folders, valid flags/classes, path cycles,
 truncation, UTF-8/traversal/depth, invalid entries/extensions, duplicates,
 overlap and exclusive failure evidence. CI never accesses game files.
 
@@ -50,3 +54,11 @@ types or layout? It does not authorize a bulk asset scan, decoder import or a
 new game-process/capture method. Any payload/reflection work needs its own
 bounded design and owned qualification. Camera publication, active-frame
 association, camera writes and independent world rendering remain unverified.
+
+The [first exact-directory-only observation](../evidence/g1-shader-direct-directory-2026-11-06.json)
+from d1beb56 resolved the root but reported zero direct entries. Its report is
+preserved: it did not inspect descendants and does not show missing shader
+resources. A separate metadata inspection of the same hash-pinned index found
+one descendant owning the 84,678 records. The subsequent subtree selection is
+explicit and owned-tested; it changes no payload/process access or runtime
+acceptance gate and does not retroactively alter the first report.

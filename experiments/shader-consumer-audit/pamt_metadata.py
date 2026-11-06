@@ -92,7 +92,7 @@ def resolve_metadata(data):
                 "\\" in value or ":" in value or any(ord(char) < 32 for char in value) for value in extensions[1:]):
             raise ValueError("invalid_extension_table")
     folder_names, file_names = Names(directories, compact), Names(filenames, compact)
-    ranges, targets, seen_paths = [], [], set()
+    ranges, targets, selected_ranges, seen_paths = [], [], [], set()
     for _, name, start, count in struct.iter_unpack("<IIII", folders):
         path = folder_names.resolve(name)
         if path.casefold() in seen_paths or start + count > file_count:
@@ -102,42 +102,55 @@ def resolve_metadata(data):
             ranges.append((start, start + count))
         if path.casefold() == "shadercache__/d3d12":
             targets.append((start, start + count))
+        if path.casefold() == "shadercache__/d3d12" or path.casefold().startswith("shadercache__/d3d12/"):
+            selected_ranges.append((start, start + count, path))
     ranges.sort()
     if any(left[1] > right[0] for left, right in zip(ranges, ranges[1:])):
         raise ValueError("overlapping_folder_ranges")
-    if len(targets) != 1 or targets[0][1] - targets[0][0] > 100000:
+    if len(targets) != 1 or sum(end - start for start, end, _ in selected_ranges) > 100000:
         raise ValueError("shader_directory_not_unique_or_bounded")
+    selected_folder_count = len(selected_ranges)
+    selected_ranges = sorted((start, end, path) for start, end, path in selected_ranges if start != end)
     archive_count = struct.unpack_from("<I", data, 4)[0]
     archives = {struct.unpack_from("<I", data, 12 + i * 12)[0] for i in range(archive_count)}
     classes, flags, name_markers, duplicates = Counter(), Counter(), Counter(), set()
     minimum, maximum = None, 0
     selected = []  # Local metadata only; no path or record is exported by summary().
+    selection_cursor = 0
     for index, (name, offset, stored, original, archive, flag) in enumerate(struct.iter_unpack("<IIIIHH", files)):
         if archive not in archives:
             raise ValueError("invalid_entry_archive")
-        if not targets[0][0] <= index < targets[0][1]:
+        while selection_cursor < len(selected_ranges) and index >= selected_ranges[selection_cursor][1]:
+            selection_cursor += 1
+        if selection_cursor == len(selected_ranges) or index < selected_ranges[selection_cursor][0]:
             continue
         if not 1 <= stored <= 64 * 1024 * 1024 or not 1 <= original <= 64 * 1024 * 1024:
             raise ValueError("selected_entry_size_outside_bounds")
-        path = file_names.resolve(name)
+        filename = file_names.resolve(name)
+        if not filename:
+            raise ValueError("empty_entry_name")
         if compact:
             if flag >> 8 >= len(extensions):
                 raise ValueError("invalid_entry_extension")
-            path += extensions[flag >> 8]
-        if not path or path.casefold() in duplicates:
+            filename += extensions[flag >> 8]
+        path = selected_ranges[selection_cursor][2] + "/" + filename
+        if len(path) > 4096 or path.casefold() in duplicates:
             raise ValueError("empty_or_duplicate_entry_name")
         duplicates.add(path.casefold())
-        extension = path.rsplit(".", 1)[-1].casefold()
+        extension = filename.rsplit(".", 1)[-1].casefold()
         role = extension if extension in {"padxil", "pars"} else "other"
         classes[role] += 1
         flags["encrypted" if (flag >> 4) & 15 else "unencrypted"] += 1
         flags["compressed" if stored != original else "uncompressed"] += 1
         for marker in ("scene", "camera", "view", "skinned"):
-            name_markers[marker] += marker in path.casefold()
+            name_markers[marker] += marker in filename.casefold()
         minimum, maximum = min(minimum or stored, stored), max(maximum, stored)
         selected.append((path, archive, offset, stored, original, flag))
     return {"format": "compact" if compact else "legacy", "folder_count": folder_count,
             "file_count": file_count, "shader_directory_matches": 1, "selected_entries": len(selected),
+            "selected_folder_count": selected_folder_count,
+            "direct_entries": targets[0][1] - targets[0][0],
+            "descendant_entries": len(selected) - (targets[0][1] - targets[0][0]),
             "extension_classes": dict(classes), "metadata_flags": dict(flags),
             "name_marker_counts": dict(name_markers), "minimum_stored_bytes": minimum,
             "maximum_stored_bytes": maximum, "_entries": selected}
