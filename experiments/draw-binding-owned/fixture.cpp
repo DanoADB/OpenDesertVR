@@ -79,12 +79,17 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-capture" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-empty" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-upload-whole")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-whole" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-indirect" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-variable")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
-        const bool upload_control = whole_upload_control || empty_upload_control ||
+        const bool indirect_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect";
+        const bool variable_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-variable";
+        const bool upload_control = indirect_control || variable_control || whole_upload_control ||
+                                    empty_upload_control ||
                                     (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload");
         const bool capture_control =
             upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture");
@@ -200,6 +205,45 @@ int wmain(int argc, wchar_t **argv) {
             p.SampleDesc.Count = 1;
             check(device->CreateGraphicsPipelineState(&p, IID_PPV_ARGS(&pipelines[mode])));
         }
+        Com<ID3D12RootSignature> compute_root;
+        Com<ID3D12PipelineState> compute_pipeline;
+        Com<ID3D12CommandSignature> indirect_signature;
+        Com<ID3D12Resource> indirect_arguments;
+        if (indirect_control) {
+            D3D12_ROOT_SIGNATURE_DESC empty_root{};
+            Com<ID3DBlob> root_blob, errors, compute_blob;
+            check(D3D12SerializeRootSignature(&empty_root, D3D_ROOT_SIGNATURE_VERSION_1, &root_blob, &errors));
+            check(device->CreateRootSignature(0, root_blob->GetBufferPointer(), root_blob->GetBufferSize(),
+                                              IID_PPV_ARGS(&compute_root)));
+            constexpr char noop[] = "[numthreads(1,1,1)] void main() {}";
+            check(D3DCompile(noop, sizeof(noop) - 1, nullptr, nullptr, nullptr, "main", "cs_5_1", 0, 0, &compute_blob,
+                             &errors));
+            D3D12_COMPUTE_PIPELINE_STATE_DESC cp{};
+            cp.pRootSignature = compute_root.Get();
+            cp.CS = {compute_blob->GetBufferPointer(), compute_blob->GetBufferSize()};
+            check(device->CreateComputePipelineState(&cp, IID_PPV_ARGS(&compute_pipeline)));
+            D3D12_INDIRECT_ARGUMENT_DESC argument{};
+            argument.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
+            D3D12_COMMAND_SIGNATURE_DESC signature{};
+            signature.ByteStride = sizeof(D3D12_DRAW_ARGUMENTS);
+            signature.NumArgumentDescs = 1;
+            signature.pArgumentDescs = &argument;
+            check(device->CreateCommandSignature(&signature, nullptr, IID_PPV_ARGS(&indirect_signature)));
+            D3D12_HEAP_PROPERTIES heap{};
+            heap.Type = D3D12_HEAP_TYPE_UPLOAD;
+            const auto desc = buffer_desc(256);
+            check(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ,
+                                                  nullptr, IID_PPV_ARGS(&indirect_arguments)));
+            void *mapped = nullptr;
+            const D3D12_RANGE empty{};
+            check(indirect_arguments->Map(0, &empty, &mapped));
+            const D3D12_DRAW_ARGUMENTS args{3, 1, 0, 0};
+            std::memcpy(mapped, &args, sizeof(args));
+            indirect_arguments->Unmap(0, nullptr);
+        }
+        const auto constant_bytes = [&](UINT index) -> UINT {
+            return variable_control && index == 5 ? 512u : (variable_control && index == 7 ? 768u : 256u);
+        };
         std::array<Com<ID3D12Resource>, 8> constants;
         const float values[8][4] = {{0, 0, 0, 0}, {1, 0, 0, 1}, {0, 0, 0, 0}, {0, 1, 0, 1},
                                     {0, 0, 0, 0}, {0, 0, 1, 1}, {0, 0, 0, 0}, {1, 1, 0, 1}};
@@ -242,7 +286,7 @@ int wmain(int argc, wchar_t **argv) {
         const auto cpu = cbheap->GetCPUDescriptorHandleForHeapStart();
         const auto gpu = cbheap->GetGPUDescriptorHandleForHeapStart();
         for (UINT i = 0; i < hd.NumDescriptors; ++i) {
-            D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(i + 2)->GetGPUVirtualAddress(), 256};
+            D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(i + 2)->GetGPUVirtualAddress(), constant_bytes(i + 2)};
             device->CreateConstantBufferView(&c, {cpu.ptr + i * cstride});
         }
         Com<ID3D12Resource> target;
@@ -320,6 +364,13 @@ int wmain(int argc, wchar_t **argv) {
                 check(allocators[i]->Reset());
                 check(lists[i]->Reset(allocators[i].Get(), nullptr));
             }
+            if (indirect_control) {
+                // Leave a cached compute pipeline before binding graphics PSOs.
+                // The following ExecuteIndirect operations are genuine draws.
+                lists[0]->SetPipelineState(compute_pipeline.Get());
+                lists[0]->SetComputeRootSignature(compute_root.Get());
+                lists[0]->Dispatch(1, 1, 1);
+            }
             const auto draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) {
                 list->SetPipelineState(pipelines[table ? 1 : 0].Get());
                 list->SetGraphicsRootSignature(roots[table ? 1 : 0].Get());
@@ -338,7 +389,10 @@ int wmain(int argc, wchar_t **argv) {
                 list->RSSetScissorRects(1, &sc);
                 list->OMSetRenderTargets(1, &view, FALSE, nullptr);
                 list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                list->DrawInstanced(3, 1, 0, 0);
+                if (indirect_control)
+                    list->ExecuteIndirect(indirect_signature.Get(), 1, indirect_arguments.Get(), 0, nullptr, 0);
+                else
+                    list->DrawInstanced(3, 1, 0, 0);
             };
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};
@@ -348,7 +402,7 @@ int wmain(int argc, wchar_t **argv) {
                     if (whole_upload_control)
                         lists[0]->CopyResource(gpu_constants[i].Get(), constants[i].Get());
                     else
-                        lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, 256);
+                        lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, constant_bytes(i));
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                             D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
                 }
@@ -387,7 +441,7 @@ int wmain(int argc, wchar_t **argv) {
                 if (whole_upload_control)
                     lists[1]->CopyResource(gpu_constants[7].Get(), constants[7].Get());
                 else
-                    lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, 256);
+                    lists[1]->CopyBufferRegion(gpu_constants[7].Get(), 0, constants[7].Get(), 0, constant_bytes(7));
                 barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
             }
