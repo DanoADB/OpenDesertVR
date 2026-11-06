@@ -56,6 +56,7 @@
       "src/CrimsonDesertTelemetry.Core/EngineCameraReader.cs"
     ],
     "scope": "Selected historical layout/validation rules only",
-    "destination": "experiments/camera-profile-audit/camera_fields.py"
+    "destination": "experiments/camera-profile-audit/camera_fields.py",
+    "additional_destination": "experiments/camera-profile-audit/native-batch/selected_read.h (same range hypotheses only; original acquisition implementation)"
   }
 }

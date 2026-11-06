@@ -34,7 +34,9 @@ validation rules from ZappendusterFX/CrimsonDesertTelemetry, revision
 and EngineCameraReader.cs. MIT, Copyright (c) 2026 CrimsonDesertTelemetry
 contributors. The full notice is preserved in
 [CrimsonDesertTelemetry-MIT.txt](docs/licenses/CrimsonDesertTelemetry-MIT.txt).
-This is an optional Python research validator, not a dependency of the native
+The optional native-batch/selected_read.h repeats those selected range
+hypotheses, with the same attribution; its acquisition code is original.
+These are optional research experiments, not dependencies of the native
 host or production adapter. No upstream ASI, host, dependencies or game assets
 are adopted. The selected source/notice hashes are inventoried in
 docs/research/crimson-telemetry-camera-inventory.json. Its layout remains an

@@ -39,6 +39,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build out/build/capture-lab --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and test optional selected-read batch (owned producers only)
+        run: |
+          cmake -S experiments/camera-profile-audit/native-batch -B out/build/selected-read -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/selected-read --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/selected-read -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check optional research-script syntax (no game or GPU capture)
         run: |
           python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py experiments/frame-capture/diagnostic_log.py
