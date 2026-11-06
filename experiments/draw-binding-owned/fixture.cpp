@@ -75,10 +75,13 @@ int wmain(int argc, wchar_t **argv) {
         if (argc != 2 &&
             (argc != 3 ||
              (std::wstring_view(argv[2]) != L"--submit-fourth" && std::wstring_view(argv[2]) != L"--loop" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget")))
+              std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-capture")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
-        const bool dxil = budget_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil");
+        const bool capture_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture";
+        const bool dxil =
+            capture_control || budget_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil");
         const UINT repeats = budget_control ? 50 : 1;
         const bool loop = dxil || (argc == 3 && std::wstring_view(argv[2]) == L"--loop");
         const bool submit_fourth = argc == 3 && !loop;
@@ -210,13 +213,13 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        hd.NumDescriptors = 4;
+        hd.NumDescriptors = capture_control ? 6 : 4;
         hd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&cbheap)));
         const auto cstride = device->GetDescriptorHandleIncrementSize(hd.Type);
         const auto cpu = cbheap->GetCPUDescriptorHandleForHeapStart();
         const auto gpu = cbheap->GetGPUDescriptorHandleForHeapStart();
-        for (UINT i = 0; i < 4; ++i) {
+        for (UINT i = 0; i < hd.NumDescriptors; ++i) {
             D3D12_CONSTANT_BUFFER_VIEW_DESC c{constants[i + 2]->GetGPUVirtualAddress(), 256};
             device->CreateConstantBufferView(&c, {cpu.ptr + i * cstride});
         }
@@ -345,7 +348,7 @@ int wmain(int argc, wchar_t **argv) {
             // Baseline never submits B. The paired control submits B before readback C,
             // proving that this same recorded draw produces yellow when executed.
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-            draw(lists[1].Get(), 3, false, 6);
+            draw(lists[1].Get(), 3, capture_control, 6);
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             check(lists[1]->Close());
             ID3D12CommandList *baseline[] = {lists[0].Get(), lists[2].Get()};

@@ -89,6 +89,11 @@ the same red/green/blue controls 50 times, plus the unsubmitted yellow draw.
 The expected pixels remain RGB/black. This exercises a metadata observer's
 retained-record cap without increasing image dimensions or changing resources.
 
+`--loop-dxil-capture` preserves the same RGB/black pixels but binds the
+unsubmitted yellow control through finite descriptor-table CBVs too. This
+gives the GPU-copy observer a finite, active 256-byte PS range on green, blue
+and unsubmitted yellow. Existing baseline/root-CBV controls are unchanged.
+
 The pixel baseline does **not** execute Devkit, qualify its CBV resource identities,
 verify its submission metadata, or observe per-draw GPU constant bytes. No
 headset/game test is run. Compare the exact authored shader pair and known bindings through the
