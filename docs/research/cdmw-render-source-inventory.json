@@ -2,7 +2,7 @@
   "game_shader_payload_retained": false,
   "schema_version": 1,
   "code_adopted": true,
-  "scope": "Selected static review plus adaptation of metadata layout/name-chain/flag rules. No upstream application modules imported/executed, no full archive parser/payload decoder/decryption code/dependencies adopted. Full MIT notice retained. Runtime capabilities remain unverified.",
+  "scope": "Selected static review plus adaptation of metadata layout/name-chain/flag and PASC wrapper checks. No upstream application modules imported/executed, no full archive parser/payload decompression/decryption code/dependencies adopted. Full MIT notice retained. Runtime capabilities remain unverified.",
   "root_license": "MIT",
   "files": [
     {
@@ -83,6 +83,6 @@
   "root_copyright": "Copyright (c) 2026 Ratrider",
   "repository": "https://github.com/Ratty123/CDMW-Full",
   "selected_header_layout_used": true,
-  "layout_destination": "experiments/shader-consumer-audit/pamt_directory_probe.py and pamt_metadata.py (original bounded readers adapting selected metadata rules; no upstream parser/decoder execution)",
+  "layout_destination": "experiments/shader-consumer-audit/pamt_directory_probe.py, pamt_metadata.py and shader_container.py (original bounded readers adapting selected metadata/PASC checks; no upstream modules or payload decoders executed)",
   "license_notice": "docs/licenses/CDMW-MIT.txt"
 }

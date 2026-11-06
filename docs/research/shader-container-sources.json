@@ -1,0 +1,20 @@
+{
+  "owned_fixture_compiler": {
+    "source": "Installed Windows SDK 10.0.26100.0 x64 DXC",
+    "authenticode": "Valid",
+    "dxcompiler_sha256": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+    "dxc_sha256": "854d5f29dbbe25b584942855e65d673db3164f7f68e20fb784be9cd747d14814",
+    "execution_scope": "Owned original HLSL compiled only. No game shader compiled, reflected or executed."
+  },
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "format_source": {
+    "sha256": "f9975fb71c62f1aa37cba989adc83f7dcbb06d48e36a62a0b2ebf29c26eaa397",
+    "code_adopted": false,
+    "path": "include/dxc/DxilContainer/DxilContainer.h",
+    "url": "https://github.com/microsoft/DirectXShaderCompiler/blob/10b3328a915e30973449aa03a1816d289e4fd42f/include/dxc/DxilContainer/DxilContainer.h",
+    "scope": "Documented container/program layout facts only, original parser; not a compiler/bitcode validation implementation.",
+    "revision": "10b3328a915e30973449aa03a1816d289e4fd42f",
+    "repository": "https://github.com/microsoft/DirectXShaderCompiler"
+  }
+}

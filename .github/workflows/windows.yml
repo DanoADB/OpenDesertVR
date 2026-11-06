@@ -37,6 +37,10 @@ jobs:
         run: python -m unittest discover -s tests -p test_pamt_directory_probe.py -v
       - name: Test bounded shader-directory resolver (owned metadata only)
         run: python -m unittest discover -s tests -p test_pamt_metadata.py -v
+      - name: Test shader-container structure (owned bytes and SDK compile only)
+        run: python -m unittest discover -s tests -p test_shader_container.py -v
+      - name: Test single-entry range gates (owned files only)
+        run: python -m unittest discover -s tests -p test_shader_entry.py -v
       - name: Compile optional owned presenting fixture (no capture tool or game)
         run: |
           cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF

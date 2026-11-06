@@ -11,7 +11,7 @@ from pamt_directory_probe import read_index
 from pamt_metadata import resolve_metadata, summary
 
 
-def run(args):
+def checked_location(args):
     root = args.game_root.resolve(strict=True)
     index = args.index
     # Exact one installed metadata file; no upstream discovery/import code.
@@ -19,6 +19,11 @@ def run(args):
             index.name != "0.pamt" or index.parent.parent.resolve(strict=True) != root or
             not re.fullmatch(r"[0-9a-f]{64}", args.index_sha256)):
         raise ValueError("unexpected_index_identity")
+    return root, index
+
+
+def run(args):
+    root, index = checked_location(args)
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "frame-capture"))
     from game_build_gate import validate_game_build
     catalog = Path(__file__).resolve().parents[1] / "frame-capture/reviewed-builds.json"

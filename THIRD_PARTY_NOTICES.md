@@ -42,13 +42,18 @@ are adopted. The selected source/notice hashes are inventoried in
 docs/research/crimson-telemetry-camera-inventory.json. Its layout remains an
 explicit hypothesis on the current game build until actual validation.
 
-## Optional archive-directory research
+## Optional archive and shader research
 
-The selected PAMT layouts, metadata name-chain and flag rules used by the original
-bounded readers in experiments/shader-consumer-audit are adapted from
+The selected PAMT layouts, metadata name-chain/flag rules and PASC wrapper checks
+used by the original bounded readers in experiments/shader-consumer-audit are adapted from
 Ratty123/CDMW-Full, revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b,
-archive_format.py and models.py.
+archive_format.py, models.py and archive_shader_preview.py.
 MIT, Copyright (c) 2026 Ratrider. Full notice: [CDMW-MIT.txt](docs/licenses/CDMW-MIT.txt).
-No upstream application, full archive parser, payload decoder, decryption code
-or dependency is adopted or executed. These metadata readers are separate from
+No upstream application, full archive parser, payload decompression/decryption
+code or dependency is adopted or executed. These readers are separate from
 the native M0 host and do not establish active bindings or camera semantics.
+The original shader_container.py uses structural facts from Microsoft's
+DirectXShaderCompiler DxilContainer.h; its selected source is fingerprinted in
+docs/research/shader-container-sources.json. No compiler/validator source is
+copied or shipped. The installed Windows SDK DXC compiles an original owned
+fixture only; no game shader is executed by these experiments.
