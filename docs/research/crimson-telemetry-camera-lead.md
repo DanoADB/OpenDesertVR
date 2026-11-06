@@ -87,9 +87,13 @@ process-memory scope requires its own technical review first.
 The next [selected-field method](g1-camera-field-hypothesis-method.md) explicitly
 tests the published historical layout as a hypothesis, with owned geometry and
 coherence tests first. It does not treat pointer association as field validation.
+Its [first actual attempt](../evidence/g1-camera-field-attempt-2026-11-06.json)
+was rejected at the coherence guard; no numeric-layout result was awarded.
+The precise changed component is unknown in that report. No second game
+attempt or relaxed validation followed.
 
 Camera observation alone still leaves projection writes, independent world-view
 scheduling, temporal-history ownership and XR submission unverified. No G2 or
 playable game VR capability is awarded. The user has deferred further headset
-tests; this file-only research does not need a headset or substitute for its
+tests; this staged research does not need a headset or substitute for its
 unperformed checks.

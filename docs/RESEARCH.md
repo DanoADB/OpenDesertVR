@@ -14,6 +14,10 @@ The [bounded live follow-up](research/g1-readonly-association-method.md) then
 observed stable global/object-first-pointer association on the reviewed current
 game build. Active-camera semantics, field layout, pose and control remain
 unverified. Further headset tests are deferred at the user's request.
+The subsequent [selected-field hypothesis check](research/g1-camera-field-hypothesis-method.md)
+was rejected because its sample changed within the coherence bracket. It did
+not validate the layout. Current work must resolve acquisition coherence before
+claiming a usable camera snapshot; no automatic retry or offset fallback occurs.
 The ADR identifies the missing capabilities and new evidence required to resume
 game-facing work. M0 maintenance and actual headset verification remain useful.
 

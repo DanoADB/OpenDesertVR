@@ -59,3 +59,24 @@ dependency is executed or adopted. Owned byte fixtures test valid geometry,
 reflection/non-finite/translation/projection failures, coherent reads, torn
 samples, source replacement, stopped/backwards counters and unsigned wrap.
 The Windows owned-child fixture also verifies the small byte-read API.
+
+## Actual first attempt and acquisition gate
+
+The [first game attempt](../evidence/g1-camera-field-attempt-2026-11-06.json)
+ran committed source 66a3b1d on the same original responsive process and reviewed
+current build. It exited 3 at SAMPLING because the coherence guard rejected a
+changed sample. No numeric-layout result was awarded. The report does not
+distinguish which global/source/table/counter/payload check changed; no raw data
+was retained, so that detail cannot be reconstructed. The scene remains unknown.
+
+The method stopped without retry or offset fallback, and the game remained
+responsive. An external-read race is a possible explanation, not an observed
+root cause or evidence that the candidate layout is wrong. Do not relax matrix
+or counter validation merely to obtain a pass.
+
+Subsequent reporting now distinguishes fixed boolean coherence checks and the
+names of changed hypothetical ranges, without values or locations. Owned
+fixtures verify those labels for counter changes and source replacement. No
+additional game observation was performed for that reporting change. The next
+experiment needs a justified acquisition strategy or specifically scoped
+coherence diagnosis before attempting semantic validation.

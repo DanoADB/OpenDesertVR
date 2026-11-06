@@ -101,8 +101,12 @@ class FieldTests(unittest.TestCase):
 
     def test_torn_fields_and_replaced_source_stop_without_retry(self):
         for torn, source_change in [(True, False), (False, True)]:
-            with self.assertRaisesRegex(ObservationError, "fields_changed_within_sample"):
+            with self.assertRaisesRegex(fields.CoherenceError, "fields_changed_within_sample") as caught:
                 self.sample((5, 6, 7), torn=torn, source_change=source_change)
+            self.assertTrue(all(type(value) is bool for value in caught.exception.checks.values()))
+            self.assertEqual(caught.exception.checks["source_pointer_stable"], not source_change)
+            self.assertEqual(caught.exception.checks["selected_ranges_stable"], not torn)
+            self.assertEqual(caught.exception.changed_ranges, ["buffer_counter_hypothesis"] if torn else [])
 
 
 if __name__ == "__main__":

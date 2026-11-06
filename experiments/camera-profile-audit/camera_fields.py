@@ -14,6 +14,16 @@ from association import ObservationError
 RANGES = ((0x20, 4), (0x30, 16), (0x80, 12), (0x90, 12),
           (0x3e0, 128), (0x4e0, 64), (0x860, 4), (0xac0, 4))
 BYTES_PER_ATTEMPT = 6 * 8 + 2 * sum(size for _, size in RANGES) + 4
+RANGE_ROLES = ("buffer_counter_hypothesis", "resolution_hypothesis", "position_hypothesis",
+               "forward_hypothesis", "view_matrices_hypothesis", "projection_hypothesis",
+               "near_hypothesis", "layout_sentinel_hypothesis")
+
+
+class CoherenceError(ObservationError):
+    def __init__(self, checks, changed_ranges):
+        super().__init__("candidate_fields_changed_within_sample")
+        self.checks = checks
+        self.changed_ranges = changed_ranges
 
 
 def decode(fields):
@@ -86,9 +96,12 @@ def sample_fields(read_pointer, read_bytes, global_address, expected_table, sour
         source_after = read_pointer(candidate + source_offset)
         table_after = read_pointer(candidate)
         candidate_after = read_pointer(global_address)
-        if (candidate != candidate_after or source != source_after or table_after != expected_table or
-                first != second or frame_after != first[0x20]):
-            raise ObservationError("candidate_fields_changed_within_sample")
+        checks = {"global_stable": candidate == candidate_after, "source_pointer_stable": source == source_after,
+                  "table_pointer_stable": table_after == expected_table, "selected_ranges_stable": first == second,
+                  "counter_bracket_stable": frame_after == first[0x20]}
+        if not all(checks.values()):
+            changed = [role for (offset, _), role in zip(RANGES, RANGE_ROLES) if first[offset] != second[offset]]
+            raise CoherenceError(checks, changed)
         frame, state = decode(first)
         chain = (candidate, source)
         if previous_chain is not None:

@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 from association import ObservationError
-from camera_fields import observe_fields
+from camera_fields import CoherenceError, observe_fields
 from probe_association import PROFILE_HASH, digest, run
 
 
@@ -48,6 +48,9 @@ def main():
             report["status"] = "FAILED"
             report["failure_reason"] = str(error) if isinstance(error, ObservationError) else "preflight_or_execution_rejected"
             report["failure_type"] = type(error).__name__
+            if isinstance(error, CoherenceError):
+                report["coherence_checks"] = error.checks
+                report["changed_hypothesis_ranges"] = error.changed_ranges
         json.dump(report, output, indent=2, allow_nan=False)
         output.write("\n")
     print(json.dumps(report, indent=2))
