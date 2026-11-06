@@ -105,3 +105,18 @@ result. Even two numeric passes are diagnostic only: neither copy is guaranteed
 atomic, counter progression is not tested, and camera layout/semantics remain
 UNVERIFIED. Existing evidence is not retroactively reclassified. Owned fixtures
 cover independent copy outcomes and suppression on each pointer-chain failure.
+
+One [rejected-copy diagnostic observation](../evidence/g1-camera-copy-diagnosis-2026-11-06.json)
+from committed source febd5a8 then ran against the same original process and
+reviewed build, after all 50 owned Python tests passed. Both existing copies
+passed numeric checks, but the counter-hypothesis bytes changed again while
+the other selected ranges and pointer chain matched. Overall result remained
+FAILED, exit 3, with no accepted candidate-fields result. The scene was not
+verified and the game remained responsive. The earlier reports remain unchanged.
+
+This supplies a numeric-plausibility lead for acquisition research, not a
+validated layout or proof of an active render camera. Stop this sequential
+method here: further work needs a reviewed acquisition design with owned
+producer tests before another game observation. Do not repeat until a pass,
+drop the counter guard, infer counter semantics, or infer atomicity from
+matching geometry. No native adapter or G2 advancement follows.

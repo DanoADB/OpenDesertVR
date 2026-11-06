@@ -67,6 +67,13 @@ The [subsequent bounded read-only observation](../research/g1-readonly-associati
 establishes a current-process global/object-first-pointer association only.
 Camera field layout, semantics and control remain unverified; no old field
 offset is thereby validated.
+The [selected-field diagnostics](../research/g1-camera-field-hypothesis-method.md)
+found numerically plausible individual byte copies, but every observed field
+attempt rejected coherence. Counter-hypothesis bytes changed while the other
+selected ranges matched in the two classified observations. Neither counter
+meaning nor a coherent active-camera sample is established. Stop the existing
+sequential acquisition method pending a reviewed design tested with an owned
+producer; no check relaxation or retry-until-pass.
 They do not change the hold on runtime adapter implementation or award G2.
 Do not make another change merely to create work or consume the weekly usage
 allowance. Other runtimes/headsets, compositor metrics and extended graphics
