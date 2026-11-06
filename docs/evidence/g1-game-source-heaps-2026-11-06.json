@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-06",
-  "status": "OBSERVED_GAME_SOURCE_HEAPS_CLEANUP_PENDING",
+  "status": "OBSERVED_GAME_SOURCE_HEAPS",
   "source_commit": "877da26aa3f92cc7d30f1b4329d8eebf90d01fac",
   "game_identity": {
     "steam_app_id": "3321460",
@@ -33,10 +33,12 @@
     65536
   ],
   "staged_game_files_unchanged": "PASS",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS_NORMAL_EXIT_EXACT_FILES_REMOVED",
   "camera_identification": "UNVERIFIED",
   "game_buffer_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "interpretation": "The selected finite active2816-byte candidate bindings reference DEFAULT(type1)65536-byte GPU allocations. UPLOAD-only eligibility rejects them. Zero originating sample tickets across all128 retained records; this compute prefix is not a world-camera observation. No assumption about current DEFAULT resource states is justified. Next owned experiment: match destination candidate ranges to app upload copies and acquire only valid UPLOAD input on the same app queue with an independently fenced owned submission. Such bytes would be upload input, not proof of later per-draw GPU state or camera semantics."
+  "interpretation": "The selected finite active2816-byte candidate bindings reference DEFAULT(type1)65536-byte GPU allocations. UPLOAD-only eligibility rejects them. Zero originating sample tickets across all128 retained records; this compute prefix is not a world-camera observation. No assumption about current DEFAULT resource states is justified. Next owned experiment: match destination candidate ranges to app upload copies and acquire only valid UPLOAD input on the same app queue with an independently fenced owned submission. Such bytes would be upload input, not proof of later per-draw GPU state or camera semantics.",
+  "game_identity_unchanged": "PASS",
+  "devkit_asset_files": 0
 }
