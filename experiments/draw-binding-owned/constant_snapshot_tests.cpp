@@ -315,6 +315,10 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     check(fence->SetEventOnCompletion(7, event.get()));
     require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
     require(uploads.read(target_b).bytes.empty()); // Empty resubmission cannot grant stale data.
+    uploads.release_device(device.Get());
+    require(std::string_view(uploads.read(target_a).state) == "DEVICE_CLOSED");
+    require(std::string_view(uploads.read(target_b).state) == "DEVICE_CLOSED");
+    require(uploads.read(target_a).bytes.empty() && uploads.read(target_b).bytes.empty());
     std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {

@@ -25,7 +25,7 @@ class UploadInputObserver final {
         ConstantSnapshot::SourceInfo source_info;
         std::unique_ptr<OwnedConstantCopy> copy;
         const char *state = "WAITING_FOR_UPLOAD";
-        bool matched = false, submitted = false, reset_pending = false, failed = false;
+        bool matched = false, submitted = false, reset_pending = false, failed = false, device_closed = false;
     };
     using Ticket = std::shared_ptr<Entry>;
     struct Sample {
@@ -39,7 +39,7 @@ class UploadInputObserver final {
     std::vector<Ticket> entries_;
     UINT64 capture_ = 0;
     static bool poll(const Ticket &entry) {
-        if (!entry->submitted || entry->failed)
+        if (!entry->submitted || entry->failed || entry->device_closed)
             return false;
         try {
             if (entry->copy->read_completed()) {
@@ -158,10 +158,37 @@ class UploadInputObserver final {
             entry->state = "UNSUBMITTED_RECORDING_RETIRED";
         }
     }
+    // Release target metadata references BEFORE the native device wrapper is
+    // destroyed. Completed owned copies retire first; unknown GPU completion
+    // still uses OwnedConstantCopy's bounded quarantine when its entry dies.
+    void release_device(ID3D12Device *device) {
+        if (!device)
+            return;
+        const std::lock_guard lock(mutex_);
+        Com<IUnknown> identity;
+        if (FAILED(device->QueryInterface(IID_PPV_ARGS(&identity))))
+            return;
+        std::erase_if(entries_, [&](const Ticket &entry) {
+            Com<IUnknown> target_device;
+            if (!entry->target || FAILED(entry->target->GetDevice(IID_PPV_ARGS(&target_device))) ||
+                target_device.Get() != identity.Get())
+                return false;
+            (void)poll(entry);
+            entry->source.Reset();
+            entry->target.Reset();
+            entry->matched = false;
+            entry->list = 0;
+            entry->device_closed = true;
+            entry->state = "DEVICE_CLOSED";
+            return true;
+        });
+    }
     Sample read(const Ticket &entry) {
         const std::lock_guard lock(mutex_);
         if (!entry)
             return {};
+        if (entry->device_closed)
+            return {entry->state, entry->source_info, {}};
         const bool ready = poll(entry);
         if (!entry->matched && !entry->submitted && Clock::now() > entry->deadline)
             entry->state = "NO_UPLOAD_WITHIN_WINDOW";
