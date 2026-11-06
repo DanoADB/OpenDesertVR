@@ -77,10 +77,13 @@ int wmain(int argc, wchar_t **argv) {
              (std::wstring_view(argv[2]) != L"--submit-fourth" && std::wstring_view(argv[2]) != L"--loop" &&
               std::wstring_view(argv[2]) != L"--loop-dxil" && std::wstring_view(argv[2]) != L"--loop-dxil-budget" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-capture" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-upload")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-upload-empty")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
-        const bool upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload";
+        const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
+        const bool upload_control =
+            empty_upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload");
         const bool capture_control =
             upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-capture");
         const bool dxil =
@@ -386,9 +389,16 @@ int wmain(int argc, wchar_t **argv) {
                         D3D12_RESOURCE_STATE_COPY_DEST);
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             check(lists[1]->Close());
+            if (empty_upload_control) {
+                // Retire B's upload/draw, then submit the EMPTY replacement.
+                // Its old copy must not gain data merely from that execution.
+                check(lists[1]->Reset(allocators[1].Get(), nullptr));
+                check(lists[1]->Close());
+            }
             ID3D12CommandList *baseline[] = {lists[0].Get(), lists[2].Get()};
             ID3D12CommandList *control[] = {lists[0].Get(), lists[1].Get(), lists[2].Get()};
-            queue->ExecuteCommandLists(submit_fourth ? 3 : 2, submit_fourth ? control : baseline);
+            queue->ExecuteCommandLists(submit_fourth || empty_upload_control ? 3 : 2,
+                                       submit_fourth || empty_upload_control ? control : baseline);
             check(queue->Signal(fence.Get(), frame));
             check(fence->SetEventOnCompletion(frame, event.get()));
             if (WaitForSingleObject(event.get(), 5000) != WAIT_OBJECT_0)
