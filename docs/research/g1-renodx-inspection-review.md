@@ -62,3 +62,8 @@ require a reviewed current-build loading and evidence method. The old game
 addon's shader hashes and VRS override do not establish current camera matrices,
 extra world-view scheduling or temporal-history ownership. ADR 0003 retains
 G2's hold. M0's code/package remain independent; headset tests remain deferred.
+
+A later [selected owned cache-test qualification](g1-owned-reshade-descriptor-method.md)
+executes only the upstream test app/addon with pinned ReShade in an isolated
+workspace case. It does not execute the full devkit or the game addon, and does
+not upgrade this static review's unverified draw/camera findings.

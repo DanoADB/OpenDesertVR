@@ -127,3 +127,10 @@ does not establish vertex-only table coverage, submitted GPU work or per-draw
 constant bytes; startup also has replacement capabilities. Qualify the actual
 tool on owned fixtures with isolated configuration before considering a
 current-game method. No addon or bridge was adopted or executed by the review.
+
+The [owned ReShade descriptor-cache regression](../research/g1-owned-reshade-descriptor-method.md)
+passes locally for Release under clean committed controller ca07e21. Its 1,024
+allocation requests and orderly exit qualify that selected loading/cache step
+only. Full devkit draw tracking, vertex-only table coverage, submitted draw
+association and per-draw GPU constants remain unverified. No game instrument,
+camera control or independent world render is qualified by this owned result.

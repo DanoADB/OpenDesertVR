@@ -71,3 +71,24 @@ concurrent descriptor allocation behavior only. Full devkit stage coverage,
 submitted draw association, per-draw GPU bytes, persistent-map behavior and
 camera semantics remain unverified. This does not qualify a current-game
 installation or alter ADR 0003. Headset testing remains deferred.
+
+## Observed Release result, 2026-11-06
+
+The [committed-controller observation](../evidence/g1-owned-reshade-descriptor-2026-11-06.json)
+uses clean source ca07e21 and completes input postflight. The owned app exits
+zero; log markers establish ReShade and the test addon loaded. All 1,024
+requests succeed across 64 layouts and 16 threads each, with zero failures and
+zero divergent layouts. The observed controller/lock/recipe and binary hashes
+are retained. This is a local Release software result; no Debug runtime result
+or CI execution of this external tool is claimed. Earlier development-controller
+output remains in its separate local case and does not replace this record.
+
+The first remaining qualification is actual per-draw metadata behavior on owned
+vertex-only/table/rebinding/submission controls. The allocator result supplies
+no pass for those tests or for current Crimson Desert compatibility.
+
+Hosted [Debug/Release validation](https://github.com/DanoADB/OpenDesertVR/actions/runs/42267944698)
+passes at ca07e21: 34 core native checks, 89 Python tests and four existing
+optional research suites per configuration. The three synthetic controller
+result/input tests actually ran in both. The external ReShade regression was
+not run in CI; its local Release evidence remains a separate grade.
