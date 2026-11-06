@@ -37,3 +37,22 @@ this method. Do not publish private game constant arrays. The native driver
 tests do not qualify ReShade callback wiring: actual owned runtime comparison
 against green/blue GPU controls and the unsubmitted yellow control is required
 before any game buffer sampling. Game camera control and stereo remain NOT_RUN.
+
+## Diagnostic revision
+
+`devkit-readback-diagnostics-input-lock.json` pins a separate
+`bc0ead3-gpu-constants-4` fork and `gpu-constant-diagnostics.patch`.
+It keeps previous references unchanged. Summary rows expose
+`odvGpuConstantSampleCount`, `odvGpuConstantAttemptCount` and
+`odvGpuConstantAttemptsTruncated`. Select originating draws with nonzero
+sample counts; a detailed reply on a later use of the same range need not
+contain a ticket. Binding count alone is not a sample-selection criterion.
+
+Detailed replies additionally expose at most six `odvGpuConstantAttempts`:
+record status, source eligibility, heap type and allocation size. Native
+resource metadata is queried only during the original valid recording
+callback. Duplicates, capacity exhaustion and ineligible sources are distinct.
+If capacity prevents source inspection, heap type/size remain null; do not
+infer an unsupported heap from absent metadata. The attempted-candidate limit
+can omit later eligible ranges and explicitly reports truncation. This
+revision does not enable new source heap types or change resource states.
