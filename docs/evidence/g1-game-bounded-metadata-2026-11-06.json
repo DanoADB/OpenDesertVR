@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-06",
-  "status": "OBSERVED_GAME_METADATA_CLEANUP_PENDING",
+  "status": "OBSERVED_GAME_METADATA",
   "method_source_commit": "bed1f8cc133977cc0248530afa449327531e2527",
   "game_identity": {
     "steam_app_id": "3321460",
@@ -34,12 +34,13 @@
     65536
   ],
   "staged_game_files_unchanged": "PASS",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS_NORMAL_EXIT_EXACT_FILES_REMOVED",
   "raw_handles_and_logs": "PRIVATE_ONLY",
   "game_buffer_bytes_read": "NOT_RUN",
   "game_buffer_writes": "NOT_RUN",
   "camera_identification": "UNVERIFIED",
   "stereo_game_rendering": "NOT_RUN",
   "headset_validation": "NOT_RUN",
-  "scope": "Actual bounded metadata from the reviewed live game title menu. Prefix contains compute work, not a proven world-camera pass. No shader text/bytecode or game payload exported. User requested to load a 3D scene after automated start input did not activate."
+  "scope": "Actual bounded metadata from the reviewed live game title menu. Prefix contains compute work, not a proven world-camera pass. No shader text/bytecode or game payload exported. User requested to load a 3D scene after automated start input did not activate. Normal exit and exact-hash cleanup subsequently verified; original game identity unchanged.",
+  "devkit_asset_files": 0
 }
