@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "stage": "G1 updated-build metadata and original settings",
+  "storefront": "Steam",
+  "app_id": 3321460,
+  "manifest_name": "Crimson Desert Enhanced",
+  "manifest_build_id": "26480954",
+  "manifest_state_flags": 4,
+  "game_ui_version": "2.04.08",
+  "executable": {
+    "size_bytes": 326872984,
+    "product_version": "1.0.0.3576",
+    "relative_path": "bin64/CrimsonDesert.exe",
+    "file_version": "1.0.0.3576",
+    "signature_status": "Valid",
+    "sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observations": {
+    "normal_steam_launch": true,
+    "title_menu_observed": true,
+    "capture_layer_loaded": false,
+    "settings_opened_with_automated_input": true
+  },
+  "original_settings": {
+    "frame_generation": "NVIDIA DLSS Frame Generation",
+    "v_sync": "Off",
+    "nvidia_reflex": "On",
+    "number_of_frames_generated": 2,
+    "screen_mode": "Borderless Window",
+    "upscale_mode": "NVIDIA DLSS 4.5",
+    "hdr": "Off",
+    "texture_quality": "Ultra",
+    "dlss_ray_reconstruction": "Off",
+    "upscale_resolution": "Performance",
+    "resolution": [
+      1600,
+      1200
+    ],
+    "raytracing": "Off",
+    "graphics_preset": "Custom",
+    "dynamic_multi_frame_generation": "Off"
+  },
+  "planned_change": {
+    "restoration_required": true,
+    "other_settings": "UNCHANGED",
+    "texture_quality": "Low"
+  },
+  "capture_result": "NOT_RUN",
+  "camera_control": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "scope": "Observed UI and installed-file/Steam metadata only. Steam updated the installation during ordinary launch after an initial old-hash preflight; final running-session metadata is a new baseline. Prior game/trace results are not transferred to this build. No game files, binary payloads, account identifiers, absolute install paths or screenshots published."
+}

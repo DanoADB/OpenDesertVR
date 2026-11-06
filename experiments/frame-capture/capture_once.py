@@ -47,6 +47,17 @@ def run(config, report, report_path):
         raise RuntimeError("Unexpected mode or executable identity")
     if digest(executable) != config["executable_sha256"]:
         raise RuntimeError("Executable fingerprint changed before launch")
+    is_game = mode in {"game_title", "game_title_resume"}
+    if is_game:
+        sys.path.insert(0, str(Path(config["script"]).resolve().parent))
+        from game_build_gate import validate_game_build
+        catalog_path = Path(config["script"]).resolve().parent / "reviewed-builds.json"
+        identity = validate_game_build(executable, config["steam_manifest"], catalog_path)
+        if (identity["steam_build_id"] != config["expected_steam_build_id"] or
+                identity["executable_sha256"] != config["executable_sha256"]):
+            raise RuntimeError("Game identity changed after the launcher preflight")
+        report.update(identity)
+        report["reviewed_build_catalog_sha256"] = digest(catalog_path)
     timeout = int(config.get("timeout_seconds", 180))
     if not 1 <= timeout <= 300:
         raise RuntimeError("Capture timeout must be between 1 and 300 seconds")
@@ -161,6 +172,8 @@ def run(config, report, report_path):
                     raise RuntimeError("Capture is not a local file inside the selected case directory")
                 if digest(executable) != config["executable_sha256"]:
                     raise RuntimeError("Game executable fingerprint changed during capture")
+                if is_game and validate_game_build(executable, config["steam_manifest"], catalog_path) != identity:
+                    raise RuntimeError("Game installation changed during capture")
                 report["status"] = "SAVING_CAPTURE"
                 save(report_path, report)
                 # Keep an independent local snapshot even if the tool later cleans its original.
@@ -173,7 +186,6 @@ def run(config, report, report_path):
                 if metadata["capture_sha256"] != source_hash:
                     raise RuntimeError("Saved capture does not match the completed source")
                 report.update(metadata)
-                is_game = mode in {"game_title", "game_title_resume"}
                 report.update({"status": "CAPTURED" if is_game else "OWNED_CONTROL_CAPTURED",
                                "game_gpu_capture": "OBSERVED" if is_game else "NOT_RUN"})
                 save(report_path, report)

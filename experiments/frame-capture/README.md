@@ -36,8 +36,8 @@ It never calls late InjectIntoProcess, enables global/child hooks, changes Steam
 launch options, copies DLLs into the game folder or alters protection settings.
 No approval from the game publisher is inferred from this technical review.
 
-The launcher accepts only the exact executable fingerprint already recorded in
-the G1 baseline and the reviewed signed RenderDoc binaries. It checks existing
+The launcher accepts only reviewed executable/Steam-build combinations from
+reviewed-builds.json and the reviewed signed RenderDoc binaries. It checks existing
 tool privacy preferences without changing them. It refuses an existing game
 process rather than interrupting gameplay. If normal Steam handoff, permissions,
 tool incompatibility or protection prevents capture, retain that result and

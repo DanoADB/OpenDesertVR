@@ -16,7 +16,17 @@ if (!$ResumeFromCase -and $existingGame.Count) {
 $gameFile = Get-Item -LiteralPath $GameExecutable
 if ($gameFile.Name -ne 'CrimsonDesert.exe') { throw 'Unexpected executable name.' }
 $gameHash = (Get-FileHash -LiteralPath $gameFile.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($gameHash -ne '25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9') {
+$catalog = Get-Content (Join-Path $PSScriptRoot 'reviewed-builds.json') -Raw | ConvertFrom-Json
+if ($catalog.schema_version -ne 1 -or $catalog.steam_app_id -ne '3321460') { throw 'Unsupported reviewed-build catalog.' }
+$gameInstall = $gameFile.Directory.Parent.FullName
+$steamApps = Split-Path (Split-Path $gameInstall -Parent) -Parent
+$steamManifest = Join-Path $steamApps 'appmanifest_3321460.acf'
+$manifestText = Get-Content -LiteralPath $steamManifest -Raw
+$buildMatches = [regex]::Matches($manifestText, '(?m)^\s*"buildid"\s+"(\d+)"\s*$')
+if ($buildMatches.Count -ne 1) { throw 'Expected one Steam build identity.' }
+$steamBuild = $buildMatches[0].Groups[1].Value
+$reviewed = @($catalog.builds | Where-Object { $_.executable_sha256 -eq $gameHash -and $_.steam_build_id -eq $steamBuild })
+if ($reviewed.Count -ne 1 -or $gameFile.Length -ne $reviewed[0].executable_bytes -or $gameFile.VersionInfo.FileVersion -ne $reviewed[0].file_version) {
     throw 'Game build differs from the observed G1 baseline; fingerprint and review the new build first.'
 }
 if (!$RenderDocRoot) {
@@ -66,6 +76,8 @@ $config = @{
     executable_sha256 = $gameHash
     script = $script
     timeout_seconds = $TimeoutSeconds
+    steam_manifest = $steamManifest
+    expected_steam_build_id = $steamBuild
 }
 if ($SteamDevelopmentContext) {
     if (!(Get-Process -Name steam -ErrorAction SilentlyContinue)) { throw 'The ordinary Steam client must be running.' }
