@@ -22,6 +22,11 @@ tests use process environment overrides from a non-elevated shell.
 See m0-hardening-2026-11-04.json for the linked successful Debug/Release run.
 No software test artifact is evidence of a real headset or game render.
 
+Current native desktop delivery (2026-11-06):
+[clean 112cdad package and software validation](m0-desktop-package-2026-11-06.json).
+This is the button-based testing app. Its own headset acceptance remains
+NOT_RUN; it does not inherit the older Quest Pro pass.
+
 Actual Quest Pro evidence (2026-11-05):
 - [User visual observations](m0-quest-pro-2026-11-05.json).
 - [Structured hardware reports, binary provenance, menu/disconnect/reconnect runs](m0-quest-pro-reports-2026-11-05.json).

@@ -89,11 +89,23 @@ powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 
 Current hardening evidence: [m0-hardening-2026-11-04.json](evidence/m0-hardening-2026-11-04.json).
 
-Latest portable collector/Explorer-launcher checks:
+Current native desktop package: **OpenDesertVR-M0-112cdad-win64.zip**, built
+from clean source 112cdad. Extract it and double-click **OpenDesertVR.exe**;
+no scripts are required. The app provides readiness, Start, Stop, reports and
+explicit visual observations. [Package and validation evidence](evidence/m0-desktop-package-2026-11-06.json)
+records its exact ZIP/executable hashes and successful hosted Debug/Release
+checks: 35 core native, 94 Python and five optional native checks in each.
+Local native checks have 34 passes, zero failures and one optional debug-layer
+skip per configuration. Packaged desktop startup passed; this new build's
+headset and game validation remain NOT_RUN. The earlier Quest Pro acceptance
+does not transfer to it. User-facing device testing is the next priority;
+additional G1 tooling is on hold for this delivery.
+
+Earlier portable collector/Explorer-launcher checks:
 [m0-package-launcher-2026-11-06.json](evidence/m0-package-launcher-2026-11-06.json).
-The clean fb1b574 ZIP is available under out/packages with a matching SHA-256
+The historical clean fb1b574 ZIP remains under out/packages with a matching SHA-256
 sidecar. Extract it and double-click Run-Headset-Test.cmd. The extracted doctor
-currently reports no available headset; a new visual acceptance run was not
+reported no available headset during that observation; a new visual acceptance run was not
 performed, and this artifact retains NOT_RUN hardware/game fields.
 
 Initial build/package evidence (before hardening): [m0-local-2026-11-04.json](evidence/m0-local-2026-11-04.json).

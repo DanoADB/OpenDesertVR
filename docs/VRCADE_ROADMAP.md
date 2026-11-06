@@ -47,6 +47,17 @@ Documentation, local-first privacy, portable profiles, safe error recovery, cont
 
 ## Current implementation snapshot (2026-11-04)
 
+**Delivery update, 2026-11-06:** clean 112cdad adds a native Windows headset
+testing app with readiness, stereo Start/Stop, reports and visual observations.
+The portable package launches without scripts. Hosted Debug/Release validation
+passes 35 core native checks, 94 Python tests and five optional native checks
+per configuration. Current-build hardware acceptance is NOT_RUN; previous
+Quest Pro results apply to 404d38a. Device testing of this delivered app is
+the next priority. This app is an M0 test interface, not the VRcade launcher.
+See [package evidence](evidence/m0-desktop-package-2026-11-06.json).
+
+The original foundation snapshot follows:
+
 Standalone OpenXR/D3D12 stereo testhost, diagnostics, configuration, inactive
 game adapter, pinned dependencies, packaging and Windows CI are implemented.
 Local MSVC Debug/Release builds each report 33 tests passed, zero failed and
