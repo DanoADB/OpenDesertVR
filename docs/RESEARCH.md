@@ -1,5 +1,10 @@
 # M0 references and next G1 experiment
 
+Current advancement decision: [ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md).
+Hold G2/game-adapter implementation; stop repeating the failed capture method.
+The ADR identifies the missing capabilities and new evidence required to resume
+game-facing work. M0 maintenance and actual headset verification remain useful.
+
 Primary references:
 - https://github.com/KhronosGroup/OpenXR-SDK/tree/781f2eab3698d653c804ecbd11e0aed47eaad1c6
 - https://github.com/KhronosGroup/OpenXR-SDK-Source/blob/release-1.1.43/src/tests/hello_xr/graphicsplugin_d3d12.cpp

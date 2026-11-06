@@ -98,6 +98,12 @@ steps and interpretation. Basic GPU discovery runs even without a headset.
 
 ## Remaining gates and limits
 
+[ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md) consolidates
+the G1 advancement decision: no game adapter or G2 until actual camera/render
+capabilities are established. The present full-frame capture method is stopped;
+new game-facing work needs a materially new engineering lead. This is not proof
+that game VR is impossible.
+
 Meta Quest Pro visual depth, alternating-eye viewpoint, world-anchored tracking
 and comfortable motion were reported passing by the user on 2026-11-05.
 See [the observation record](evidence/m0-quest-pro-2026-11-05.json).
