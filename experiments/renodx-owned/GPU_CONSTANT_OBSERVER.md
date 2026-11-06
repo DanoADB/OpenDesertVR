@@ -84,3 +84,12 @@ shader/text/dump exclusions remain. The Close callback also confirms retirement
 after reset to an empty command list; before-reset alone never grants data.
 Owned DEFAULT-buffer pixels, matching upload values and an unsubmitted control
 must pass actual addon runtime qualification before any game use.
+
+`devkit-upload-cleanup-input-lock.json` and `upload-input-cleanup.patch` pin
+the separate v6 correction: candidate/source metadata references are released
+at destruction of their matching native device. Completed owned copies retire
+first; uncertain GPU completion still uses bounded quarantine. Qualification
+checks the normal shutdown log for native device reference-count warnings.
+The additional `--loop-dxil-upload-empty` control retires yellow's recorded
+upload/draw and actually executes its empty replacement list. Yellow must
+still return no bytes; reset/Close cannot turn an unexecuted copy into data.
