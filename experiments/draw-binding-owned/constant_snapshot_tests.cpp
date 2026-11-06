@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include "constant_snapshot.hpp"
+#include "constant_capture_driver.hpp"
 #include <array>
 #include <dxgi1_4.h>
 #include <iostream>
@@ -91,6 +91,7 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     } release_gate{gate.Get()};
     check(queue->Wait(gate.Get(), 1));
     ID3D12CommandList *execute[] = {commands[0].Get()};
+    require(submitted.before_execute());
     queue->ExecuteCommandLists(1, execute);
     check(queue->Signal(fence.Get(), 1));
     require(submitted.submitted_after_execute(fence.Get(), 1));
@@ -102,17 +103,101 @@ static void run_case(D3D12_COMMAND_LIST_TYPE queue_type) {
     require(event != nullptr);
     check(fence->SetEventOnCompletion(1, event.get()));
     require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
-    const auto &bytes = submitted.read_completed();
+    const auto bytes = submitted.read_completed();
     require(bytes && bytes->size() == sizeof(after));
     require(std::memcmp(bytes->data(), after.data(), sizeof(after)) == 0);
     require(std::memcmp(bytes->data(), before.data(), sizeof(before)) != 0);
+    // Completion does not retire a recording: it is legal to execute A again.
+    // Its readback allocation must still be alive and capacity still consumed.
+    require(!over_capacity.record(device.Get(), commands[1].Get(), source.Get(), 256, sizeof(before)));
+    check(gate->Signal(1));
+    check(queue->Wait(gate.Get(), 2));
+    struct SecondReleaseGate {
+        ID3D12Fence *fence;
+        ~SecondReleaseGate() { fence->Signal(2); }
+    } second_release{gate.Get()};
+    require(submitted.before_execute());
+    require(!submitted.release_retired()); // Before-execute is not completion.
+    queue->ExecuteCommandLists(1, execute);
+    check(queue->Signal(fence.Get(), 2));
+    require(submitted.submitted_after_execute(fence.Get(), 2));
+    require(!submitted.release_retired()); // Latest execution is still blocked.
+    // The earlier CPU sample is frozen, even while a later GPU copy is pending.
+    require(submitted.read_completed() == bytes);
+    check(gate->Signal(2));
+    check(fence->SetEventOnCompletion(2, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    check(allocators[0]->Reset());
+    check(commands[0]->Reset(allocators[0].Get(), nullptr));
+    require(submitted.release_retired()); // Successful reset + latest completion.
+    require(submitted.read_completed() == bytes);
+    require(!submitted.before_execute());
     // Completion of A's fence cannot grant data to the unsubmitted B.
     require(!unsubmitted.read_completed());
+    check(allocators[1]->Reset());
+    check(commands[1]->Reset(allocators[1].Get(), nullptr));
     require(unsubmitted.discard_unsubmitted());
     for (auto &snapshot : pending)
         require(snapshot->discard_unsubmitted());
     require(!unsubmitted.read_completed());
-    std::cout << "PASS: GPU values reflect late upload writes; unsubmitted recording stays unread; bounds rejected\n";
+    // Exercise the event bridge with real GPU work. The tests call AFTER-
+    // present only after native Execute returned; actual addon wiring needs
+    // a separate runtime qualification.
+    odv::research::ConstantCaptureDriver driver;
+    driver.begin_capture();
+    const auto a = driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after));
+    const auto b = driver.record(2, device.Get(), commands[1].Get(), source.Get(), 256, sizeof(after));
+    require(a != nullptr && b != nullptr);
+    require(!driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after)));
+    check(commands[0]->Close());
+    check(commands[1]->Close());
+    check(queue->Wait(gate.Get(), 3));
+    struct ThirdReleaseGate {
+        ID3D12Fence *fence;
+        ~ThirdReleaseGate() { fence->Signal(3); }
+    } third_release{gate.Get()};
+    driver.before_execute(1, queue.Get());
+    require(driver.read(a).bytes.empty());
+    queue->ExecuteCommandLists(1, execute);
+    Com<ID3D12CommandQueue> other_queue;
+    check(device->CreateCommandQueue(&q, IID_PPV_ARGS(&other_queue)));
+    driver.after_present(other_queue.Get());
+    std::thread wrong_thread([&] { driver.after_present(queue.Get()); });
+    wrong_thread.join();
+    require(driver.read(a).bytes.empty());
+    driver.after_present(queue.Get());
+    require(driver.read(a).bytes.empty()); // Queue still blocked.
+    check(gate->Signal(3));
+    check(queue->Signal(fence.Get(), 3));
+    check(fence->SetEventOnCompletion(3, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    const auto sample = driver.read(a);
+    require(std::string_view(sample.state) == "READY" && sample.bytes.size() == sizeof(after));
+    require(std::memcmp(sample.bytes.data(), after.data(), sizeof(after)) == 0);
+    require(std::string_view(driver.read(b).state) == "UNSUBMITTED");
+    // A before-reset event is insufficient. Its old commands can still execute
+    // if Reset fails; retain the allocation and track that repeated execution.
+    driver.before_reset(1);
+    driver.before_execute(1, queue.Get());
+    queue->ExecuteCommandLists(1, execute);
+    driver.after_present(queue.Get());
+    check(queue->Signal(fence.Get(), 4));
+    check(fence->SetEventOnCompletion(4, event.get()));
+    require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0);
+    check(allocators[0]->Reset());
+    check(commands[0]->Reset(allocators[0].Get(), nullptr));
+    driver.recording_resumed(1);
+    require(driver.read(a).bytes == sample.bytes);
+    driver.before_reset(2);
+    check(allocators[1]->Reset());
+    check(commands[1]->Reset(allocators[1].Get(), nullptr));
+    driver.recording_resumed(2);
+    require(driver.read(b).bytes.empty());
+    driver.begin_capture();
+    require(driver.record(1, device.Get(), commands[0].Get(), source.Get(), 256, sizeof(after)) != nullptr);
+    commands[0].Reset();
+    driver.destroyed(1);
+    std::cout << "PASS: late upload writes, repeated execution, retirement, unsubmitted and bounds controls\n";
 }
 int main() {
     try {

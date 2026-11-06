@@ -25,6 +25,7 @@ class ConstantSnapshot final {
     std::size_t bytes_ = 0;
     std::optional<std::vector<std::byte>> data_;
     bool counted_ = false;
+    bool execution_observed_ = false;
     static inline std::atomic_uint32_t pending_ = 0;
     void release_count() noexcept {
         if (counted_) {
@@ -45,10 +46,9 @@ class ConstantSnapshot final {
     ConstantSnapshot(const ConstantSnapshot &) = delete;
     ConstantSnapshot &operator=(const ConstantSnapshot &) = delete;
     ~ConstantSnapshot() {
-        const bool unfinished = phase_ == Phase::recorded || phase_ == Phase::submitted;
-        const auto completed = fence_ ? fence_->GetCompletedValue() : 0;
-        if (unfinished && (!fence_ || completed == UINT64_MAX || completed < fence_value_)) {
-            // Do not free GPU-referenced memory when its completion is unknown.
+        if (counted_) {
+            // A completed command list may execute again. Only explicit
+            // recording retirement plus completion permits resource release.
             // Retain the capacity slot too: at most six abandoned captures can
             // exist, after which capture stops. This is not a hard watchdog.
             source_.Detach();
@@ -103,15 +103,28 @@ class ConstantSnapshot final {
             throw;
         }
     }
-    bool submitted_after_execute(ID3D12Fence *fence, UINT64 value) {
-        if (phase_ != Phase::recorded || !fence || !value)
+    // Invoke before EVERY native execution, while excluding concurrent reads.
+    // No new read is permitted until an after-execute fence covers this call.
+    // A previously copied CPU sample stays immutable across resubmission.
+    bool before_execute() noexcept {
+        if (phase_ != Phase::recorded && phase_ != Phase::submitted && phase_ != Phase::complete)
             return false;
+        execution_observed_ = true;
+        phase_ = Phase::recorded;
+        return true;
+    }
+    bool submitted_after_execute(ID3D12Fence *fence, UINT64 value) {
+        if ((phase_ != Phase::recorded && phase_ != Phase::submitted && phase_ != Phase::complete) || !fence || !value)
+            return false;
+        execution_observed_ = true;
         fence_ = fence;
         fence_value_ = value;
         phase_ = Phase::submitted;
         return true;
     }
     const std::optional<std::vector<std::byte>> &read_completed() {
+        if (data_)
+            return data_;
         if (phase_ != Phase::submitted)
             return data_;
         const auto completed = fence_->GetCompletedValue();
@@ -134,15 +147,27 @@ class ConstantSnapshot final {
         const D3D12_RANGE empty{};
         readback_->Unmap(0, &empty);
         phase_ = Phase::complete;
+        return data_;
+    }
+    // Caller proves the command recording can NEVER execute again (successful
+    // reset or destruction), and has reported every execution. The last fence
+    // must cover all of them. A before-reset callback alone is insufficient.
+    bool release_retired() noexcept {
+        if ((phase_ != Phase::submitted && phase_ != Phase::complete) || !fence_)
+            return false;
+        const auto completed = fence_->GetCompletedValue();
+        if (completed == UINT64_MAX || completed < fence_value_)
+            return false;
         source_.Reset();
         readback_.Reset();
         fence_.Reset();
+        phase_ = Phase::discarded;
         release_count();
-        return data_;
+        return true;
     }
     // Only after the caller proves this recording will never be submitted.
     bool discard_unsubmitted() noexcept {
-        if (phase_ != Phase::recorded)
+        if (phase_ != Phase::recorded || execution_observed_)
             return false;
         phase_ = Phase::discarded;
         source_.Reset();

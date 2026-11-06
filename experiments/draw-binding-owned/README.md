@@ -95,3 +95,27 @@ headset/game test is run. Compare the exact authored shader pair and known bindi
 already qualified owned Devkit transport. Known pixel buffers must validate
 the native/ReShade handle convention before interpreting other missing/stale
 bindings. A listed draw alone cannot establish GPU submission or completion.
+
+`constant_snapshot.hpp` and `constant_capture_driver.hpp` provide the bounded
+UPLOAD-only GPU-copy path being prepared for camera research. Each copy is at
+most 4096 bytes; at most six unresolved copies retain resources. The driver
+tracks every execution, including resubmission outside an active snapshot.
+Only a later AFTER-present callback on the same native queue and CPU thread
+can establish its post-execution fence. Other queues/threads cannot grant
+readiness. The first completed CPU sample is immutable; it belongs only to
+the draw where that copy was inserted, not subsequent uses of the buffer.
+
+GPU completion alone cannot free the allocation: a recorded command list may
+execute again. Explicit retirement and completion of the latest execution are
+both required. A BEFORE-reset callback alone is insufficient; the driver waits
+for subsequent recording (assuming conforming D3D12 use), or destruction.
+Unsubmitted retired lists discard their copies. Unknown completion/retirement
+retains allocations and consumes the fixed capacity rather than freeing memory
+still referenced by commands. This can stop capture; it is not production
+fault recovery or a hard watchdog.
+
+`owned_gpu_constant_snapshot` exercises actual WARP Direct, Compute and Copy
+queues: late upload writes, blocked fences, repeated execution, retirement,
+wrong queue/thread rejection and an unsubmitted control. These tests do not
+execute ReShade callbacks or establish actual game-camera contents. Addon
+wiring still requires its own owned runtime qualification before game use.
