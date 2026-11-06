@@ -21,6 +21,7 @@ class UploadInputObserver final {
         UINT64 target_offset = 0, source_offset = 0, capture = 0;
         std::size_t bytes = 0;
         std::uintptr_t list = 0;
+        std::uintptr_t device = 0;
         Clock::time_point deadline;
         ConstantSnapshot::SourceInfo source_info;
         std::unique_ptr<OwnedConstantCopy> copy;
@@ -60,7 +61,8 @@ class UploadInputObserver final {
         ++capture_;
         std::erase_if(entries_, [](const Ticket &entry) { return !entry->submitted || poll(entry); });
     }
-    Ticket register_target(ID3D12Resource *target, UINT64 offset, std::size_t bytes) {
+    Ticket register_target(ID3D12Resource *target, UINT64 offset, std::size_t bytes,
+                           ID3D12Device *native_device = nullptr) {
         const std::lock_guard lock(mutex_);
         if (!capture_ || !target || !bytes || bytes > ConstantSnapshot::maximum_bytes || entries_.size() >= 6)
             return {};
@@ -75,6 +77,13 @@ class UploadInputObserver final {
             if (entry->target.Get() == target && entry->target_offset == offset && entry->bytes == bytes)
                 return {}; // Attach only to the originating observed draw.
         auto entry = std::make_shared<Entry>();
+        Com<ID3D12Device> parent;
+        if (!native_device) {
+            if (FAILED(target->GetDevice(IID_PPV_ARGS(&parent))))
+                return {};
+            native_device = parent.Get();
+        }
+        entry->device = reinterpret_cast<std::uintptr_t>(native_device);
         entry->target = target;
         entry->target_offset = offset;
         entry->bytes = bytes;
@@ -158,30 +167,29 @@ class UploadInputObserver final {
             entry->state = "UNSUBMITTED_RECORDING_RETIRED";
         }
     }
-    // Release target metadata references BEFORE the native device wrapper is
-    // destroyed. Completed owned copies retire first; unknown GPU completion
-    // still uses OwnedConstantCopy's bounded quarantine when its entry dies.
+    // Call while the parent device is still alive (e.g. primary swapchain
+    // destruction), NOT from device finalization. No GetDevice/QI here and no
+    // resource Release under our mutex: either can reenter an interop layer.
     void release_device(ID3D12Device *device) {
         if (!device)
             return;
-        const std::lock_guard lock(mutex_);
-        Com<IUnknown> identity;
-        if (FAILED(device->QueryInterface(IID_PPV_ARGS(&identity))))
-            return;
-        std::erase_if(entries_, [&](const Ticket &entry) {
-            Com<IUnknown> target_device;
-            if (!entry->target || FAILED(entry->target->GetDevice(IID_PPV_ARGS(&target_device))) ||
-                target_device.Get() != identity.Get())
-                return false;
-            (void)poll(entry);
-            entry->source.Reset();
-            entry->target.Reset();
-            entry->matched = false;
-            entry->list = 0;
-            entry->device_closed = true;
-            entry->state = "DEVICE_CLOSED";
-            return true;
-        });
+        std::vector<Com<ID3D12Resource>> release;
+        release.reserve(12);
+        {
+            const std::lock_guard lock(mutex_);
+            std::erase_if(entries_, [&](const Ticket &entry) {
+                if (entry->device != reinterpret_cast<std::uintptr_t>(device))
+                    return false;
+                (void)poll(entry);
+                release.push_back(std::move(entry->source));
+                release.push_back(std::move(entry->target));
+                entry->matched = false;
+                entry->list = 0;
+                entry->device_closed = true;
+                entry->state = "DEVICE_CLOSED";
+                return true;
+            });
+        }
     }
     Sample read(const Ticket &entry) {
         const std::lock_guard lock(mutex_);
