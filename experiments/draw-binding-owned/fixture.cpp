@@ -2,6 +2,7 @@
 // Original WARP geometry/readback control. No game, XR or capture-tool dependency.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
@@ -86,15 +87,18 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-variable" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-transient" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-split" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-default-2816")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
         const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
         const bool split_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-split";
+        const bool large_default_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816";
         const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
         const bool indirect_control = transient_control || split_control || present_gap_control ||
+                                      large_default_control ||
                                       (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-indirect");
         const bool variable_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-variable";
         const bool upload_control = indirect_control || variable_control || whole_upload_control ||
@@ -251,6 +255,8 @@ int wmain(int argc, wchar_t **argv) {
             indirect_arguments->Unmap(0, nullptr);
         }
         const auto constant_bytes = [&](UINT index) -> UINT {
+            if (large_default_control && (index == 3 || index == 5 || index == 7))
+                return 2816;
             return variable_control && index == 5 ? 512u : (variable_control && index == 7 ? 768u : 256u);
         };
         std::array<Com<ID3D12Resource>, 8> constants;
@@ -259,7 +265,7 @@ int wmain(int argc, wchar_t **argv) {
         D3D12_HEAP_PROPERTIES upload{};
         upload.Type = D3D12_HEAP_TYPE_UPLOAD;
         for (UINT i = 0; i < constants.size(); ++i) {
-            const auto d = buffer_desc(256ULL * (i + 1));
+            const auto d = buffer_desc(std::max(256ULL * (i + 1), static_cast<UINT64>(constant_bytes(i))));
             check(device->CreateCommittedResource(&upload, D3D12_HEAP_FLAG_NONE, &d, D3D12_RESOURCE_STATE_GENERIC_READ,
                                                   nullptr, IID_PPV_ARGS(&constants[i])));
             const auto name = L"OwnedControl" + std::to_wstring(i);
@@ -362,7 +368,7 @@ int wmain(int argc, wchar_t **argv) {
                     ground << ',';
                 ground << "{\"index\":" << i
                        << ",\"nativeHandle\":" << reinterpret_cast<std::uintptr_t>(bound_constant(i))
-                       << ",\"bytes\":" << 256 * (i + 1) << '}';
+                       << ",\"bytes\":" << bound_constant(i)->GetDesc().Width << '}';
             }
             ground << "]}";
             ground.close();
