@@ -48,6 +48,8 @@ The selected PAMT layouts, metadata name-chain/flag rules and PASC wrapper check
 used by the original bounded readers in experiments/shader-consumer-audit are adapted from
 Ratty123/CDMW-Full, revision 0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b,
 archive_format.py, models.py and archive_shader_preview.py.
+The technique XML fragment-envelope approach also follows selected static facts
+from upscale_profiles.py and native material_graph.cpp at the same revision.
 MIT, Copyright (c) 2026 Ratrider. Full notice: [CDMW-MIT.txt](docs/licenses/CDMW-MIT.txt).
 No upstream application or full archive parser is imported or executed. The
 optional technique_contract.py executes five reviewed pure filename-format

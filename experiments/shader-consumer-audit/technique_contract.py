@@ -97,7 +97,18 @@ def inspect_xml(data, shader_paths):
     text = data.decode("utf-8-sig", errors="strict")
     if "<!DOCTYPE" in text.upper() or "<!ENTITY" in text.upper():
         raise ValueError("xml_declarations_rejected")
-    root = ET.fromstring(text)
+    # The pinned sidecar reader uses a fragment envelope. Preserve strict XML
+    # validation and reject stray top-level text rather than extracting tags.
+    declaration = ""
+    body = text.lstrip()
+    if body.startswith("<?xml "):
+        end = body.find("?>")
+        if not 0 <= end <= 256:
+            raise ValueError("xml_declaration_outside_bounds")
+        declaration, body = body[:end + 2], body[end + 2:]
+    root = ET.fromstring(declaration + "<ODVFragment>" + body + "</ODVFragment>")
+    if not len(root) or (root.text or "").strip() or any((child.tail or "").strip() for child in root):
+        raise ValueError("xml_fragment_has_stray_top_level_text")
     known = {"category", "technique", "pipelinebinding"}
     tags, attributes = Counter(), Counter()
     by_basename = {}
@@ -105,6 +116,8 @@ def inspect_xml(data, shader_paths):
         by_basename.setdefault(path.rsplit("/", 1)[-1], set()).add(path)
     exact, ambiguous, potential, nodes = set(), 0, 0, 0
     for node in root.iter():
+        if node is root:
+            continue
         nodes += 1
         if nodes > 4096 or len(node.attrib) > 64:
             raise ValueError("xml_structure_outside_bounds")
@@ -125,7 +138,7 @@ def inspect_xml(data, shader_paths):
                 exact.update(matches)
             elif len(matches) > 1:
                 ambiguous += 1
-    return {"xml_nodes": nodes, "known_tag_counts": dict(tags), "known_attribute_counts": dict(attributes),
+    return {"xml_nodes": nodes, "top_level_elements": len(root), "known_tag_counts": dict(tags), "known_attribute_counts": dict(attributes),
             "scalar_values_containing_padxil": potential, "literal_shader_path_matches": len(exact),
             "ambiguous_basename_values": ambiguous,
             "matched_shader_name_sha256": sorted(sha(value.encode("utf-8")) for value in exact)}
@@ -202,6 +215,8 @@ def run(args, codec, report):
     catalog = Path(__file__).resolve().parents[1] / "frame-capture/reviewed-builds.json"
     catalog_hash = sha(catalog.read_bytes())
     identity = validate_game_build(root / "bin64/CrimsonDesert.exe", args.steam_manifest, catalog)
+    report.update(identity, reviewed_catalog_sha256=catalog_hash, plan_sha256=args.plan_sha256,
+                  shader_index_sha256=args.shader_index_sha256)
     plan_data = bounded_file(args.metadata_plan, 128 * 1024)
     if sha(plan_data) != args.plan_sha256:
         raise ValueError("metadata_plan_changed_or_oversized")
@@ -305,8 +320,13 @@ def main():
         try:
             report.update(run(args, codec, report))
             code = 0
-        except Exception:
+        except Exception as error:
             report["failure_reason"] = "input_codec_or_contract_rejected"
+            report["failure_category"] = ("XML_PARSE" if isinstance(error, ET.ParseError) else
+                                          "UTF8_DECODE" if isinstance(error, UnicodeDecodeError) else "OTHER_REJECTION")
+            if isinstance(error, ET.ParseError):
+                report["xml_error_code"] = error.code
+                report["xml_error_position"] = list(error.position)
         json.dump(report, output, indent=2, allow_nan=False)
         output.write("\n")
     print(json.dumps(report, indent=2))

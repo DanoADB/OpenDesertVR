@@ -94,10 +94,30 @@
       "path": "cdmw/ui/archive_browser/README.md",
       "sha256": "e44724c950dc6501902f080c6a3ecbc59b2c349ae83bca9e1e1ae29c319b7918",
       "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/ui/archive_browser/README.md"
+    },
+    {
+      "path": "cdmw/core/upscale_profiles.py",
+      "sha256": "23e8aa8a4f334f68d0730a2d499af9769b6c2c1a266ac5a7da558d04bbb7cc1e",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/upscale_profiles.py"
+    },
+    {
+      "path": "cdmw/rendering/material_channels.py",
+      "sha256": "bb78e8c8769c836760d7f0d20a294fc6d3574109005f576dba806b7a08fdf603",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/rendering/material_channels.py"
+    },
+    {
+      "path": "native/cdmw_preview_core/src/owners/material_graph.cpp",
+      "sha256": "f79642b46d9b7ef9353b98aec39ab70b8fffaca0adc30922109844b6ce561c21",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/native/cdmw_preview_core/src/owners/material_graph.cpp"
+    },
+    {
+      "path": "native/cdmw_preview_core/src/owners/material_semantics.cpp",
+      "sha256": "1d920193301341ef0160f0b01b4e5f32eba7d7e5eaad959cb1efb41e1e21fb03",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/native/cdmw_preview_core/src/owners/material_semantics.cpp"
     }
   ],
   "date": "2026-11-06",
-  "dependencies_adopted": false,
+  "dependencies_adopted": true,
   "execution": "SELECTED_PURE_FORMAT_ROUTINES_ONLY",
   "revision": "0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b",
   "root_copyright": "Copyright (c) 2026 Ratrider",
@@ -109,5 +129,6 @@
   "optional_local_codec_versions": {
     "cryptography": "50.0.2",
     "lz4": "4.4.5"
-  }
+  },
+  "dependency_scope": "Optional research recipe only: uses existing local cryptography/lz4. No M0 or CI dependency change."
 }

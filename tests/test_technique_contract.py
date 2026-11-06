@@ -32,6 +32,17 @@ class TechniqueContractTests(unittest.TestCase):
             with self.assertRaises((ValueError, ET.ParseError)):
                 inspect_xml(data, paths)
 
+    def test_fragment_envelope_preserves_strict_structure_and_does_not_delete_bytes(self):
+        data = b'\xef\xbb\xbf<?xml version="1.0" encoding="UTF-8"?><Category/><Technique><PipelineBinding Shader="owned.padxil"/></Technique>'
+        result = inspect_xml(data, {"a/owned.padxil"})
+        self.assertEqual(result["top_level_elements"], 2)
+        self.assertEqual(result["xml_nodes"], 3)
+        self.assertEqual(result["literal_shader_path_matches"], 1)
+        for bad in (b'garbage<x/>', b'<x/>garbage', b'<x/>\x00', b'<x/><y>',
+                    b'<x A="owned.padxil"/>\x00<y/>'):
+            with self.assertRaises((ValueError, ET.ParseError)):
+                inspect_xml(bad, {"a/owned.padxil"})
+
     def test_file_bounds_apply_before_loading_unreviewed_references_or_plans(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "owned"

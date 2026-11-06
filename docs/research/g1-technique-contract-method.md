@@ -73,3 +73,17 @@ read accounting. The diagnostic run followed the reporting fix; both attempts
 remain distinct. Stop this asset probe pending a specific format review and
 owned qualification of any parser change, rather than loosening checks or
 retrying until it parses. G2 and the production adapter remain held.
+
+## Source-backed fragment envelope revision
+
+CDMW's pinned `cdmw/core/upscale_profiles.py:812-828` wraps material sidecars
+in a synthetic XML root; `native/cdmw_preview_core/src/owners/material_graph.cpp:432-479`
+reads technique blocks without requiring a single-root document. These files
+are fingerprinted in the source inventory. This supplies a specific reason
+to qualify a fragment envelope, without proving the cause of the prior failure.
+The revised original reader permits multiple well-formed top-level elements
+and a bounded leading XML declaration. It rejects stray top-level text, DTDs,
+entities, NULs, malformed nesting and all previous size/structure limits. Unlike
+the upstream tolerant path, it never deletes embedded bytes or extracts only
+parseable blocks. Owned tests check both a BOM/declaration/two-element fragment
+and malformed/stray/NUL cases. Prior rejection evidence remains unchanged.
