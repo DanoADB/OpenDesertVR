@@ -91,3 +91,17 @@ The next acquisition design must preserve coherence requirements; do not omit
 the counter check or treat matching geometry alone as a frame-atomic snapshot.
 Separate diagnostic numeric plausibility, if pursued, must not award coherent
 camera validity or relax any acceptance condition.
+
+## Rejected-copy numeric diagnostics
+
+The observer now classifies the two existing byte copies on a coherence rejection,
+only when all three pointer-chain checks stayed equal. Each copy independently
+runs the same numeric validator; the report exports pass/rejection labels and
+fixed rejection reasons only. A changed pointer chain suppresses these diagnostics.
+This adds no reads, pauses, retries, offset searches or raw-data retention.
+
+The overall attempt still fails with exit 3 and no accepted candidate-fields
+result. Even two numeric passes are diagnostic only: neither copy is guaranteed
+atomic, counter progression is not tested, and camera layout/semantics remain
+UNVERIFIED. Existing evidence is not retroactively reclassified. Owned fixtures
+cover independent copy outcomes and suppression on each pointer-chain failure.

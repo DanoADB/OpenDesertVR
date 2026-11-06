@@ -51,6 +51,7 @@ def main():
             if isinstance(error, CoherenceError):
                 report["coherence_checks"] = error.checks
                 report["changed_hypothesis_ranges"] = error.changed_ranges
+                report["rejected_copy_diagnostics"] = error.copy_diagnostics
         json.dump(report, output, indent=2, allow_nan=False)
         output.write("\n")
     print(json.dumps(report, indent=2))

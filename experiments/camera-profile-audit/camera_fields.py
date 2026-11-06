@@ -20,10 +20,11 @@ RANGE_ROLES = ("buffer_counter_hypothesis", "resolution_hypothesis", "position_h
 
 
 class CoherenceError(ObservationError):
-    def __init__(self, checks, changed_ranges):
+    def __init__(self, checks, changed_ranges, copy_diagnostics):
         super().__init__("candidate_fields_changed_within_sample")
         self.checks = checks
         self.changed_ranges = changed_ranges
+        self.copy_diagnostics = copy_diagnostics
 
 
 def decode(fields):
@@ -78,6 +79,22 @@ def decode(fields):
     return struct.unpack("<I", fields[0x20])[0], state
 
 
+def diagnose_copies(first, second, checks):
+    """Classify existing bytes only; never award coherent-sample acceptance."""
+    if not all(checks[key] for key in ("global_stable", "source_pointer_stable", "table_pointer_stable")):
+        return {"status": "NOT_EVALUATED_POINTER_CHAIN_CHANGED"}
+    copies = []
+    for fields in (first, second):
+        try:
+            decode(fields)
+        except ObservationError as error:
+            copies.append({"status": "NUMERIC_CHECKS_REJECTED", "reason": str(error)})
+        else:
+            copies.append({"status": "NUMERIC_CHECKS_PASSED"})
+    return {"status": "DIAGNOSTIC_ONLY_UNCOHERENT", "copies": copies,
+            "scope": "Checks on each existing byte copy, not an atomic or coherent snapshot. No counter progression or camera semantics established."}
+
+
 def sample_fields(read_pointer, read_bytes, global_address, expected_table, source_offset, pause=lambda: None):
     if type(source_offset) is not int or not 8 <= source_offset <= 4096 or source_offset % 8:
         raise ObservationError("unbounded_source_offset_hypothesis")
@@ -101,7 +118,7 @@ def sample_fields(read_pointer, read_bytes, global_address, expected_table, sour
                   "counter_bracket_stable": frame_after == first[0x20]}
         if not all(checks.values()):
             changed = [role for (offset, _), role in zip(RANGES, RANGE_ROLES) if first[offset] != second[offset]]
-            raise CoherenceError(checks, changed)
+            raise CoherenceError(checks, changed, diagnose_copies(first, second, checks))
         frame, state = decode(first)
         chain = (candidate, source)
         if previous_chain is not None:

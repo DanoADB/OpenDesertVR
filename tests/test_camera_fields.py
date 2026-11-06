@@ -107,6 +107,25 @@ class FieldTests(unittest.TestCase):
             self.assertEqual(caught.exception.checks["source_pointer_stable"], not source_change)
             self.assertEqual(caught.exception.checks["selected_ranges_stable"], not torn)
             self.assertEqual(caught.exception.changed_ranges, ["buffer_counter_hypothesis"] if torn else [])
+            diagnostic = caught.exception.copy_diagnostics
+            self.assertEqual(diagnostic["status"], "DIAGNOSTIC_ONLY_UNCOHERENT" if torn else
+                             "NOT_EVALUATED_POINTER_CHAIN_CHANGED")
+            if torn:
+                self.assertEqual(diagnostic["copies"], [{"status": "NUMERIC_CHECKS_PASSED"}] * 2)
+
+    def test_rejected_copy_diagnostics_keep_independent_numeric_failures(self):
+        first, second = selected(buffer()), selected(buffer(6))
+        second[0xac0] = struct.pack("<f", 1)
+        checks = {"global_stable": True, "source_pointer_stable": True, "table_pointer_stable": True}
+        report = fields.diagnose_copies(first, second, checks)
+        self.assertEqual(report["status"], "DIAGNOSTIC_ONLY_UNCOHERENT")
+        self.assertEqual(report["copies"], [{"status": "NUMERIC_CHECKS_PASSED"},
+                         {"status": "NUMERIC_CHECKS_REJECTED", "reason": "candidate_layout_sentinel_mismatch"}])
+        self.assertEqual(first, selected(buffer()))
+        for key in checks:
+            changed = dict(checks, **{key: False})
+            self.assertEqual(fields.diagnose_copies(first, second, changed),
+                             {"status": "NOT_EVALUATED_POINTER_CHAIN_CHANGED"})
 
 
 if __name__ == "__main__":
