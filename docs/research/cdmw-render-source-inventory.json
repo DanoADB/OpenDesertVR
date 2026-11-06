@@ -1,0 +1,60 @@
+{
+  "game_shader_payload_retained": false,
+  "schema_version": 1,
+  "code_adopted": false,
+  "scope": "Selected static source/document review. No complete transitive license clearance; no program/module import, installation, archive extraction, capture, game write or live process observation.",
+  "root_license": "MIT",
+  "files": [
+    {
+      "sha256": "557e4c4af360db6d9190c5e0f989fb41243ae950cd66713300025ccdaf31978a",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/LICENSE",
+      "path": "LICENSE"
+    },
+    {
+      "sha256": "87a1dd7f97cff0c4c563dd8ccc374de230ec181c71811c6f184f24b1ee190758",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/README.md",
+      "path": "README.md"
+    },
+    {
+      "sha256": "317292de41f3b1840d30e9e144b6b21c39b2bc19aa245f46fd2a2a502691694a",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/docs/crimson-desert-research.md",
+      "path": "docs/crimson-desert-research.md"
+    },
+    {
+      "sha256": "aa06decc0f35b5ffb75886bb297a9b206fc177741d1e40ea22102a2d15ce5984",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/run_crimson_renderdoc_hotkey_capture.py",
+      "path": "tools/run_crimson_renderdoc_hotkey_capture.py"
+    },
+    {
+      "sha256": "2bdfb26b18be45915b8621ec43fb6af9207b15cbc1c000a146190873f2e1d5ab",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/trigger_renderdoc_capture_api.py",
+      "path": "tools/trigger_renderdoc_capture_api.py"
+    },
+    {
+      "sha256": "d97b19364d662355a6017d8a80b8479e7ce85d5038d0781e4a2840b4ece5a56c",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/analyze_renderdoc_capture_xml.py",
+      "path": "tools/analyze_renderdoc_capture_xml.py"
+    },
+    {
+      "sha256": "9babf390235a31f512cefe578883e7f639e12ae4b53b4c40ea63e256bad1fe30",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/capture_crimson_renderdoc_frame.py",
+      "path": "tools/capture_crimson_renderdoc_frame.py"
+    },
+    {
+      "sha256": "ef8ef0517cfaab816379fb6173df552e9391ebf169171ef2581d481ddfbb8d37",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/rendering/ingame_capture.py",
+      "path": "cdmw/rendering/ingame_capture.py"
+    },
+    {
+      "sha256": "bc33585340a91c69ff45d58fd1b817173b7af62f9304e32d6412bf1f21f4f709",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md",
+      "path": "cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md"
+    }
+  ],
+  "date": "2026-11-06",
+  "dependencies_adopted": false,
+  "execution": "NOT_RUN",
+  "revision": "0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b",
+  "root_copyright": "Copyright (c) 2026 Ratrider",
+  "repository": "https://github.com/Ratty123/CDMW-Full"
+}
