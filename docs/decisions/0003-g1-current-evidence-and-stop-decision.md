@@ -74,6 +74,11 @@ selected ranges matched in the two classified observations. Neither counter
 meaning nor a coherent active-camera sample is established. Stop the existing
 sequential acquisition method pending a reviewed design tested with an owned
 producer; no check relaxation or retry-until-pass.
+The [publication-contract review](../research/g1-camera-publication-review.md)
+finds no engine writer-order/lifetime contract in the five selected pinned
+sources. A native speedup alone does not qualify a new game probe. A documented
+current-build producer/consumer relationship is the missing evidence for this
+acquisition route; observer-owned transport synchronization does not supply it.
 They do not change the hold on runtime adapter implementation or award G2.
 Do not make another change merely to create work or consume the weekly usage
 allowance. Other runtimes/headsets, compositor metrics and extended graphics
