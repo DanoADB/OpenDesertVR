@@ -56,3 +56,31 @@ If capacity prevents source inspection, heap type/size remain null; do not
 infer an unsupported heap from absent metadata. The attempted-candidate limit
 can omit later eligible ranges and explicitly reports truncation. This
 revision does not enable new source heap types or change resource states.
+
+## Upload-input revision
+
+`devkit-upload-input-lock.json` pins separate `bc0ead3-upload-input-5` and
+`upload-input-observer.patch`. Explicit `ODVUploadInputs=1` registers up to six
+finite active DEFAULT candidates of the configured `ODVConstantBytes` size.
+Only a subsequent application copy fully covering a candidate range, within
+five seconds of registration, can supply an input. Its source must be valid
+UPLOAD memory. The observer preserves the app copy and inserts no source or
+destination writes or transitions. It retains strong resource references.
+
+At execution, a single exclusively owned list copies the matched UPLOAD span
+on the actual application's queue before the upcoming app list. Its own
+post-submission fence gates CPU readback; no app Present callback is needed.
+This captures upload input, not the destination's later state or the exact
+contents at the originally observed draw. GPU writers, partial updates,
+different data paths and a missing subsequent upload can leave data unavailable.
+Six unresolved copies share the original fixed copy capacity. Extra target and
+source references can prolong existing allocations; this is not a process-wide
+memory cap or a hard driver timeout.
+
+Summary `odvUploadInputCount` locates originating candidate tickets. Detailed
+`odvUploadInputs` report state, source metadata and private float32 values.
+Do not infer a camera from a buffer size or from returned numbers. All
+shader/text/dump exclusions remain. The Close callback also confirms retirement
+after reset to an empty command list; before-reset alone never grants data.
+Owned DEFAULT-buffer pixels, matching upload values and an unsubmitted control
+must pass actual addon runtime qualification before any game use.
