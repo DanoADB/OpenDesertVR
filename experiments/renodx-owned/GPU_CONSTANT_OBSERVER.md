@@ -85,11 +85,24 @@ after reset to an empty command list; before-reset alone never grants data.
 Owned DEFAULT-buffer pixels, matching upload values and an unsubmitted control
 must pass actual addon runtime qualification before any game use.
 
-`devkit-upload-cleanup-input-lock.json` and `upload-input-cleanup.patch` pin
-the separate v6 correction: candidate/source metadata references are released
-at destruction of their matching native device. Completed owned copies retire
-first; uncertain GPU completion still uses bounded quarantine. Qualification
-checks the normal shutdown log for native device reference-count warnings.
+`devkit-upload-cleanup-input-lock.json` and `upload-input-cleanup.patch` retain
+the **rejected v6 experiment**: device-finalization cleanup hung both owned
+shutdown cases. It must not be used in the game. V5 acquired correct input
+values but retained target references until addon unload. Neither result is
+clean shutdown qualification for the subsequent game method.
 The additional `--loop-dxil-upload-empty` control retires yellow's recorded
 upload/draw and actually executes its empty replacement list. Yellow must
 still return no bytes; reset/Close cannot turn an unexecuted copy into data.
+
+`devkit-upload-swapchain-input-lock.json` and `upload-input-swapchain.patch`
+pin v7: device identity is captured during valid registration; cleanup occurs
+at non-resize primary-swapchain destruction, while the device is alive. COM
+references are released outside observer and DeviceData locks. Completed owned
+copies retire first; uncertain completion remains quarantined. Device closure
+invalidates cached tickets. The normal shutdown log must contain no native
+device reference-count warnings in owned qualification before game use.
+
+V7 also matches equal-sized whole-buffer `CopyResource` uploads. The
+`--loop-dxil-upload-whole` fixture uses actual DEFAULT destinations and whole
+UPLOAD copies. Both whole and region paths preserve the original app copy;
+only the candidate subrange is sampled. Partial writes are not assembled.
