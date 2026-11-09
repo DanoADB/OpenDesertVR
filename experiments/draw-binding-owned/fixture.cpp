@@ -2,12 +2,14 @@
 // Original WARP geometry/readback control. No game, XR or capture-tool dependency.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "scoped_scalar_patch.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <d3d12.h>
+#include <d3d12sdklayers.h>
 #include <d3dcompiler.h>
 #include <dxgi1_4.h>
 #include <filesystem>
@@ -26,6 +28,11 @@ static void check(HRESULT hr) {
         throw std::runtime_error("owned_draw_graphics_failure");
 }
 static constexpr UINT width = 64, height = 32;
+#ifdef ODV_SCALAR_PATCH_RENDER
+static constexpr bool scalar_control = true;
+#else
+static constexpr bool scalar_control = false;
+#endif
 static constexpr char shader[] = R"(
 cbuffer VertexControl : register(b2, space3) { float4 clipOffset; };
 cbuffer PixelControl : register(b5, space7) { float4 color; };
@@ -133,17 +140,29 @@ int wmain(int argc, wchar_t **argv) {
             if (!window)
                 throw std::runtime_error("owned_hidden_window_failed");
         }
+        Com<ID3D12Debug> debug;
+        const bool validation = scalar_control && SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)));
+        if (validation)
+            debug->EnableDebugLayer();
         Com<IDXGIFactory4> factory;
         check(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
         Com<IDXGIAdapter> adapter;
         check(factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter)));
         Com<ID3D12Device> device;
         check(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)));
-        if (enhanced_control) {
+        Com<ID3D12InfoQueue> info;
+        if (validation)
+            check(device.As(&info));
+        if (enhanced_control || scalar_control) {
             D3D12_FEATURE_DATA_D3D12_OPTIONS12 options{};
             check(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS12, &options, sizeof(options)));
-            if (!options.EnhancedBarriersSupported)
+            if (!options.EnhancedBarriersSupported) {
+                if (scalar_control) {
+                    std::cout << "NOT_RUN: enhanced barriers unsupported\n";
+                    return 77;
+                }
                 throw std::runtime_error("enhanced_barriers_unsupported");
+            }
         }
         Com<ID3D12CommandQueue> queue;
         D3D12_COMMAND_QUEUE_DESC q{};
@@ -287,6 +306,13 @@ int wmain(int argc, wchar_t **argv) {
             // Deliberately persistently mapped; no writes after initialization.
         }
         std::array<Com<ID3D12Resource>, 8> gpu_constants;
+        if (scalar_control) {
+            D3D12_HEAP_PROPERTIES gpu_heap{};
+            gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+            const auto desc = constants[0]->GetDesc();
+            check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COMMON,
+                                                  nullptr, IID_PPV_ARGS(&gpu_constants[0])));
+        }
         if (upload_control) {
             D3D12_HEAP_PROPERTIES gpu_heap{};
             gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
@@ -391,6 +417,15 @@ int wmain(int argc, wchar_t **argv) {
         const auto bd = buffer_desc(total);
         check(device->CreateCommittedResource(&read, D3D12_HEAP_FLAG_NONE, &bd, D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
                                               IID_PPV_ARGS(&readback)));
+        Com<ID3D12Resource> perturbed_readback, restored_input;
+        if (scalar_control) {
+            check(device->CreateCommittedResource(&read, D3D12_HEAP_FLAG_NONE, &bd, D3D12_RESOURCE_STATE_COPY_DEST,
+                                                  nullptr, IID_PPV_ARGS(&perturbed_readback)));
+            const auto input_desc = buffer_desc(256);
+            check(device->CreateCommittedResource(&read, D3D12_HEAP_FLAG_NONE, &input_desc,
+                                                  D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                  IID_PPV_ARGS(&restored_input)));
+        }
         std::array<Com<ID3D12CommandAllocator>, 3> allocators;
         std::array<Com<ID3D12GraphicsCommandList>, 3> lists;
         for (UINT i = 0; i < lists.size(); ++i) {
@@ -425,6 +460,8 @@ int wmain(int argc, wchar_t **argv) {
         UINT completed = 0;
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
         for (UINT frame = 1; loop || frame <= 2; ++frame) {
+            odv::research::ScopedScalarPatch scalar_patch;
+            Com<ID3D12GraphicsCommandList7> scalar_commands;
             if (loop && (std::filesystem::exists(output.parent_path() / L"stop.flag") ||
                          std::chrono::steady_clock::now() >= deadline))
                 break;
@@ -501,6 +538,7 @@ int wmain(int argc, wchar_t **argv) {
                 lists[0]->SetComputeRootSignature(compute_root.Get());
                 lists[0]->Dispatch(1, 1, 1);
             }
+            D3D12_GPU_VIRTUAL_ADDRESS private_vertex_address = 0;
             const auto draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) {
                 list->SetPipelineState(pipelines[table ? 1 : 0].Get());
                 list->SetGraphicsRootSignature(roots[table ? 1 : 0].Get());
@@ -510,7 +548,9 @@ int wmain(int argc, wchar_t **argv) {
                     list->SetGraphicsRootDescriptorTable(0, {gpu.ptr + (first - 2) * cstride});
                     list->SetGraphicsRootDescriptorTable(1, {gpu.ptr + (first - 1) * cstride});
                 } else {
-                    list->SetGraphicsRootConstantBufferView(0, constants[first]->GetGPUVirtualAddress());
+                    list->SetGraphicsRootConstantBufferView(0, private_vertex_address && first == 0
+                                                                   ? private_vertex_address
+                                                                   : bound_constant(first)->GetGPUVirtualAddress());
                     list->SetGraphicsRootConstantBufferView(1, constants[first + 1]->GetGPUVirtualAddress());
                 }
                 D3D12_VIEWPORT vp{static_cast<float>(column * 16), 0, 16, static_cast<float>(height), 0, 1};
@@ -536,6 +576,62 @@ int wmain(int argc, wchar_t **argv) {
                         lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, constant_bytes(i));
                     constant_ready(lists[0].Get(), i);
                 }
+            if (scalar_control) {
+                check(lists[0].As(&scalar_commands));
+                D3D12_BUFFER_BARRIER b{};
+                b.pResource = gpu_constants[0].Get();
+                b.Size = UINT64_MAX;
+                D3D12_BARRIER_GROUP group{};
+                group.Type = D3D12_BARRIER_TYPE_BUFFER;
+                group.NumBarriers = 1;
+                group.pBufferBarriers = &b;
+                b.SyncBefore = D3D12_BARRIER_SYNC_ALL;
+                b.SyncAfter = D3D12_BARRIER_SYNC_COPY;
+                b.AccessBefore = D3D12_BARRIER_ACCESS_COMMON;
+                b.AccessAfter = D3D12_BARRIER_ACCESS_COPY_DEST;
+                scalar_commands->Barrier(1, &group);
+                lists[0]->CopyBufferRegion(gpu_constants[0].Get(), 0, constants[0].Get(), 0, 256);
+                b.SyncBefore = D3D12_BARRIER_SYNC_COPY;
+                b.SyncAfter = D3D12_BARRIER_SYNC_ALL;
+                b.AccessBefore = D3D12_BARRIER_ACCESS_COPY_DEST;
+                b.AccessAfter = D3D12_BARRIER_ACCESS_CONSTANT_BUFFER;
+                scalar_commands->Barrier(1, &group);
+                odv::research::KnownBufferStates states;
+                states.observe_enhanced(1, &group);
+                if (!scalar_patch.begin_private(device.Get(), scalar_commands.Get(), gpu_constants[0].Get(), 0, 256, 0,
+                                                2.0f, states))
+                    throw std::runtime_error("scalar_patch_begin_failed");
+                private_vertex_address = scalar_patch.private_gpu_address();
+                if (!private_vertex_address || private_vertex_address == gpu_constants[0]->GetGPUVirtualAddress())
+                    throw std::runtime_error("private_vertex_binding_invalid");
+                draw(lists[0].Get(), 0, false, 0); // Shift triangle fully outside its viewport.
+                if (!scalar_patch.end(scalar_commands.Get()))
+                    throw std::runtime_error("scalar_patch_restore_failed");
+                private_vertex_address = 0;
+                barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET,
+                        D3D12_RESOURCE_STATE_COPY_SOURCE);
+                D3D12_TEXTURE_COPY_LOCATION changed{};
+                changed.pResource = perturbed_readback.Get();
+                changed.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+                changed.PlacedFootprint = footprint;
+                D3D12_TEXTURE_COPY_LOCATION rendered{};
+                rendered.pResource = target.Get();
+                rendered.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+                lists[0]->CopyTextureRegion(&changed, 0, 0, 0, &rendered, nullptr);
+                barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE,
+                        D3D12_RESOURCE_STATE_RENDER_TARGET);
+                b.SyncBefore = D3D12_BARRIER_SYNC_ALL;
+                b.SyncAfter = D3D12_BARRIER_SYNC_COPY;
+                b.AccessBefore = D3D12_BARRIER_ACCESS_COMMON;
+                b.AccessAfter = D3D12_BARRIER_ACCESS_COPY_SOURCE;
+                scalar_commands->Barrier(1, &group);
+                lists[0]->CopyBufferRegion(restored_input.Get(), 0, gpu_constants[0].Get(), 0, 256);
+                b.SyncBefore = D3D12_BARRIER_SYNC_COPY;
+                b.SyncAfter = D3D12_BARRIER_SYNC_ALL;
+                b.AccessBefore = D3D12_BARRIER_ACCESS_COPY_SOURCE;
+                b.AccessAfter = D3D12_BARRIER_ACCESS_COMMON;
+                scalar_commands->Barrier(1, &group);
+            }
             for (UINT repeat = 0; repeat < repeats; ++repeat) {
                 draw(lists[0].Get(), 0, false, 0);
                 draw(lists[0].Get(), 1, true, 2);
@@ -589,9 +685,15 @@ int wmain(int argc, wchar_t **argv) {
             }
             ID3D12CommandList *baseline[] = {lists[0].Get(), lists[2].Get()};
             ID3D12CommandList *control[] = {lists[0].Get(), lists[1].Get(), lists[2].Get()};
+            if constexpr (scalar_control)
+                if (!scalar_patch.before_execute())
+                    throw std::runtime_error("scalar_patch_execution_rejected");
             queue->ExecuteCommandLists(submit_fourth || empty_upload_control ? 3 : 2,
                                        submit_fourth || empty_upload_control ? control : baseline);
             check(queue->Signal(fence.Get(), frame));
+            if constexpr (scalar_control)
+                if (!scalar_patch.submitted_after_execute(fence.Get(), frame))
+                    throw std::runtime_error("scalar_patch_fence_rejected");
             check(fence->SetEventOnCompletion(frame, event.get()));
             if (WaitForSingleObject(event.get(), 5000) != WAIT_OBJECT_0)
                 throw std::runtime_error("owned_gpu_fence_timeout");
@@ -615,6 +717,32 @@ int wmain(int argc, wchar_t **argv) {
             readback->Unmap(0, &no_write);
             if (!matches)
                 throw std::runtime_error("owned_pixel_control_failed");
+            if (scalar_control) {
+                check(perturbed_readback->Map(0, &range, &bytes));
+                bool empty_geometry = true;
+                const unsigned char black_pixel[4] = {0, 0, 0, 255};
+                for (UINT y = 0; y < height; ++y)
+                    for (UINT x = 0; x < width; ++x) {
+                        const auto *pixel = static_cast<const unsigned char *>(bytes) + footprint.Offset +
+                                            y * footprint.Footprint.RowPitch + x * 4;
+                        if (std::memcmp(pixel, black_pixel, 4))
+                            empty_geometry = false;
+                    }
+                perturbed_readback->Unmap(0, &no_write);
+                const D3D12_RANGE input_range{0, 256};
+                check(restored_input->Map(0, &input_range, &bytes));
+                const std::array<std::byte, 256> original{};
+                const bool exact_restoration = std::memcmp(bytes, original.data(), original.size()) == 0;
+                restored_input->Unmap(0, &no_write);
+                if (!empty_geometry || !exact_restoration)
+                    throw std::runtime_error("scalar_geometry_or_restoration_failed");
+                check(allocators[0]->Reset());
+                check(lists[0]->Reset(allocators[0].Get(), nullptr)); // Retires actual recording.
+                check(lists[0]->Close());
+                if (!scalar_patch.release_retired())
+                    throw std::runtime_error("scalar_patch_retirement_failed");
+                odv::research::DeferredResourceRelease::drain();
+            }
             if (loop)
                 check(swap->Present(1, 0));
             if (rollover) {
@@ -633,14 +761,31 @@ int wmain(int argc, wchar_t **argv) {
         }
         if (!completed)
             throw std::runtime_error("owned_fixture_rendered_no_frames");
+        if (info)
+            for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
+                SIZE_T size = 0;
+                check(info->GetMessage(i, nullptr, &size));
+                auto storage = std::make_unique<std::byte[]>(size);
+                auto *message = reinterpret_cast<D3D12_MESSAGE *>(storage.get());
+                check(info->GetMessage(i, message, &size));
+                if (message->Severity == D3D12_MESSAGE_SEVERITY_ERROR ||
+                    message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION)
+                    throw std::runtime_error("scalar_render_debug_validation_failed");
+            }
         std::ofstream result(output / "result.json");
         result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":" << completed << ','
-               << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":" << repeats * 3 + 1
-               << ",\"submittedDrawsPerFrame\":" << repeats * 3 + (submit_fourth ? 1 : 0) << ",\"fourthColumn\":\""
-               << (submit_fourth ? "yellow" : "black") << "\",\"captureTool\":\""
+               << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":"
+               << repeats * 3 + 1 + (scalar_control ? 1 : 0)
+               << ",\"submittedDrawsPerFrame\":" << repeats * 3 + (submit_fourth ? 1 : 0) + (scalar_control ? 1 : 0)
+               << ",\"fourthColumn\":\"" << (submit_fourth ? "yellow" : "black") << "\",\"captureTool\":\""
                << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
                << "\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
                   "RUN\"}";
+        if (scalar_control)
+            std::cout
+                << "PASS: private-copy geometry 2048 black pixels, original geometry 2048 RGB/black pixels, exact "
+                   "256 input bytes; debug="
+                << (validation ? "ENABLED" : "UNAVAILABLE") << '\n';
         result.close();
         if (!result)
             throw std::runtime_error("result_write_failed");
