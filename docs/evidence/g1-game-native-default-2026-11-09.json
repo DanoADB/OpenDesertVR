@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "LIVE_NATIVE_OBSERVER_READY",
+  "source_commit": "cecc4b145d1900c1606660be3d6b52f5276a767d",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observer_version": "bc0ead3-native-default-10",
+  "addon_sha256": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+  "native_reshade_sha256": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+  "controller_sha256": "b2c73118eea3287d240d1f269690aba30ce7fb7124fd0e93c261a9e5cfc0d9aa",
+  "same_reviewed_game_build": "PASS",
+  "bootstrap_and_tool_identity": "PASS_PRELAUNCH",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "presenting_d3d12_devices": 1,
+  "prior_case_normal_exit_and_exact_cleanup": "PASS",
+  "configuration": {
+    "ODVConstantBytes": 2816,
+    "ODVConstantMaxBytes": 0,
+    "ODVGraphicsOnly": 1,
+    "ODVUploadInputs": 0,
+    "ODVDefaultConstants": 1
+  },
+  "capture": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "game_buffer_data_writes": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "interpretation": "The new addon and native bridge loaded in the reviewed game after normal exit and exact cleanup of the prior observer. A slow but progressing shader initialization preceded the live status response. No restart followed the startup observation timeout. Scene data acquisition remains pending."
+}

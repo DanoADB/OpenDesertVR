@@ -47,7 +47,7 @@
   "game_buffer_writes": "NOT_RUN",
   "stereo_game_rendering": "NOT_RUN",
   "headset_test": "NOT_RUN",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS",
   "interpretation": "The continuous-pan attempt returned zero records and is rejected despite its legacy collector status. A non-overwriting third observation of the changed world view retained128submitted graphics records and returned the same768byte input binding/shaderpair with10of192floatwords changed. Elapsed time, animation and other updates are confounders; this does not identify a camera. Larger DEFAULT candidates remain unread by this upload-input method. No additional user camera motion is needed for the next owned GPU-copy development step.",
   "empty_pan_attempt": {
     "classification": "REJECTED_EMPTY_SNAPSHOT",
@@ -79,5 +79,7 @@
     "supplemental_controller_sha256": "be15b7961490f0f3c9a5e92b33220f89d3e19f882079c07ddf7d9cde1d06cfc0",
     "observation_bound": 3,
     "camera_semantics": "UNVERIFIED"
-  }
+  },
+  "cleanup_observed_date": "2026-11-09",
+  "cleanup_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
 }
