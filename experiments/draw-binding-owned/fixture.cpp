@@ -96,14 +96,17 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-default-split" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-2816" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-world-aspect")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
         const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
         const bool split_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-split";
-        const bool enhanced_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-enhanced-2816";
+        const bool aspect_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-world-aspect";
+        const bool enhanced_control =
+            aspect_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-enhanced-2816");
         const bool large_default_control =
             enhanced_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816");
         const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
@@ -400,11 +403,20 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12DescriptorHeap> rtv;
         hd = {};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        hd.NumDescriptors = loop ? 3 : 1;
+        hd.NumDescriptors = loop ? (aspect_control ? 4 : 3) : 1;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&rtv)));
         const auto view = rtv->GetCPUDescriptorHandleForHeapStart();
         device->CreateRenderTargetView(target.Get(), nullptr, view);
         const auto rstride = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        Com<ID3D12Resource> square_target;
+        if (aspect_control) {
+            auto square_desc = td;
+            square_desc.Width = square_desc.Height = 32;
+            check(device->CreateCommittedResource(&normal, D3D12_HEAP_FLAG_NONE, &square_desc,
+                                                  D3D12_RESOURCE_STATE_RENDER_TARGET, nullptr,
+                                                  IID_PPV_ARGS(&square_target)));
+            device->CreateRenderTargetView(square_target.Get(), nullptr, {view.ptr + 3 * rstride});
+        }
         if (loop)
             for (UINT i = 0; i < backbuffers.size(); ++i)
                 device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, {view.ptr + (i + 1) * rstride});
@@ -576,6 +588,13 @@ int wmain(int argc, wchar_t **argv) {
                         lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, constant_bytes(i));
                     constant_ready(lists[0].Get(), i);
                 }
+            if (aspect_control) {
+                const D3D12_CPU_DESCRIPTOR_HANDLE square_view{view.ptr + 3 * rstride};
+                lists[0]->OMSetRenderTargets(1, &square_view, FALSE, nullptr);
+                lists[0]->ClearRenderTargetView(square_view, black, 0, nullptr);
+                draw(lists[0].Get(), 0, false, 0); // Extra submitted square pass: must be filtered.
+                lists[0]->OMSetRenderTargets(1, &view, FALSE, nullptr);
+            }
             if (scalar_control) {
                 check(lists[0].As(&scalar_commands));
                 D3D12_BUFFER_BARRIER b{};
@@ -775,8 +794,9 @@ int wmain(int argc, wchar_t **argv) {
         std::ofstream result(output / "result.json");
         result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":" << completed << ','
                << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":"
-               << repeats * 3 + 1 + (scalar_control ? 1 : 0)
-               << ",\"submittedDrawsPerFrame\":" << repeats * 3 + (submit_fourth ? 1 : 0) + (scalar_control ? 1 : 0)
+               << repeats * 3 + 1 + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0)
+               << ",\"submittedDrawsPerFrame\":"
+               << repeats * 3 + (submit_fourth ? 1 : 0) + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0)
                << ",\"fourthColumn\":\"" << (submit_fourth ? "yellow" : "black") << "\",\"captureTool\":\""
                << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
                << "\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
