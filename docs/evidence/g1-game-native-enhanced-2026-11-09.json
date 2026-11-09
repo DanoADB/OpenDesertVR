@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-09",
-  "status": "LIVE_ENHANCED_OBSERVER_READY",
+  "status": "OBSERVED_GAME_DEFAULT_GPU_BYTES",
   "source_commit": "7ffcc26ad5bb8a9dc0010beb1accf7fb4c1ff9e5",
   "observer_version": "bc0ead3-native-enhanced-11",
   "addon_sha256": "e5473781c0fadcdfbc65ad185750dc2e08354718537495d19d4c09e833431780",
@@ -24,11 +24,122 @@
     "ODVUploadInputs": 0,
     "ODVDefaultConstants": 1
   },
-  "capture": "NOT_RUN",
+  "capture": "COMPLETE",
   "camera_semantics": "UNVERIFIED",
   "game_buffer_data_writes": "NOT_RUN",
   "game_stereo": "NOT_RUN",
   "headset": "NOT_RUN",
   "cleanup": "PENDING_NORMAL_GAME_EXIT",
-  "interpretation": "Observer11 loaded after normal game exit and exact cleanup of observer10. The reviewed game build and pipe server match. Enhanced capture passed owned qualification; actual 3D game acquisition is pending."
+  "interpretation": "Two active shader DEFAULT bindings yielded complete 2816-byte GPU copies after native submission and covering fences. One passes historical selected camera-layout consistency checks; the other rejects that layout. Whole-buffer float finiteness was initially overstrict because unselected words can contain integer bits; the separate selected-field check passes the first buffer without assigning meaning to those words. Camera-motion correlation and reversible camera control remain unverified.",
+  "scene": "USER_CONFIRMED_STILL_3D_WORLD",
+  "capture_report_sha256": "417851843d44128ae9ce702e2ae82f6bc41f88b37c3bc318b2da789b48e45f33",
+  "retained_records": 128,
+  "known_submission_records": 128,
+  "detail_records": 6,
+  "truncated": true,
+  "command_origins": {
+    "DrawIndexed": 8,
+    "DrawOrDispatchIndirect": 120
+  },
+  "direct_gpu_sample_states": [
+    "READY",
+    "READY"
+  ],
+  "direct_gpu_sample_bytes": [
+    2816,
+    2816
+  ],
+  "native_event_metadata": [
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "enhancedBufferBarriers": 115,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 175,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "enhancedBufferBarriers": 115,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 175,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "enhancedBufferBarriers": 161,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 237,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "enhancedBufferBarriers": 161,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 237,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "enhancedBufferBarriers": 161,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 237,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 86,
+      "enhancedBufferBarriers": 203,
+      "enhancedGlobalBarriers": 0,
+      "enhancedTextureBarriers": 490,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    }
+  ],
+  "selected_layout_checks": [
+    {
+      "draw_index": 25,
+      "slot": 17,
+      "space": 35,
+      "unavailable_selected_ranges": [],
+      "nonfinite_words_in_whole_buffer": 5,
+      "layout": "NUMERIC_LAYOUT_CHECKS_PASSED",
+      "camera_semantics": "UNVERIFIED",
+      "resolution_field_matches_capture_dimensions": true,
+      "historical_sentinel_at_expected_offset": true
+    },
+    {
+      "draw_index": 25,
+      "slot": 18,
+      "space": 35,
+      "unavailable_selected_ranges": [],
+      "nonfinite_words_in_whole_buffer": 0,
+      "layout": "REJECTED",
+      "reason": "candidate_resolution_inconsistent",
+      "resolution_field_matches_capture_dimensions": false,
+      "historical_sentinel_at_expected_offset": false
+    }
+  ],
+  "selected_layout_report_sha256": "8900cba3db4b4b7bd36da8d8cf456278024cd0cb0a536f360266e972a85d4d9d"
 }
