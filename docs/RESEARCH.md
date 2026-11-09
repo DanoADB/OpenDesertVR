@@ -9,11 +9,16 @@ resource identities do not carry across launches. See the
 [world-input candidate](evidence/g1-game-native-scene-2026-11-09.json).
 
 The [qualified observer14](evidence/g1-owned-native-indirect-2026-11-09.json)
-can capture both shader roles and actual native signature/root metadata within
-one recording. The next live capture must compare exact source ranges,
-recording identities and ordering. An alias alone does not prove unchanged
-contents or valid cached bindings after prior indirect commands. Establish
-those conditions before substituting a private camera copy.
+captured both shader roles and actual native signature/root metadata in
+[one game snapshot](evidence/g1-game-native-indirect-2026-11-09.json). The
+shadow and world bindings share an exact 2,816-byte source range, with a
+completed shadow GPU sample passing selected camera-layout checks. They use
+different command-list recordings. The world signature has a 40-byte stride
+and changes an index buffer and one root constant before DrawIndexed; its
+root layout uses 22 DWORDs, 20 parameters and 13 static samplers. Private
+replacement therefore needs an exact derived command signature and correct
+post-indirect resets as well as proof of copy ordering and unchanged source
+contents. An alias alone does not establish those conditions.
 
 [Private binding](evidence/g1-owned-private-table-2026-11-09.json) and
 [split-table rendering](evidence/g1-owned-private-split-2026-11-09.json) now

@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_GAME_SHADOW_WORLD_CAMERA_RANGE_ALIAS",
+  "scene": "world_static",
+  "scene_confirmed_by": "user",
+  "source_commit": "323e0f53bc6b24150ed1911e075b4b0156afdc46",
+  "observer_version": "bc0ead3-native-indirect-14",
+  "observer_sha256": "c179cbaa0758209dcfc82bebb850335225777c447934a2f949a9d3535e2a1f1d",
+  "game_build": "26480954",
+  "retained_records": 5,
+  "read_details": 4,
+  "oversized_details_rejected": 1,
+  "camera_selected_checks": {
+    "scene": "world_static",
+    "samples": [
+      {
+        "draw_index": 1,
+        "slot": 17,
+        "space": 35,
+        "unavailable_selected_ranges": [],
+        "nonfinite_words_in_whole_buffer": 5,
+        "layout": "NUMERIC_LAYOUT_CHECKS_PASSED",
+        "camera_semantics": "UNVERIFIED",
+        "resolution_field_matches_capture_dimensions": true,
+        "historical_sentinel_at_expected_offset": true
+      }
+    ],
+    "scope": "Only historical selected fields are validated. Nonfinite float interpretations elsewhere may represent integer bits and do not reject selected fields.",
+    "camera_semantics": "UNVERIFIED"
+  },
+  "comparison": {
+    "status": "OBSERVED_ROLE_ALIAS_CANDIDATES",
+    "shadow_records": 1,
+    "world_records": 3,
+    "pairs": [
+      {
+        "shadow_draw": 1,
+        "world_draw": 2,
+        "same_range": true,
+        "same_recording": false,
+        "shadow_captured_before_world": true,
+        "shadow_gpu_sample_ready": true,
+        "world_signature_without_root_mutations": false,
+        "copy_forward_candidate": false,
+        "world_root_description": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      {
+        "shadow_draw": 1,
+        "world_draw": 3,
+        "same_range": true,
+        "same_recording": false,
+        "shadow_captured_before_world": true,
+        "shadow_gpu_sample_ready": true,
+        "world_signature_without_root_mutations": false,
+        "copy_forward_candidate": false,
+        "world_root_description": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      {
+        "shadow_draw": 1,
+        "world_draw": 4,
+        "same_range": true,
+        "same_recording": false,
+        "shadow_captured_before_world": true,
+        "shadow_gpu_sample_ready": true,
+        "world_signature_without_root_mutations": false,
+        "copy_forward_candidate": false,
+        "world_root_description": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      }
+    ],
+    "intervening_source_writes": "UNVERIFIED",
+    "cached_binding_validity_after_prior_indirects": "UNVERIFIED",
+    "world_influence": "NOT_RUN",
+    "stereo": "NOT_RUN",
+    "meaning": "A candidate requires write-order validation before substituting a private camera copy. Binding and submission do not prove a nonzero indirect draw or shader access."
+  },
+  "draws": [
+    {
+      "index": 1,
+      "shaderHashes": [
+        "0x344CE166",
+        "0x87BF0C9A"
+      ],
+      "submissionKnown": true,
+      "submissionOrder": 5,
+      "native": {
+        "role": 0,
+        "activeQueries": 1,
+        "renderPassBlocked": false,
+        "signatureAction": 1,
+        "signatureStride": 40,
+        "signatureArgumentCount": 3,
+        "signatureArguments": [
+          {
+            "type": 4
+          },
+          {
+            "firstWord": 0,
+            "rootParameter": 0,
+            "type": 5,
+            "wordCount": 1
+          },
+          {
+            "type": 1
+          }
+        ],
+        "rootMutationMask": 1,
+        "vertexBufferMutationMask": 0,
+        "indexBufferModified": true,
+        "gpuCountBufferPresent": true,
+        "maximumCommandCount": 76,
+        "rootSignature": {
+          "descriptorKnown": true,
+          "dwordCost": 21,
+          "flags": 29,
+          "nodeMask": 0,
+          "parameters": 19,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      "sample_states": [
+        {
+          "slot": 17,
+          "space": 35,
+          "state": "READY",
+          "byteCount": 2816
+        }
+      ],
+      "attempt_states": [
+        {
+          "slot": 17,
+          "space": 35,
+          "state": "RECORDED",
+          "sourceState": "ELIGIBLE_DEFAULT_ENHANCED_SCOPE"
+        }
+      ],
+      "render_target_dimensions": [
+        [
+          1024,
+          1024
+        ],
+        [
+          1024,
+          1024
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "shaderHashes": [
+        "0xC02F6FB5",
+        "0xF25B25BC"
+      ],
+      "submissionKnown": true,
+      "submissionOrder": 7,
+      "native": {
+        "role": 1,
+        "activeQueries": 1,
+        "renderPassBlocked": false,
+        "signatureAction": 1,
+        "signatureStride": 40,
+        "signatureArgumentCount": 3,
+        "signatureArguments": [
+          {
+            "type": 4
+          },
+          {
+            "firstWord": 0,
+            "rootParameter": 0,
+            "type": 5,
+            "wordCount": 1
+          },
+          {
+            "type": 1
+          }
+        ],
+        "rootMutationMask": 1,
+        "vertexBufferMutationMask": 0,
+        "indexBufferModified": true,
+        "gpuCountBufferPresent": true,
+        "maximumCommandCount": 36,
+        "rootSignature": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      "sample_states": [],
+      "attempt_states": [
+        {
+          "slot": 18,
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE",
+          "sourceState": "DEFAULT_STATE_UNVERIFIED"
+        }
+      ],
+      "render_target_dimensions": [
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "shaderHashes": [
+        "0xC02F6FB5",
+        "0xEF095A1B"
+      ],
+      "submissionKnown": true,
+      "submissionOrder": 7,
+      "native": {
+        "role": 1,
+        "activeQueries": 1,
+        "renderPassBlocked": false,
+        "signatureAction": 1,
+        "signatureStride": 40,
+        "signatureArgumentCount": 3,
+        "signatureArguments": [
+          {
+            "type": 4
+          },
+          {
+            "firstWord": 0,
+            "rootParameter": 0,
+            "type": 5,
+            "wordCount": 1
+          },
+          {
+            "type": 1
+          }
+        ],
+        "rootMutationMask": 1,
+        "vertexBufferMutationMask": 0,
+        "indexBufferModified": true,
+        "gpuCountBufferPresent": true,
+        "maximumCommandCount": 30,
+        "rootSignature": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      "sample_states": [],
+      "attempt_states": [
+        {
+          "slot": 18,
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE",
+          "sourceState": "DEFAULT_STATE_UNVERIFIED"
+        }
+      ],
+      "render_target_dimensions": [
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ]
+      ]
+    },
+    {
+      "index": 4,
+      "shaderHashes": [
+        "0xBA2D6B67",
+        "0xC02F6FB5"
+      ],
+      "submissionKnown": true,
+      "submissionOrder": 7,
+      "native": {
+        "role": 1,
+        "activeQueries": 1,
+        "renderPassBlocked": false,
+        "signatureAction": 1,
+        "signatureStride": 40,
+        "signatureArgumentCount": 3,
+        "signatureArguments": [
+          {
+            "type": 4
+          },
+          {
+            "firstWord": 0,
+            "rootParameter": 0,
+            "type": 5,
+            "wordCount": 1
+          },
+          {
+            "type": 1
+          }
+        ],
+        "rootMutationMask": 1,
+        "vertexBufferMutationMask": 0,
+        "indexBufferModified": true,
+        "gpuCountBufferPresent": true,
+        "maximumCommandCount": 12,
+        "rootSignature": {
+          "descriptorKnown": true,
+          "dwordCost": 22,
+          "flags": 17,
+          "nodeMask": 0,
+          "parameters": 20,
+          "staticSamplers": 13,
+          "tagPresent": true,
+          "version": 2
+        }
+      },
+      "sample_states": [],
+      "attempt_states": [
+        {
+          "slot": 18,
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE",
+          "sourceState": "DEFAULT_STATE_UNVERIFIED"
+        }
+      ],
+      "render_target_dimensions": [
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ],
+        [
+          2560,
+          720
+        ]
+      ]
+    }
+  ],
+  "private_evidence_sha256": {
+    "draws.private.json": "fb723de89abfc3269cd57692be1a3780009d183d72467477b6c905d58ee34a6d",
+    "recovered-details.private.json": "e363a458243ca55f31baa9a00d23f764d34d2c3f7e892fe30da5c34e117ee5e5",
+    "report.json": "2736bcf3b20d6de03702cec5923bb791c43861d0f7f8ac3783a34650960b1b5c",
+    "role-comparison.json": "3ef71bd8d4e4e2635544bee543652eeef8e0c2c665cdc9446e96b34db1f9654a"
+  },
+  "cleanup": "NOT_RUN_GAME_STILL_RUNNING",
+  "game_camera_writes": "NOT_RUN",
+  "game_world_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "limits": [
+    "All bindings are PRE_INDIRECT_ARGUMENTS metadata; prior indirect root-cache validity requires separate proof.",
+    "Exact range alias across different command-list recordings does not establish unchanged data, queue ordering or safe copy-forward.",
+    "Count buffer and maximum-command count do not prove nonzero shader work.",
+    "Initial detail collection FAILED when draw0 exceeded the fixed1MiB response cap; four other retained draws recovered with unchanged cap and no new snapshot.",
+    "Active query count1 was observed; private vertex-reader injection is not enabled.",
+    "World source state remains DEFAULT_STATE_UNVERIFIED; no unknown-state read or original game buffer write occurred."
+  ]
+}
