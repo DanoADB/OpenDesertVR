@@ -86,7 +86,9 @@ reads a CBV using a vertex shader into uint4 stream output with rasterization
 disabled. It does not add COPY_SOURCE access to the original source. All 2816
 bytes match on WARP and physical GPU, including integer and NaN bit patterns;
 independent verification finds all 4096 original source bytes unchanged.
-Unpredicated stream-output statistics reject a GPU-skipped draw/copy. Local
+Unpredicated stream-output statistics reject a GPU-skipped draw/copy. Filled-byte
+count and primitive statistics also reject a deliberately undersized output
+(175 written, 176 needed, 2800 bytes), without accepting a partial sample. Local
 Debug/Release each pass eight optional tests; local debug layer is unavailable.
 
 This standalone executable does not yet restore an application's state. Before

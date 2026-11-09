@@ -3,10 +3,10 @@
   "observed_date": "2026-11-09",
   "status": "QUALIFIED_OWNED_VERTEX_STREAM_FEASIBILITY",
   "source_file": "experiments/draw-binding-owned/vertex_stream_tests.cpp",
-  "source_sha256": "ec9455b9e601bb8f0c28d2c4aada6e1263f6c9479ee7df91ab9d4dc0c26a095f",
+  "source_sha256": "a0a24a704e6c5039e267da3aea63aaf130151cd5597b9cffd4c4e7baa4f432ca",
   "binary_sha256": {
-    "Debug": "c6617fdca58eb6ec5a84dad26e14ae9a7c7c9a52258632ade16632135cff4525",
-    "Release": "a99a7922409929c2b98e3a86c3ef7b557635e5fc6005c6e3c9113138537d8a57"
+    "Debug": "ce5eeef23d39f77d6245dc38d0a9952fe891c97d15971b38f887a3db9b1596e8",
+    "Release": "e52c003e2497ba9b8a7c021493752d715b7c5abe40fdad8ca32490da2bb720ce"
   },
   "local_ctest": {
     "Debug": {"passed": 8, "failed": 0, "skipped": 0},
@@ -30,6 +30,8 @@
     "zero_predicate_EQUAL_ZERO_draw_and_copy_skipped": "PASS",
     "zero_predicate_NOT_EQUAL_ZERO_exact_sample": "PASS",
     "unpredicated_so_statistics_reject_skipped_draw": "PASS",
+    "filled_byte_counter_matches_exact_payload": "PASS",
+    "undersized_output_175_written_176_needed_2800_bytes_rejected": "PASS",
     "recording_reset_before_releasing_resources": "PASS"
   },
   "scope": "Standalone owned D3D12 feasibility executable only. Original source transitions occur solely in setup and independent verification, outside sampling. No app state restoration implementation is exercised.",

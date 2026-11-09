@@ -154,12 +154,12 @@ Output main(uint id : SV_VertexID) {
             ID3D12Fence *gate;
             ~Unblock() { gate->Signal(UINT64_MAX - 1); }
         } unblock{gate.Get()};
-        for (UINT64 pass = 1; pass <= 3; ++pass) {
+        for (UINT64 pass = 1; pass <= 4; ++pass) {
             // Each recording owns separate outputs; never reuse a stale SO counter.
             auto stream = buffer(bytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_STREAM_OUT);
             auto counter = buffer(8, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_COPY_DEST);
-            auto readback = buffer(bytes + sizeof(D3D12_QUERY_DATA_SO_STATISTICS), D3D12_HEAP_TYPE_READBACK,
-                                   D3D12_RESOURCE_STATE_COPY_DEST);
+            constexpr UINT counter_offset = bytes + sizeof(D3D12_QUERY_DATA_SO_STATISTICS);
+            auto readback = buffer(counter_offset + 8, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST);
             Com<ID3D12QueryHeap> query;
             D3D12_QUERY_HEAP_DESC query_desc{D3D12_QUERY_HEAP_TYPE_SO_STATISTICS, 1, 0};
             checked(device->CreateQueryHeap(&query_desc, IID_PPV_ARGS(&query)));
@@ -174,7 +174,7 @@ Output main(uint id : SV_VertexID) {
             commands->CopyBufferRegion(readback.Get(), 0, upload.Get(), 0, bytes);
             commands->CopyBufferRegion(counter.Get(), 0, zeros.Get(), 0, 8);
             transition(commands.Get(), counter.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
-            if (pass != 1)
+            if (pass == 2 || pass == 3)
                 commands->SetPredication(predicate.Get(), 0,
                                          pass == 2 ? D3D12_PREDICATION_OP_EQUAL_ZERO
                                                    : D3D12_PREDICATION_OP_NOT_EQUAL_ZERO);
@@ -183,7 +183,8 @@ Output main(uint id : SV_VertexID) {
             commands->SetPipelineState(pipeline.Get());
             commands->SetGraphicsRootConstantBufferView(0, source->GetGPUVirtualAddress() + source_offset);
             commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-            const D3D12_STREAM_OUTPUT_BUFFER_VIEW view{stream->GetGPUVirtualAddress(), bytes,
+            const UINT capacity = pass == 4 ? bytes - 16 : bytes;
+            const D3D12_STREAM_OUTPUT_BUFFER_VIEW view{stream->GetGPUVirtualAddress(), capacity,
                                                        counter->GetGPUVirtualAddress()};
             commands->SOSetTargets(0, 1, &view);
             commands->BeginQuery(query.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0);
@@ -193,6 +194,9 @@ Output main(uint id : SV_VertexID) {
             commands->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
             transition(commands.Get(), stream.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
             commands->CopyBufferRegion(readback.Get(), 0, stream.Get(), 0, bytes);
+            transition(commands.Get(), counter.Get(), D3D12_RESOURCE_STATE_STREAM_OUT,
+                       D3D12_RESOURCE_STATE_COPY_SOURCE);
+            commands->CopyBufferRegion(readback.Get(), counter_offset, counter.Get(), 0, 8);
             // Query resolution is unpredicated, even if the draw/copy were skipped.
             commands->ResolveQueryData(query.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0, 1, readback.Get(),
                                        bytes);
@@ -211,22 +215,28 @@ Output main(uint id : SV_VertexID) {
             checked(gate->Signal(pass));
             checked(fence->SetEventOnCompletion(pass, event.get()));
             require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0, "gpu_timeout");
-            const D3D12_RANGE range{0, bytes + sizeof(D3D12_QUERY_DATA_SO_STATISTICS)};
+            const D3D12_RANGE range{0, counter_offset + 8};
             checked(readback->Map(0, &range, &mapped));
             D3D12_QUERY_DATA_SO_STATISTICS statistics{};
             std::memcpy(&statistics, static_cast<const std::byte *>(mapped) + bytes, sizeof(statistics));
+            UINT64 filled_bytes = 0;
+            std::memcpy(&filled_bytes, static_cast<const std::byte *>(mapped) + counter_offset, sizeof(filled_bytes));
             const bool executed = pass != 2;
-            const bool valid =
-                statistics.NumPrimitivesWritten == vertices && statistics.PrimitivesStorageNeeded == vertices;
-            require(valid == executed, "unexpected_stream_statistics");
+            const bool valid = statistics.NumPrimitivesWritten == vertices &&
+                               statistics.PrimitivesStorageNeeded == vertices && filled_bytes == bytes;
+            require(valid == (executed && pass != 4), "unexpected_stream_statistics");
             if (valid)
                 require(std::memcmp(mapped, reinterpret_cast<const std::byte *>(expected.data()) + source_offset,
                                     bytes) == 0,
                         "vertex_read_not_bit_exact");
-            else {
+            else if (!executed) {
                 require(statistics.NumPrimitivesWritten == 0 && statistics.PrimitivesStorageNeeded == 0,
                         "skipped_draw_nonzero_statistics");
                 require(std::memcmp(mapped, expected.data(), bytes) == 0, "skipped_copy_modified_sentinel");
+            } else {
+                require(statistics.NumPrimitivesWritten == vertices - 1 &&
+                            statistics.PrimitivesStorageNeeded == vertices && filled_bytes == bytes - 16,
+                        "incomplete_output_not_rejected");
             }
             readback->Unmap(0, &empty);
             const D3D12_RANGE original_range{0, source_bytes};
@@ -251,7 +261,8 @@ Output main(uint id : SV_VertexID) {
                 }
             }
         std::cout << "PASS: vertex-to-stream-output 2816-byte bit-exact read; mixed integer/NaN bits; "
-                     "original 4096 bytes unchanged; predicated-off rejected; covering fence pending control; adapter="
+                     "original 4096 bytes unchanged; predicated-off and incomplete output rejected; filled-byte "
+                     "counter verified; covering fence pending control; adapter="
                   << (hardware ? "hardware" : "WARP") << "; debug=" << (validation ? "ENABLED" : "UNAVAILABLE")
                   << "; game=NOT_RUN; app_state_restore=NOT_RUN\n";
         return 0;
