@@ -31,15 +31,20 @@ static void check(HRESULT hr) {
         throw std::runtime_error("owned_draw_graphics_failure");
 }
 static constexpr UINT width = 64, height = 32;
-#if defined(ODV_SCALAR_PATCH_RENDER) || defined(ODV_PRIVATE_TABLE_RENDER)
+#if defined(ODV_SCALAR_PATCH_RENDER) || defined(ODV_PRIVATE_TABLE_RENDER) || defined(ODV_PRIVATE_TABLE_SPLIT_RENDER)
 static constexpr bool scalar_control = true;
 #else
 static constexpr bool scalar_control = false;
 #endif
-#ifdef ODV_PRIVATE_TABLE_RENDER
+#if defined(ODV_PRIVATE_TABLE_RENDER) || defined(ODV_PRIVATE_TABLE_SPLIT_RENDER)
 static constexpr bool private_table_control = true;
 #else
 static constexpr bool private_table_control = false;
+#endif
+#ifdef ODV_PRIVATE_TABLE_SPLIT_RENDER
+static constexpr bool private_split_control = true;
+#else
+static constexpr bool private_split_control = false;
 #endif
 #ifdef ODV_VERTEX_STREAM_RENDER
 static constexpr bool stream_control = true;
@@ -237,6 +242,12 @@ int wmain(int argc, wchar_t **argv) {
                     params[i].Descriptor = {reg, space};
                 } else {
                     ranges[i] = {D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, reg, space, 0};
+                    if constexpr (private_split_control) {
+                        if (mode == 0 && i == 0) {
+                            ranges[i].NumDescriptors = 3;
+                            ranges[i].BaseShaderRegister = reg - 1;
+                        }
+                    }
                     params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
                     params[i].DescriptorTable = {1, &ranges[i]};
                 }
@@ -256,8 +267,9 @@ int wmain(int argc, wchar_t **argv) {
                     const D3D12_VERSIONED_ROOT_SIGNATURE_DESC *exact = nullptr;
                     check(decoder->GetRootSignatureDescAtVersion(D3D_ROOT_SIGNATURE_VERSION_1_1, &exact));
                     odv::research::PrivateCbvLayout layout;
-                    if (!layout.prepare(exact->Desc_1_1, 0, 2, 3, true) || layout.private_index() != 0 ||
-                        layout.dword_cost() != 4)
+                    if (!layout.prepare(exact->Desc_1_1, 0, 2, 3, true) ||
+                        layout.private_index() != (private_split_control ? 2u : 0u) ||
+                        layout.dword_cost() != (private_split_control ? 5u : 4u))
                         throw std::runtime_error("private_table_derivation_failed");
                     Com<ID3DBlob> lifted;
                     check(D3D12SerializeVersionedRootSignature(layout.description(), &lifted, &errors));
@@ -441,14 +453,15 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        hd.NumDescriptors = private_table_control ? 6 : (capture_control ? 6 : 4);
+        hd.NumDescriptors = private_table_control ? (private_split_control ? 10 : 6) : (capture_control ? 6 : 4);
         hd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&cbheap)));
         const auto cstride = device->GetDescriptorHandleIncrementSize(hd.Type);
         const auto cpu = cbheap->GetCPUDescriptorHandleForHeapStart();
         const auto gpu = cbheap->GetGPUDescriptorHandleForHeapStart();
         for (UINT i = 0; i < hd.NumDescriptors; ++i) {
-            const UINT source_index = private_table_control && i >= 4 ? (i == 4 ? 0 : 6) : i + 2;
+            const UINT source_index =
+                private_table_control && i >= 4 ? (i < (private_split_control ? 7u : 5u) ? 0 : 6) : i + 2;
             D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(source_index)->GetGPUVirtualAddress(),
                                               constant_bytes(source_index)};
             device->CreateConstantBufferView(&c, {cpu.ptr + i * cstride});
@@ -631,7 +644,13 @@ int wmain(int argc, wchar_t **argv) {
                     list->SetGraphicsRootDescriptorTable(1, {gpu.ptr + (first - 1) * cstride});
                 } else {
                     if constexpr (private_table_control) {
-                        if (!lifted) {
+                        if constexpr (private_split_control) {
+                            ID3D12DescriptorHeap *heaps[] = {cbheap.Get()};
+                            list->SetDescriptorHeaps(1, heaps);
+                            list->SetGraphicsRootDescriptorTable(0, {gpu.ptr + (first == 0 ? 4 : 7) * cstride});
+                            if (lifted)
+                                list->SetGraphicsRootConstantBufferView(2, private_vertex_address);
+                        } else if (!lifted) {
                             ID3D12DescriptorHeap *heaps[] = {cbheap.Get()};
                             list->SetDescriptorHeaps(1, heaps);
                             list->SetGraphicsRootDescriptorTable(0, {gpu.ptr + (first == 0 ? 4 : 5) * cstride});
@@ -989,6 +1008,9 @@ int wmain(int argc, wchar_t **argv) {
             std::cout
                 << "PASS: exact derived descriptor-table layout, private root-CBV/PSO and original table restore; "
                    "same shader bytes; no original descriptor edits\n";
+        if (private_split_control)
+            std::cout << "PASS: interior b2 removed from b1-b3 table, private root appended at index 2; "
+                         "original table and shaders restored\n";
         if (stream_control)
             std::cout << "PASS: stream read restores root-CBV/table PSO, roots, targets, topology and unbound SO; "
                          "next draws execute without rebinding; 2048 RGB/black pixels and three 2816-byte original "
