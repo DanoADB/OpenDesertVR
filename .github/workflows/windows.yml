@@ -68,7 +68,6 @@ jobs:
       - name: Verify original WARP draw pixels and unsubmitted-list control (no capture tool)
         run: |
           ./scripts/prepare-owned-warp.ps1
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64 "-DODV_TEST_WARP_DLL:FILEPATH=$PWD/out/deps/warp-1.0.22/d3d10warp.dll"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build out/build/draw-binding-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
@@ -79,8 +78,15 @@ jobs:
           $baselineExit = $LASTEXITCODE
           Get-Content out/ci-system-warp-indirect.log
           Write-Output "SYSTEM_WARP_DIAGNOSTIC_EXIT=$baselineExit"
-          ctest --test-dir out/build/draw-binding-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          ctest --test-dir out/build/draw-binding-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --no-tests=error --output-on-failure
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $testLog = Get-Content out/build/draw-binding-owned/Testing/Temporary/LastTest.log -Raw
+          $indirectLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_private_indirect_render.*?<end of output>').Value
+          if (-not $indirectLog.Contains('warp_kind=PINNED_TEST_ONLY version=1.0.22.0') -or
+              -not $indirectLog.Contains('19 cases x256 pixels') -or
+              -not $indirectLog.Contains('debug=ENABLED')) {
+            throw 'Missing actual pinned-WARP 19-case GPU execution with debug validation'
+          }
       - name: Build and test optional selected-read batch (owned producers only)
         run: |
           cmake -S experiments/camera-profile-audit/native-batch -B out/build/selected-read -A x64
