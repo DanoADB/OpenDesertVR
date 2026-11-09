@@ -2,6 +2,7 @@
 // Owned-only feasibility control. No game integration or generic state restore.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "vertex_constant_stream.hpp"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -200,6 +201,21 @@ Output main(uint id : SV_VertexID) {
             // Query resolution is unpredicated, even if the draw/copy were skipped.
             commands->ResolveQueryData(query.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0, 1, readback.Get(),
                                        bytes);
+            odv::research::VertexConstantStream component;
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const auto restore = [&]() noexcept {
+                commands->SetGraphicsRootSignature(signature.Get());
+                commands->SetPipelineState(pipeline.Get());
+                commands->SetGraphicsRootConstantBufferView(0, source->GetGPUVirtualAddress() + source_offset);
+                commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+                commands->OMSetRenderTargets(0, nullptr, FALSE, nullptr);
+                commands->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
+            };
+            require(!component.record(device.Get(), commands.Get(), source.Get(), source_offset + 1, context, restore),
+                    "misaligned_component_source_accepted");
+            require(component.record(device.Get(), commands.Get(), source.Get(), source_offset, context, restore),
+                    "component_record_failed");
+            require(component.read().bytes.empty(), "component_unsubmitted_exposed_bytes");
             commands->SetPredication(nullptr, 0, D3D12_PREDICATION_OP_EQUAL_ZERO);
             // Only this independent verification transitions the original source.
             transition(commands.Get(), source.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
@@ -207,14 +223,28 @@ Output main(uint id : SV_VertexID) {
             commands->CopyBufferRegion(independent.Get(), 0, source.Get(), 0, source_bytes);
             checked(commands->Close());
             checked(queue->Wait(gate.Get(), pass));
+            require(component.before_execute(), "component_before_execute_failed");
             ID3D12CommandList *execute[] = {commands.Get()};
             queue->ExecuteCommandLists(1, execute);
             checked(queue->Signal(fence.Get(), pass));
+            require(component.submitted_after_execute(fence.Get(), pass), "component_submission_failed");
             require(fence->GetCompletedValue() < pass, "blocked_fence_not_pending");
+            require(component.read().bytes.empty() && !component.release_retired(),
+                    "component_pending_fence_exposed_data_or_released_resources");
             // No output is mapped before the actual covering fence completes.
             checked(gate->Signal(pass));
             checked(fence->SetEventOnCompletion(pass, event.get()));
             require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0, "gpu_timeout");
+            const auto sampled = component.read();
+            if (pass == 2)
+                require(std::strcmp(sampled.state, "SO_NOT_EXECUTED") == 0 && sampled.bytes.empty(),
+                        "component_skipped_draw_accepted");
+            else
+                require(std::strcmp(sampled.state, "READY") == 0 && sampled.bytes.size() == bytes &&
+                            std::memcmp(sampled.bytes.data(),
+                                        reinterpret_cast<const std::byte *>(expected.data()) + source_offset,
+                                        bytes) == 0,
+                        "component_sample_not_exact");
             const D3D12_RANGE range{0, counter_offset + 8};
             checked(readback->Map(0, &range, &mapped));
             D3D12_QUERY_DATA_SO_STATISTICS statistics{};
@@ -246,6 +276,87 @@ Output main(uint id : SV_VertexID) {
             // Retire the recording before any referenced resources are destroyed.
             checked(allocator->Reset());
             checked(commands->Reset(allocator.Get(), nullptr));
+            require(component.release_retired(), "component_retirement_failed");
+            odv::research::DeferredResourceRelease::drain();
+        }
+        {
+            // Re-execute the SAME recording; all owned buffers must return to
+            // their initial state, with a new covering fence for each execution.
+            odv::research::VertexConstantStream repeated;
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const auto restore = [&]() noexcept {
+                commands->SetGraphicsRootSignature(signature.Get());
+                commands->SetPipelineState(pipeline.Get());
+                commands->SetGraphicsRootConstantBufferView(0, source->GetGPUVirtualAddress() + source_offset);
+                commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+                commands->OMSetRenderTargets(0, nullptr, FALSE, nullptr);
+                const std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> unbound{};
+                commands->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
+            };
+            for (UINT rejected = 0; rejected < 6; ++rejected) {
+                auto missing = context;
+                switch (rejected) {
+                case 0:
+                    missing.active_vertex_cbv = false;
+                    break;
+                case 1:
+                    missing.outside_render_pass = false;
+                    break;
+                case 2:
+                    missing.no_active_app_query = false;
+                    break;
+                case 3:
+                    missing.complete_replay_prepared = false;
+                    break;
+                case 4:
+                    missing.stream_output_bindings_known = false;
+                    break;
+                default:
+                    missing.unprotected = false;
+                    break;
+                }
+                require(!repeated.record(device.Get(), commands.Get(), source.Get(), source_offset, missing, restore),
+                        "incomplete_context_accepted");
+            }
+            transition(commands.Get(), source.Get(), D3D12_RESOURCE_STATE_COMMON,
+                       D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+            require(repeated.record(device.Get(), commands.Get(), source.Get(), source_offset, context, restore),
+                    "repeated_record_failed");
+            transition(commands.Get(), source.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                       D3D12_RESOURCE_STATE_COMMON);
+            checked(commands->Close());
+            for (UINT64 execution = 5; execution <= 6; ++execution) {
+                checked(queue->Wait(gate.Get(), execution));
+                require(repeated.before_execute(), "repeated_before_execute_failed");
+                ID3D12CommandList *execute[] = {commands.Get()};
+                queue->ExecuteCommandLists(1, execute);
+                checked(queue->Signal(fence.Get(), execution));
+                require(repeated.submitted_after_execute(fence.Get(), execution), "repeated_submission_failed");
+                require(!repeated.release_retired(), "prior_fence_released_new_execution");
+                checked(gate->Signal(execution));
+                checked(fence->SetEventOnCompletion(execution, event.get()));
+                require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0, "repeat_gpu_timeout");
+                const auto data = repeated.read();
+                require(std::strcmp(data.state, "READY") == 0 && data.bytes.size() == bytes &&
+                            std::memcmp(data.bytes.data(),
+                                        reinterpret_cast<const std::byte *>(expected.data()) + source_offset,
+                                        bytes) == 0,
+                        "repeated_sample_changed");
+            }
+            checked(allocator->Reset());
+            checked(commands->Reset(allocator.Get(), nullptr));
+            require(repeated.release_retired(), "repeat_retirement_failed");
+            odv::research::DeferredResourceRelease::drain();
+            // A never-submitted recording must release only after retirement.
+            odv::research::VertexConstantStream abandoned;
+            require(abandoned.record(device.Get(), commands.Get(), source.Get(), source_offset, context, restore),
+                    "unsubmitted_record_failed");
+            checked(commands->Close());
+            require(abandoned.read().bytes.empty() && !abandoned.release_retired(),
+                    "unsubmitted_capture_granted_completion");
+            checked(commands->Reset(allocator.Get(), nullptr));
+            require(abandoned.discard_unsubmitted(), "unsubmitted_retirement_failed");
+            odv::research::DeferredResourceRelease::drain();
         }
         checked(commands->Close());
         if (info)
@@ -260,11 +371,12 @@ Output main(uint id : SV_VertexID) {
                     throw std::runtime_error("debug_layer_error");
                 }
             }
-        std::cout << "PASS: vertex-to-stream-output 2816-byte bit-exact read; mixed integer/NaN bits; "
-                     "original 4096 bytes unchanged; predicated-off and incomplete output rejected; filled-byte "
-                     "counter verified; covering fence pending control; adapter="
-                  << (hardware ? "hardware" : "WARP") << "; debug=" << (validation ? "ENABLED" : "UNAVAILABLE")
-                  << "; game=NOT_RUN; app_state_restore=NOT_RUN\n";
+        std::cout
+            << "PASS: vertex-to-stream-output 2816-byte bit-exact read; mixed integer/NaN bits; "
+               "original 4096 bytes unchanged; predicated-off and incomplete output rejected; filled-byte "
+               "counter verified; covering fence, same-recording repeat, unsubmitted retirement controls; adapter="
+            << (hardware ? "hardware" : "WARP") << "; debug=" << (validation ? "ENABLED" : "UNAVAILABLE")
+            << "; game=NOT_RUN; app_state_restore=NOT_RUN\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << error.what() << '\n';

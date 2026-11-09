@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "QUALIFIED_OWNED_VERTEX_STREAM_COMPONENT_AND_PREPARED_REPLAY",
+  "source_sha256": {
+    "vertex_constant_stream.hpp": "f89452aaf6415171b7519aeb426079056221c2eb6935a0f5b93408c857f50da2",
+    "vertex_stream_tests.cpp": "74bb9328036824a2cda2f2ff729676b7bd32502ba76b681a73a6a6027b24a9b7",
+    "fixture.cpp": "9d029bf5e5b8397cbc1058008148f0223b8dd7a43036c3ae036202c68775d3b6",
+    "deferred_resource_release.hpp": "d87a2c41b9cf8eee5c89efc81de0ae14c5f3cacdafbfe2c5a43d25669af4e57c"
+  },
+  "binary_sha256": {
+    "Debug_byte_test": "5113d44b0af3d30cd8d07050915fcd30ba3072751779388795a27e9f3f7480f4",
+    "Debug_render_test": "2f067f39117803c27b33845e2721fc2fe811ecd03ed077b70cd30cee09fae0ee",
+    "Release_byte_test": "7ee6c82693600ccd09cc10ff8e530b0f0bd07dead9b94637b18cf974afa91513",
+    "Release_render_test": "a42d452d0fa107e7376aa827067b3c7aaf461a20a8a72c2e90dcf5c9ddd1e532"
+  },
+  "local_ctest": {
+    "Debug": {"passed": 9, "failed": 0, "skipped": 0},
+    "Release": {"passed": 9, "failed": 0, "skipped": 0}
+  },
+  "physical_gpu_Debug_component": "PASS",
+  "local_debug_layer": "UNAVAILABLE",
+  "controls": {
+    "mixed_bit_exact_2816_bytes": "PASS",
+    "original_source_bytes_unchanged": "PASS",
+    "skipped_and_incomplete_output_rejected": "PASS",
+    "component_unsubmitted_and_pending_reads_empty": "PASS",
+    "same_recording_executed_twice": "PASS",
+    "latest_blocked_fence_prevents_retirement": "PASS",
+    "successful_recording_reset_then_release": "PASS",
+    "unsubmitted_recording_reset_then_discard": "PASS",
+    "missing_context_fields_and_misalignment_rejected": "PASS",
+    "render_frames": 2,
+    "pixels_verified_per_frame": 2048,
+    "original_vertex_sources_per_frame": 3,
+    "bytes_per_vertex_source": 2816,
+    "render_state_replay": "OWNED_ROOT_CBV_AND_DESCRIPTOR_TABLE_LAYOUTS",
+    "state_rebinding_between_replay_and_original_draw": false,
+    "original_draw_pixels_unchanged": "PASS"
+  },
+  "component_scope": "Caller-supplied context and prepared noexcept replay. The reader never changes source barriers, descriptors, predication, viewports or scissors. Its own resource barriers return DEFAULT outputs to COMMON. Resources and the capacity slot remain quarantined without explicit retirement and completion; deferred COM release occurs outside caller locks.",
+  "replay_scope": "Authored two-CBV root signatures, original PSO and topology, one RTV, null DSV and four unbound SO targets. This does not qualify arbitrary root SRVs/UAVs/constants, bound SO, DSV or RenoDX snapshot replay.",
+  "remaining_gates": [
+    "Derive context and complete prepared replay from actual same-recording metadata in a separately pinned observer.",
+    "Qualify real frontend query/render-pass/SO/protected/unknown-state rejection on an owned application.",
+    "Qualify frontend submission, concurrent queue rejection and recording retirement before game use."
+  ],
+  "hosted_validation": {
+    "current_component": "NOT_RUN",
+    "prior_121f0e6_Release": "PASS_DEBUG_LAYER_ENABLED",
+    "prior_121f0e6_overall_run": "FAILURE_WITH_ONLY_RELEASE_JOB_REPORTED",
+    "prior_3d22d25_overall_run": "FAILURE_ZERO_JOBS_NO_CHECK_ANNOTATIONS",
+    "failure_cause": "UNVERIFIED_NO_SOURCE_FAILURE_LOGS_AVAILABLE"
+  },
+  "game": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

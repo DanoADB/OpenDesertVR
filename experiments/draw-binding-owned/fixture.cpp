@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include "scoped_scalar_patch.hpp"
+#include "vertex_constant_stream.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -32,6 +33,11 @@ static constexpr UINT width = 64, height = 32;
 static constexpr bool scalar_control = true;
 #else
 static constexpr bool scalar_control = false;
+#endif
+#ifdef ODV_VERTEX_STREAM_RENDER
+static constexpr bool stream_control = true;
+#else
+static constexpr bool stream_control = false;
 #endif
 static constexpr char shader[] = R"(
 cbuffer VertexControl : register(b2, space3) { float4 clipOffset; };
@@ -144,7 +150,8 @@ int wmain(int argc, wchar_t **argv) {
                 throw std::runtime_error("owned_hidden_window_failed");
         }
         Com<ID3D12Debug> debug;
-        const bool validation = scalar_control && SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)));
+        const bool validation =
+            (scalar_control || stream_control) && SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)));
         if (validation)
             debug->EnableDebugLayer();
         Com<IDXGIFactory4> factory;
@@ -289,6 +296,9 @@ int wmain(int argc, wchar_t **argv) {
             indirect_arguments->Unmap(0, nullptr);
         }
         const auto constant_bytes = [&](UINT index) -> UINT {
+            if constexpr (stream_control)
+                if (index == 0 || index == 2 || index == 4)
+                    return odv::research::VertexConstantStream::byte_count;
             if (large_default_control && (index == 3 || index == 5 || index == 7))
                 return 2816;
             return variable_control && index == 5 ? 512u : (variable_control && index == 7 ? 768u : 256u);
@@ -318,6 +328,23 @@ int wmain(int argc, wchar_t **argv) {
             const auto desc = constants[0]->GetDesc();
             check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COMMON,
                                                   nullptr, IID_PPV_ARGS(&gpu_constants[0])));
+        }
+        Com<ID3D12Resource> stream_originals;
+        if (stream_control) {
+            D3D12_HEAP_PROPERTIES gpu_heap{};
+            gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+            for (UINT i : {0u, 2u, 4u}) {
+                const auto desc = constants[i]->GetDesc();
+                check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc,
+                                                      D3D12_RESOURCE_STATE_COMMON, nullptr,
+                                                      IID_PPV_ARGS(&gpu_constants[i])));
+            }
+            D3D12_HEAP_PROPERTIES read_heap{};
+            read_heap.Type = D3D12_HEAP_TYPE_READBACK;
+            const auto desc = buffer_desc(3 * odv::research::VertexConstantStream::byte_count);
+            check(device->CreateCommittedResource(&read_heap, D3D12_HEAP_FLAG_NONE, &desc,
+                                                  D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                  IID_PPV_ARGS(&stream_originals)));
         }
         if (upload_control) {
             D3D12_HEAP_PROPERTIES gpu_heap{};
@@ -476,6 +503,7 @@ int wmain(int argc, wchar_t **argv) {
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
         for (UINT frame = 1; loop || frame <= 2; ++frame) {
             odv::research::ScopedScalarPatch scalar_patch;
+            std::array<odv::research::VertexConstantStream, 3> stream_samples;
             Com<ID3D12GraphicsCommandList7> scalar_commands;
             if (loop && (std::filesystem::exists(output.parent_path() / L"stop.flag") ||
                          std::chrono::steady_clock::now() >= deadline))
@@ -555,7 +583,7 @@ int wmain(int argc, wchar_t **argv) {
             }
             D3D12_GPU_VIRTUAL_ADDRESS private_vertex_address = 0;
             D3D12_CPU_DESCRIPTOR_HANDLE draw_view = view;
-            const auto draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) {
+            const auto bind_draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) noexcept {
                 list->SetPipelineState(pipelines[table ? 1 : 0].Get());
                 list->SetGraphicsRootSignature(roots[table ? 1 : 0].Get());
                 if (table) {
@@ -575,6 +603,23 @@ int wmain(int argc, wchar_t **argv) {
                 list->RSSetScissorRects(1, &sc);
                 list->OMSetRenderTargets(1, &draw_view, FALSE, nullptr);
                 list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            };
+            const auto draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) {
+                bind_draw(list, column, table, first);
+                if constexpr (stream_control) {
+                    if (column < 3) {
+                        const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+                        const auto restore = [&]() noexcept {
+                            const std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> unbound{};
+                            list->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
+                            bind_draw(list, column, table, first);
+                        };
+                        if (!stream_samples[column].record(device.Get(), list, bound_constant(first), 0, context,
+                                                           restore))
+                            throw std::runtime_error("vertex_stream_render_record_failed");
+                    }
+                }
+                // No application-state rebinding after the reader's restore.
                 if (indirect_control)
                     list->ExecuteIndirect(indirect_signature.Get(), 1, indirect_arguments.Get(), 0, nullptr, 0);
                 else
@@ -583,6 +628,14 @@ int wmain(int argc, wchar_t **argv) {
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
+            if (stream_control)
+                for (UINT i : {0u, 2u, 4u}) {
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COMMON,
+                            D3D12_RESOURCE_STATE_COPY_DEST);
+                    lists[0]->CopyBufferRegion(gpu_constants[i].Get(), 0, constants[i].Get(), 0, constant_bytes(i));
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                            D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+                }
             if (upload_control)
                 for (UINT i : {3u, 5u}) {
                     constant_prepare(lists[0].Get(), i);
@@ -666,6 +719,15 @@ int wmain(int argc, wchar_t **argv) {
                 for (UINT i : {3u, 5u})
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                             D3D12_RESOURCE_STATE_COPY_DEST);
+            if (stream_control)
+                for (UINT i : {0u, 2u, 4u}) {
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                            D3D12_RESOURCE_STATE_COPY_SOURCE);
+                    lists[0]->CopyBufferRegion(stream_originals.Get(), (i / 2) * constant_bytes(i),
+                                               gpu_constants[i].Get(), 0, constant_bytes(i));
+                    barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COPY_SOURCE,
+                            D3D12_RESOURCE_STATE_COMMON);
+                }
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dest{};
             dest.pResource = readback.Get();
@@ -713,12 +775,20 @@ int wmain(int argc, wchar_t **argv) {
             if constexpr (scalar_control)
                 if (!scalar_patch.before_execute())
                     throw std::runtime_error("scalar_patch_execution_rejected");
+            if (stream_control)
+                for (auto &sample : stream_samples)
+                    if (!sample.read().bytes.empty() || !sample.before_execute())
+                        throw std::runtime_error("stream_render_unsubmitted_control_failed");
             queue->ExecuteCommandLists(submit_fourth || empty_upload_control ? 3 : 2,
                                        submit_fourth || empty_upload_control ? control : baseline);
             check(queue->Signal(fence.Get(), frame));
             if constexpr (scalar_control)
                 if (!scalar_patch.submitted_after_execute(fence.Get(), frame))
                     throw std::runtime_error("scalar_patch_fence_rejected");
+            if (stream_control)
+                for (auto &sample : stream_samples)
+                    if (!sample.submitted_after_execute(fence.Get(), frame))
+                        throw std::runtime_error("stream_render_fence_rejected");
             check(fence->SetEventOnCompletion(frame, event.get()));
             if (WaitForSingleObject(event.get(), 5000) != WAIT_OBJECT_0)
                 throw std::runtime_error("owned_gpu_fence_timeout");
@@ -742,6 +812,31 @@ int wmain(int argc, wchar_t **argv) {
             readback->Unmap(0, &no_write);
             if (!matches)
                 throw std::runtime_error("owned_pixel_control_failed");
+            if (stream_control) {
+                const std::array<std::byte, odv::research::VertexConstantStream::byte_count> expected{};
+                for (auto &sample : stream_samples) {
+                    const auto actual = sample.read();
+                    if (std::strcmp(actual.state, "READY") || actual.bytes.size() != expected.size() ||
+                        std::memcmp(actual.bytes.data(), expected.data(), expected.size()))
+                        throw std::runtime_error("stream_render_sample_failed");
+                }
+                const D3D12_RANGE source_range{0, expected.size() * 3};
+                check(stream_originals->Map(0, &source_range, &bytes));
+                bool exact = true;
+                for (UINT i = 0; i < 3; ++i)
+                    exact &= std::memcmp(static_cast<const std::byte *>(bytes) + i * expected.size(), expected.data(),
+                                         expected.size()) == 0;
+                stream_originals->Unmap(0, &no_write);
+                if (!exact)
+                    throw std::runtime_error("stream_render_original_source_modified");
+                check(allocators[0]->Reset());
+                check(lists[0]->Reset(allocators[0].Get(), nullptr));
+                check(lists[0]->Close());
+                for (auto &sample : stream_samples)
+                    if (!sample.release_retired())
+                        throw std::runtime_error("stream_render_retirement_failed");
+                odv::research::DeferredResourceRelease::drain();
+            }
             if (scalar_control) {
                 check(perturbed_readback->Map(0, &range, &bytes));
                 bool empty_geometry = true;
@@ -800,9 +895,10 @@ int wmain(int argc, wchar_t **argv) {
         std::ofstream result(output / "result.json");
         result << "{\"schemaVersion\":1,\"status\":\"PASS\",\"adapter\":\"WARP\",\"frames\":" << completed << ','
                << "\"pixelsVerifiedPerFrame\":2048,\"recordedDrawsPerFrame\":"
-               << repeats * 3 + 1 + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0)
+               << repeats * 3 + 1 + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0) + (stream_control ? 3 : 0)
                << ",\"submittedDrawsPerFrame\":"
-               << repeats * 3 + (submit_fourth ? 1 : 0) + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0)
+               << repeats * 3 + (submit_fourth ? 1 : 0) + (scalar_control ? 1 : 0) + (aspect_control ? 1 : 0) +
+                      (stream_control ? 3 : 0)
                << ",\"fourthColumn\":\"" << (submit_fourth ? "yellow" : "black") << "\",\"captureTool\":\""
                << (loop ? "EXTERNAL_OBSERVER_POSSIBLE" : "NOT_RUN")
                << "\",\"headset\":\"NOT_RUN\",\"game\":\"NOT_"
@@ -812,6 +908,11 @@ int wmain(int argc, wchar_t **argv) {
                 << "PASS: private-copy geometry 2048 black pixels, original geometry 2048 RGB/black pixels, exact "
                    "256 input bytes; debug="
                 << (validation ? "ENABLED" : "UNAVAILABLE") << '\n';
+        if (stream_control)
+            std::cout << "PASS: stream read restores root-CBV/table PSO, roots, targets, topology and unbound SO; "
+                         "next draws execute without rebinding; 2048 RGB/black pixels and three 2816-byte original "
+                         "sources exact; debug="
+                      << (validation ? "ENABLED" : "UNAVAILABLE") << '\n';
         result.close();
         if (!result)
             throw std::runtime_error("result_write_failed");

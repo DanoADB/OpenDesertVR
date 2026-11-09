@@ -18,7 +18,7 @@ class DeferredResourceRelease final {
   private:
     struct State {
         std::mutex mutex;
-        std::array<Com<ID3D12Resource>, capacity> resources;
+        std::array<Com<IUnknown>, capacity> resources;
         ~State() {
             // A missing explicit drain must not call into an unloading addon.
             // Bounded quarantine; callers retain ownership on queue overflow.
@@ -33,10 +33,11 @@ class DeferredResourceRelease final {
 
   public:
     // All-or-none transfer. No AddRef/Release or allocation under the mutex.
-    static bool defer(Com<ID3D12Resource> &first, Com<ID3D12Resource> &second) noexcept {
+    template <class... T> static bool defer(Com<T> &...resources) noexcept {
+        static_assert(sizeof...(T) > 0);
         auto &value = state();
         const std::lock_guard lock(value.mutex);
-        const std::size_t needed = (first ? 1u : 0u) + (second ? 1u : 0u);
+        const std::size_t needed = ((resources ? 1u : 0u) + ...);
         std::size_t free = 0;
         for (const auto &resource : value.resources)
             free += resource ? 0u : 1u;
@@ -45,19 +46,16 @@ class DeferredResourceRelease final {
         for (auto &resource : value.resources) {
             if (resource)
                 continue;
-            if (first)
-                resource.Swap(first);
-            else if (second)
-                resource.Swap(second);
+            const auto transfer = [&](auto &source) {
+                if (!resource && source)
+                    resource.Attach(source.Detach());
+            };
+            (transfer(resources), ...);
         }
         return true;
     }
-    static bool defer(Com<ID3D12Resource> &resource) noexcept {
-        Com<ID3D12Resource> empty;
-        return defer(resource, empty);
-    }
     static void drain() noexcept {
-        std::array<Com<ID3D12Resource>, capacity> release;
+        std::array<Com<IUnknown>, capacity> release;
         auto &value = state();
         {
             const std::lock_guard lock(value.mutex);

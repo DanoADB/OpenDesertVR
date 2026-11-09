@@ -100,3 +100,20 @@ separate eye rendering.
 
 References: [Microsoft stream-output description](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_stream_output_desc)
 and [predicated versus unpredicated operations](https://learn.microsoft.com/en-us/windows/win32/direct3d12/predication).
+
+The [reusable reader and owned replay control](../evidence/g1-owned-vertex-replay-2026-11-09.json)
+now preserve authored root-CBV and descriptor-table rendering: the original raw
+draw runs immediately after replay, without another state bind. All 2048 pixels
+and three 2816-byte original inputs match in both frames. Local Debug/Release
+each pass nine checks; physical GPU component controls pass too. The component
+also qualifies same-recording re-execution, latest-fence retirement and an
+unsubmitted recording's reset/discard. This is a two-CBV/null-DSV/unbound-SO
+fixture; arbitrary game root arguments and RenoDX replay remain unqualified.
+The next observer must derive its context from actual metadata. The component's
+caller-supplied context alone is not evidence of an application query/render-pass
+guard.
+
+Hosted results remain limited. The initial 121f0e6 Release job passes with the
+debug layer enabled, but its overall run fails with no Debug job reported.
+The subsequent 3d22d25 run fails with zero jobs and no check annotations; the
+cause is unverified. Neither run establishes a full hosted matrix pass.
