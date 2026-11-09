@@ -57,6 +57,15 @@ static void unchanged(ID3D12Resource *resource, const void *original, SIZE_T byt
     resource->Unmap(0, &no_write);
     require(equal);
 }
+static Com<ID3D12Resource> gpu_buffer(ID3D12Device *device, SIZE_T bytes) {
+    D3D12_HEAP_PROPERTIES heap{};
+    heap.Type = D3D12_HEAP_TYPE_DEFAULT;
+    const auto desc = buffer(bytes);
+    Com<ID3D12Resource> result;
+    checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                            IID_PPV_ARGS(&result)));
+    return result;
+}
 static void transition(ID3D12GraphicsCommandList *list, ID3D12Resource *target, D3D12_RESOURCE_STATES before,
                        D3D12_RESOURCE_STATES after) {
     D3D12_RESOURCE_BARRIER b{};
@@ -170,9 +179,11 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         argument_bytes.fill(std::byte{0xCD});
         std::memcpy(argument_bytes.data() + 16, &a, sizeof(a));
         std::memcpy(argument_bytes.data() + 56, &b, sizeof(b));
-        auto arguments = upload(device.Get(), argument_bytes.data(), argument_bytes.size());
+        auto argument_upload = upload(device.Get(), argument_bytes.data(), argument_bytes.size());
+        auto arguments = gpu_buffer(device.Get(), argument_bytes.size());
         const std::array<UINT, 4> count_bytes{0, 1, 2, 0xFA123456};
-        auto counts = upload(device.Get(), count_bytes.data(), sizeof(count_bytes));
+        auto count_upload = upload(device.Get(), count_bytes.data(), sizeof(count_bytes));
+        auto counts = gpu_buffer(device.Get(), sizeof(count_bytes));
         stage = "signature_creation";
         D3D12_INDIRECT_ARGUMENT_DESC arg_desc[3]{};
         arg_desc[0].Type = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW;
@@ -242,6 +253,14 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         Com<ID3D12Resource> readback;
         checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &readback_desc,
                                                 D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&readback)));
+        std::array<std::byte, 128> expected_indirect{};
+        std::memcpy(expected_indirect.data(), argument_bytes.data(), argument_bytes.size());
+        std::memcpy(expected_indirect.data() + argument_bytes.size(), count_bytes.data(), sizeof(count_bytes));
+        const auto indirect_readback_desc = buffer(expected_indirect.size());
+        Com<ID3D12Resource> indirect_readback;
+        checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &indirect_readback_desc,
+                                                D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                IID_PPV_ARGS(&indirect_readback)));
         Com<ID3D12CommandQueue> queue;
         D3D12_COMMAND_QUEUE_DESC queue_desc{};
         checked(device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&queue)));
@@ -251,6 +270,10 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         checked(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr,
                                           IID_PPV_ARGS(&list)));
         stage = "recording";
+        list->CopyBufferRegion(arguments.Get(), 0, argument_upload.Get(), 0, argument_bytes.size());
+        list->CopyBufferRegion(counts.Get(), 0, count_upload.Get(), 0, sizeof(count_bytes));
+        transition(list.Get(), arguments.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT);
+        transition(list.Get(), counts.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT);
         for (UINT i = 0; i < cases.size(); ++i) {
             const auto &c = cases[i];
             const UINT mode = c.use_private ? 1 : 0;
@@ -292,6 +315,11 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
             list->CopyTextureRegion(&destination, 0, 0, 0, &from, nullptr);
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
         }
+        transition(list.Get(), arguments.Get(), D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
+                   D3D12_RESOURCE_STATE_COPY_SOURCE);
+        transition(list.Get(), counts.Get(), D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT, D3D12_RESOURCE_STATE_COPY_SOURCE);
+        list->CopyBufferRegion(indirect_readback.Get(), 0, arguments.Get(), 0, argument_bytes.size());
+        list->CopyBufferRegion(indirect_readback.Get(), argument_bytes.size(), counts.Get(), 0, sizeof(count_bytes));
         stage = "submission_and_completion";
         checked(list->Close());
         ID3D12CommandList *submission[] = {list.Get()};
@@ -306,6 +334,20 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         CloseHandle(event);
         require(waited == WAIT_OBJECT_0);
         require(fence->GetCompletedValue() >= 1 && fence->GetCompletedValue() != UINT64_MAX);
+        stage = "debug_validation";
+        if (info)
+            for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
+                SIZE_T bytes = 0;
+                checked(info->GetMessage(i, nullptr, &bytes));
+                std::vector<std::byte> storage(bytes);
+                auto *message = reinterpret_cast<D3D12_MESSAGE *>(storage.data());
+                checked(info->GetMessage(i, message, &bytes));
+                if (message->Severity == D3D12_MESSAGE_SEVERITY_ERROR ||
+                    message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION)
+                    std::cerr << "D3D12 id=" << message->ID << " " << message->pDescription << '\n';
+                require(message->Severity != D3D12_MESSAGE_SEVERITY_ERROR &&
+                        message->Severity != D3D12_MESSAGE_SEVERITY_CORRUPTION);
+            }
         stage = "pixel_verification";
         void *mapped = nullptr;
         const D3D12_RANGE read_range{0, SIZE_T(readback_desc.Width)};
@@ -330,27 +372,14 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         stage = "input_preservation";
         unchanged(source.Get(), camera_bytes.data(), camera_bytes.size());
         unchanged(private_camera.Get(), private_bytes.data(), private_bytes.size());
-        unchanged(arguments.Get(), argument_bytes.data(), argument_bytes.size());
-        unchanged(counts.Get(), count_bytes.data(), sizeof(count_bytes));
+        unchanged(argument_upload.Get(), argument_bytes.data(), argument_bytes.size());
+        unchanged(count_upload.Get(), count_bytes.data(), sizeof(count_bytes));
+        unchanged(indirect_readback.Get(), expected_indirect.data(), expected_indirect.size());
         unchanged(index.Get(), indices.data(), sizeof(indices));
-        stage = "debug_validation";
-        if (info)
-            for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
-                SIZE_T bytes = 0;
-                checked(info->GetMessage(i, nullptr, &bytes));
-                std::vector<std::byte> storage(bytes);
-                auto *message = reinterpret_cast<D3D12_MESSAGE *>(storage.data());
-                checked(info->GetMessage(i, message, &bytes));
-                if (message->Severity == D3D12_MESSAGE_SEVERITY_ERROR ||
-                    message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION)
-                    std::cerr << "D3D12 id=" << message->ID << " " << message->pDescription << '\n';
-                require(message->Severity != D3D12_MESSAGE_SEVERITY_ERROR &&
-                        message->Severity != D3D12_MESSAGE_SEVERITY_CORRUPTION);
-            }
         std::cout << "PASS: WARP exact40-byte IBV/root0/DrawIndexed private split-root GPU forwarding; "
                      "19 cases x256 pixels; GPU count0/1/2, max0/1/2, nonzero offsets, null count, "
                      "private camera change and restoration, root0 resets after nonzero/zero counts; "
-                     "source/arguments/counts/indices exact; IBV null-reset GPU probe=NOT_RUN; debug="
+                     "source/DEFAULT arguments/DEFAULT counts/indices exact; IBV null-reset GPU probe=NOT_RUN; debug="
                   << (validation ? "ENABLED" : "UNAVAILABLE") << "; game=NOT_RUN; headset=NOT_RUN\n";
         return 0;
     } catch (const std::exception &e) {
