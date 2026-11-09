@@ -93,6 +93,9 @@ class ConstantSnapshot final {
             info.state = "SOURCE_ALLOCATION_TOO_LARGE";
         } else if (!bytes || bytes > maximum_bytes || offset > info.width || bytes > info.width - offset) {
             info.state = "RANGE_REJECTED";
+        } else if (states.enhanced_constant_scope(source)) {
+            info.state = "ELIGIBLE_DEFAULT_ENHANCED_SCOPE";
+            info.supported = true;
         } else if (!states.constant_read_state(source)) {
             info.state = "DEFAULT_STATE_UNVERIFIED";
         } else {
@@ -123,23 +126,32 @@ class ConstantSnapshot final {
     }
     // Experimental DEFAULT path. Requires exact native state observations in
     // THIS command recording; never infer states from descriptors or CBV use.
-    // Current interop addon does NOT supply this contract and remains UPLOAD-only.
+    // Enhanced barriers use their own sync/access scopes, never legacy states.
     bool record_default(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source,
                         UINT64 offset, std::size_t bytes, const KnownBufferStates &states) {
         const auto state = states.constant_read_state(source);
-        if (!state || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
+        const bool enhanced = states.enhanced_constant_scope(source);
+        if ((!state && !enhanced) || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
             return false;
-        return record_copy(device, commands, source, offset, bytes, state);
+        return record_copy(device, commands, source, offset, bytes, state, enhanced);
     }
 
   private:
     bool record_copy(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source, UINT64 offset,
-                     std::size_t bytes, std::optional<D3D12_RESOURCE_STATES> default_state) {
+                     std::size_t bytes, std::optional<D3D12_RESOURCE_STATES> default_state, bool enhanced = false) {
         if (phase_ != Phase::empty || !device || !commands || !source || !bytes || bytes > maximum_bytes)
             return false;
         if (commands->GetType() == D3D12_COMMAND_LIST_TYPE_BUNDLE)
             return false;
-        if (default_state) {
+        Com<ID3D12GraphicsCommandList7> enhanced_commands;
+        if (enhanced) {
+            D3D12_FEATURE_DATA_D3D12_OPTIONS12 options{};
+            if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS12, &options, sizeof(options))) ||
+                !options.EnhancedBarriersSupported ||
+                FAILED(commands->QueryInterface(IID_PPV_ARGS(&enhanced_commands))))
+                return false;
+        }
+        if (default_state || enhanced) {
             const auto desc = source->GetDesc();
             D3D12_HEAP_PROPERTIES heap{};
             D3D12_HEAP_FLAGS flags{};
@@ -174,6 +186,23 @@ class ConstantSnapshot final {
             source_ = source;
             bytes_ = bytes;
             D3D12_RESOURCE_BARRIER barrier{};
+            D3D12_BUFFER_BARRIER enhanced_barrier{};
+            D3D12_BARRIER_GROUP group{};
+            if (enhanced) {
+                // COMMON covers all preceding writes. This deliberately broad
+                // flush avoids pretending the app's last AccessAfter describes
+                // every intervening access. Buffers have no layout to restore.
+                enhanced_barrier.SyncBefore = D3D12_BARRIER_SYNC_ALL;
+                enhanced_barrier.SyncAfter = D3D12_BARRIER_SYNC_COPY;
+                enhanced_barrier.AccessBefore = D3D12_BARRIER_ACCESS_COMMON;
+                enhanced_barrier.AccessAfter = D3D12_BARRIER_ACCESS_COPY_SOURCE;
+                enhanced_barrier.pResource = source;
+                enhanced_barrier.Size = UINT64_MAX;
+                group.Type = D3D12_BARRIER_TYPE_BUFFER;
+                group.NumBarriers = 1;
+                group.pBufferBarriers = &enhanced_barrier;
+                enhanced_commands->Barrier(1, &group);
+            }
             const bool transition = default_state && !(*default_state & D3D12_RESOURCE_STATE_COPY_SOURCE);
             if (transition) {
                 barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -184,6 +213,13 @@ class ConstantSnapshot final {
                 commands->ResourceBarrier(1, &barrier);
             }
             commands->CopyBufferRegion(readback_.Get(), 0, source_.Get(), offset, bytes);
+            if (enhanced) {
+                enhanced_barrier.SyncBefore = D3D12_BARRIER_SYNC_COPY;
+                enhanced_barrier.SyncAfter = D3D12_BARRIER_SYNC_ALL;
+                enhanced_barrier.AccessBefore = D3D12_BARRIER_ACCESS_COPY_SOURCE;
+                enhanced_barrier.AccessAfter = D3D12_BARRIER_ACCESS_COMMON;
+                enhanced_commands->Barrier(1, &group);
+            }
             if (transition) {
                 std::swap(barrier.Transition.StateBefore, barrier.Transition.StateAfter);
                 commands->ResourceBarrier(1, &barrier);

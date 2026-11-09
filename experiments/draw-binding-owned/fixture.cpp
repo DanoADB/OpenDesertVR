@@ -88,14 +88,17 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-upload-transient" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-split" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap" &&
-              std::wstring_view(argv[2]) != L"--loop-dxil-default-2816")))
+              std::wstring_view(argv[2]) != L"--loop-dxil-default-2816" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
         const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
         const bool split_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-split";
-        const bool large_default_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816";
+        const bool enhanced_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-enhanced-2816";
+        const bool large_default_control =
+            enhanced_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816");
         const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
         const bool indirect_control = transient_control || split_control || present_gap_control ||
                                       large_default_control ||
@@ -136,6 +139,12 @@ int wmain(int argc, wchar_t **argv) {
         check(factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter)));
         Com<ID3D12Device> device;
         check(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)));
+        if (enhanced_control) {
+            D3D12_FEATURE_DATA_D3D12_OPTIONS12 options{};
+            check(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS12, &options, sizeof(options)));
+            if (!options.EnhancedBarriersSupported)
+                throw std::runtime_error("enhanced_barriers_unsupported");
+        }
         Com<ID3D12CommandQueue> queue;
         D3D12_COMMAND_QUEUE_DESC q{};
         check(device->CreateCommandQueue(&q, IID_PPV_ARGS(&queue)));
@@ -284,20 +293,56 @@ int wmain(int argc, wchar_t **argv) {
             for (UINT i : {3u, 5u, 7u}) {
                 const auto desc = constants[i]->GetDesc();
                 check(device->CreateCommittedResource(&gpu_heap, D3D12_HEAP_FLAG_NONE, &desc,
-                                                      D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
-                                                      IID_PPV_ARGS(&gpu_constants[i])));
+                                                      enhanced_control ? D3D12_RESOURCE_STATE_COMMON
+                                                                       : D3D12_RESOURCE_STATE_COPY_DEST,
+                                                      nullptr, IID_PPV_ARGS(&gpu_constants[i])));
             }
         }
         const auto bound_constant = [&](UINT i) {
             return gpu_constants[i] ? gpu_constants[i].Get() : constants[i].Get();
         };
         const auto constant_ready = [&](ID3D12GraphicsCommandList *list, UINT index) {
+            if (enhanced_control) {
+                Com<ID3D12GraphicsCommandList7> native;
+                check(list->QueryInterface(IID_PPV_ARGS(&native)));
+                D3D12_BUFFER_BARRIER b{};
+                b.SyncBefore = D3D12_BARRIER_SYNC_COPY;
+                b.SyncAfter = D3D12_BARRIER_SYNC_ALL;
+                b.AccessBefore = D3D12_BARRIER_ACCESS_COPY_DEST;
+                b.AccessAfter = D3D12_BARRIER_ACCESS_CONSTANT_BUFFER;
+                b.pResource = gpu_constants[index].Get();
+                b.Size = UINT64_MAX;
+                D3D12_BARRIER_GROUP group{};
+                group.Type = D3D12_BARRIER_TYPE_BUFFER;
+                group.NumBarriers = 1;
+                group.pBufferBarriers = &b;
+                native->Barrier(1, &group);
+                return;
+            }
             if (split_control)
                 barrier(list, gpu_constants[index].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY);
             barrier(list, gpu_constants[index].Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                     D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                     split_control ? D3D12_RESOURCE_BARRIER_FLAG_END_ONLY : D3D12_RESOURCE_BARRIER_FLAG_NONE);
+        };
+        const auto constant_prepare = [&](ID3D12GraphicsCommandList *list, UINT index) {
+            if (!enhanced_control)
+                return;
+            Com<ID3D12GraphicsCommandList7> native;
+            check(list->QueryInterface(IID_PPV_ARGS(&native)));
+            D3D12_BUFFER_BARRIER b{};
+            b.SyncBefore = D3D12_BARRIER_SYNC_ALL;
+            b.SyncAfter = D3D12_BARRIER_SYNC_COPY;
+            b.AccessBefore = D3D12_BARRIER_ACCESS_COMMON;
+            b.AccessAfter = D3D12_BARRIER_ACCESS_COPY_DEST;
+            b.pResource = gpu_constants[index].Get();
+            b.Size = UINT64_MAX;
+            D3D12_BARRIER_GROUP group{};
+            group.Type = D3D12_BARRIER_TYPE_BUFFER;
+            group.NumBarriers = 1;
+            group.pBufferBarriers = &b;
+            native->Barrier(1, &group);
         };
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
@@ -484,6 +529,7 @@ int wmain(int argc, wchar_t **argv) {
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
             if (upload_control)
                 for (UINT i : {3u, 5u}) {
+                    constant_prepare(lists[0].Get(), i);
                     if (whole_upload_control)
                         lists[0]->CopyResource(gpu_constants[i].Get(), constants[i].Get());
                     else
@@ -495,7 +541,7 @@ int wmain(int argc, wchar_t **argv) {
                 draw(lists[0].Get(), 1, true, 2);
                 draw(lists[0].Get(), 2, true, 4);
             }
-            if (upload_control)
+            if (upload_control && !enhanced_control)
                 for (UINT i : {3u, 5u})
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                             D3D12_RESOURCE_STATE_COPY_DEST);
@@ -522,6 +568,7 @@ int wmain(int argc, wchar_t **argv) {
             // proving that this same recorded draw produces yellow when executed.
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             if (upload_control) {
+                constant_prepare(lists[1].Get(), 7);
                 if (whole_upload_control)
                     lists[1]->CopyResource(gpu_constants[7].Get(), constants[7].Get());
                 else
@@ -529,7 +576,7 @@ int wmain(int argc, wchar_t **argv) {
                 constant_ready(lists[1].Get(), 7);
             }
             draw(lists[1].Get(), 3, capture_control, 6);
-            if (upload_control)
+            if (upload_control && !enhanced_control)
                 barrier(lists[1].Get(), gpu_constants[7].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                         D3D12_RESOURCE_STATE_COPY_DEST);
             barrier(lists[1].Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);

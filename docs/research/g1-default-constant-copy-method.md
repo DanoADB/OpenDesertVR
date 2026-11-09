@@ -94,3 +94,37 @@ coverage and byte availability; do not infer camera identity from byte size.
 
 Primary references: [Microsoft resource-state and split-barrier rules](https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12),
 [pinned ReShade native wrapper](https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/source/d3d12/d3d12_command_list.cpp).
+
+## Enhanced-buffer path (2026-11-09)
+
+The [actual still-world capture](../evidence/g1-game-native-default-2026-11-09.json)
+confirmed native enhanced callbacks and after-execute delivery, but returned no
+DEFAULT bytes. Observer10 invalidated all state on enhanced calls. The capture
+does not establish which enhanced barrier covers a candidate resource.
+
+The new component keeps enhanced buffer scopes separate from legacy states.
+It requires an observed full-buffer barrier in the same command recording,
+constant-compatible AccessAfter, and completion of matching split pairs.
+Reset, destruction, legacy replacement, global/unknown barriers and incomplete
+or mismatched splits discard eligibility. Texture barriers do not establish
+buffer eligibility. Device support and command-list interface 7 are required.
+
+AccessAfter is not treated as a permanent resource state or complete access
+history. Before the bounded copy, an enhanced buffer barrier synchronizes ALL
+to COPY and makes COMMON access visible to COPY_SOURCE. After the copy, a
+COPY-to-ALL barrier returns access to COMMON. No buffer layout transition or
+legacy ResourceBarrier is injected. COMMON-before deliberately flushes all
+possible preceding writes and can be expensive; this is a six-copy research
+capture, not a per-frame rendering strategy. Microsoft documents a performance
+warning for COMMON-before; debug errors/corruption still fail qualification.
+
+The component test passes on local WARP and physical GPU, copying 2816 authored
+bytes through DEFAULT, rejecting a pending split and a blocked fence, and
+independently verifying unchanged source data. Metadata controls reject missing
+and mismatched split endings, partial ranges, mixed-family confusion, forgotten
+resources and global invalidation. All four optional tests pass in Debug and
+Release. Local debug layer is unavailable. Observer integration and actual-game
+enhanced-buffer acquisition remain unverified at this stage.
+
+Primary reference: [Microsoft enhanced barriers specification](https://microsoft.github.io/DirectX-Specs/d3d/D3D12EnhancedBarriers.html),
+including buffer access scopes, COMMON access, split pairs and legacy interop.

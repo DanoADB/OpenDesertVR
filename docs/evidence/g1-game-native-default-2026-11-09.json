@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-09",
-  "status": "LIVE_NATIVE_OBSERVER_READY",
+  "status": "OBSERVED_ENHANCED_BARRIER_GAP",
   "source_commit": "cecc4b145d1900c1606660be3d6b52f5276a767d",
   "game_identity": {
     "steam_app_id": "3321460",
@@ -25,11 +25,77 @@
     "ODVUploadInputs": 0,
     "ODVDefaultConstants": 1
   },
-  "capture": "NOT_RUN",
+  "capture": "COMPLETE_METADATA_ONLY",
   "camera_semantics": "UNVERIFIED",
   "game_buffer_data_writes": "NOT_RUN",
   "game_stereo": "NOT_RUN",
   "headset": "NOT_RUN",
   "cleanup": "PENDING_NORMAL_GAME_EXIT",
-  "interpretation": "The new addon and native bridge loaded in the reviewed game after normal exit and exact cleanup of the prior observer. A slow but progressing shader initialization preceded the live status response. No restart followed the startup observation timeout. Scene data acquisition remains pending."
+  "interpretation": "Native enhanced barrier and actual after-execute callbacks worked in the current verified game process. Observer10 invalidates metadata on enhanced barriers, so it recorded no DEFAULT copies and returned no candidate bytes. Callback counts alone do not establish which barrier covers a candidate buffer. A separate enhanced-buffer path requires owned qualification and a new normal game launch; no camera or stereo proof exists.",
+  "supplemental_controller_sha256": "ef2c070f0d5e07c7692e1e0f18d2dfe4c89da88e3179c4b58ae8efdbb27bdfdb",
+  "capture_report_sha256": "3f9147c3aed1934dcb4da2fb18a669e422565afedffd5fcd8955471d854fb672",
+  "scene": "USER_CONFIRMED_STILL_3D_WORLD",
+  "retained_records": 128,
+  "known_submission_records": 128,
+  "detail_records": 6,
+  "command_origins": {
+    "DrawIndexed": 8,
+    "DrawOrDispatchIndirect": 120
+  },
+  "truncated": true,
+  "direct_gpu_samples": 0,
+  "direct_gpu_bytes": 0,
+  "queried_default_sources": 11,
+  "queried_source_state": "DEFAULT_STATE_UNVERIFIED",
+  "native_event_metadata": [
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 177,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    }
+  ],
+  "prior_stale_pid_attempt": "REJECTED_PROCESS_IDENTITY_BEFORE_CAPTURE"
 }
