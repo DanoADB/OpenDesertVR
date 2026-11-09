@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "QUALIFIED_OWNED_VERTEX_STREAM_FEASIBILITY",
+  "source_file": "experiments/draw-binding-owned/vertex_stream_tests.cpp",
+  "source_sha256": "ec9455b9e601bb8f0c28d2c4aada6e1263f6c9479ee7df91ab9d4dc0c26a095f",
+  "binary_sha256": {
+    "Debug": "c6617fdca58eb6ec5a84dad26e14ae9a7c7c9a52258632ade16632135cff4525",
+    "Release": "a99a7922409929c2b98e3a86c3ef7b557635e5fc6005c6e3c9113138537d8a57"
+  },
+  "local_ctest": {
+    "Debug": {"passed": 8, "failed": 0, "skipped": 0},
+    "Release": {"passed": 8, "failed": 0, "skipped": 0}
+  },
+  "physical_gpu_Debug": "PASS",
+  "local_debug_layer": "UNAVAILABLE",
+  "hosted_debug_layer": "PENDING_CI",
+  "controls": {
+    "default_source_bytes": 4096,
+    "constant_offset_bytes": 256,
+    "constant_bytes": 2816,
+    "source_access_during_read": "VERTEX_AND_CONSTANT_BUFFER_ONLY",
+    "source_barriers_during_sampling": 0,
+    "source_writes_during_sampling": 0,
+    "output": "176_POINT_VERTICES_UINT4_STREAM_OUTPUT_NO_RASTERIZATION",
+    "bit_exact_including_nan_infinity_signed_zero_and_integer_patterns": "PASS",
+    "independent_all_source_bytes_unchanged": "PASS",
+    "actual_covering_fence_initially_blocked": "PASS",
+    "predication_disabled_exact_sample": "PASS",
+    "zero_predicate_EQUAL_ZERO_draw_and_copy_skipped": "PASS",
+    "zero_predicate_NOT_EQUAL_ZERO_exact_sample": "PASS",
+    "unpredicated_so_statistics_reject_skipped_draw": "PASS",
+    "recording_reset_before_releasing_resources": "PASS"
+  },
+  "scope": "Standalone owned D3D12 feasibility executable only. Original source transitions occur solely in setup and independent verification, outside sampling. No app state restoration implementation is exercised.",
+  "remaining_gates": [
+    "Qualify restoration of root signature, every root argument, PSO, topology, stream-output targets and render/depth targets before the original application draw.",
+    "Reject active application queries, native render passes, unknown replay state, unverified vertex CBV usage, protected or unsupported command lists.",
+    "Integrate bounded tickets, exact native submission fences, repeated execution and recording retirement before game use."
+  ],
+  "game": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

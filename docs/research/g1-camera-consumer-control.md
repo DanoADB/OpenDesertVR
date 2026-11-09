@@ -70,3 +70,31 @@ No game projection field has been changed; independent game-eye rendering and
 headset submission remain NOT_RUN. Source data and shader bytecode stay private.
 
 Primary reference: [Microsoft descriptor-copy source restrictions](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12device-copydescriptorssimple).
+
+## Same-stage geometry-input read
+
+The screen-aspect snapshot finds a standard geometry vertex/pixel pair writing
+five 2560x720 targets. Both stages bind b18 space35, a 2816-byte range shared
+with the reviewed particle/refraction inputs in that same snapshot. Numeric
+confirmation in this launch remains absent: all eleven queried copy sources
+were DEFAULT_STATE_UNVERIFIED. This is a geometry-input candidate, not world
+camera control. The process was later absent; exact staged-file cleanup and
+unchanged game identity passed. Its exit cause was not observed.
+
+An [owned vertex-stream control](../evidence/g1-owned-vertex-stream-2026-11-09.json)
+reads a CBV using a vertex shader into uint4 stream output with rasterization
+disabled. It does not add COPY_SOURCE access to the original source. All 2816
+bytes match on WARP and physical GPU, including integer and NaN bit patterns;
+independent verification finds all 4096 original source bytes unchanged.
+Unpredicated stream-output statistics reject a GPU-skipped draw/copy. Local
+Debug/Release each pass eight optional tests; local debug layer is unavailable.
+
+This standalone executable does not yet restore an application's state. Before
+game use, qualify full affected-state replay, active-query and render-pass
+rejection, active vertex-CBV evidence, bounded resource retention and exact
+submission/retirement tracking. Pixel-only bindings cannot qualify a vertex
+read. This route reads inputs; it does not establish a private-binding write or
+separate eye rendering.
+
+References: [Microsoft stream-output description](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_stream_output_desc)
+and [predicated versus unpredicated operations](https://learn.microsoft.com/en-us/windows/win32/direct3d12/predication).

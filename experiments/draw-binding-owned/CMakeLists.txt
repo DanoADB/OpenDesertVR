@@ -67,3 +67,11 @@ add_test(NAME owned_scoped_scalar_render COMMAND "${Python3_EXECUTABLE}"
   "${CMAKE_CURRENT_SOURCE_DIR}/scalar_render.py" "$<TARGET_FILE:odv_scalar_render_tests>"
   "${CMAKE_CURRENT_BINARY_DIR}/scalar-render-cases")
 set_tests_properties(owned_scoped_scalar_render PROPERTIES TIMEOUT 25 SKIP_RETURN_CODE 77)
+add_executable(odv_vertex_stream_tests vertex_stream_tests.cpp)
+target_compile_features(odv_vertex_stream_tests PRIVATE cxx_std_20)
+target_link_libraries(odv_vertex_stream_tests PRIVATE d3d12 dxgi d3dcompiler)
+if(MSVC)
+  target_compile_options(odv_vertex_stream_tests PRIVATE /W4 /WX /EHsc)
+endif()
+add_test(NAME owned_vertex_constant_stream COMMAND odv_vertex_stream_tests)
+set_tests_properties(owned_vertex_constant_stream PROPERTIES TIMEOUT 20)
