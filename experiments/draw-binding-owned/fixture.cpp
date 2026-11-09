@@ -551,6 +551,7 @@ int wmain(int argc, wchar_t **argv) {
                 lists[0]->Dispatch(1, 1, 1);
             }
             D3D12_GPU_VIRTUAL_ADDRESS private_vertex_address = 0;
+            D3D12_CPU_DESCRIPTOR_HANDLE draw_view = view;
             const auto draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) {
                 list->SetPipelineState(pipelines[table ? 1 : 0].Get());
                 list->SetGraphicsRootSignature(roots[table ? 1 : 0].Get());
@@ -569,7 +570,7 @@ int wmain(int argc, wchar_t **argv) {
                 D3D12_RECT sc{static_cast<LONG>(column * 16), 0, static_cast<LONG>((column + 1) * 16), height};
                 list->RSSetViewports(1, &vp);
                 list->RSSetScissorRects(1, &sc);
-                list->OMSetRenderTargets(1, &view, FALSE, nullptr);
+                list->OMSetRenderTargets(1, &draw_view, FALSE, nullptr);
                 list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
                 if (indirect_control)
                     list->ExecuteIndirect(indirect_signature.Get(), 1, indirect_arguments.Get(), 0, nullptr, 0);
@@ -592,7 +593,9 @@ int wmain(int argc, wchar_t **argv) {
                 const D3D12_CPU_DESCRIPTOR_HANDLE square_view{view.ptr + 3 * rstride};
                 lists[0]->OMSetRenderTargets(1, &square_view, FALSE, nullptr);
                 lists[0]->ClearRenderTargetView(square_view, black, 0, nullptr);
+                draw_view = square_view;
                 draw(lists[0].Get(), 0, false, 0); // Extra submitted square pass: must be filtered.
+                draw_view = view;
                 lists[0]->OMSetRenderTargets(1, &view, FALSE, nullptr);
             }
             if (scalar_control) {
