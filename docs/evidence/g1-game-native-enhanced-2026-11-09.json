@@ -29,7 +29,7 @@
   "game_buffer_data_writes": "NOT_RUN",
   "game_stereo": "NOT_RUN",
   "headset": "NOT_RUN",
-  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "cleanup": "PASS",
   "interpretation": "The same active shader DEFAULT binding yielded numerically consistent camera fields in both GPU samples. Its forward direction changed 27.865 degrees, with a -27.862 degree horizontal component matching the requested left turn; resolution and projection remained unchanged. This supports a camera-input candidate. It does not establish that overriding this particular draw binding moves visible world geometry, nor prove independent eye rendering. No game buffer bytes were written.",
   "scene": "USER_CONFIRMED_STILL_3D_WORLD",
   "capture_report_sha256": "417851843d44128ae9ce702e2ae82f6bc41f88b37c3bc318b2da789b48e45f33",
@@ -184,5 +184,6 @@
     ],
     "candidate_bound_by_vertex_and_pixel_stages": true,
     "visible_world_consumer": "NOT_ESTABLISHED"
-  }
+  },
+  "cleanup_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
 }

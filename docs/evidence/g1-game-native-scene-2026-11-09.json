@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "LIVE_SCENE_OBSERVER_READY",
+  "source_commit": "299f8db2fc77c2c6de2be5eb11db8fa1bf8a84cf",
+  "observer_version": "bc0ead3-native-scene-12",
+  "addon_sha256": "3424d5d46dc698ccaa6b0784a882c471b06aa9e5023a6aea2dd7cb9b9b2a22b4",
+  "native_reshade_sha256": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+  "controller_sha256": "e665a610403086800a1f1ce1b2311cf307c3b34b731458527a9b82efe7706703",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "presenting_d3d12_devices": 1,
+  "prior_observer_exact_cleanup": "PASS",
+  "prior_cleanup_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74",
+  "configuration": {
+    "ODVConstantBytes": 2816,
+    "ODVConstantMaxBytes": 0,
+    "ODVGraphicsOnly": 1,
+    "ODVUploadInputs": 0,
+    "ODVDefaultConstants": 1,
+    "ODVSceneAspectFilter": 1
+  },
+  "scene_filter_runtime_confirmation": "PENDING_CAPTURE",
+  "capture": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_buffer_data_writes": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "interpretation": "Separate observer12 loaded after verified normal exit and exact observer11 cleanup. The reviewed game build, version and pipe identity match. Owned screen-aspect selection passed; actual game selected-pass acquisition and visible-world consumer identification are pending."
+}

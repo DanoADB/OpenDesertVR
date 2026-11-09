@@ -47,6 +47,15 @@ the original binding and verifies all 2048 RGB/black pixels. All 256 original
 input bytes remain unchanged. The private-copy byte test also passes on the
 physical GPU. Local debug layer is unavailable; hosted validation is separate.
 
+Hosted [Debug/Release CI for 299f8db](https://github.com/DanoADB/OpenDesertVR/actions/runs/42654704955)
+passes. Downloaded logs explicitly mark all four enhanced-barrier tests NOT_RUN
+because that runner's WARP lacks support; this is not enhanced debug-layer
+acceptance. The legacy DEFAULT test runs with debug=ENABLED in both jobs. The
+first hosted scalar-render run failed on the older feature-query path; the fix
+recognizes an unavailable OPTIONS12 query and reports a skip, while unexpected
+query failures remain failures. Local enhanced/geometry results remain a
+separate evidence grade from hosted CI.
+
 The in-place entry point is an owned, exclusive-source control only. A barrier
 on one queue cannot order another queue's reads; the game's shared camera
 buffer has no established exclusive-queue contract. Do not enable in-place
