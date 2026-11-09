@@ -31,6 +31,14 @@ resource indices or later shader stages. `downstreamConsumptionProven` and
 lifetime, complete PSO/root compatibility and camera influence remain separate
 requirements before enabling a private game-camera probe.
 
+A fresh private copy and a frozen historical payload have different contracts.
+With a bit-exact copy at a proven current-frame access point, unchanged words
+can retain their original meaning without identifying every field. GPU order,
+source equivalence at that draw and referenced-resource lifetime still need
+proof. A frozen payload may contain stale descriptor indices or temporal
+references, so static CBV bounds alone cannot qualify it. Neither route is
+enabled by this observer.
+
 The isolated reflection CMake project runs authored negative controls and
 compiles original HLSL with Windows SDK DXC for SM6.0 and SM6.6. Constant last-row
 reads must be observed at byte end2,816; dynamic rows must be rejected. No GPU

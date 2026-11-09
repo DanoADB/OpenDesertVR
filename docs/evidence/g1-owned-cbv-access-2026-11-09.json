@@ -272,5 +272,17 @@
     "All704-word completed samples remain bit-exact; unsubmitted samples expose no bytes; native render-pass rejection unchanged.",
     "Constant-buffer load syntax observation does not establish downstream consumption, frozen payload safety, current-frame ordering or camera influence.",
     "No game shader bytes/text exported; no new GPU reader, game binding override, game camera write or stereo enabled."
-  ]
+  ],
+  "hosted_validation": {
+    "run": 42695645398,
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42695645398",
+    "source_commit": "0943aa5",
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "status": "PASS",
+    "isolated_reflection_ctest_cases_per_configuration": 3,
+    "private_job_log_sha256": "5628efcd4702b1ce43054d1c6441f8db3f30e577c1e0cc3c9efe78700a599c23"
+  }
 }
