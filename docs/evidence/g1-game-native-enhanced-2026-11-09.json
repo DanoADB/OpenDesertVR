@@ -174,5 +174,15 @@
     ],
     "retained_records": 128,
     "known_submission_records": 128
+  },
+  "consumer_stage_review": {
+    "shader_summary_report_sha256": "c92c3d0f424a411a3ea1b41c9428d854554f9bd920c8c0dff836419031364237",
+    "pass_kind": "DYNAMIC_SHADOW",
+    "target_dimensions": [
+      1024,
+      1024
+    ],
+    "candidate_bound_by_vertex_and_pixel_stages": true,
+    "visible_world_consumer": "NOT_ESTABLISHED"
   }
 }

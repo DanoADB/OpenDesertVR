@@ -14,6 +14,21 @@ visible-world consumer; changing a shadow-only input would not establish a
 world-view change. A bounded capture of screen-shaped targets is the next
 specific question, keeping the 128-record/six-detail limits.
 
+Observer12 implements that read-only heuristic behind ODVSceneAspectFilter=1.
+It accepts a substantial color target within 2% of the primary swapchain aspect,
+between one quarter and twice its dimensions. Mip dimensions are accounted for;
+absent presentation/target metadata rejects the pass. Screen-shaped UI and
+postprocessing can also match, so retained shader/binding metadata still needs
+review. A square primary display would not exclude square shadow targets.
+
+The [owned paired control](../evidence/g1-owned-native-scene-2026-11-09.json)
+executes a square pass before the usual screen-aspect draws. Filter-on excludes
+it; filter-off retains it. Both preserve authored GPU bytes, unsubmitted
+rejection, independent rendered pixels, normal exit and input postflight. The
+initial fixture accidentally rebound the main target inside its draw helper;
+the failed reports are retained, and the corrected fixture qualifies both
+settings. This does not yet qualify the heuristic on the game.
+
 ## Owned GPU perturbation
 
 `ScopedScalarPatch` can copy a bounded constant range into a private DEFAULT
