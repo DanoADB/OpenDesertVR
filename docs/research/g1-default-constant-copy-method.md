@@ -126,5 +126,20 @@ resources and global invalidation. All four optional tests pass in Debug and
 Release. Local debug layer is unavailable. Observer integration and actual-game
 enhanced-buffer acquisition remain unverified at this stage.
 
+Separate observer11 integration subsequently passed the
+[owned enhanced route and legacy regression](../evidence/g1-owned-native-enhanced-2026-11-09.json).
+Both used the native wrapper and actual after-execute callback. The enhanced
+fixture returned two submitted 2816-byte DEFAULT samples with authored values
+and padding; the recorded unsubmitted control returned zero bytes. Vertex and
+pixel resource identities matched independent fixture ground truth. RGB/black
+pixels remained correct, shutdown was normal, no native device-reference
+warnings occurred, and source/binary postflight passed. The first controller
+attempt rejected an inherited old version assertion before queuing capture;
+its failed report is retained separately from the corrected qualification.
+
+Observer11 has its own source lock, patch and build directory. The loaded
+observer10 and wrapper remain untouched until normal game exit. Actual-game
+enhanced acquisition, camera identity and game stereo remain unverified.
+
 Primary reference: [Microsoft enhanced barriers specification](https://microsoft.github.io/DirectX-Specs/d3d/D3D12EnhancedBarriers.html),
 including buffer access scopes, COMMON access, split pairs and legacy interop.
