@@ -87,6 +87,13 @@ jobs:
               -not $indirectLog.Contains('debug=ENABLED')) {
             throw 'Missing actual pinned-WARP 19-case GPU execution with debug validation'
           }
+          $clipLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_clip_shift_render.*?<end of output>').Value
+          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 2 -or
+              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 2 -or
+              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 2 -or
+              -not $clipLog.Contains('owned SDK SM6.0/6.6 assembly, validation, private-PSO geometry')) {
+            throw 'Missing actual SM6.0/6.6 clip geometry execution with pinned WARP and debug validation'
+          }
       - name: Build and test optional selected-read batch (owned producers only)
         run: |
           cmake -S experiments/camera-profile-audit/native-batch -B out/build/selected-read -A x64

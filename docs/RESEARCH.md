@@ -47,6 +47,21 @@ keeps this partial result explicit. A parser correction is qualified against
 owned high-bit-space and unrelated dynamic-descriptor fixtures before another
 game observation; it does not enable a camera override by itself.
 
+The [corrected observer17 capture](evidence/g1-game-cbv-access17-2026-11-09.json)
+passes static target-load bounds for the world VS: twelve loads, maximum byte
+end2,720 within a singleton2,768-byte declaration. Three world PS variants still
+have unsupported target-handle uses; ALL-stage root-CBV lifting remains
+unqualified. The completed sample and this syntax observation do not prove
+payload freshness or camera control.
+
+A [private vertex-position probe](research/g1-clip-position-probe-method.md)
+now passes [owned GPU qualification](evidence/g1-owned-clip-position-2026-11-09.json):
+SDK assembly/validation, identity and restoration, unchanged original root,
+signature and buffers, and depth-dependent4/2-pixel displacement. This is a
+geometry-influence diagnostic, not complete game stereo. The next integration
+step retains the actual native PSO description and changes only its VS; generic
+pipeline subobjects omit some native state and cannot establish exact cloning.
+
 The [owned indirect GPU test](evidence/g1-owned-warp-runtime-2026-11-09.json)
 passes all 19 rendering/count/reset/preservation cases in hosted Debug and
 Release with the debug layer enabled, using explicitly loaded test-only
