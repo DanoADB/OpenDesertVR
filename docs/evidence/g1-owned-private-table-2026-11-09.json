@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_PRIVATE_TABLE_BINDING",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "source_sha256": {
+    "experiments/draw-binding-owned/private_cbv_layout.hpp": "57f6672b13d08ccf7d2bd99308fd9ae27691337f4cfcf62143326fbcee13f549",
+    "experiments/draw-binding-owned/fixture.cpp": "ec7cffd0d7e2048bed83c7a0fd99c0afcd75b029b9bf35bbc24cd52d56d93bc7",
+    "experiments/draw-binding-owned/native_root_tests.cpp": "c0ccde175a903caa8f156033cb3a135e65ff857b467ed24f23a70b27857dc023",
+    "experiments/draw-binding-owned/CMakeLists.txt": "6aea2fe0797cf093d5e581285a27b0a889a5d3ed068b1b96cae967092f83456c"
+  },
+  "configurations": [
+    {
+      "name": "Debug",
+      "passed": 13,
+      "failed": 0,
+      "test_log_sha256": "0966ebc9b0b182204ee8362daefd14c908347ca13f2ea3c94341815be5145a48",
+      "private_table_binary_sha256": "f5d0f63bc4e48a92848e0b85938af581a253ddc75fda1fd48a3ff2726e20c60b"
+    },
+    {
+      "name": "Release",
+      "passed": 13,
+      "failed": 0,
+      "test_log_sha256": "a74f32f10db2901697effd10bda503dce5ec1f50e91fbce4bf153990570da376",
+      "private_table_binary_sha256": "b2ce4bf502a203046efa00636fa4b9d233d61d47a71583cdd4e4e03da943e2fc"
+    }
+  ],
+  "controls": [
+    "Same authored VS/PS bytes with a separately created root signature and PSO.",
+    "Private copied constant buffer shifts owned geometry out of view: 2048 black pixels.",
+    "Restored original descriptor table renders original RGB/black image: 2048 verified pixels per frame for two frames.",
+    "All 256 original input bytes remain exact. No original descriptor edits.",
+    "Native root creation/roundtrip verifies preserved split CBV and following APPEND SRV offsets, range flags, root flags and static sampler.",
+    "Missing non-array read proof and greater-than-64-DWORD derived layout reject before recording."
+  ],
+  "limits": [
+    "Owned WARP only; no actual game camera or root replacement tested.",
+    "Pixel test covers singleton CBV table replacement in place; split-range root passes native serialization/creation/roundtrip, not a split-range shader draw.",
+    "Finite v1.1 layouts only, including official deserializer conversion of the owned v1.0 source. Exact source description and static samplers must survive serialization.",
+    "Caller must independently prove non-array bounded CBV reads, source content/lifetime, exact bindings and full root/PSO restoration.",
+    "Indirect signatures mutating roots, bindless/unbounded tables, game root compatibility, and game stereo remain UNVERIFIED.",
+    "Local D3D12 debug layer unavailable."
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/direct3d12/creating-a-root-signature",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3d12/root-signature-version-1-1",
+    "https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-descriptors-directly-in-the-root-signature"
+  ],
+  "private_render_results": [
+    {
+      "result": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 2,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 5,
+        "submittedDrawsPerFrame": 4,
+        "fourthColumn": "black",
+        "captureTool": "NOT_RUN",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "result_sha256": "4da01e54c7d10d4beed3b3b9ef44199c7ea57d1ef2ce8dacba66ffdd8fd7a35e",
+      "stdout_sha256": "7adc4457f7072e0b0d261dcf443c555009512ffce38efe768bd1ce9d1af9c735"
+    },
+    {
+      "result": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 2,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 5,
+        "submittedDrawsPerFrame": 4,
+        "fourthColumn": "black",
+        "captureTool": "NOT_RUN",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "result_sha256": "4da01e54c7d10d4beed3b3b9ef44199c7ea57d1ef2ce8dacba66ffdd8fd7a35e",
+      "stdout_sha256": "7adc4457f7072e0b0d261dcf443c555009512ffce38efe768bd1ce9d1af9c735"
+    }
+  ]
+}

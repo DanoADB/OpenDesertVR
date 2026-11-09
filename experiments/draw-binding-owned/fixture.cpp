@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include "prepared_graphics_replay.hpp"
+#include "private_cbv_layout.hpp"
 #include "scoped_scalar_patch.hpp"
 #include "vertex_constant_stream.hpp"
 #include <algorithm>
@@ -30,10 +31,15 @@ static void check(HRESULT hr) {
         throw std::runtime_error("owned_draw_graphics_failure");
 }
 static constexpr UINT width = 64, height = 32;
-#ifdef ODV_SCALAR_PATCH_RENDER
+#if defined(ODV_SCALAR_PATCH_RENDER) || defined(ODV_PRIVATE_TABLE_RENDER)
 static constexpr bool scalar_control = true;
 #else
 static constexpr bool scalar_control = false;
+#endif
+#ifdef ODV_PRIVATE_TABLE_RENDER
+static constexpr bool private_table_control = true;
+#else
+static constexpr bool private_table_control = false;
 #endif
 #ifdef ODV_VERTEX_STREAM_RENDER
 static constexpr bool stream_control = true;
@@ -218,13 +224,15 @@ int wmain(int argc, wchar_t **argv) {
         write_blob(output / "owned.ps.cso", ps.Get());
         std::array<Com<ID3D12RootSignature>, 2> roots;
         std::array<Com<ID3D12PipelineState>, 2> pipelines;
+        Com<ID3D12RootSignature> private_table_root;
+        Com<ID3D12PipelineState> private_table_pipeline;
         for (UINT mode = 0; mode < 2; ++mode) {
             D3D12_DESCRIPTOR_RANGE ranges[2]{};
             D3D12_ROOT_PARAMETER params[2]{};
             for (UINT i = 0; i < 2; ++i) {
                 params[i].ShaderVisibility = i == 0 ? D3D12_SHADER_VISIBILITY_VERTEX : D3D12_SHADER_VISIBILITY_PIXEL;
                 const UINT reg = i == 0 ? 2 : 5, space = i == 0 ? 3 : 7;
-                if (mode == 0) {
+                if (mode == 0 && !(private_table_control && i == 0)) {
                     params[i].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
                     params[i].Descriptor = {reg, space};
                 } else {
@@ -240,6 +248,22 @@ int wmain(int argc, wchar_t **argv) {
             check(D3D12SerializeRootSignature(&rd, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &errors));
             check(device->CreateRootSignature(0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
                                               IID_PPV_ARGS(&roots[mode])));
+            if constexpr (private_table_control)
+                if (mode == 0) {
+                    Com<ID3D12VersionedRootSignatureDeserializer> decoder;
+                    check(D3D12CreateVersionedRootSignatureDeserializer(
+                        serialized->GetBufferPointer(), serialized->GetBufferSize(), IID_PPV_ARGS(&decoder)));
+                    const D3D12_VERSIONED_ROOT_SIGNATURE_DESC *exact = nullptr;
+                    check(decoder->GetRootSignatureDescAtVersion(D3D_ROOT_SIGNATURE_VERSION_1_1, &exact));
+                    odv::research::PrivateCbvLayout layout;
+                    if (!layout.prepare(exact->Desc_1_1, 0, 2, 3, true) || layout.private_index() != 0 ||
+                        layout.dword_cost() != 4)
+                        throw std::runtime_error("private_table_derivation_failed");
+                    Com<ID3DBlob> lifted;
+                    check(D3D12SerializeVersionedRootSignature(layout.description(), &lifted, &errors));
+                    check(device->CreateRootSignature(0, lifted->GetBufferPointer(), lifted->GetBufferSize(),
+                                                      IID_PPV_ARGS(&private_table_root)));
+                }
             D3D12_GRAPHICS_PIPELINE_STATE_DESC p{};
             p.pRootSignature = roots[mode].Get();
             p.VS = {vs->GetBufferPointer(), vs->GetBufferSize()};
@@ -264,6 +288,11 @@ int wmain(int argc, wchar_t **argv) {
             p.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
             p.SampleDesc.Count = 1;
             check(device->CreateGraphicsPipelineState(&p, IID_PPV_ARGS(&pipelines[mode])));
+            if constexpr (private_table_control)
+                if (mode == 0) {
+                    p.pRootSignature = private_table_root.Get();
+                    check(device->CreateGraphicsPipelineState(&p, IID_PPV_ARGS(&private_table_pipeline)));
+                }
         }
         Com<ID3D12RootSignature> compute_root;
         Com<ID3D12PipelineState> compute_pipeline;
@@ -412,14 +441,16 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12DescriptorHeap> cbheap;
         D3D12_DESCRIPTOR_HEAP_DESC hd{};
         hd.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        hd.NumDescriptors = capture_control ? 6 : 4;
+        hd.NumDescriptors = private_table_control ? 6 : (capture_control ? 6 : 4);
         hd.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         check(device->CreateDescriptorHeap(&hd, IID_PPV_ARGS(&cbheap)));
         const auto cstride = device->GetDescriptorHandleIncrementSize(hd.Type);
         const auto cpu = cbheap->GetCPUDescriptorHandleForHeapStart();
         const auto gpu = cbheap->GetGPUDescriptorHandleForHeapStart();
         for (UINT i = 0; i < hd.NumDescriptors; ++i) {
-            D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(i + 2)->GetGPUVirtualAddress(), constant_bytes(i + 2)};
+            const UINT source_index = private_table_control && i >= 4 ? (i == 4 ? 0 : 6) : i + 2;
+            D3D12_CONSTANT_BUFFER_VIEW_DESC c{bound_constant(source_index)->GetGPUVirtualAddress(),
+                                              constant_bytes(source_index)};
             device->CreateConstantBufferView(&c, {cpu.ptr + i * cstride});
         }
         Com<ID3D12Resource> target;
@@ -590,17 +621,28 @@ int wmain(int argc, wchar_t **argv) {
             D3D12_GPU_VIRTUAL_ADDRESS private_vertex_address = 0;
             D3D12_CPU_DESCRIPTOR_HANDLE draw_view = view;
             const auto bind_draw = [&](ID3D12GraphicsCommandList *list, UINT column, bool table, UINT first) noexcept {
-                list->SetPipelineState(pipelines[table ? 1 : 0].Get());
-                list->SetGraphicsRootSignature(roots[table ? 1 : 0].Get());
+                const bool lifted = private_table_control && !table && private_vertex_address != 0;
+                list->SetPipelineState(lifted ? private_table_pipeline.Get() : pipelines[table ? 1 : 0].Get());
+                list->SetGraphicsRootSignature(lifted ? private_table_root.Get() : roots[table ? 1 : 0].Get());
                 if (table) {
                     ID3D12DescriptorHeap *heaps[] = {cbheap.Get()};
                     list->SetDescriptorHeaps(1, heaps);
                     list->SetGraphicsRootDescriptorTable(0, {gpu.ptr + (first - 2) * cstride});
                     list->SetGraphicsRootDescriptorTable(1, {gpu.ptr + (first - 1) * cstride});
                 } else {
-                    list->SetGraphicsRootConstantBufferView(0, private_vertex_address && first == 0
-                                                                   ? private_vertex_address
-                                                                   : bound_constant(first)->GetGPUVirtualAddress());
+                    if constexpr (private_table_control) {
+                        if (!lifted) {
+                            ID3D12DescriptorHeap *heaps[] = {cbheap.Get()};
+                            list->SetDescriptorHeaps(1, heaps);
+                            list->SetGraphicsRootDescriptorTable(0, {gpu.ptr + (first == 0 ? 4 : 5) * cstride});
+                        } else {
+                            list->SetGraphicsRootConstantBufferView(0, private_vertex_address);
+                        }
+                    } else {
+                        list->SetGraphicsRootConstantBufferView(0, private_vertex_address && first == 0
+                                                                       ? private_vertex_address
+                                                                       : bound_constant(first)->GetGPUVirtualAddress());
+                    }
                     list->SetGraphicsRootConstantBufferView(1, constants[first + 1]->GetGPUVirtualAddress());
                 }
                 D3D12_VIEWPORT vp{static_cast<float>(column * 16), 0, 16, static_cast<float>(height), 0, 1};
@@ -943,6 +985,10 @@ int wmain(int argc, wchar_t **argv) {
                 << "PASS: private-copy geometry 2048 black pixels, original geometry 2048 RGB/black pixels, exact "
                    "256 input bytes; debug="
                 << (validation ? "ENABLED" : "UNAVAILABLE") << '\n';
+        if (private_table_control)
+            std::cout
+                << "PASS: exact derived descriptor-table layout, private root-CBV/PSO and original table restore; "
+                   "same shader bytes; no original descriptor edits\n";
         if (stream_control)
             std::cout << "PASS: stream read restores root-CBV/table PSO, roots, targets, topology and unbound SO; "
                          "next draws execute without rebinding; 2048 RGB/black pixels and three 2816-byte original "
