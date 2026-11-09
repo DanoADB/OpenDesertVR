@@ -29,6 +29,24 @@ unverified. The next product gate is visible world-camera influence, followed
 by distinct game eye renders and OpenXR delivery; additional cube tests are
 not a prerequisite.
 
+[Observer15's game capture](evidence/g1-game-camera-layout-2026-11-09.json)
+now preserves all 704 shadow-input words, including non-finite float bit
+patterns. Selected historical camera fields pass numeric checks. The world
+target is b18/space35 at root parameter5, descriptor offset18 within a finite
+52-CBV range; no unbounded table ranges were observed. This resolves the
+target table shape, but shader array shape, load bounds and downstream use
+still require exact-shader consumption analysis before a private camera probe.
+The world source remains ineligible for direct copying under the current
+state proof. No camera override or independent game eye render has run.
+
+The [owned indirect GPU test](evidence/g1-owned-warp-runtime-2026-11-09.json)
+passes all 19 rendering/count/reset/preservation cases in hosted Debug and
+Release with the debug layer enabled, using explicitly loaded test-only
+Microsoft WARP1.0.22. The older hosted system runtime mutates an argument
+byte; its failure is retained as diagnostic evidence. These results qualify
+owned forwarding, not game integration. A prior green run that skipped GPU
+execution is explicitly excluded from acceptance.
+
 The earlier investigation and stop decisions follow as historical context.
 
 Earlier advancement decision: [ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md).

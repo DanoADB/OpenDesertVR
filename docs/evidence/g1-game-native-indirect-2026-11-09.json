@@ -411,7 +411,7 @@
     "report.json": "2736bcf3b20d6de03702cec5923bb791c43861d0f7f8ac3783a34650960b1b5c",
     "role-comparison.json": "3ef71bd8d4e4e2635544bee543652eeef8e0c2c665cdc9446e96b34db1f9654a"
   },
-  "cleanup": "NOT_RUN_GAME_STILL_RUNNING",
+  "cleanup": "PASS",
   "game_camera_writes": "NOT_RUN",
   "game_world_influence": "NOT_RUN",
   "independent_game_eye_views": "NOT_RUN",
@@ -423,5 +423,15 @@
     "Initial detail collection FAILED when draw0 exceeded the fixed1MiB response cap; four other retained draws recovered with unchanged cap and no new snapshot.",
     "Active query count1 was observed; private vertex-reader injection is not enabled.",
     "World source state remains DEFAULT_STATE_UNVERIFIED; no unknown-state read or original game buffer write occurred."
-  ]
+  ],
+  "cleanup_postflight": {
+    "status": "PASS",
+    "game_identity_unchanged": true,
+    "created_files_removed": [
+      "dxgi.dll",
+      "ReShade.ini"
+    ],
+    "devkit_asset_files": 0,
+    "private_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  }
 }

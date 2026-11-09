@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "QUALIFIED_LOCAL_PINNED_WARP_PENDING_HOSTED_VALIDATION",
+  "status": "QUALIFIED_LOCAL_AND_HOSTED_PINNED_WARP",
   "game": "NOT_RUN",
   "headset": "NOT_RUN",
   "hosted_system_warp": {
@@ -12,7 +12,7 @@
     "first_changed_byte_offset": 20,
     "expected_byte": 4,
     "actual_byte": 0,
-    "loaded_version": "NOT_YET_RECORDED",
+    "loaded_version": "NOT_RECORDED_IN_HISTORICAL_RUN_SEE_HOSTED_VALIDATION_BASELINE",
     "private_log_sha256": "7ca72b49504878c1616dceac8cb32d6c15e44c0f0abecce12b4c3d7d4365b1c4"
   },
   "pinned_test_runtime": {
@@ -30,7 +30,7 @@
     "scripts/prepare-owned-warp.ps1": "c1e9b8f8027461e86ac241dd3df72cb71f2c7c6d93268764c18cb973e3985e4c",
     "experiments/draw-binding-owned/private_indirect_render_tests.cpp": "6d5d1ad778b10f5656f01ff430770ec390fc9c8fd902adb426a15c373b17c825",
     "experiments/draw-binding-owned/CMakeLists.txt": "1ba97953f6da5d1b9326bb6418880e3d932895ae9c33912863f534deb3e2e35d",
-    ".github/workflows/windows.yml": "f6db3654b842a0383a2a691c0597d03dd52b9eaa0ff0c98e6a5449bd6b1caac3"
+    ".github/workflows/windows.yml": "d8a76d5b5ea178fe67746abe975f6c497c19f474f9cbf74d2f13f05960191edf"
   },
   "local_validation": [
     {
@@ -69,15 +69,58 @@
     "https://microsoft.github.io/DirectX-Specs/d3d/IndirectDrawing.html"
   ],
   "limits": [
-    "Microsoft documents a WARP1.0.9 fix for ExecuteIndirect modifying application-provided argument buffers. This supports the observed hosted mutation; exact old loaded version awaits diagnostic.",
+    "Microsoft documents a WARP1.0.9 fix for ExecuteIndirect modifying application-provided argument buffers. Hosted system version6.2.20348.5756 reproduces the mutation; pinned1.0.22.0 passes unchanged assertions in both configurations.",
     "Pinned DLL is explicitly loaded only by the isolated owned indirect test process. Other system-runtime tests, game observer and main XR app unchanged.",
     "The CI system-WARP baseline remains diagnostic and may fail; acceptance requires the complete unchanged assertions on the pinned test runtime.",
-    "Local debug layer unavailable; hosted debug validation pending.",
-    "No game camera override, independently rendered game views or game OpenXR submission tested."
+    "No game camera override, independently rendered game views or game OpenXR submission tested.",
+    "IBV null-reset GPU probe remains NOT_RUN; these owned tests do not prove game root-layout compatibility or camera influence."
   ],
   "local_system_warp": {
     "version": "6.2.26100.9818",
     "result": "PASS_19_CASES",
     "stdout_sha256": "39eab3fc42821225a73131f1f31f624a6082100a170abcb460129de3a12a7943"
+  },
+  "hosted_validation": {
+    "run": 42693445101,
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42693445101",
+    "source_commit": "310989fe4c612855675e8f3bab103eb3e6fef7c5",
+    "configurations": [
+      {
+        "configuration": "Debug",
+        "owned_ctest_cases": 15,
+        "failed": 0,
+        "indirect_render_cases": 19,
+        "pixels_per_case": 256,
+        "debug_layer": "ENABLED",
+        "loaded_warp_version": "1.0.22.0",
+        "test_log_sha256": "b500365fbd795dcad5663510b4eda80f701841fad13e72cc81307fce71b3f376",
+        "system_baseline_log_sha256": "0433a96c097373933d80a5d9389efbaaeb65d0db793b2a80d6b8d7554f0a1af0",
+        "system_baseline_version": "6.2.20348.5756",
+        "system_baseline_status": "FAILED_INPUT_PRESERVATION",
+        "system_first_changed_byte_offset": 20,
+        "system_expected_byte": 4,
+        "system_actual_byte": 0
+      },
+      {
+        "configuration": "Release",
+        "owned_ctest_cases": 15,
+        "failed": 0,
+        "indirect_render_cases": 19,
+        "pixels_per_case": 256,
+        "debug_layer": "ENABLED",
+        "loaded_warp_version": "1.0.22.0",
+        "test_log_sha256": "136a9582e3622d28ce3acb6374b8f7ef17406b9be5261b23ded4491a1a402b3c",
+        "system_baseline_log_sha256": "0433a96c097373933d80a5d9389efbaaeb65d0db793b2a80d6b8d7554f0a1af0",
+        "system_baseline_version": "6.2.20348.5756",
+        "system_baseline_status": "FAILED_INPUT_PRESERVATION",
+        "system_first_changed_byte_offset": 20,
+        "system_expected_byte": 4,
+        "system_actual_byte": 0
+      }
+    ]
+  },
+  "excluded_run": {
+    "run": 42692916957,
+    "reason": "Owned GPU step exited successfully before configure/build/CTest because a pure-PowerShell helper left LASTEXITCODE null. This green run is not accepted as GPU validation; 310989f removes that guard and requires actual test output."
   }
 }
