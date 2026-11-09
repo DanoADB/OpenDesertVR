@@ -104,10 +104,12 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-2816" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-native-pass" &&
               std::wstring_view(argv[2]) != L"--loop-vertex-source" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-world-aspect")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
+        const bool native_pass_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-pass";
         const bool vertex_observer_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-vertex-source";
         const bool vertex_source_control = stream_control || vertex_observer_control;
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
@@ -117,8 +119,8 @@ int wmain(int argc, wchar_t **argv) {
         const bool aspect_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-world-aspect";
         const bool enhanced_control =
             aspect_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-enhanced-2816");
-        const bool large_default_control =
-            enhanced_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816");
+        const bool large_default_control = enhanced_control || native_pass_control ||
+                                           (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816");
         const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
         const bool indirect_control = transient_control || split_control || present_gap_control ||
                                       large_default_control ||
@@ -639,10 +641,21 @@ int wmain(int argc, wchar_t **argv) {
                     }
                 }
                 // No application-state rebinding after the reader's restore.
+                Com<ID3D12GraphicsCommandList4> render_pass;
+                if (native_pass_control) {
+                    check(list->QueryInterface(IID_PPV_ARGS(&render_pass)));
+                    D3D12_RENDER_PASS_RENDER_TARGET_DESC target_pass{};
+                    target_pass.cpuDescriptor = draw_view;
+                    target_pass.BeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
+                    target_pass.EndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+                    render_pass->BeginRenderPass(1, &target_pass, nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+                }
                 if (indirect_control)
                     list->ExecuteIndirect(indirect_signature.Get(), 1, indirect_arguments.Get(), 0, nullptr, 0);
                 else
                     list->DrawInstanced(3, 1, 0, 0);
+                if (native_pass_control)
+                    render_pass->EndRenderPass();
             };
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};

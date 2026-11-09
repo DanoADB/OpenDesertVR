@@ -1,0 +1,731 @@
+{
+  "schema_version": 1,
+  "upstream_revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "reference_directory": "renodx-bc0ead3-native-indirect-14",
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "9c079ce00a873a4f9239e7185c3d9d009d5775a5d334eca6e6f51f17bd98cb75",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/CMakeLists.txt"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "e9e2da3991a48d9c09b710c9ddbf5673275b6d569c976bcffab3111d0c509d51",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/LICENSE"
+    },
+    {
+      "path": "external/Detours/LICENSE",
+      "sha256": "7c77a44a8acd9b41fdc209864a8016b3d430b5d0e09309818d5b7444336df744",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/LICENSE"
+    },
+    {
+      "path": "external/Detours/LICENSE.md",
+      "sha256": "b301808b732cfaa60df2b4b422d78cd97d2a15058b207e7e33f0535ba5170dd6",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/LICENSE.md"
+    },
+    {
+      "path": "external/Detours/src/Makefile",
+      "sha256": "4ae1200e0e3767bf3c6b60e8362ea99c10c5f25615716d06dce85715d7ca1688",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/Makefile"
+    },
+    {
+      "path": "external/Detours/src/creatwth.cpp",
+      "sha256": "57d1756707c93d4544d3346355d3c7fe900578a8ecb4b4f6835da55e71b02cd5",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/creatwth.cpp"
+    },
+    {
+      "path": "external/Detours/src/detours.cpp",
+      "sha256": "4a82da4b285ddae0e7c825cfeaa798241b393207cd3374b556be4877f71f906b",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/detours.cpp"
+    },
+    {
+      "path": "external/Detours/src/detours.h",
+      "sha256": "74b9d7a9f4f219a3ba1f08ee3f11ffece16f10ba413b12477955cca7449c4f60",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/detours.h"
+    },
+    {
+      "path": "external/Detours/src/detver.h",
+      "sha256": "997d713d5b47d159f1736840b318ea426c76ed6f148014a5a9da78ebb4bd700c",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/detver.h"
+    },
+    {
+      "path": "external/Detours/src/disasm.cpp",
+      "sha256": "8b879e1232131cc79b956d5976b8261365f4bf1da95cb50586a2cdb93651edef",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disasm.cpp"
+    },
+    {
+      "path": "external/Detours/src/disolarm.cpp",
+      "sha256": "20900e34f4afa968f4182fc9ae2d94d00ad15ddf1a17c53a034b18b38a9a4592",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disolarm.cpp"
+    },
+    {
+      "path": "external/Detours/src/disolarm64.cpp",
+      "sha256": "b93f39ba5691b9ffb98aae45c7fa5f5a6975a8fed001704ec97f7867a59998ce",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disolarm64.cpp"
+    },
+    {
+      "path": "external/Detours/src/disolia64.cpp",
+      "sha256": "8ce93f70257c11a7b1015fac5ff801e7b72bbb9621f302a74f9d0bc1db49d334",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disolia64.cpp"
+    },
+    {
+      "path": "external/Detours/src/disolx64.cpp",
+      "sha256": "dcac45e9bf07b916e454e141f850856b76e3e0f7b502bd5dd56e18aa2250e020",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disolx64.cpp"
+    },
+    {
+      "path": "external/Detours/src/disolx86.cpp",
+      "sha256": "045d4b00029e810a9a156c1e17b33c2becdda1cc652a7cadfe61d9d1c66c81b6",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/disolx86.cpp"
+    },
+    {
+      "path": "external/Detours/src/image.cpp",
+      "sha256": "a039466a8edc0248042c9df804a2d13bb8a4e03cb038fb10b4b762b2e5d214a9",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/image.cpp"
+    },
+    {
+      "path": "external/Detours/src/modules.cpp",
+      "sha256": "1950d936e27e847d69c132ee063752b5078593a98ab1841a2e10f33d8bbb4567",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/modules.cpp"
+    },
+    {
+      "path": "external/Detours/src/uimports.cpp",
+      "sha256": "18f86c93d2c2d8feb46ddfb500027ce959a542b824c1d70cf7671227b8c70176",
+      "url": "https://github.com/microsoft/Detours/blob/9764cebcb1a75940e68fa83d6730ffaf0f669401/src/uimports.cpp"
+    },
+    {
+      "path": "external/frozen/LICENSE",
+      "sha256": "f6099ed23682840ae60a76fce378faae9b5c75f7d162188883e13b790ca18b98",
+      "url": "https://github.com/serge-sans-paille/frozen/blob/61dce5ae18ca59931e27675c468e64118aba8744/LICENSE"
+    },
+    {
+      "path": "external/gtl/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/LICENSE"
+    },
+    {
+      "path": "external/gtl/include/gtl/bits.hpp",
+      "sha256": "39fbb48aaeb008a6ea7eb90867a4b5b2783bf50f2eb95d5e193362c789b0324c",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/bits.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/gtl_base.hpp",
+      "sha256": "1efb9d481946a8278564943e3ddd87a4dc8ca36d8d0b7e976281a92566e2b377",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/gtl_base.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/gtl_config.hpp",
+      "sha256": "d0e6aace806b3b572118a6e609070f8ac72f94c5bbe36b92818f9f43de01e144",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/gtl_config.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap.hpp",
+      "sha256": "a3457cc7dedd09f9904ffa0c4555c18470e72dbb9afc760e947eb69079294414",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap_fwd_decl.hpp",
+      "sha256": "d991056c77c974bffc7348b75eb23b68449af7be297e2b85ad4df64c857a715e",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap_fwd_decl.hpp"
+    },
+    {
+      "path": "external/gtl/include/gtl/phmap_utils.hpp",
+      "sha256": "8d552d72924bced08573edc58af2f999dd67195bc2e50ba2ecf6cb16acd760c4",
+      "url": "https://github.com/greg7mdp/gtl/blob/51eb683658378d67086d8fc04d5fd162a0ae30c5/include/gtl/phmap_utils.hpp"
+    },
+    {
+      "path": "external/json/LICENSE.MIT",
+      "sha256": "46a65cffd1ea955132d95a8dd921640714a8d6b537d2e4e482d31145ae95b603",
+      "url": "https://github.com/nlohmann/json/blob/55f93686c01528224f448c19128836e7df245f72/LICENSE.MIT"
+    },
+    {
+      "path": "external/json/single_include/nlohmann/json.hpp",
+      "sha256": "aaf127c04cb31c406e5b04a63f1ae89369fccde6d8fa7cdda1ed4f32dfc5de63",
+      "url": "https://github.com/nlohmann/json/blob/55f93686c01528224f448c19128836e7df245f72/single_include/nlohmann/json.hpp"
+    },
+    {
+      "path": "external/minhook/LICENSE.txt",
+      "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/LICENSE.txt"
+    },
+    {
+      "path": "external/minhook/include/MinHook.h",
+      "sha256": "62dff05e63155c6bf8135c36a0d79dedbdcaaede9da26fe38daf0bea34323e38",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/include/MinHook.h"
+    },
+    {
+      "path": "external/minhook/src/buffer.c",
+      "sha256": "0ab484d7870c3a8e7a3a1ee61e2070072cf445ed85b619d4c4207fed34356d99",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/buffer.c"
+    },
+    {
+      "path": "external/minhook/src/buffer.h",
+      "sha256": "9769702bd625249e59a19ede05c84365fcc7707e1fa0e5df08df42227cee13e3",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/buffer.h"
+    },
+    {
+      "path": "external/minhook/src/hde/hde32.c",
+      "sha256": "5da4941e9044f7b325c7f952b5840089e365f374740b7fe7318805d08c0d6c32",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/hde32.c"
+    },
+    {
+      "path": "external/minhook/src/hde/hde32.h",
+      "sha256": "5132de5be8ac7a9d054420f5caef0fb01437faa892f03b3cdc77f795973bf15a",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/hde32.h"
+    },
+    {
+      "path": "external/minhook/src/hde/hde64.c",
+      "sha256": "824eafa315322e6da105a7ce4ec1fc0e0adeee0106d32152fbb0b59e709bd15c",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/hde64.c"
+    },
+    {
+      "path": "external/minhook/src/hde/hde64.h",
+      "sha256": "e99aa4997bda14b534c614c3d8cb78a72c4aca91a1212c8b03ec605d1d75e36e",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/hde64.h"
+    },
+    {
+      "path": "external/minhook/src/hde/pstdint.h",
+      "sha256": "604d1cdf45c5a95bc9cf1bbf39ca05ef83013541101d34971c5cd7577e3d5247",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/pstdint.h"
+    },
+    {
+      "path": "external/minhook/src/hde/table32.h",
+      "sha256": "43bf687a9fff071b5f46070db4d36c846f8e069cdc57485ee897c499aacdde23",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/table32.h"
+    },
+    {
+      "path": "external/minhook/src/hde/table64.h",
+      "sha256": "b774446d2f110ce954fb0a710f4693c5562ddbd8d56fe84106f2ee80db8b50a2",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hde/table64.h"
+    },
+    {
+      "path": "external/minhook/src/hook.c",
+      "sha256": "edcce4c81985d7dd5b73feae96d6498c8f749b1bca4c3d2d9926ea9a17a84755",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/hook.c"
+    },
+    {
+      "path": "external/minhook/src/trampoline.c",
+      "sha256": "f13a169f803ff5a8e45c58ce668b4377a9878c0fc4452369b8a1325065186b2b",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/trampoline.c"
+    },
+    {
+      "path": "external/minhook/src/trampoline.h",
+      "sha256": "53ed9934492320617a27bfd952ffe7f5b7a4a1d09963d4512447082fe7b727b4",
+      "url": "https://github.com/TsudaKageyu/minhook/blob/c3fcafdc10146beb5919319d0683e44e3c30d537/src/trampoline.h"
+    },
+    {
+      "path": "external/reshade/LICENSE.md",
+      "sha256": "237ded5b8344f820113efab1e65e91e1f159d9202c5b4856606a0590d3ffdab0",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/LICENSE.md"
+    },
+    {
+      "path": "external/reshade/deps/imgui/LICENSE.txt",
+      "sha256": "c80c5789748d955c4a650562baa0d750494e2c7128c2ca66aaebe2e3c4e198bf",
+      "url": "https://github.com/ocornut/imgui/blob/3912b3d9a9c1b3f17431aebafd86d2f40ee6e59c/LICENSE.txt"
+    },
+    {
+      "path": "external/reshade/deps/imgui/imconfig.h",
+      "sha256": "6e5687893594ebfaf8569280cfea83d025904a8a4e23bec073086f6c5bc8f7fb",
+      "url": "https://github.com/ocornut/imgui/blob/3912b3d9a9c1b3f17431aebafd86d2f40ee6e59c/imconfig.h"
+    },
+    {
+      "path": "external/reshade/deps/imgui/imgui.h",
+      "sha256": "07562842049eaca4e47c3fcdcc9d8eafd442695b9856d6f6639e92e1bb6c737e",
+      "url": "https://github.com/ocornut/imgui/blob/3912b3d9a9c1b3f17431aebafd86d2f40ee6e59c/imgui.h"
+    },
+    {
+      "path": "external/reshade/include/reshade.hpp",
+      "sha256": "dcb22f29ca7d7b2e4a9ea2f19cf98ce2911141659e525d3417f5ffada75899c8",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api.hpp",
+      "sha256": "8d83ec8a620c48da7a20d975bd27b3345b24d3f0d5b78ae4c4fe633d61b804eb",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_device.hpp",
+      "sha256": "36d8970c360a96d47a8a454899420d80cb5a98fba180123d375a35de5f35d46d",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_device.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_format.hpp",
+      "sha256": "68caa17fef712043e810ab88770c15af009aa3c7693e5c115ddc324f2d0809a7",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_format.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_pipeline.hpp",
+      "sha256": "a08260c70bab82f2c149c34ae9fcfbb50b4d30f6aee848fc22a9d9ffed7ec7db",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_pipeline.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_api_resource.hpp",
+      "sha256": "c5e2f458dffbebab2c840fd0830e529d62e003e17d6fbd27be0c5297b6293944",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_api_resource.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_events.hpp",
+      "sha256": "64608864e68faf8e01b896b7726a1b0fc5aec3cd802b49ba19e1b58f2bcebdfe",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_events.hpp"
+    },
+    {
+      "path": "external/reshade/include/reshade_overlay.hpp",
+      "sha256": "ed914b12fbc41ed038287b0163c0bc934772afcff2c22392044c6008adc5ae79",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/include/reshade_overlay.hpp"
+    },
+    {
+      "path": "external/reshade/res/fonts/forkawesome.h",
+      "sha256": "0c67569aeb95de4b0d14b94722b211cbfe3696769d5e51370e2d18890434129c",
+      "url": "https://github.com/crosire/reshade/blob/4a50d1eddace85734871d91792ff214f13f66c01/res/fonts/forkawesome.h"
+    },
+    {
+      "path": "src/addons/devkit/addon.cpp",
+      "sha256": "25bc19629224cbb75e459e6e5e78c68abc0c4b32d1238b2d49261f62deee6532",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/addon.cpp"
+    },
+    {
+      "path": "src/addons/devkit/formatting.hpp",
+      "sha256": "7ae9980316df87ead64082c98c00b63f1fa4b2470090edfc476f10e2b05ec92a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/formatting.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/device_selection.hpp",
+      "sha256": "e6932e9ae1de92d10ce342de61e24a2824db1c8296128bd4d78bd716f15b7a3a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/device_selection.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/device_summary.hpp",
+      "sha256": "615a8405c923e843136d6510830b5f333dddcc391935073e15840ae0618f5e4a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/device_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/draw_summary.hpp",
+      "sha256": "30a84563c68712e3b0873f7ce81ad48f1d53d8c740621aaff31bbeb6aea13ec4",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/draw_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/live_shaders.hpp",
+      "sha256": "de5bc421c43f67875d0e86cf33616d6e0a4228f142bb67fbc24250186eb83d4d",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/live_shaders.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_analysis.hpp",
+      "sha256": "252da68c6e07bc38350de829739bea47c794f307b73ff1f0c8c6e2167002cab2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_analysis.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_clone.hpp",
+      "sha256": "30e5893f9819ff1ebf38d67bd91f455bc1ccdf1d4069189d61f33829e80fefa5",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_clone.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_handle.hpp",
+      "sha256": "e6c54d7da149f871238a7af26e12da609da4f1dba2fac636083d33c1ef3bfd9b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_handle.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_view_summary.hpp",
+      "sha256": "5fdd8002af12816fe00d1785443462433a2bc9c895d80fdd4bf7fc40f4a8dab8",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_view_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/runtime.hpp",
+      "sha256": "b793101e6b6f574694d1fa22829ddfab84eab4b2c1ca13bed5120ad9af6cfdc2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/runtime.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/server_session.hpp",
+      "sha256": "2b413e800734da2a6297221bf5ece13d09c1a90313fed959a5cfb0f8b6486d25",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/server_session.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_hash.hpp",
+      "sha256": "5f1e4151a5248fcccc4f23e6c6a394076d16d8f5ee12b68e22212d73d8ce9c14",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_hash.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_inspection.hpp",
+      "sha256": "a09c046041bece67d9f4d5ad42f4896863118262b80d107426dd34d8607f0748",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_inspection.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_summary.hpp",
+      "sha256": "eef8e75f63e057112d4a9dd81f5b403783096e9b06391a5392579fb363b69eb3",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/snapshot_summary.hpp",
+      "sha256": "b3a33e73fa9277c0e03df2935e60009286b267b4826ffd241268c70399883084",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/snapshot_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/snapshot_tools.hpp",
+      "sha256": "8f9b295186636c263f7516cb00ee937120d25d2e4e56a1f4f21ac5c5885300ad",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/snapshot_tools.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/texture_replace.hpp",
+      "sha256": "a115d537f6a0dd19cdcff8a06cb1de86e3aba4651951f14a440a464b01058783",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/texture_replace.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/tool_catalog.hpp",
+      "sha256": "48b311a88e0350d2f59a0e99029e28f5fa25681c0412c80c8b014a6aad71e566",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/tool_catalog.hpp"
+    },
+    {
+      "path": "src/addons/devkit/swap_chain_proxy_pixel_shader.ps_5_x.hlsl",
+      "sha256": "4b9d3f3e26519b19aa1c74394d01679e2f9dfb113f7c7cacb50265a1204bc87b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/swap_chain_proxy_pixel_shader.ps_5_x.hlsl"
+    },
+    {
+      "path": "src/addons/devkit/swap_chain_proxy_vertex_shader.vs_5_x.hlsl",
+      "sha256": "9c1f5be703b4a86e6dc0c35034dc39a365b5e1efc7686ddbef2e2579722c3b8b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/swap_chain_proxy_vertex_shader.vs_5_x.hlsl"
+    },
+    {
+      "path": "src/addons/devkit/tools_path.hpp",
+      "sha256": "f5df5c674f837741e28a7a49a092769d1d89899d2c91188db9fa73b84fb7bf8e",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/tools_path.hpp"
+    },
+    {
+      "path": "src/analyze_shader_deps.cpp",
+      "sha256": "08e8725dcb8a230948ae39ad71992a2ddbc29e83dd694d5c724a6062d4d1e9ba",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/analyze_shader_deps.cpp"
+    },
+    {
+      "path": "src/apps/mcp_bridge/main.cpp",
+      "sha256": "8aeffd2c58e94c9f7db0f6ee3ac160050e0800599328d5572cd259d3ed911bb4",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/apps/mcp_bridge/main.cpp"
+    },
+    {
+      "path": "src/embed_file.cpp",
+      "sha256": "18438c513d0c5b4a2c062f98c43cdf5b188777abb3142a3a7a67b767f408ff95",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/embed_file.cpp"
+    },
+    {
+      "path": "src/utils/bitwise.hpp",
+      "sha256": "437e1fed2f950c8248f4864a6e8b938169f9af8f1c577b7548b956afcfb5e9a3",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/bitwise.hpp"
+    },
+    {
+      "path": "src/utils/build_info.hpp",
+      "sha256": "8ee8592f52980c735d0e789a7359812370b2f96364d3396fc86fa431968872f3",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/build_info.hpp"
+    },
+    {
+      "path": "src/utils/command_action.hpp",
+      "sha256": "7c5a6bc4080021d630e7b2252b0370acc46f1c02c84a9bcb742875f5fd7b900b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/command_action.hpp"
+    },
+    {
+      "path": "src/utils/constants.hpp",
+      "sha256": "b2431f8487a393828e5584b8bef3e04f3493199c89f11bc3c20587d86861453a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/constants.hpp"
+    },
+    {
+      "path": "src/utils/cross_addon.hpp",
+      "sha256": "323a686a87f9123ed57cea5ff93a548bfb798c3cedbdec9dc116d337b2a30bbb",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/cross_addon.hpp"
+    },
+    {
+      "path": "src/utils/cstring.hpp",
+      "sha256": "87c8c925e6155d1934526517f3cf3edd5b3ecc097e3d3ae5ff1dac2b8d820063",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/cstring.hpp"
+    },
+    {
+      "path": "src/utils/data.hpp",
+      "sha256": "b0da0fa95b843a937867abad428cf6ada7eca03a990a3df1a648482337cbdb91",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/data.hpp"
+    },
+    {
+      "path": "src/utils/date.hpp",
+      "sha256": "b7f8a6519a3ae75d481b8f0120ea4db7a58b1a1bd947ab40c55207e89007e9c6",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/date.hpp"
+    },
+    {
+      "path": "src/utils/descriptor.hpp",
+      "sha256": "db5928fddc3267c7b48b1206edaaa31e31488cfea914b09cbd087c34d1406db9",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/descriptor.hpp"
+    },
+    {
+      "path": "src/utils/device.hpp",
+      "sha256": "ac7efd6ae74f062e32ec69bbb837bc6b21a933b713b38c29bf7da0a0f1b28a2d",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/device.hpp"
+    },
+    {
+      "path": "src/utils/device_proxy.hpp",
+      "sha256": "78418807eade4e6cd660820a7ac7da7c1007d28b4cdc3997fb2d58d50a878678",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/device_proxy.hpp"
+    },
+    {
+      "path": "src/utils/device_upgrade.hpp",
+      "sha256": "052ca6a2ce6d61744c5cb31700e755a1b288ec07c77d938a8f2376dbc41edf17",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/device_upgrade.hpp"
+    },
+    {
+      "path": "src/utils/directx.hpp",
+      "sha256": "8807fc56d5e356528ff2a8cdc062b3c9bc8d736a690802e8b30a363133418300",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/directx.hpp"
+    },
+    {
+      "path": "src/utils/draw.hpp",
+      "sha256": "0f3fe387a7994b492ef4cd0f9e489e2b96ef7f37b6b1912f979a2c21bf0c3473",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/draw.hpp"
+    },
+    {
+      "path": "src/utils/exr.hpp",
+      "sha256": "23cfbe9abfd508ef480652c214c5af774230d44948697657c3b3e14101791d79",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/exr.hpp"
+    },
+    {
+      "path": "src/utils/flagged_array.hpp",
+      "sha256": "e511a72b07a0eed1a9842f5331f11353b30f1db2979a2de4a035a0271957d00c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/flagged_array.hpp"
+    },
+    {
+      "path": "src/utils/flagged_bits.hpp",
+      "sha256": "ab944fe3929e0cafb403a58113b51f0eb051e3477f918c10cdb3c0ea40bf74ae",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/flagged_bits.hpp"
+    },
+    {
+      "path": "src/utils/flagged_vector.hpp",
+      "sha256": "42662f35cab0962cd8303e7634457489b9a1ff14062bb09ae69cbc66aa1e524a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/flagged_vector.hpp"
+    },
+    {
+      "path": "src/utils/float16.hpp",
+      "sha256": "f52bed5fc2b8bc572cc8408173d8c35af12206f3338b4bece8b64864659f38a1",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/float16.hpp"
+    },
+    {
+      "path": "src/utils/format.hpp",
+      "sha256": "0258799928902006636d4ce2ccffa2a1286d152d53c338000ce465aa2b6a8c1c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/format.hpp"
+    },
+    {
+      "path": "src/utils/hash.hpp",
+      "sha256": "d09d0e169aea233138451604721b568890354624ce997997c839e21be2d8b87f",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/hash.hpp"
+    },
+    {
+      "path": "src/utils/hlsl_dependencies.hpp",
+      "sha256": "18704636852056fec8c5961cdbe277095b0231bff5f903030fecefa42fe105ee",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/hlsl_dependencies.hpp"
+    },
+    {
+      "path": "src/utils/icons.hpp",
+      "sha256": "e3b0d9c823a5212125d8b8b236aec4b2d3413f9a2fa89ea7319afcbde63ff812",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/icons.hpp"
+    },
+    {
+      "path": "src/utils/ipc/ipc.hpp",
+      "sha256": "81530a4b5c1ba71483dce9c61b4bca7eeb456b29ae397334ba2369648820bc7b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/ipc/ipc.hpp"
+    },
+    {
+      "path": "src/utils/json_rpc.hpp",
+      "sha256": "79cf4db9836bdba00cbd27d80a7bcc645df3aa8443f350b4a1b70840764f02f7",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/json_rpc.hpp"
+    },
+    {
+      "path": "src/utils/log.hpp",
+      "sha256": "7ef79023d22a16697a6f895f2f4933c9c673642d21de9b6da130aea8fd593116",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/log.hpp"
+    },
+    {
+      "path": "src/utils/mcp/arguments.hpp",
+      "sha256": "c4659fc8c51eaba05c804178da566955f20fbf4381ba5b3f9e4610283a305e6f",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/arguments.hpp"
+    },
+    {
+      "path": "src/utils/mcp/protocol.hpp",
+      "sha256": "912d6abe367fbd535a0fa563a1b052c5f4e5e014d561df36792f87724db2bb4c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/protocol.hpp"
+    },
+    {
+      "path": "src/utils/mcp/server.hpp",
+      "sha256": "d5c85b0f75f6081f5a4c9108ccc0478de9879de7cf99d421338166f06fdd6899",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/server.hpp"
+    },
+    {
+      "path": "src/utils/mcp/types.hpp",
+      "sha256": "8b7e61ceeab3e0b8ac46658006f15f63d0192e64f9bfd990f57309afeba46007",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/types.hpp"
+    },
+    {
+      "path": "src/utils/mutex.hpp",
+      "sha256": "2a6974492a80a8f02606a8085fa720d8249e45bcb0670311d86c1a1a45c3303a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mutex.hpp"
+    },
+    {
+      "path": "src/utils/opengl.hpp",
+      "sha256": "f15a7be65716bd7061a14ff3c584f6dc910c757d42705d7daeb8d320f41cd32b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/opengl.hpp"
+    },
+    {
+      "path": "src/utils/path.hpp",
+      "sha256": "7d494b6e1ee6f17eea9029ffde2e88503e5a7861ae2948411503978a15e8354d",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/path.hpp"
+    },
+    {
+      "path": "src/utils/pipeline.hpp",
+      "sha256": "f88ecb008fae16ef74be6d83520ba344db1b9309ed83845c13e1f9f1583bf63e",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/pipeline.hpp"
+    },
+    {
+      "path": "src/utils/pipeline_layout.hpp",
+      "sha256": "e62de65ccae32395aa1287ce75ed9b15161fb153e1ee93c86930742e5d33b1d9",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/pipeline_layout.hpp"
+    },
+    {
+      "path": "src/utils/platform.hpp",
+      "sha256": "48ed56ca868417b756375e6f6dee9e7501f095685b2b3d6cd31de0ae1a84c77b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/platform.hpp"
+    },
+    {
+      "path": "src/utils/png.hpp",
+      "sha256": "784189e363f301bdeb404b194fa3830d50b30454462695fef35769ec9c973671",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/png.hpp"
+    },
+    {
+      "path": "src/utils/render.hpp",
+      "sha256": "49b3d149deb44f68852e5318052215b9d85495564f36761e2bd13ea745a3f78a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/render.hpp"
+    },
+    {
+      "path": "src/utils/resource.hpp",
+      "sha256": "62b1af0b79f3297f3534fefc5d706ae2c6711ae41977522284115a7eb65e6204",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/resource.hpp"
+    },
+    {
+      "path": "src/utils/resource_replace.hpp",
+      "sha256": "b22e63b169842a97fdc101bc2e7267928ff98e395ebd731322ee79b73cda8a8e",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/resource_replace.hpp"
+    },
+    {
+      "path": "src/utils/resource_upgrade.hpp",
+      "sha256": "e3b33b2468d62e59ab84568e595b76324399ca12f4106e48539b1bf36fac8010",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/resource_upgrade.hpp"
+    },
+    {
+      "path": "src/utils/shader.hpp",
+      "sha256": "4ff7e8df6eacdf7edfd184c31a05152d6cf38b4582510b9c1c3274c8a2356b2a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader.hpp"
+    },
+    {
+      "path": "src/utils/shader_compiler_directx.hpp",
+      "sha256": "1c974c629f047501f53d398398de41f55128ee6d2fee162d5bc1cb99078f6f4c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader_compiler_directx.hpp"
+    },
+    {
+      "path": "src/utils/shader_compiler_vulkan.hpp",
+      "sha256": "308d392cb963796dfa568e3a60453ed4e4942c640436532ee51a44175fde716e",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader_compiler_vulkan.hpp"
+    },
+    {
+      "path": "src/utils/shader_compiler_watcher.hpp",
+      "sha256": "fd7876cf4118e7c1314e9c52c913eac2d83bc1b5698f4bdd48277d25ce21abfe",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader_compiler_watcher.hpp"
+    },
+    {
+      "path": "src/utils/shader_decompiler_dxc.hpp",
+      "sha256": "c170a8ba6998a1419eaa7d5ffa55230403ae9b864023916931a48fe832756ff2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader_decompiler_dxc.hpp"
+    },
+    {
+      "path": "src/utils/shader_dump.hpp",
+      "sha256": "849a8dd0d8b5a9609b687df1e4c168a454b931b2af37de2f2641ad2e4dd84428",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/shader_dump.hpp"
+    },
+    {
+      "path": "src/utils/state.hpp",
+      "sha256": "031fc1c11fe0630d831b3ddabd769aa64a05c2e8ead42686d3d1890d9a2c53f7",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/state.hpp"
+    },
+    {
+      "path": "src/utils/string_view.hpp",
+      "sha256": "3caedf76fa22499a29a296a2991510131a00ffeaceece2b74adda65253a23456",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/string_view.hpp"
+    },
+    {
+      "path": "src/utils/swapchain.hpp",
+      "sha256": "cc05228830952f2aabff088e2bffaae79e2c6a4abe84ff4679e3696df073979b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/swapchain.hpp"
+    },
+    {
+      "path": "src/utils/trace.hpp",
+      "sha256": "fbb086a01291aab5ebd712542923ddb98c720281ae54eccd62ba55e86b317635",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/trace.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/constant_snapshot.hpp",
+      "sha256": "05476aba6b90e0eeb02a96f76f5e5758c32d186ca962b218ec5bc5b711d6a50f",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/8603aca3a458f0fee9ea03a6e5600cc60504daf8/experiments/draw-binding-owned/constant_snapshot.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/constant_capture_driver.hpp",
+      "sha256": "324833950b0d65a8df3412ea874344572eec061ca3ff240ec09731f1a82b6554",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/36db38991886a0ae9b15308f25be348739b4f187/experiments/draw-binding-owned/constant_capture_driver.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/owned_constant_copy.hpp",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/36db38991886a0ae9b15308f25be348739b4f187/experiments/draw-binding-owned/owned_constant_copy.hpp",
+      "sha256": "27cccacaa4a2d904097e21bc14254c188e7825aeaca4ca38657d25c126ac88e6"
+    },
+    {
+      "path": "src/addons/devkit/odv/upload_input_observer.hpp",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/36db38991886a0ae9b15308f25be348739b4f187/experiments/draw-binding-owned/upload_input_observer.hpp",
+      "sha256": "b9115f04547007abf7ba70ba8fcafac4fbe364d64ba75a49b281d4e485a96eb5"
+    },
+    {
+      "path": "src/addons/devkit/odv/deferred_resource_release.hpp",
+      "sha256": "a1c909c7f4492d154523fc754f11d6e1718a905b2975e925133114e1c8985cd0",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/36db38991886a0ae9b15308f25be348739b4f187/experiments/draw-binding-owned/deferred_resource_release.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/known_buffer_states.hpp",
+      "sha256": "7eaa113b7157a6bdf86a348f819873e5e59fc3b4ac0518b6ae12a23e77733037",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/8603aca3a458f0fee9ea03a6e5600cc60504daf8/experiments/draw-binding-owned/known_buffer_states.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/native_barrier_events.hpp",
+      "sha256": "84ea84ce84f2bed3b11b3207a8625b567120540315615793da178f3c8c47d927",
+      "url": "https://github.com/DanoADB/OpenDesertVR/blob/36db38991886a0ae9b15308f25be348739b4f187/experiments/renodx-owned/native_barrier_events.hpp"
+    },
+    {
+      "path": "src/addons/devkit/odv/native_draw_events.hpp",
+      "sha256": "105d4fe530cdd4decdc0ab0eedbe636c268abe78f4b9ceddc4a0f4bb230fb890"
+    },
+    {
+      "path": "src/addons/devkit/odv/native_indirect_events.hpp",
+      "sha256": "601778a90770ca87111cad7d939e73d405af41716c65d080bfa9874be6566175"
+    },
+    {
+      "path": "src/addons/devkit/odv/native_root_signature.hpp",
+      "sha256": "b59369f6c4523840c6c7f1cf131e4597f8c9ef39cabeaff7f0dbaecdc34b097a"
+    },
+    {
+      "path": "src/addons/devkit/odv/draw_recording_state.hpp",
+      "sha256": "8531b6515bc8a449ec42f1ae33ae89d9d73cc383e107983f3c4585005326215e"
+    }
+  ],
+  "scope": "Full private owned-Devkit build source/header/license inputs, no game addon/replacement shaders. Files are references, not an exhaustive line-by-line or transitive binary audit.",
+  "local_patch": {
+    "path": "experiments/renodx-owned/patches/native-indirect-observer.patch",
+    "sha256": "bb4ae4cfccc4f43e331621fc4d8f13fc006d108179ab641d85d11d0eb78d2cdf",
+    "version": "bc0ead3-native-indirect-14",
+    "record_limit": 128,
+    "maximum_constant_bytes": 4096,
+    "maximum_unresolved_copies": 6,
+    "scope": "Read-only bounded shadow/world role capture with actual native signature/root metadata. Original known-state DEFAULT copies only; active native render passes reject copies. No game buffer writes or root replacement.",
+    "maximum_attempts_per_draw": 6,
+    "maximum_upload_targets": 6,
+    "upload_match_window_seconds": 5
+  },
+  "binary": {
+    "path": "out/build/renodx-devkit-native-indirect-owned/Release/renodx-devkit.addon64",
+    "sha256": "c179cbaa0758209dcfc82bebb850335225777c447934a2f949a9d3535e2a1f1d",
+    "bytes": 2917888
+  }
+}

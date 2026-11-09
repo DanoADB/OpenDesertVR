@@ -1,0 +1,264 @@
+--- a/source/d3d12/d3d12_command_list.cpp
++++ b/source/d3d12/d3d12_command_list.cpp
+@@ -12,6 +12,29 @@
+ #include "addon_manager.hpp"
+ 
+ using reshade::d3d12::to_handle;
++
++#include "odv/native_barrier_events.hpp"
++#include "odv/native_draw_events.hpp"
++#include "odv/native_indirect_events.hpp"
++namespace {
++odv::research::NativeDrawEvents *ODVDrawEvents(reshade::api::command_list *list) noexcept
++{
++    auto *events = odv::research::get_native_draw_events(list);
++    if (events != nullptr && events->capabilities != nullptr)
++        events->capabilities(events->context, odv::research::native_draw_capabilities);
++    return events;
++}
++odv::research::NativeBarrierEvents *ODVNativeEvents(reshade::api::command_list *list) noexcept
++{
++    (void)ODVDrawEvents(list);
++    return odv::research::get_native_barrier_events(list);
++}
++void ODVInvalidate(reshade::api::command_list *list, odv::research::NativeStateInvalidation reason) noexcept
++{
++    if (auto *events = ODVNativeEvents(list); events != nullptr && events->invalidate != nullptr)
++        events->invalidate(events->context, reason);
++}
++}
+ 
+ D3D12GraphicsCommandList::D3D12GraphicsCommandList(D3D12Device *device, ID3D12GraphicsCommandList *original) :
+ 	command_list_impl(device, original),
+@@ -163,6 +186,7 @@
+ }
+ HRESULT STDMETHODCALLTYPE D3D12GraphicsCommandList::Reset(ID3D12CommandAllocator *pAllocator, ID3D12PipelineState *pInitialState)
+ {
++    ODVInvalidate(this, odv::research::NativeStateInvalidation::reset);
+ #if RESHADE_ADDON
+ 	reshade::invoke_addon_event<reshade::addon_event::reset_command_list>(this);
+ #endif
+@@ -192,6 +216,7 @@
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::ClearState(ID3D12PipelineState *pPipelineState)
+ {
+ 	_orig->ClearState(pPipelineState);
++    ODVInvalidate(this, odv::research::NativeStateInvalidation::clear_state);
+ 
+ 	_current_root_signature[0] = nullptr;
+ 	_current_root_signature[1] = nullptr;
+@@ -452,6 +477,8 @@
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::ResourceBarrier(UINT NumBarriers, const D3D12_RESOURCE_BARRIER *pBarriers)
+ {
+ 	_orig->ResourceBarrier(NumBarriers, pBarriers);
++    if (auto *events = ODVNativeEvents(this); events != nullptr && events->legacy != nullptr)
++        events->legacy(events->context, NumBarriers, pBarriers);
+ 
+ #if RESHADE_ADDON >= 2
+ 	if (!reshade::has_addon_event<reshade::addon_event::barrier>())
+@@ -496,6 +523,7 @@
+ #endif
+ 
+ 	_orig->ExecuteBundle(command_list_proxy->_orig);
++    ODVInvalidate(this, odv::research::NativeStateInvalidation::bundle);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::SetDescriptorHeaps(UINT NumDescriptorHeaps, ID3D12DescriptorHeap *const *ppDescriptorHeaps)
+ {
+@@ -791,6 +819,8 @@
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::SOSetTargets(UINT StartSlot, UINT NumViews, const D3D12_STREAM_OUTPUT_BUFFER_VIEW *pViews)
+ {
+ 	_orig->SOSetTargets(StartSlot, NumViews, pViews);
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->stream_output != nullptr)
++        events->stream_output(events->context, StartSlot, NumViews, pViews);
+ 
+ #if RESHADE_ADDON >= 2
+ 	if (!reshade::has_addon_event<reshade::addon_event::bind_stream_output_buffers>())
+@@ -887,6 +917,8 @@
+ 		return;
+ #endif
+ 	_orig->BeginQuery(pQueryHeap, Type, Index);
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->query != nullptr)
++        events->query(events->context, pQueryHeap, Type, Index, true);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::EndQuery(ID3D12QueryHeap *pQueryHeap, D3D12_QUERY_TYPE Type, UINT Index)
+ {
+@@ -895,6 +927,8 @@
+ 		return;
+ #endif
+ 	_orig->EndQuery(pQueryHeap, Type, Index);
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->query != nullptr)
++        events->query(events->context, pQueryHeap, Type, Index, false);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::ResolveQueryData(ID3D12QueryHeap *pQueryHeap, D3D12_QUERY_TYPE Type, UINT StartIndex, UINT NumQueries, ID3D12Resource *pDestinationBuffer, UINT64 AlignedDestinationBufferOffset)
+ {
+@@ -923,11 +957,28 @@
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::ExecuteIndirect(ID3D12CommandSignature *pCommandSignature, UINT MaxCommandCount, ID3D12Resource *pArgumentBuffer, UINT64 ArgumentBufferOffset, ID3D12Resource *pCountBuffer, UINT64 CountBufferOffset)
+ {
+-#if RESHADE_ADDON
+-	if (reshade::invoke_addon_event<reshade::addon_event::draw_or_dispatch_indirect>(this, reshade::api::indirect_command::unknown, to_handle(pArgumentBuffer), ArgumentBufferOffset, MaxCommandCount, 0))
+-		return;
+-#endif
+-	_orig->ExecuteIndirect(pCommandSignature, MaxCommandCount, pArgumentBuffer, ArgumentBufferOffset, pCountBuffer, CountBufferOffset);
++    auto *events = odv::research::get_native_indirect_events(this);
++    odv::research::NativeIndirectDescription description;
++    const odv::research::NativeIndirectDescription *known = nullptr;
++    const odv::research::NativeIndirectCall call{pCommandSignature, MaxCommandCount, pArgumentBuffer,
++                                                 ArgumentBufferOffset, pCountBuffer, CountBufferOffset};
++    const auto notify = [&](odv::research::NativeIndirectPhase phase) noexcept {
++        if (events != nullptr && events->record != nullptr)
++            events->record(events->context, &call, known, phase);
++    };
++    if (events != nullptr) {
++        if (events->capabilities != nullptr) events->capabilities(events->context, 1);
++        if (odv::research::load_indirect_description(pCommandSignature, description)) known = &description;
++        notify(odv::research::NativeIndirectPhase::before_record);
++    }
++#if RESHADE_ADDON
++    if (reshade::invoke_addon_event<reshade::addon_event::draw_or_dispatch_indirect>(this, reshade::api::indirect_command::unknown, to_handle(pArgumentBuffer), ArgumentBufferOffset, MaxCommandCount, 0)) {
++        notify(odv::research::NativeIndirectPhase::cancelled);
++        return;
++    }
++#endif
++    _orig->ExecuteIndirect(pCommandSignature, MaxCommandCount, pArgumentBuffer, ArgumentBufferOffset, pCountBuffer, CountBufferOffset);
++    notify(odv::research::NativeIndirectPhase::after_record);
+ }
+ 
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::AtomicCopyBufferUINT(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT Dependencies, ID3D12Resource *const *ppDependentResources, const D3D12_SUBRESOURCE_RANGE_UINT64 *pDependentSubresourceRanges)
+@@ -999,6 +1050,8 @@
+ 	assert(_interface_version >= 3);
+ 
+ 	static_cast<ID3D12GraphicsCommandList3 *>(_orig)->SetProtectedResourceSession(pProtectedResourceSession);
++    if (pProtectedResourceSession != nullptr)
++        ODVInvalidate(this, odv::research::NativeStateInvalidation::protected_session);
+ }
+ 
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::BeginRenderPass(UINT NumRenderTargets, const D3D12_RENDER_PASS_RENDER_TARGET_DESC *pRenderTargets, const D3D12_RENDER_PASS_DEPTH_STENCIL_DESC *pDepthStencil, D3D12_RENDER_PASS_FLAGS Flags)
+@@ -1031,6 +1084,8 @@
+ #endif
+ 
+ 	static_cast<ID3D12GraphicsCommandList4 *>(_orig)->BeginRenderPass(NumRenderTargets, pRenderTargets, pDepthStencil, Flags);
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->render_pass != nullptr)
++        events->render_pass(events->context, true, Flags);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::EndRenderPass()
+ {
+@@ -1041,6 +1096,8 @@
+ #endif
+ 
+ 	static_cast<ID3D12GraphicsCommandList4 *>(_orig)->EndRenderPass();
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->render_pass != nullptr)
++        events->render_pass(events->context, false, D3D12_RENDER_PASS_FLAG_NONE);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::InitializeMetaCommand(ID3D12MetaCommand *pMetaCommand, const void *pInitializationParametersData, SIZE_T InitializationParametersDataSizeInBytes)
+ {
+@@ -1206,6 +1263,8 @@
+ 	assert(_interface_version >= 7);
+ 
+ 	static_cast<ID3D12GraphicsCommandList7 *>(_orig)->Barrier(NumBarrierGroups, pBarrierGroups);
++    if (auto *events = ODVNativeEvents(this); events != nullptr && events->enhanced != nullptr)
++        events->enhanced(events->context, NumBarrierGroups, pBarrierGroups);
+ 
+ #if RESHADE_ADDON >= 2
+ 	if (!reshade::has_addon_event<reshade::addon_event::barrier>())
+--- a/source/d3d12/d3d12_command_queue.cpp
++++ b/source/d3d12/d3d12_command_queue.cpp
+@@ -1,3 +1,4 @@
++#include "odv/native_barrier_events.hpp"
+ /*
+  * Copyright (C) 2014 Patrick Mours
+  * SPDX-License-Identifier: BSD-3-Clause OR MIT
+@@ -208,6 +209,15 @@
+ 	lock.unlock();
+ 
+ 	_orig->ExecuteCommandLists(NumCommandLists, command_lists.p);
++    // Exact native submission boundary. No queue wrapper lock is held here.
++    // Borrowed command-list identities stay valid for the application call.
++    for (UINT i = 0; i < NumCommandLists; ++i)
++    {
++        com_ptr<D3D12GraphicsCommandList> proxy;
++        if (SUCCEEDED(ppCommandLists[i]->QueryInterface(&proxy)))
++            if (auto *events = odv::research::get_native_barrier_events(proxy.get()); events != nullptr && events->after_execute != nullptr)
++                events->after_execute(events->context, _orig);
++    }
+ }
+ void    STDMETHODCALLTYPE D3D12CommandQueue::SetMarker(UINT Metadata, const void *pData, UINT Size)
+ {
+--- a/source/d3d12/d3d12_device.cpp
++++ b/source/d3d12/d3d12_device.cpp
+@@ -4,6 +4,8 @@
+  */
+ 
+ #include "d3d12_device.hpp"
++#include "odv/native_indirect_events.hpp"
++#include "odv/native_root_signature.hpp"
+ #include "d3d12_device_downlevel.hpp"
+ #include "d3d12_command_list.hpp"
+ #include "d3d12_command_queue.hpp"
+@@ -432,7 +434,16 @@
+ 		riid != __uuidof(ID3D12RootSignature) ||
+ 		!invoke_create_and_init_pipeline_layout_event(nodeMask, pBlobWithRootSignature, blobLengthInBytes, *reinterpret_cast<ID3D12RootSignature **>(ppvRootSignature), hr))
+ #endif
+-		hr = _orig->CreateRootSignature(nodeMask, pBlobWithRootSignature, blobLengthInBytes, riid, ppvRootSignature);
++    {
++        hr = _orig->CreateRootSignature(nodeMask, pBlobWithRootSignature, blobLengthInBytes, riid, ppvRootSignature);
++        if (SUCCEEDED(hr) && ppvRootSignature != nullptr && *ppvRootSignature != nullptr) {
++            ID3D12RootSignature *signature = nullptr;
++            if (SUCCEEDED(static_cast<IUnknown *>(*ppvRootSignature)->QueryInterface(IID_PPV_ARGS(&signature)))) {
++                (void)odv::research::store_root_signature_blob(signature, nodeMask, pBlobWithRootSignature, blobLengthInBytes);
++                signature->Release();
++            }
++        }
++    }
+ 
+ #if RESHADE_VERBOSE_LOG
+ 	if (FAILED(hr) && ppvRootSignature != nullptr)
+@@ -1109,7 +1120,20 @@
+ }
+ HRESULT STDMETHODCALLTYPE D3D12Device::CreateCommandSignature(const D3D12_COMMAND_SIGNATURE_DESC *pDesc, ID3D12RootSignature *pRootSignature, REFIID riid, void **ppvCommandSignature)
+ {
+-	return _orig->CreateCommandSignature(pDesc, pRootSignature, riid, ppvCommandSignature);
++    const HRESULT hr = _orig->CreateCommandSignature(pDesc, pRootSignature, riid, ppvCommandSignature);
++    if (SUCCEEDED(hr) && ppvCommandSignature != nullptr && *ppvCommandSignature != nullptr) {
++        odv::research::NativeIndirectDescription description;
++        if (odv::research::describe_indirect_signature(pDesc, pRootSignature, description)) {
++            ID3D12CommandSignature *signature = nullptr;
++            if (SUCCEEDED(static_cast<IUnknown *>(*ppvCommandSignature)->QueryInterface(IID_PPV_ARGS(&signature)))) {
++                // Private metadata only; failure never changes the application's result.
++                (void)signature->SetPrivateData(odv::research::native_signature_metadata_guid,
++                                               sizeof(description), &description);
++                signature->Release();
++            }
++        }
++    }
++    return hr;
+ }
+ void    STDMETHODCALLTYPE D3D12Device::GetResourceTiling(ID3D12Resource *pTiledResource, UINT *pNumTilesForEntireResource, D3D12_PACKED_MIP_INFO *pPackedMipDesc, D3D12_TILE_SHAPE *pStandardTileShapeForNonPackedMips, UINT *pNumSubresourceTilings, UINT FirstSubresourceTilingToGet, D3D12_SUBRESOURCE_TILING *pSubresourceTilingsForNonPackedMips)
+ {
+@@ -2947,6 +2971,8 @@
+ 	else
+ 	{
+ 		hr = _orig->CreateRootSignature(node_mask, blob, blob_size, IID_PPV_ARGS(&root_signature));
++        if (SUCCEEDED(hr))
++            (void)odv::research::store_root_signature_blob(root_signature, node_mask, blob, blob_size);
+ 	}
+ 
+ 	if (SUCCEEDED(hr))
+--- a/source/d3d12/d3d12_impl_device.cpp
++++ b/source/d3d12/d3d12_impl_device.cpp
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include "d3d12_impl_device.hpp"
++#include "odv/native_root_signature.hpp"
+ #include "d3d12_impl_command_queue.hpp"
+ #include "d3d12_impl_type_convert.hpp"
+ #include "d3d12_descriptor_heap.hpp"
+@@ -1527,6 +1528,8 @@
+ 	if (SUCCEEDED(D3D12SerializeRootSignature(&internal_desc, D3D_ROOT_SIGNATURE_VERSION_1, &signature_blob, &error_blob)) &&
+ 		SUCCEEDED(_orig->CreateRootSignature(0, signature_blob->GetBufferPointer(), signature_blob->GetBufferSize(), IID_PPV_ARGS(&signature))))
+ 	{
++        (void)odv::research::store_root_signature_blob(signature.get(), 0,
++            signature_blob->GetBufferPointer(), signature_blob->GetBufferSize());
+ 		pipeline_layout_extra_data extra_data;
+ 		extra_data.ranges = nullptr;
+ 		UINT extra_data_size = sizeof(extra_data);
