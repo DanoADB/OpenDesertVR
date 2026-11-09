@@ -15,11 +15,16 @@
 #include <vector>
 
 template <class T> using Com = Microsoft::WRL::ComPtr<T>;
+static const char *stage = "initialization";
 static void require(bool condition) {
     if (!condition)
         throw std::runtime_error("owned_private_indirect_control_failed");
 }
-static void checked(HRESULT result) { require(SUCCEEDED(result)); }
+static void checked(HRESULT result) {
+    if (FAILED(result))
+        std::cerr << "native_hresult=0x" << std::hex << static_cast<unsigned long>(result) << std::dec << '\n';
+    require(SUCCEEDED(result));
+}
 static D3D12_RESOURCE_DESC buffer(UINT64 bytes) {
     D3D12_RESOURCE_DESC d{};
     d.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -90,6 +95,7 @@ float4 vs(uint id:SV_VertexID):SV_Position {
 }
 float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
 )";
+        stage = "shader_and_pipeline_creation";
         Com<ID3DBlob> vs, ps, errors;
         checked(D3DCompile(shader, sizeof(shader) - 1, nullptr, nullptr, nullptr, "vs", "vs_5_1", 0, 0, &vs, &errors));
         checked(D3DCompile(shader, sizeof(shader) - 1, nullptr, nullptr, nullptr, "ps", "ps_5_1", 0, 0, &ps, &errors));
@@ -148,6 +154,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
             pso_desc.pRootSignature = roots[i].Get();
             checked(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pipelines[i])));
         }
+        stage = "resource_creation";
         std::array<std::byte, 256> camera_bytes{};
         auto source = upload(device.Get(), camera_bytes.data(), camera_bytes.size());
         auto private_bytes = camera_bytes;
@@ -166,6 +173,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         auto arguments = upload(device.Get(), argument_bytes.data(), argument_bytes.size());
         const std::array<UINT, 4> count_bytes{0, 1, 2, 0xFA123456};
         auto counts = upload(device.Get(), count_bytes.data(), sizeof(count_bytes));
+        stage = "signature_creation";
         D3D12_INDIRECT_ARGUMENT_DESC arg_desc[3]{};
         arg_desc[0].Type = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW;
         arg_desc[1].Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT;
@@ -242,6 +250,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         Com<ID3D12GraphicsCommandList> list;
         checked(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr,
                                           IID_PPV_ARGS(&list)));
+        stage = "recording";
         for (UINT i = 0; i < cases.size(); ++i) {
             const auto &c = cases[i];
             const UINT mode = c.use_private ? 1 : 0;
@@ -283,6 +292,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
             list->CopyTextureRegion(&destination, 0, 0, 0, &from, nullptr);
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
         }
+        stage = "submission_and_completion";
         checked(list->Close());
         ID3D12CommandList *submission[] = {list.Get()};
         queue->ExecuteCommandLists(1, submission);
@@ -296,6 +306,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         CloseHandle(event);
         require(waited == WAIT_OBJECT_0);
         require(fence->GetCompletedValue() >= 1 && fence->GetCompletedValue() != UINT64_MAX);
+        stage = "pixel_verification";
         void *mapped = nullptr;
         const D3D12_RANGE read_range{0, SIZE_T(readback_desc.Width)};
         checked(readback->Map(0, &read_range, &mapped));
@@ -305,17 +316,24 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
                 for (UINT x = 0; x < 16; ++x) {
                     const auto *p = static_cast<const unsigned char *>(mapped) + i * 4096 + y * 256 + x * 4;
                     const auto expected = cases[i].expected;
-                    pixels &= p[0] == (expected == 1 ? 255 : 0) && p[1] == (expected == 2 ? 255 : 0) && p[2] == 0 &&
-                              p[3] == (expected ? 255 : 0);
+                    const bool match = p[0] == (expected == 1 ? 255 : 0) && p[1] == (expected == 2 ? 255 : 0) &&
+                                       p[2] == 0 && p[3] == (expected ? 255 : 0);
+                    if (!match && pixels)
+                        std::cerr << "pixel_case=" << i << " x=" << x << " y=" << y << " expected_color=" << expected
+                                  << " actual_rgba=" << UINT(p[0]) << ',' << UINT(p[1]) << ',' << UINT(p[2]) << ','
+                                  << UINT(p[3]) << '\n';
+                    pixels &= match;
                 }
         const D3D12_RANGE no_write{};
         readback->Unmap(0, &no_write);
         require(pixels);
+        stage = "input_preservation";
         unchanged(source.Get(), camera_bytes.data(), camera_bytes.size());
         unchanged(private_camera.Get(), private_bytes.data(), private_bytes.size());
         unchanged(arguments.Get(), argument_bytes.data(), argument_bytes.size());
         unchanged(counts.Get(), count_bytes.data(), sizeof(count_bytes));
         unchanged(index.Get(), indices.data(), sizeof(indices));
+        stage = "debug_validation";
         if (info)
             for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
                 SIZE_T bytes = 0;
@@ -323,6 +341,9 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
                 std::vector<std::byte> storage(bytes);
                 auto *message = reinterpret_cast<D3D12_MESSAGE *>(storage.data());
                 checked(info->GetMessage(i, message, &bytes));
+                if (message->Severity == D3D12_MESSAGE_SEVERITY_ERROR ||
+                    message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION)
+                    std::cerr << "D3D12 id=" << message->ID << " " << message->pDescription << '\n';
                 require(message->Severity != D3D12_MESSAGE_SEVERITY_ERROR &&
                         message->Severity != D3D12_MESSAGE_SEVERITY_CORRUPTION);
             }
@@ -333,7 +354,7 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
                   << (validation ? "ENABLED" : "UNAVAILABLE") << "; game=NOT_RUN; headset=NOT_RUN\n";
         return 0;
     } catch (const std::exception &e) {
-        std::cerr << e.what() << '\n';
+        std::cerr << "stage=" << stage << " " << e.what() << '\n';
         return 1;
     }
 }
