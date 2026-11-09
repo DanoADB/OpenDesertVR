@@ -288,5 +288,17 @@
     "The game16 declaration rejection cause remains unverified until corrected observer runs.",
     "No shader bytes/text exported and no game binding, source or pipeline override enabled.",
     "Static access syntax is distinct from complete downstream consumption, payload freshness or camera influence."
-  ]
+  ],
+  "hosted_validation": {
+    "run": 42711665277,
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42711665277",
+    "source_commit": "c0d92c7604bf536a6567f30b29191ee7bbe58de1",
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "status": "PASS",
+    "isolated_reflection_ctest_cases_per_configuration": 3,
+    "private_job_log_sha256": "56ca59f705a0bc21f47fa61a4ac02e3991909c040200adadd15fbe94cd4f8a59"
+  }
 }

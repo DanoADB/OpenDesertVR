@@ -174,7 +174,7 @@
     "draws.private.json": "e7e4532bb91e403cb6e29dc5b44c37dc7865380639c0a055961afc8e450efb9b",
     "report.json": "144a21eb7f52961bbd9ad29e70e03e848ec148e13b6dedaac6fe9aa0dae1b9c3"
   },
-  "cleanup": "NOT_RUN_GAME_STILL_RUNNING",
+  "cleanup": "PASS",
   "world_camera_influence": "NOT_RUN",
   "independent_game_eye_views": "NOT_RUN",
   "headset": "NOT_RUN",
@@ -182,5 +182,15 @@
     "Target declaration encountered as one descriptor with2768 bytes in both shader stages. Later CBV_DECLARATION_FORMAT rejection prevents complete declaration uniqueness and access-envelope qualification.",
     "The exact unsupported declaration is not established by observer16 output. Signed signless-i32 representations and unrelated dynamic handles are separately reproduced with owned SDK fixtures; game cause remains unverified until corrected observer runs.",
     "No shader bytes, names or instruction text exported. No private game binding or source modification enabled."
-  ]
+  ],
+  "cleanup_postflight": {
+    "status": "PASS",
+    "game_identity_unchanged": true,
+    "created_files_removed": [
+      "dxgi.dll",
+      "ReShade.ini"
+    ],
+    "devkit_asset_files": 0,
+    "private_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  }
 }
