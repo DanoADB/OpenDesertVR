@@ -26,6 +26,17 @@ Windows D3D12, DXGI, D3DCompiler and MSVC runtime are Microsoft system/toolchain
 components, not project-owned code. Release packaging includes the toolchain's
 redistributable runtime DLLs under its redistribution terms.
 
+The optional owned indirect-render test can explicitly load Microsoft.Direct3D.WARP
+1.0.22, acquired from Microsoft's NuGet package and checked by package/DLL SHA256
+and Authenticode signature. Its Microsoft Software License Terms allow Windows
+development/testing and prohibit redistribution. The DLL and package stay in
+ignored `out/deps`; they are not committed, uploaded as CI artifacts, installed
+globally, or included in OpenDesertVR packages. Only the indirect test process
+uses this optional input; other tests retain their system-runtime coverage.
+See [the official package and license](https://www.nuget.org/packages/Microsoft.Direct3D.WARP/1.0.22)
+and `scripts/prepare-owned-warp.ps1` for the exact pins. This is a test runtime,
+not a production game or XR dependency.
+
 ## Optional camera research
 
 experiments/camera-profile-audit/camera_fields.py adapts selected direct-layout

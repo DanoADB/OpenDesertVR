@@ -67,10 +67,18 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify original WARP draw pixels and unsubmitted-list control (no capture tool)
         run: |
-          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64
+          ./scripts/prepare-owned-warp.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64 "-DODV_TEST_WARP_DLL:FILEPATH=$PWD/out/deps/warp-1.0.22/d3d10warp.dll"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build out/build/draw-binding-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Keep the system-WARP reproduction as a diagnostic. Acceptance below
+          # still requires every assertion on the pinned, test-only runtime.
+          & "./out/build/draw-binding-owned/${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}/odv_private_indirect_render_tests.exe" --system-warp *> out/ci-system-warp-indirect.log
+          $baselineExit = $LASTEXITCODE
+          Get-Content out/ci-system-warp-indirect.log
+          Write-Output "SYSTEM_WARP_DIAGNOSTIC_EXIT=$baselineExit"
           ctest --test-dir out/build/draw-binding-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and test optional selected-read batch (owned producers only)

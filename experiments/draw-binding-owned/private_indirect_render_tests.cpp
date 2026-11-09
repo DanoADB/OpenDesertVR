@@ -10,8 +10,10 @@
 #include <d3d12sdklayers.h>
 #include <d3dcompiler.h>
 #include <dxgi1_4.h>
+#include <filesystem>
 #include <iostream>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 
 template <class T> using Com = Microsoft::WRL::ComPtr<T>;
@@ -89,8 +91,49 @@ struct Arguments {
     D3D12_DRAW_INDEXED_ARGUMENTS draw;
 };
 static_assert(sizeof(Arguments) == 40 && offsetof(Arguments, token) == 16 && offsetof(Arguments, draw) == 20);
-int main() {
+struct TestModule {
+    HMODULE value = nullptr;
+    ~TestModule() {
+        if (value)
+            FreeLibrary(value);
+    }
+};
+static void report_warp(HMODULE expected) {
+    const auto loaded = GetModuleHandleW(L"d3d10warp.dll");
+    require(loaded && (!expected || loaded == expected));
+    std::array<wchar_t, 32768> path{};
+    const DWORD length = GetModuleFileNameW(loaded, path.data(), static_cast<DWORD>(path.size()));
+    require(length && length < path.size());
+#ifdef ODV_TEST_WARP_DLL
+    if (expected)
+        require(
+            std::filesystem::equivalent(std::filesystem::path(path.data()), std::filesystem::path(ODV_TEST_WARP_DLL)));
+#endif
+    DWORD ignored = 0;
+    const DWORD bytes = GetFileVersionInfoSizeW(path.data(), &ignored);
+    require(bytes > 0 && bytes <= 1024 * 1024);
+    std::vector<std::byte> storage(bytes);
+    checked(GetFileVersionInfoW(path.data(), 0, bytes, storage.data()) ? S_OK : E_FAIL);
+    VS_FIXEDFILEINFO *version = nullptr;
+    UINT size = 0;
+    require(VerQueryValueW(storage.data(), L"\\", reinterpret_cast<void **>(&version), &size) &&
+            size >= sizeof(*version));
+    std::cout << "warp_kind=" << (expected ? "PINNED_TEST_ONLY" : "SYSTEM")
+              << " version=" << HIWORD(version->dwFileVersionMS) << '.' << LOWORD(version->dwFileVersionMS) << '.'
+              << HIWORD(version->dwFileVersionLS) << '.' << LOWORD(version->dwFileVersionLS) << '\n';
+}
+int main(int argc, char **argv) {
     try {
+        const bool system_warp = argc == 2 && std::string_view(argv[1]) == "--system-warp";
+        require(argc == 1 || system_warp);
+        TestModule module; // Declared first: unload only after every native object.
+#ifdef ODV_TEST_WARP_DLL
+        if (!system_warp) {
+            module.value = LoadLibraryExW(ODV_TEST_WARP_DLL, nullptr,
+                                          LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+            require(module.value != nullptr);
+        }
+#endif
         Com<ID3D12Debug> debug;
         const bool validation = SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)));
         if (validation)
@@ -101,6 +144,7 @@ int main() {
         checked(factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter)));
         Com<ID3D12Device> device;
         checked(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)));
+        report_warp(module.value);
         Com<ID3D12InfoQueue> info;
         if (validation)
             checked(device.As(&info));

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_LOCAL_PINNED_WARP_PENDING_HOSTED_VALIDATION",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "hosted_system_warp": {
+    "run": 42691749116,
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42691749116",
+    "source_commit": "01c21a90593be06f026a06ddcd6d33784507ca5c",
+    "status": "FAILED_INPUT_PRESERVATION",
+    "gpu_readback_bytes": 128,
+    "first_changed_byte_offset": 20,
+    "expected_byte": 4,
+    "actual_byte": 0,
+    "loaded_version": "NOT_YET_RECORDED",
+    "private_log_sha256": "7ca72b49504878c1616dceac8cb32d6c15e44c0f0abecce12b4c3d7d4365b1c4"
+  },
+  "pinned_test_runtime": {
+    "package": "Microsoft.Direct3D.WARP",
+    "version": "1.0.22",
+    "package_url": "https://api.nuget.org/v3-flatcontainer/microsoft.direct3d.warp/1.0.22/microsoft.direct3d.warp.1.0.22.nupkg",
+    "package_sha256": "afc058f4d1066edc4231a38f3ab3592b1930f7287d4ac700e6a056e0874bb0be",
+    "x64_dll_sha256": "bb8ee56fd0f7ee665abb61178301e612181e5e2f57af0e5ab64e456b8f1a8c4f",
+    "license_sha256": "5435f10305a92870b45735dfc169c5d6010617f6556e0859689a058d2c6b59c4",
+    "authenticode": "Valid Microsoft Corporation",
+    "redistribution": "PROHIBITED_NOT_PACKAGED_OR_UPLOADED",
+    "loaded_version": "1.0.22.0"
+  },
+  "source_sha256": {
+    "scripts/prepare-owned-warp.ps1": "c1e9b8f8027461e86ac241dd3df72cb71f2c7c6d93268764c18cb973e3985e4c",
+    "experiments/draw-binding-owned/private_indirect_render_tests.cpp": "6d5d1ad778b10f5656f01ff430770ec390fc9c8fd902adb426a15c373b17c825",
+    "experiments/draw-binding-owned/CMakeLists.txt": "1ba97953f6da5d1b9326bb6418880e3d932895ae9c33912863f534deb3e2e35d",
+    ".github/workflows/windows.yml": "f6db3654b842a0383a2a691c0597d03dd52b9eaa0ff0c98e6a5449bd6b1caac3"
+  },
+  "local_validation": [
+    {
+      "configuration": "Debug",
+      "passed": 15,
+      "failed": 0,
+      "test_log_sha256": "41a4818e362b0173b69b28c12173d51794e35582bd550d913d63fa062bf66b32",
+      "binary_sha256": "9827a51a3287ef2fa37f745ca1179d9778ab3d6330811f40da2793517a254430"
+    },
+    {
+      "configuration": "Release",
+      "passed": 15,
+      "failed": 0,
+      "test_log_sha256": "de37626bd46563f65c20865870849444c21f7d0103e189f56ae2cf0fb5849400",
+      "binary_sha256": "dc720f700afee2896976856efad87a7c7af74378672ef6456c7ab785275962ba"
+    }
+  ],
+  "unchanged_assertions": {
+    "cases": 19,
+    "pixels_per_case": 256,
+    "count_values": [
+      0,
+      1,
+      2
+    ],
+    "maximum_values": [
+      0,
+      1,
+      2
+    ],
+    "root_reset_probes": true,
+    "original_argument_count_preservation": true
+  },
+  "references": [
+    "https://www.nuget.org/packages/Microsoft.Direct3D.WARP/1.0.22",
+    "https://microsoft.github.io/DirectX-Specs/d3d/IndirectDrawing.html"
+  ],
+  "limits": [
+    "Microsoft documents a WARP1.0.9 fix for ExecuteIndirect modifying application-provided argument buffers. This supports the observed hosted mutation; exact old loaded version awaits diagnostic.",
+    "Pinned DLL is explicitly loaded only by the isolated owned indirect test process. Other system-runtime tests, game observer and main XR app unchanged.",
+    "The CI system-WARP baseline remains diagnostic and may fail; acceptance requires the complete unchanged assertions on the pinned test runtime.",
+    "Local debug layer unavailable; hosted debug validation pending.",
+    "No game camera override, independently rendered game views or game OpenXR submission tested."
+  ],
+  "local_system_warp": {
+    "version": "6.2.26100.9818",
+    "result": "PASS_19_CASES",
+    "stdout_sha256": "39eab3fc42821225a73131f1f31f624a6082100a170abcb460129de3a12a7943"
+  }
+}
