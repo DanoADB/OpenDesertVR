@@ -53,6 +53,16 @@ static void unchanged(ID3D12Resource *resource, const void *original, SIZE_T byt
     const D3D12_RANGE range{0, bytes};
     checked(resource->Map(0, &range, &mapped));
     const bool equal = std::memcmp(mapped, original, bytes) == 0;
+    if (!equal) {
+        const auto *a = static_cast<const unsigned char *>(mapped);
+        const auto *b = static_cast<const unsigned char *>(original);
+        for (SIZE_T i = 0; i < bytes; ++i)
+            if (a[i] != b[i]) {
+                std::cerr << "preservation_bytes=" << bytes << " mismatch_offset=" << i
+                          << " expected_byte=" << UINT(b[i]) << " actual_byte=" << UINT(a[i]) << '\n';
+                break;
+            }
+    }
     const D3D12_RANGE no_write{};
     resource->Unmap(0, &no_write);
     require(equal);
@@ -348,6 +358,13 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
                 require(message->Severity != D3D12_MESSAGE_SEVERITY_ERROR &&
                         message->Severity != D3D12_MESSAGE_SEVERITY_CORRUPTION);
             }
+        stage = "input_preservation";
+        unchanged(source.Get(), camera_bytes.data(), camera_bytes.size());
+        unchanged(private_camera.Get(), private_bytes.data(), private_bytes.size());
+        unchanged(argument_upload.Get(), argument_bytes.data(), argument_bytes.size());
+        unchanged(count_upload.Get(), count_bytes.data(), sizeof(count_bytes));
+        unchanged(indirect_readback.Get(), expected_indirect.data(), expected_indirect.size());
+        unchanged(index.Get(), indices.data(), sizeof(indices));
         stage = "pixel_verification";
         void *mapped = nullptr;
         const D3D12_RANGE read_range{0, SIZE_T(readback_desc.Width)};
@@ -369,13 +386,6 @@ float4 ps():SV_Target { return token==8?float4(0,1,0,1):float4(1,0,0,1); }
         const D3D12_RANGE no_write{};
         readback->Unmap(0, &no_write);
         require(pixels);
-        stage = "input_preservation";
-        unchanged(source.Get(), camera_bytes.data(), camera_bytes.size());
-        unchanged(private_camera.Get(), private_bytes.data(), private_bytes.size());
-        unchanged(argument_upload.Get(), argument_bytes.data(), argument_bytes.size());
-        unchanged(count_upload.Get(), count_bytes.data(), sizeof(count_bytes));
-        unchanged(indirect_readback.Get(), expected_indirect.data(), expected_indirect.size());
-        unchanged(index.Get(), indices.data(), sizeof(indices));
         std::cout << "PASS: WARP exact40-byte IBV/root0/DrawIndexed private split-root GPU forwarding; "
                      "19 cases x256 pixels; GPU count0/1/2, max0/1/2, nonzero offsets, null count, "
                      "private camera change and restoration, root0 resets after nonzero/zero counts; "
