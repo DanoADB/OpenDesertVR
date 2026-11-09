@@ -130,3 +130,11 @@ add_test(NAME owned_private_split_render COMMAND "${Python3_EXECUTABLE}"
   "${CMAKE_CURRENT_SOURCE_DIR}/scalar_render.py" "$<TARGET_FILE:odv_private_split_render_tests>"
   "${CMAKE_CURRENT_BINARY_DIR}/private-split-render-cases")
 set_tests_properties(owned_private_split_render PROPERTIES TIMEOUT 25 SKIP_RETURN_CODE 77)
+add_executable(odv_private_indirect_render_tests private_indirect_render_tests.cpp)
+target_compile_features(odv_private_indirect_render_tests PRIVATE cxx_std_20)
+target_link_libraries(odv_private_indirect_render_tests PRIVATE d3d12 dxgi d3dcompiler)
+if(MSVC)
+  target_compile_options(odv_private_indirect_render_tests PRIVATE /W4 /WX /EHsc)
+endif()
+add_test(NAME owned_private_indirect_render COMMAND odv_private_indirect_render_tests)
+set_tests_properties(owned_private_indirect_render PROPERTIES TIMEOUT 20)
