@@ -116,11 +116,13 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-default-2816" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-native-pass" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-native-words" &&
               std::wstring_view(argv[2]) != L"--loop-vertex-source" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-world-aspect")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool native_pass_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-pass";
+        const bool word_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-words";
         const bool vertex_observer_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-vertex-source";
         const bool vertex_source_control = stream_control || vertex_observer_control;
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
@@ -130,7 +132,7 @@ int wmain(int argc, wchar_t **argv) {
         const bool aspect_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-world-aspect";
         const bool enhanced_control =
             aspect_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-enhanced-2816");
-        const bool large_default_control = enhanced_control || native_pass_control ||
+        const bool large_default_control = enhanced_control || native_pass_control || word_control ||
                                            (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-2816");
         const bool present_gap_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-default-present-gap";
         const bool indirect_control = transient_control || split_control || present_gap_control ||
@@ -366,6 +368,13 @@ int wmain(int argc, wchar_t **argv) {
             check(constants[i]->Map(0, &empty, &mapped));
             std::memset(mapped, 0, static_cast<size_t>(d.Width));
             std::memcpy(mapped, values[i], sizeof(values[i]));
+            if (word_control && (i == 3 || i == 5 || i == 7)) {
+                const UINT words[] = {0x7FC01234, 0xFFC05678, 0x7F800000, 0xFF800000,
+                                      0x80000000, 0xFFFFFFFF, 0xDEADBEEF, 0x01234567};
+                std::memcpy(static_cast<std::byte *>(mapped) + 16, words, sizeof(words));
+                const UINT last = 0xABCD0000 | i;
+                std::memcpy(static_cast<std::byte *>(mapped) + 2812, &last, sizeof(last));
+            }
             // Deliberately persistently mapped; no writes after initialization.
         }
         std::array<Com<ID3D12Resource>, 8> gpu_constants;

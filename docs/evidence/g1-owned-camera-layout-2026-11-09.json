@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_CAMERA_LAYOUT_WORDS",
+  "observer_version": "bc0ead3-camera-layout-15",
+  "addon_sha256": "b79d96bfb2d9bee301657058fa67d2cbc4c9ed30a6c4a2425c91ed8f3da6b3f8",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "controls": [
+    {
+      "name": "owned-camera-layout-words-*",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_CAMERA_LAYOUT_WORDS",
+      "private_report_sha256": "2f9ed99460acff0b8adf96c802bc04e938d5b018885787dd334392ee541e393d",
+      "source_dirty": true,
+      "binary_sha256": {
+        "owned_app.exe": "acdea242aa5272552f5bbc81f1be64517b9915a755f05d1c31318698586c3fe5",
+        "renodx-devkit.addon64": "b79d96bfb2d9bee301657058fa67d2cbc4c9ed30a6c4a2425c91ed8f3da6b3f8",
+        "dxgi.dll": "52dcf461aefb0d041e542f846952b62503a6eff088fe53c2226c91f89954434d",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "postflight": "PASS",
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "devkit_asset_files": 0,
+      "comparisons": [
+        {
+          "source_index": 1,
+          "submitted": true,
+          "sample_states": [],
+          "sample_bytes": [],
+          "render_pass_blocked": false,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 4,
+            "flags": 0,
+            "nodeMask": 0,
+            "nonArrayBoundedShaderReadProven": false,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "targetLayoutBounded": true,
+            "targetMatches": [
+              {
+                "flags": 2,
+                "kind": "ROOT_CBV",
+                "rootParameter": 1,
+                "visibility": 5
+              }
+            ],
+            "targetSlot": 5,
+            "targetSpace": 7,
+            "unboundedTableRanges": 0,
+            "version": 1
+          },
+          "word_exact": null
+        },
+        {
+          "source_index": 3,
+          "submitted": true,
+          "sample_states": [
+            "READY"
+          ],
+          "sample_bytes": [
+            2816
+          ],
+          "render_pass_blocked": false,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "nonArrayBoundedShaderReadProven": false,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "targetLayoutBounded": true,
+            "targetMatches": [
+              {
+                "baseRegister": 5,
+                "descriptorOffset": 0,
+                "descriptorOffsetKnown": true,
+                "finite": true,
+                "kind": "TABLE_CBV",
+                "rangeDescriptors": 1,
+                "rangeFlags": 3,
+                "rangeIndex": 0,
+                "rootParameter": 1,
+                "visibility": 5
+              }
+            ],
+            "targetSlot": 5,
+            "targetSpace": 7,
+            "unboundedTableRanges": 0,
+            "version": 1
+          },
+          "word_exact": true
+        },
+        {
+          "source_index": 5,
+          "submitted": true,
+          "sample_states": [
+            "READY"
+          ],
+          "sample_bytes": [
+            2816
+          ],
+          "render_pass_blocked": false,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "nonArrayBoundedShaderReadProven": false,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "targetLayoutBounded": true,
+            "targetMatches": [
+              {
+                "baseRegister": 5,
+                "descriptorOffset": 0,
+                "descriptorOffsetKnown": true,
+                "finite": true,
+                "kind": "TABLE_CBV",
+                "rangeDescriptors": 1,
+                "rangeFlags": 3,
+                "rangeIndex": 0,
+                "rootParameter": 1,
+                "visibility": 5
+              }
+            ],
+            "targetSlot": 5,
+            "targetSpace": 7,
+            "unboundedTableRanges": 0,
+            "version": 1
+          },
+          "word_exact": true
+        },
+        {
+          "source_index": 7,
+          "submitted": false,
+          "sample_states": [
+            "UNSUBMITTED"
+          ],
+          "sample_bytes": [
+            0
+          ],
+          "render_pass_blocked": false,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "nonArrayBoundedShaderReadProven": false,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "targetLayoutBounded": true,
+            "targetMatches": [
+              {
+                "baseRegister": 5,
+                "descriptorOffset": 0,
+                "descriptorOffsetKnown": true,
+                "finite": true,
+                "kind": "TABLE_CBV",
+                "rangeDescriptors": 1,
+                "rangeFlags": 3,
+                "rangeIndex": 0,
+                "rootParameter": 1,
+                "visibility": 5
+              }
+            ],
+            "targetSlot": 5,
+            "targetSpace": 7,
+            "unboundedTableRanges": 0,
+            "version": 1
+          },
+          "word_exact": null
+        }
+      ]
+    },
+    {
+      "name": "owned-camera-layout-native-pass-*",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_NATIVE_RENDER_PASS_REJECTION",
+      "private_report_sha256": "336022582938f2227a17668df21dbe98021321bb8409d94c4040885054a56754",
+      "source_dirty": true,
+      "binary_sha256": {
+        "owned_app.exe": "acdea242aa5272552f5bbc81f1be64517b9915a755f05d1c31318698586c3fe5",
+        "renodx-devkit.addon64": "b79d96bfb2d9bee301657058fa67d2cbc4c9ed30a6c4a2425c91ed8f3da6b3f8",
+        "dxgi.dll": "52dcf461aefb0d041e542f846952b62503a6eff088fe53c2226c91f89954434d",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "postflight": "PASS",
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "devkit_asset_files": 0,
+      "comparisons": [
+        {
+          "source_index": 1,
+          "submitted": true,
+          "sample_states": [],
+          "sample_bytes": [],
+          "render_pass_blocked": true,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 4,
+            "flags": 0,
+            "nodeMask": 0,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "version": 1
+          },
+          "attempt_states": []
+        },
+        {
+          "source_index": 3,
+          "submitted": true,
+          "sample_states": [],
+          "sample_bytes": [],
+          "render_pass_blocked": true,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "version": 1
+          },
+          "attempt_states": [
+            "COPY_BLOCKED_NATIVE_RENDER_PASS"
+          ]
+        },
+        {
+          "source_index": 5,
+          "submitted": true,
+          "sample_states": [],
+          "sample_bytes": [],
+          "render_pass_blocked": true,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "version": 1
+          },
+          "attempt_states": [
+            "COPY_BLOCKED_NATIVE_RENDER_PASS"
+          ]
+        },
+        {
+          "source_index": 7,
+          "submitted": false,
+          "sample_states": [],
+          "sample_bytes": [],
+          "render_pass_blocked": true,
+          "root_signature": {
+            "descriptorKnown": true,
+            "dwordCost": 2,
+            "flags": 0,
+            "nodeMask": 0,
+            "parameters": 2,
+            "staticSamplers": 0,
+            "tagPresent": true,
+            "version": 1
+          },
+          "attempt_states": [
+            "COPY_BLOCKED_NATIVE_RENDER_PASS"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Provisional controls ran with source_dirty=true; exact source and binary fingerprints retained.",
+    "Completed704-word payload matches every authored bit including NaNs, infinities, signedzero, sentinels; unsubmitted ticket exposes no words.",
+    "Root-index/range metadata validated on authored root-CBV and singleton descriptor-table controls; shader access and non-array bounds are not inferred from root metadata.",
+    "Native render-pass copy rejection remains qualified; no source transition/state assumption was loosened.",
+    "Actual game root layout, lossless game payload and frozen/current-frame private camera substitution NOT_RUN.",
+    "No game binding or root/PSO replacement enabled."
+  ]
+}
