@@ -158,8 +158,11 @@ int wmain(int argc, wchar_t **argv) {
             check(device.As(&info));
         if (enhanced_control || scalar_control) {
             D3D12_FEATURE_DATA_D3D12_OPTIONS12 options{};
-            check(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS12, &options, sizeof(options)));
-            if (!options.EnhancedBarriersSupported) {
+            const auto feature_result =
+                device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS12, &options, sizeof(options));
+            if (FAILED(feature_result) && feature_result != E_INVALIDARG && feature_result != E_NOINTERFACE)
+                check(feature_result);
+            if (FAILED(feature_result) || !options.EnhancedBarriersSupported) {
                 if (scalar_control) {
                     std::cout << "NOT_RUN: enhanced barriers unsupported\n";
                     return 77;

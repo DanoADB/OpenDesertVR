@@ -22,7 +22,8 @@ if run.returncode == 77:
     print("NOT_RUN: enhanced barriers unsupported")
     sys.exit(77)
 if run.returncode:
-    raise RuntimeError(f"scalar_render_exit_{run.returncode}; retained evidence at {case}")
+    detail = run.stderr.decode(errors="replace")[-2000:].strip()
+    raise RuntimeError(f"scalar_render_exit_{run.returncode}: {detail}; retained evidence at {case}")
 actual = json.loads((case / "result.json").read_text())
 expected = {"schemaVersion": 1, "status": "PASS", "adapter": "WARP", "frames": 2,
             "pixelsVerifiedPerFrame": 2048, "recordedDrawsPerFrame": 5,
