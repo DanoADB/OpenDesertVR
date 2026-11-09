@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-09",
-  "status": "LIVE_SCENE_OBSERVER_READY",
+  "status": "OBSERVED_SCREEN_ASPECT_GEOMETRY_INPUT_CANDIDATE",
   "source_commit": "299f8db2fc77c2c6de2be5eb11db8fa1bf8a84cf",
   "observer_version": "bc0ead3-native-scene-12",
   "addon_sha256": "3424d5d46dc698ccaa6b0784a882c471b06aa9e5023a6aea2dd7cb9b9b2a22b4",
@@ -25,12 +25,272 @@
     "ODVDefaultConstants": 1,
     "ODVSceneAspectFilter": 1
   },
-  "scene_filter_runtime_confirmation": "PENDING_CAPTURE",
-  "capture": "NOT_RUN",
+  "scene_filter_runtime_confirmation": "PASS",
+  "capture": "COMPLETE_METADATA_ONLY",
   "camera_control": "NOT_RUN",
   "game_buffer_data_writes": "NOT_RUN",
   "game_stereo": "NOT_RUN",
   "headset": "NOT_RUN",
   "cleanup": "PENDING_NORMAL_GAME_EXIT",
-  "interpretation": "Separate observer12 loaded after verified normal exit and exact observer11 cleanup. The reviewed game build, version and pipe identity match. Owned screen-aspect selection passed; actual game selected-pass acquisition and visible-world consumer identification are pending."
+  "interpretation": "The bounded filter excludes square targets and reaches screen-aspect particle, refraction and standard geometry shader pairs. The standard vertex/pixel pair reads one 2816-byte range also bound at other registers in the reviewed passes. Its five half-resolution targets make it a visible-world candidate, not geometry-control proof. The copy-based sampler rejects all queried DEFAULT states, returning no bytes. No game buffer writes occurred; a same-stage constant-read path is being evaluated to avoid adding COPY_SOURCE access.",
+  "scene": "USER_CONFIRMED_STILL_3D_WORLD",
+  "capture_report_sha256": "86e4233f2d578bdc75e9ea721884cb61f8ad396555fb3d641c450415ffb6f73e",
+  "retained_records": 128,
+  "known_submission_records": 128,
+  "detail_records": 6,
+  "truncated": true,
+  "command_origins": {
+    "DrawIndexed": 10,
+    "DrawOrDispatchIndirect": 118
+  },
+  "queried_render_target_dimensions": [
+    [
+      [
+        1280,
+        360
+      ],
+      [
+        1280,
+        360
+      ]
+    ],
+    [
+      [
+        1280,
+        360
+      ],
+      [
+        1280,
+        360
+      ]
+    ],
+    [
+      [
+        1280,
+        360
+      ],
+      [
+        1280,
+        360
+      ]
+    ],
+    [
+      [
+        1280,
+        360
+      ],
+      [
+        1280,
+        360
+      ]
+    ],
+    [
+      [
+        2560,
+        720
+      ]
+    ],
+    [
+      [
+        2560,
+        720
+      ],
+      [
+        2560,
+        720
+      ],
+      [
+        2560,
+        720
+      ],
+      [
+        2560,
+        720
+      ],
+      [
+        2560,
+        720
+      ]
+    ]
+  ],
+  "direct_gpu_sample_count": 0,
+  "direct_gpu_bytes": 0,
+  "queried_source_states": [
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED",
+    "DEFAULT_STATE_UNVERIFIED"
+  ],
+  "consumer_review": {
+    "unique_ranges": 2,
+    "bindings": [
+      {
+        "draw_index": 106,
+        "slot": 14,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 106,
+        "slot": 20,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 106,
+        "slot": 21,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 106,
+        "slot": 32,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 108,
+        "slot": 14,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 108,
+        "slot": 20,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 108,
+        "slot": 21,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 108,
+        "slot": 32,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 125,
+        "slot": 14,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 125,
+        "slot": 20,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 125,
+        "slot": 21,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 125,
+        "slot": 32,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 127,
+        "slot": 14,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 127,
+        "slot": 20,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 127,
+        "slot": 21,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 127,
+        "slot": 32,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 90,
+        "slot": 17,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      },
+      {
+        "draw_index": 90,
+        "slot": 18,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 90,
+        "slot": 20,
+        "space": 35,
+        "active_pixel_binding": false,
+        "source_range": "range_1"
+      },
+      {
+        "draw_index": 15,
+        "slot": 18,
+        "space": 35,
+        "active_pixel_binding": true,
+        "source_range": "range_0"
+      }
+    ],
+    "shader_summary_report_sha256": "f93714a73cfa4269b954bc380468729ec607a26362d41377e8f1d23c19176203",
+    "standard_geometry_candidate": {
+      "draw_index": 15,
+      "vertex_and_pixel_stage_summaries": "STANDARD",
+      "target_dimensions": [
+        2560,
+        720
+      ],
+      "color_target_count": 5,
+      "cbv_slot": 18,
+      "cbv_space": 35,
+      "cbv_bytes": 2816,
+      "shared_source_range": "range_0",
+      "visible_world_geometry_control": "NOT_RUN"
+    },
+    "other_reviewed_pass_classes": [
+      "PARTICLES",
+      "REFRACTION"
+    ],
+    "camera_source_numeric_confirmation_this_launch": "NOT_RUN"
+  }
 }
