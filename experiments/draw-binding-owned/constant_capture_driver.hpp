@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "constant_snapshot.hpp"
+#include "vertex_constant_stream.hpp"
 #include <algorithm>
 #include <memory>
 #include <mutex>
@@ -19,6 +20,7 @@ class ConstantCaptureDriver final {
       private:
         friend class ConstantCaptureDriver;
         ConstantSnapshot snapshot;
+        std::unique_ptr<VertexConstantStream> vertex;
         std::uintptr_t list = 0, source = 0;
         UINT64 offset = 0, capture = 0;
         std::size_t bytes = 0;
@@ -46,11 +48,15 @@ class ConstantCaptureDriver final {
             if (!entry->retired || entry->failed)
                 return false;
             if (!entry->executed)
-                return entry->snapshot.discard_unsubmitted();
+                return entry->vertex ? entry->vertex->discard_unsubmitted() : entry->snapshot.discard_unsubmitted();
             if (entry->pending || entry->ambiguous)
                 return false;
             // Preserve an immutable CPU sample before retiring its allocation.
             try {
+                if (entry->vertex) {
+                    (void)entry->vertex->read();
+                    return entry->vertex->release_retired();
+                }
                 (void)entry->snapshot.read_completed();
                 return entry->snapshot.release_retired();
             } catch (...) {
@@ -74,6 +80,53 @@ class ConstantCaptureDriver final {
                           ID3D12Resource *source, UINT64 offset, std::size_t bytes, const KnownBufferStates &states,
                           RecordStatus *status = nullptr) {
         return record_impl(list, device, commands, source, offset, bytes, &states, status);
+    }
+    template <class Restore>
+    Ticket record_vertex(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
+                         ID3D12Resource *source, UINT64 offset, const VertexConstantStream::Context &context,
+                         Restore &&restore, RecordStatus *status = nullptr) {
+        const std::lock_guard lock(mutex_);
+        RecordStatus result;
+        const auto reject = [&](const char *reason) -> Ticket {
+            result.state = reason;
+            if (status)
+                *status = result;
+            return {};
+        };
+        collect_retired();
+        if (!list || !capture_ || !device || !commands)
+            return reject("INVALID_CAPTURE_CONTEXT");
+        if (entries_.size() >= VertexConstantStream::maximum_pending)
+            return reject("CAPACITY_REACHED");
+        result.source = ConstantSnapshot::inspect_source(source, offset, VertexConstantStream::byte_count);
+        const auto identity = reinterpret_cast<std::uintptr_t>(source);
+        for (const auto &entry : entries_)
+            if (!entry->retired && entry->list == list && entry->source == identity && entry->offset == offset &&
+                entry->bytes == VertexConstantStream::byte_count)
+                return reject("DUPLICATE_SOURCE_RANGE");
+        auto entry = std::make_shared<Entry>();
+        entry->vertex = std::make_unique<VertexConstantStream>();
+        entry->list = list;
+        entry->source = identity;
+        entry->offset = offset;
+        entry->bytes = VertexConstantStream::byte_count;
+        entry->capture = capture_;
+        entries_.push_back(entry); // Tracking allocation precedes GPU recording.
+        try {
+            if (!entry->vertex->record(device, commands, source, offset, context, std::forward<Restore>(restore))) {
+                entries_.pop_back();
+                return reject("VERTEX_READ_NOT_RECORDED");
+            }
+        } catch (...) {
+            entries_.pop_back();
+            throw;
+        }
+        result.source.state = "ELIGIBLE_ACTIVE_VERTEX_CBV";
+        result.source.supported = true;
+        result.state = "RECORDED_VERTEX_STREAM";
+        if (status)
+            *status = result;
+        return entry;
     }
 
   private:
@@ -145,7 +198,10 @@ class ConstantCaptureDriver final {
             }
             entry->executed = true;
             entry->pending = true;
-            (void)entry->snapshot.before_execute();
+            if (entry->vertex)
+                (void)entry->vertex->before_execute();
+            else
+                (void)entry->snapshot.before_execute();
         }
     }
     void after_present(ID3D12CommandQueue *queue) { after_submission(queue, std::nullopt); }
@@ -161,7 +217,8 @@ class ConstantCaptureDriver final {
         const std::lock_guard lock(mutex_);
         for (const auto &entry : entries_) {
             if (!queue || !entry->pending || entry->ambiguous || entry->failed || entry->queue.Get() != queue ||
-                entry->thread != std::this_thread::get_id() || (list && entry->list != *list))
+                entry->thread != std::this_thread::get_id() || (list && entry->list != *list) ||
+                (entry->vertex && !list)) // Shader reads require exact native after-execute, never Present.
                 continue;
             Com<ID3D12Device> device;
             Com<ID3D12Fence> fence;
@@ -173,7 +230,9 @@ class ConstantCaptureDriver final {
             }
             // Caller has returned from native execution submission, either via
             // the exact callback or the qualified same-thread present route.
-            if (!entry->snapshot.submitted_after_execute(fence.Get(), 1)) {
+            const bool submitted = entry->vertex ? entry->vertex->submitted_after_execute(fence.Get(), 1)
+                                                 : entry->snapshot.submitted_after_execute(fence.Get(), 1);
+            if (!submitted) {
                 entry->failed = true;
                 continue;
             }
@@ -213,6 +272,10 @@ class ConstantCaptureDriver final {
         if (entry->failed || entry->ambiguous)
             return {"UNVERIFIED_SUBMISSION", {}};
         try {
+            if (entry->vertex) {
+                auto result = entry->vertex->read();
+                return {result.state, std::move(result.bytes)};
+            }
             const auto &bytes = entry->snapshot.read_completed();
             if (bytes)
                 return {"READY", *bytes};

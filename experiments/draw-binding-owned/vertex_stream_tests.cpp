@@ -2,6 +2,7 @@
 // Owned-only feasibility control. No game integration or generic state restore.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "constant_capture_driver.hpp"
 #include "vertex_constant_stream.hpp"
 #include <array>
 #include <cstddef>
@@ -358,6 +359,61 @@ Output main(uint id : SV_VertexID) {
             require(abandoned.discard_unsubmitted(), "unsubmitted_retirement_failed");
             odv::research::DeferredResourceRelease::drain();
         }
+        {
+            odv::research::ConstantCaptureDriver driver;
+            driver.begin_capture();
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const auto restore = [&]() noexcept {
+                commands->SetGraphicsRootSignature(signature.Get());
+                commands->SetPipelineState(pipeline.Get());
+                commands->SetGraphicsRootConstantBufferView(0, source->GetGPUVirtualAddress() + source_offset);
+                commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+                commands->OMSetRenderTargets(0, nullptr, FALSE, nullptr);
+                const std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> unbound{};
+                commands->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
+            };
+            transition(commands.Get(), source.Get(), D3D12_RESOURCE_STATE_COMMON,
+                       D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+            odv::research::ConstantCaptureDriver::RecordStatus status;
+            const auto ticket = driver.record_vertex(123, device.Get(), commands.Get(), source.Get(), source_offset,
+                                                     context, restore, &status);
+            require(ticket && status.source.supported && std::strcmp(status.state, "RECORDED_VERTEX_STREAM") == 0,
+                    "driver_vertex_record_failed");
+            require(
+                !driver.record_vertex(123, device.Get(), commands.Get(), source.Get(), source_offset, context, restore),
+                "driver_duplicate_source_accepted");
+            require(driver.read(ticket).bytes.empty(), "driver_unsubmitted_granted_bytes");
+            transition(commands.Get(), source.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+                       D3D12_RESOURCE_STATE_COMMON);
+            checked(commands->Close());
+            checked(queue->Wait(gate.Get(), 7));
+            driver.before_execute(123, queue.Get());
+            ID3D12CommandList *execute[] = {commands.Get()};
+            queue->ExecuteCommandLists(1, execute);
+            driver.after_present(queue.Get());      // Never covers a vertex reader.
+            driver.after_execute(999, queue.Get()); // Different recording.
+            checked(queue->Signal(fence.Get(), 7));
+            require(driver.read(ticket).bytes.empty(), "driver_pending_granted_bytes");
+            checked(gate->Signal(7));
+            checked(fence->SetEventOnCompletion(7, event.get()));
+            require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0, "driver_gpu_timeout");
+            require(driver.read(ticket).bytes.empty(), "present_or_other_recording_granted_completion");
+            driver.after_execute(123, queue.Get()); // Actual native execution has returned.
+            checked(queue->Signal(fence.Get(), 8));
+            checked(fence->SetEventOnCompletion(8, event.get()));
+            require(WaitForSingleObject(event.get(), 5000) == WAIT_OBJECT_0, "driver_covering_fence_timeout");
+            const auto actual = driver.read(ticket);
+            require(std::strcmp(actual.state, "READY") == 0 && actual.bytes.size() == bytes &&
+                        std::memcmp(actual.bytes.data(),
+                                    reinterpret_cast<const std::byte *>(expected.data()) + source_offset, bytes) == 0,
+                    "driver_vertex_sample_failed");
+            driver.before_reset(123);
+            checked(allocator->Reset());
+            checked(commands->Reset(allocator.Get(), nullptr));
+            driver.recording_resumed(123);
+            odv::research::DeferredResourceRelease::drain();
+            require(driver.read(ticket).bytes == actual.bytes, "driver_retirement_changed_frozen_sample");
+        }
         checked(commands->Close());
         if (info)
             for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
@@ -371,12 +427,12 @@ Output main(uint id : SV_VertexID) {
                     throw std::runtime_error("debug_layer_error");
                 }
             }
-        std::cout
-            << "PASS: vertex-to-stream-output 2816-byte bit-exact read; mixed integer/NaN bits; "
-               "original 4096 bytes unchanged; predicated-off and incomplete output rejected; filled-byte "
-               "counter verified; covering fence, same-recording repeat, unsubmitted retirement controls; adapter="
-            << (hardware ? "hardware" : "WARP") << "; debug=" << (validation ? "ENABLED" : "UNAVAILABLE")
-            << "; game=NOT_RUN; app_state_restore=NOT_RUN\n";
+        std::cout << "PASS: vertex-to-stream-output 2816-byte bit-exact read; mixed integer/NaN bits; "
+                     "original 4096 bytes unchanged; predicated-off and incomplete output rejected; filled-byte "
+                     "counter verified; covering fence, same-recording repeat, unsubmitted retirement, exact driver "
+                     "after-execute controls; adapter="
+                  << (hardware ? "hardware" : "WARP") << "; debug=" << (validation ? "ENABLED" : "UNAVAILABLE")
+                  << "; game=NOT_RUN; app_state_restore=NOT_RUN\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << error.what() << '\n';

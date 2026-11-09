@@ -117,3 +117,25 @@ Hosted results remain limited. The initial 121f0e6 Release job passes with the
 debug layer enabled, but its overall run fails with no Debug job reported.
 The subsequent 3d22d25 run fails with zero jobs and no check annotations; the
 cause is unverified. Neither run establishes a full hosted matrix pass.
+
+`PreparedGraphicsReplay` now records the affected native state into a fixed
+packet before GPU work. Replay performs no allocation or framework callback;
+descriptor heaps, viewport/scissor and predication remain untouched by the
+reader. The pixel fixture uses this packet for its root-CBV/table layouts.
+The shared capture driver also supports vertex tickets with exact native
+after-execute fences. Present and another recording's callback do not grant
+data, even after independent GPU completion. The owned byte control verifies
+that rejection, duplicate-range rejection and immutable data after retirement.
+
+Hosted Debug for 6160107 passes the component and renderer with the debug layer
+enabled (five optional tests pass, four enhanced tests skip). Its overall run
+still fails with no Release job reported. Downloaded logs are retained and
+hashed; no full hosted matrix pass is inferred.
+
+The existing ReShade SO wrapper can return without emitting its generic bind
+event if GPU-address resolution fails after the native binding was changed.
+Consequently a generic-event-only SO cache cannot prove replay completeness.
+The next separately pinned wrapper must notify the observer of native SO
+changes before that resolution path. Native query/render-pass notifications
+should likewise establish actual execution boundaries. Unknown or incomplete
+state must reject the capture; the original application draw still proceeds.

@@ -2,6 +2,7 @@
 // Original WARP geometry/readback control. No game, XR or capture-tool dependency.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "prepared_graphics_replay.hpp"
 #include "scoped_scalar_patch.hpp"
 #include "vertex_constant_stream.hpp"
 #include <algorithm>
@@ -609,11 +610,25 @@ int wmain(int argc, wchar_t **argv) {
                 if constexpr (stream_control) {
                     if (column < 3) {
                         const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
-                        const auto restore = [&]() noexcept {
-                            const std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> unbound{};
-                            list->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
-                            bind_draw(list, column, table, first);
-                        };
+                        odv::research::PreparedGraphicsReplay replay;
+                        replay.root = roots[table ? 1 : 0].Get();
+                        replay.pipeline = pipelines[table ? 1 : 0].Get();
+                        replay.root_count = 2;
+                        for (UINT index = 0; index < 2; ++index) {
+                            replay.arguments[index].kind = table
+                                                               ? odv::research::PreparedGraphicsReplay::RootKind::table
+                                                               : odv::research::PreparedGraphicsReplay::RootKind::cbv;
+                            replay.arguments[index].address =
+                                table ? gpu.ptr + (first - 2 + index) * cstride
+                                      : bound_constant(first + index)->GetGPUVirtualAddress();
+                        }
+                        replay.target_count = 1;
+                        replay.targets[0] = draw_view;
+                        replay.targets_known = replay.stream_outputs_known = true;
+                        replay.topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                        if (!replay.ready())
+                            throw std::runtime_error("prepared_replay_incomplete");
+                        const auto restore = [&]() noexcept { replay.apply(list); };
                         if (!stream_samples[column].record(device.Get(), list, bound_constant(first), 0, context,
                                                            restore))
                             throw std::runtime_error("vertex_stream_render_record_failed");
