@@ -35,6 +35,21 @@ int main(int argc, char **argv) {
         };
         auto result = inspect(create + load);
         require(result.supported && result.loads == 1 && result.maximum_byte_end == 2816 && result.rows.contains(175));
+        std::uint32_t signless = 0;
+        require(odv::research::cbv_detail::i32("i32 -1", signless) && signless == 0xffffffffu);
+        require(odv::research::cbv_detail::i32("i32 -2147483648", signless) && signless == 0x80000000u);
+        require(!odv::research::cbv_detail::i32("i32 -2147483649", signless));
+        auto extra = metadata;
+        extra.replace(extra.find("!5 = !{!6}"), 10, "!5 = !{!6, !7}");
+        extra += "!7 = !{i32 1, %Other* undef, !\"\", i32 -2147483648, i32 0, i32 -1, i32 16, null}\n";
+        require(odv::research::observe_static_cbv(extra + create + load, 18, 35, 2816).supported);
+        require(inspect(create +
+                        "%srv = call %dx.types.Handle @dx.op.createHandle(i32 57, i8 0, i32 0, i32 %index, i1 true)\n" +
+                        load)
+                    .supported);
+        require(!inspect("%1 = call %dx.types.Handle @dx.op.createHandle(i32 57, i8 2, i32 0, i32 %index, i1 true)\n" +
+                         load)
+                     .supported);
         require(
             !inspect(
                  create +

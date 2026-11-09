@@ -18,6 +18,7 @@ struct StaticCbvAccess {
     bool supported = false;
     std::uint32_t declarations = 0, descriptor_count = 0, declared_bytes = 0;
     std::uint32_t handles = 0, loads = 0, maximum_byte_end = 0;
+    std::uint32_t malformed_record_fields = 0, malformed_record_integer_mask = 0;
     std::set<std::uint32_t> rows;
     const char *reason = "UNSUPPORTED";
 };
@@ -31,7 +32,19 @@ inline bool number(std::string_view s, std::uint32_t &out) {
     return !s.empty() && parsed.ec == std::errc{} && parsed.ptr == s.data() + s.size();
 }
 inline bool i32(const std::string &s, std::uint32_t &out) {
-    return s.starts_with("i32 ") && number(std::string_view(s).substr(4), out);
+    if (!s.starts_with("i32 "))
+        return false;
+    const auto value = std::string_view(s).substr(4);
+    if (!value.starts_with("-"))
+        return number(value, out);
+    // LLVM integers are signless. DXC prints high-bit spaces/unbounded
+    // descriptor counts as negative decimal literals; preserve all 32 bits.
+    std::int32_t signed_value = 0;
+    const auto parsed = std::from_chars(value.data(), value.data() + value.size(), signed_value);
+    if (parsed.ec != std::errc{} || parsed.ptr != value.data() + value.size())
+        return false;
+    out = static_cast<std::uint32_t>(signed_value);
+    return true;
 }
 inline std::vector<std::string> fields(std::string_view s) {
     std::vector<std::string> result;
@@ -119,11 +132,21 @@ inline StaticCbvAccess observe_static_cbv(std::string_view text, std::uint32_t r
     for (const auto &reference : get(resources[2])) {
         const auto &record = get(reference);
         std::uint32_t id = 0, slot = 0, sp = 0, count = 0, bytes = 0;
-        if (record.size() != 8 || !i32(record[0], id) || !i32(record[3], sp) || !i32(record[4], slot) ||
-            !i32(record[5], count) || !i32(record[6], bytes))
+        if (record.size() != 8) {
+            result.malformed_record_fields=static_cast<std::uint32_t>(record.size());
             return fail("CBV_DECLARATION_FORMAT");
+        }
+        const bool known_id=i32(record[0],id), known_space=i32(record[3],sp),
+                   known_slot=i32(record[4],slot), known_count=i32(record[5],count);
+        if (!known_id || !known_space || !known_slot || !known_count) {
+            result.malformed_record_fields=8;
+            result.malformed_record_integer_mask=(known_id?1u:0u)|(known_space?2u:0u)|(known_slot?4u:0u)|(known_count?8u:0u);
+            return fail("CBV_DECLARATION_FORMAT");
+        }
         if (sp != space || slot > reg || (count && std::uint64_t(slot) + count <= reg))
             continue;
+        if (!i32(record[6], bytes))
+            return fail("TARGET_SIZE_FORMAT");
         ++result.declarations;
         target_id = id;
         result.descriptor_count = count;
@@ -134,9 +157,9 @@ inline StaticCbvAccess observe_static_cbv(std::string_view text, std::uint32_t r
     if (result.declarations != 1)
         return fail("TARGET_DECLARATION_NOT_UNIQUE");
     static const std::regex binding(
-        R"(^(%[A-Za-z0-9_.]+) = call %dx.types.Handle @dx.op.createHandleFromBinding\(i32 217, %dx.types.ResBind \{ i32 ([0-9]+), i32 ([0-9]+), i32 ([0-9]+), i8 ([0-9]+) \}, i32 ([0-9]+), i1 (?:false|true)\)$)");
+        R"(^(%[A-Za-z0-9_.]+) = call %dx.types.Handle @dx.op.createHandleFromBinding\(i32 217, %dx.types.ResBind \{ i32 (-?[0-9]+), i32 (-?[0-9]+), i32 (-?[0-9]+), i8 ([0-9]+) \}, i32 ([A-Za-z0-9_%.-]+), i1 (?:false|true)\)$)");
     static const std::regex legacy(
-        R"(^(%[A-Za-z0-9_.]+) = call %dx.types.Handle @dx.op.createHandle\(i32 57, i8 ([0-9]+), i32 ([0-9]+), i32 ([0-9]+), i1 (?:false|true)\)$)");
+        R"(^(%[A-Za-z0-9_.]+) = call %dx.types.Handle @dx.op.createHandle\(i32 57, i8 ([0-9]+), i32 ([0-9]+), i32 ([A-Za-z0-9_%.-]+), i1 (?:false|true)\)$)");
     static const std::regex annotate(
         R"(^(%[A-Za-z0-9_.]+) = call %dx.types.Handle @dx.op.annotateHandle\(i32 216, %dx.types.Handle (%[A-Za-z0-9_.]+), %dx.types.ResourceProperties \{ i32 [0-9]+, i32 [0-9]+ \}\)$)");
     static const std::regex load(
@@ -154,21 +177,21 @@ inline StaticCbvAccess observe_static_cbv(std::string_view text, std::uint32_t r
         std::smatch match;
         if (std::regex_match(line, match, binding)) {
             std::uint32_t low = 0, high = 0, sp = 0, kind = 0, index = 0;
-            if (!number(match[2].str(), low) || !number(match[3].str(), high) || !number(match[4].str(), sp) ||
-                !number(match[5].str(), kind) || !number(match[6].str(), index))
+            if (!i32("i32 " + match[2].str(), low) || !i32("i32 " + match[3].str(), high) ||
+                !i32("i32 " + match[4].str(), sp) || !number(match[5].str(), kind))
                 return fail("OPERAND_BOUND");
             if (kind == 2 && sp == space && low <= reg && high >= reg) {
-                if (low != reg || high != reg || index != reg)
+                if (low != reg || high != reg || !number(match[6].str(), index) || index != reg)
                     return fail("DESCRIPTOR_SELECTION");
                 handles.insert(match[1].str());
                 creations.insert(i);
             }
         } else if (std::regex_match(line, match, legacy)) {
             std::uint32_t kind = 0, id = 0, index = 0;
-            if (!number(match[2].str(), kind) || !number(match[3].str(), id) || !number(match[4].str(), index))
+            if (!number(match[2].str(), kind) || !number(match[3].str(), id))
                 return fail("OPERAND_BOUND");
             if (kind == 2 && id == target_id) {
-                if (index != reg)
+                if (!number(match[4].str(), index) || index != reg)
                     return fail("DESCRIPTOR_SELECTION");
                 handles.insert(match[1].str());
                 creations.insert(i);

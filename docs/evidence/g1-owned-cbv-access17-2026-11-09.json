@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_STATIC_CBV_ACCESS17_OBSERVATION",
+  "observer_version": "bc0ead3-cbv-access-17",
+  "addon_sha256": "65242437899d319ac951b7f06edc534d8fd5fc942610105acd52f8cdce1be02b",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "controls": [
+    {
+      "status": "QUALIFIED_PROVISIONAL_OWNED_CBV_ACCESS",
+      "private_report_sha256": "717f7a9bbd67c64ac9f12bfd11e286899d0529d36e90e3bf66b97ed9a076478a",
+      "source_dirty": true,
+      "binary_sha256": {
+        "owned_app.exe": "acdea242aa5272552f5bbc81f1be64517b9915a755f05d1c31318698586c3fe5",
+        "renodx-devkit.addon64": "65242437899d319ac951b7f06edc534d8fd5fc942610105acd52f8cdce1be02b",
+        "dxgi.dll": "52dcf461aefb0d041e542f846952b62503a6eff088fe53c2226c91f89954434d",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "postflight": "PASS",
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "devkit_asset_files": 0,
+      "shader_access_observations": [
+        {
+          "declarations": 0,
+          "declaredBytes": 0,
+          "descriptorCount": 0,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 3612,
+          "shaderHash": "0xE5F94D53",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "TARGET_DECLARATION_NOT_UNIQUE"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 16,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 1,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 16,
+          "rows": [
+            0
+          ],
+          "shaderBytes": 3256,
+          "shaderHash": "0xDF79FE45",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 0,
+          "declaredBytes": 0,
+          "descriptorCount": 0,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 3612,
+          "shaderHash": "0xE5F94D53",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "TARGET_DECLARATION_NOT_UNIQUE"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 16,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 1,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 16,
+          "rows": [
+            0
+          ],
+          "shaderBytes": 3256,
+          "shaderHash": "0xDF79FE45",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 0,
+          "declaredBytes": 0,
+          "descriptorCount": 0,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 3612,
+          "shaderHash": "0xE5F94D53",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "TARGET_DECLARATION_NOT_UNIQUE"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 16,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 1,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 16,
+          "rows": [
+            0
+          ],
+          "shaderBytes": 3256,
+          "shaderHash": "0xDF79FE45",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 0,
+          "declaredBytes": 0,
+          "descriptorCount": 0,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 3612,
+          "shaderHash": "0xE5F94D53",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "TARGET_DECLARATION_NOT_UNIQUE"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 16,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 1,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 16,
+          "rows": [
+            0
+          ],
+          "shaderBytes": 3256,
+          "shaderHash": "0xDF79FE45",
+          "slot": 5,
+          "space": 7,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        }
+      ],
+      "samples": [
+        {
+          "source_index": 1,
+          "sample_states": [],
+          "sample_bytes": [],
+          "word_exact": null,
+          "render_pass_blocked": false
+        },
+        {
+          "source_index": 3,
+          "sample_states": [
+            "READY"
+          ],
+          "sample_bytes": [
+            2816
+          ],
+          "word_exact": true,
+          "render_pass_blocked": false
+        },
+        {
+          "source_index": 5,
+          "sample_states": [
+            "READY"
+          ],
+          "sample_bytes": [
+            2816
+          ],
+          "word_exact": true,
+          "render_pass_blocked": false
+        },
+        {
+          "source_index": 7,
+          "sample_states": [
+            "UNSUBMITTED"
+          ],
+          "sample_bytes": [
+            0
+          ],
+          "word_exact": null,
+          "render_pass_blocked": false
+        }
+      ]
+    },
+    {
+      "status": "QUALIFIED_PROVISIONAL_OWNED_NATIVE_RENDER_PASS_REJECTION",
+      "private_report_sha256": "8f6aec2b01f9e6a8443947552a569cc8115f90be3cecb8891f9a29d3921de5c2",
+      "source_dirty": true,
+      "binary_sha256": {
+        "owned_app.exe": "acdea242aa5272552f5bbc81f1be64517b9915a755f05d1c31318698586c3fe5",
+        "renodx-devkit.addon64": "65242437899d319ac951b7f06edc534d8fd5fc942610105acd52f8cdce1be02b",
+        "dxgi.dll": "52dcf461aefb0d041e542f846952b62503a6eff088fe53c2226c91f89954434d",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "postflight": "PASS",
+      "owned_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "devkit_asset_files": 0,
+      "shader_access_observations": [],
+      "samples": [
+        {
+          "source_index": 1,
+          "sample_states": [],
+          "sample_bytes": [],
+          "word_exact": null,
+          "render_pass_blocked": true
+        },
+        {
+          "source_index": 3,
+          "sample_states": [],
+          "sample_bytes": [],
+          "word_exact": null,
+          "render_pass_blocked": true
+        },
+        {
+          "source_index": 5,
+          "sample_states": [],
+          "sample_bytes": [],
+          "word_exact": null,
+          "render_pass_blocked": true
+        },
+        {
+          "source_index": 7,
+          "sample_states": [],
+          "sample_bytes": [],
+          "word_exact": null,
+          "render_pass_blocked": true
+        }
+      ]
+    }
+  ],
+  "local_sdk_tests": {
+    "Debug": "PASS_3_TESTS",
+    "Release": "PASS_3_TESTS",
+    "scope": "SM6.0/6.6 constant/dynamic target fixtures, high-bit registerspace and unrelated nonuniform SRV descriptor-array selection; signed-i32 boundaries and unknown/target-dynamic controls."
+  },
+  "limits": [
+    "Provisional owned controls ran with source_dirty=true; exact source/binary/controller fingerprints retained privately.",
+    "The game16 declaration rejection cause remains unverified until corrected observer runs.",
+    "No shader bytes/text exported and no game binding, source or pipeline override enabled.",
+    "Static access syntax is distinct from complete downstream consumption, payload freshness or camera influence."
+  ]
+}

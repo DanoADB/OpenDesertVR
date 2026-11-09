@@ -244,7 +244,7 @@
     "report.json": "5801c0abba4568b8eb129b14975ac8ae3ab6e1c0b5f56b080bfa6161c7cb5def",
     "camera-selected-check.json": "0520c835acce227b39c7683292035e7ace657f8689d2316e7d9f91ce97389022"
   },
-  "cleanup": "NOT_RUN_GAME_STILL_RUNNING",
+  "cleanup": "PASS",
   "world_gpu_copy": "NOT_RUN_DEFAULT_STATE_UNVERIFIED",
   "world_camera_influence": "NOT_RUN",
   "independent_game_eye_views": "NOT_RUN",
@@ -254,5 +254,15 @@
     "Lossless words include NaN/integer bit patterns; only selected historical numeric fields passed checks.",
     "Shadow and world bindings occur on different command-list recordings; no copy-forward or frozen private-camera payload is qualified.",
     "Root layout metadata does not establish complete private root/PSO compatibility; no game binding or original source modification performed."
-  ]
+  ],
+  "cleanup_postflight": {
+    "status": "PASS",
+    "game_identity_unchanged": true,
+    "created_files_removed": [
+      "dxgi.dll",
+      "ReShade.ini"
+    ],
+    "devkit_asset_files": 0,
+    "private_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  }
 }

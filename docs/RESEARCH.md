@@ -39,6 +39,14 @@ still require exact-shader consumption analysis before a private camera probe.
 The world source remains ineligible for direct copying under the current
 state proof. No camera override or independent game eye render has run.
 
+[Observer16](evidence/g1-game-cbv-access-2026-11-09.json) encountered a
+singleton 2,768-byte target declaration in the world VS and three PS variants.
+A later declaration-format rejection prevents complete uniqueness and load-bound
+qualification. The [selected-shader method](research/g1-static-cbv-access-method.md)
+keeps this partial result explicit. A parser correction is qualified against
+owned high-bit-space and unrelated dynamic-descriptor fixtures before another
+game observation; it does not enable a camera override by itself.
+
 The [owned indirect GPU test](evidence/g1-owned-warp-runtime-2026-11-09.json)
 passes all 19 rendering/count/reset/preservation cases in hosted Debug and
 Release with the debug layer enabled, using explicitly loaded test-only

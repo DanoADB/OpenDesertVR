@@ -13,9 +13,18 @@ SM6.0 `createHandle` or SM6.6 `createHandleFromBinding` plus annotations. It
 collects all handles before inspecting uses, including forward references.
 Only literal-index f32/i32 `cbufferLoadLegacy` uses are accepted; each complete
 16-byte row must fit both the declared buffer and the explicit byte limit.
-Dynamic loads, descriptor arrays, unsupported handle uses and heap/library
-handle origins return an unsupported observation. The analysis intentionally
-rejects some unrelated dynamic handle creations rather than guessing aliases.
+Dynamic target loads, target descriptor arrays, unsupported target-handle uses
+and heap/library handle origins return an unsupported observation. Recognized
+handle creation for a different resource class or a disjoint declared binding
+does not alias the target CBV; its index can remain dynamic. Unknown handle
+origins still reject the observation.
+
+DXC's signless i32 operands may print high-bit spaces and unbounded descriptor
+counts as negative decimal literals. The parser preserves their exact32-bit
+value and rejects values outside that domain. All CBV register/space/count
+records must be interpretable to establish unique target selection. Declared
+buffer size is required for the target; unrelated size fields are not used as
+target access evidence.
 
 Input text, line length, metadata count, nesting and target-handle count have
 fixed bounds. DXC text is compiler output, not an arbitrary LLVM module accepted
