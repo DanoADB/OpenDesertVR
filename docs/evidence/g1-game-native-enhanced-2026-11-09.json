@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "LIVE_ENHANCED_OBSERVER_READY",
+  "source_commit": "7ffcc26ad5bb8a9dc0010beb1accf7fb4c1ff9e5",
+  "observer_version": "bc0ead3-native-enhanced-11",
+  "addon_sha256": "e5473781c0fadcdfbc65ad185750dc2e08354718537495d19d4c09e833431780",
+  "native_reshade_sha256": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+  "controller_sha256": "7397128c5ca5c7fdc6ad755972b273cf3fcb95ce7d7f49c63e47daf991db0f19",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "presenting_d3d12_devices": 1,
+  "prior_observer_exact_cleanup": "PASS",
+  "prior_cleanup_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74",
+  "configuration": {
+    "ODVConstantBytes": 2816,
+    "ODVConstantMaxBytes": 0,
+    "ODVGraphicsOnly": 1,
+    "ODVUploadInputs": 0,
+    "ODVDefaultConstants": 1
+  },
+  "capture": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "game_buffer_data_writes": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "cleanup": "PENDING_NORMAL_GAME_EXIT",
+  "interpretation": "Observer11 loaded after normal game exit and exact cleanup of observer10. The reviewed game build and pipe server match. Enhanced capture passed owned qualification; actual 3D game acquisition is pending."
+}
