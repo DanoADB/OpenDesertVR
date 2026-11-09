@@ -1,6 +1,32 @@
 # M0 references and next G1 experiment
 
-Current advancement decision: [ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md).
+Current integration state, 2026-11-09: actual game GPU observations identified
+a camera-like shadow input whose selected view fields respond to a controlled
+camera turn. A later capture identified a screen-shaped standard-geometry
+input, but its buffer state prevented a safe read. These are distinct captures;
+resource identities do not carry across launches. See the
+[shadow-camera evidence](evidence/g1-game-native-enhanced-2026-11-09.json) and
+[world-input candidate](evidence/g1-game-native-scene-2026-11-09.json).
+
+The [qualified observer14](evidence/g1-owned-native-indirect-2026-11-09.json)
+can capture both shader roles and actual native signature/root metadata within
+one recording. The next live capture must compare exact source ranges,
+recording identities and ordering. An alias alone does not prove unchanged
+contents or valid cached bindings after prior indirect commands. Establish
+those conditions before substituting a private camera copy.
+
+[Private binding](evidence/g1-owned-private-table-2026-11-09.json) and
+[split-table rendering](evidence/g1-owned-private-split-2026-11-09.json) now
+change and restore owned geometry using separately created roots/PSOs and
+unchanged shaders and source buffers. Actual game layout compatibility, camera
+influence, independently rendered eye views and game OpenXR submission remain
+unverified. The next product gate is visible world-camera influence, followed
+by distinct game eye renders and OpenXR delivery; additional cube tests are
+not a prerequisite.
+
+The earlier investigation and stop decisions follow as historical context.
+
+Earlier advancement decision: [ADR 0003](decisions/0003-g1-current-evidence-and-stop-decision.md).
 Hold G2/game-adapter implementation; stop repeating the failed capture method.
 The new [native-camera telemetry lead](research/crimson-telemetry-camera-lead.md)
 has a pinned historical exact-hash profile and actual current-file instruction
