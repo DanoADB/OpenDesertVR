@@ -86,3 +86,10 @@ add_test(NAME owned_vertex_stream_render COMMAND "${Python3_EXECUTABLE}"
   "${CMAKE_CURRENT_SOURCE_DIR}/vertex_stream_render.py" "$<TARGET_FILE:odv_vertex_stream_render_tests>"
   "${CMAKE_CURRENT_BINARY_DIR}/vertex-stream-render-cases")
 set_tests_properties(owned_vertex_stream_render PROPERTIES TIMEOUT 25)
+add_executable(odv_native_draw_state_tests native_draw_state_tests.cpp)
+target_compile_features(odv_native_draw_state_tests PRIVATE cxx_std_20)
+if(MSVC)
+  target_compile_options(odv_native_draw_state_tests PRIVATE /W4 /WX /EHsc)
+endif()
+add_test(NAME owned_native_draw_state_metadata COMMAND odv_native_draw_state_tests)
+set_tests_properties(owned_native_draw_state_metadata PROPERTIES TIMEOUT 5)

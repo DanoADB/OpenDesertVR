@@ -126,6 +126,9 @@ Output main(uint id : SV_VertexID) {
         bool complete_replay_prepared = false;
         bool stream_output_bindings_known = false;
         bool unprotected = false;
+        // A reflected binding is not access proof, particularly for a skipped
+        // or zero-work draw. Require a separately established read scope.
+        bool known_constant_read_access = false;
     };
     struct Sample {
         const char *state;
@@ -161,7 +164,8 @@ Output main(uint id : SV_VertexID) {
         if (phase_ != Phase::empty || !device || !commands || !source ||
             commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT || !context.active_vertex_cbv ||
             !context.outside_render_pass || !context.no_active_app_query || !context.complete_replay_prepared ||
-            !context.stream_output_bindings_known || !context.unprotected || offset % 256)
+            !context.stream_output_bindings_known || !context.unprotected || !context.known_constant_read_access ||
+            offset % 256)
             return false;
         const auto desc = source->GetDesc();
         D3D12_HEAP_PROPERTIES heap{};

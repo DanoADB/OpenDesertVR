@@ -104,9 +104,12 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-default-present-gap" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-default-2816" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816" &&
+              std::wstring_view(argv[2]) != L"--loop-vertex-source" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-world-aspect")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
+        const bool vertex_observer_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-vertex-source";
+        const bool vertex_source_control = stream_control || vertex_observer_control;
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
         const bool whole_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-whole";
         const bool transient_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-transient";
@@ -129,7 +132,7 @@ int wmain(int argc, wchar_t **argv) {
         const bool dxil =
             capture_control || budget_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil");
         const UINT repeats = budget_control ? 50 : 1;
-        const bool loop = dxil || (argc == 3 && std::wstring_view(argv[2]) == L"--loop");
+        const bool loop = dxil || vertex_observer_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop");
         const bool submit_fourth = argc == 3 && !loop;
         const std::filesystem::path output(argv[1]);
         if (!std::filesystem::is_directory(output) || !std::filesystem::is_empty(output))
@@ -297,7 +300,7 @@ int wmain(int argc, wchar_t **argv) {
             indirect_arguments->Unmap(0, nullptr);
         }
         const auto constant_bytes = [&](UINT index) -> UINT {
-            if constexpr (stream_control)
+            if (vertex_source_control)
                 if (index == 0 || index == 2 || index == 4)
                     return odv::research::VertexConstantStream::byte_count;
             if (large_default_control && (index == 3 || index == 5 || index == 7))
@@ -331,7 +334,7 @@ int wmain(int argc, wchar_t **argv) {
                                                   nullptr, IID_PPV_ARGS(&gpu_constants[0])));
         }
         Com<ID3D12Resource> stream_originals;
-        if (stream_control) {
+        if (vertex_source_control) {
             D3D12_HEAP_PROPERTIES gpu_heap{};
             gpu_heap.Type = D3D12_HEAP_TYPE_DEFAULT;
             for (UINT i : {0u, 2u, 4u}) {
@@ -609,7 +612,8 @@ int wmain(int argc, wchar_t **argv) {
                 bind_draw(list, column, table, first);
                 if constexpr (stream_control) {
                     if (column < 3) {
-                        const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+                        const odv::research::VertexConstantStream::Context context{true, true, true, true,
+                                                                                   true, true, true};
                         odv::research::PreparedGraphicsReplay replay;
                         replay.root = roots[table ? 1 : 0].Get();
                         replay.pipeline = pipelines[table ? 1 : 0].Get();
@@ -643,7 +647,7 @@ int wmain(int argc, wchar_t **argv) {
             barrier(lists[0].Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
             const float black[4] = {0, 0, 0, 1};
             lists[0]->ClearRenderTargetView(view, black, 0, nullptr);
-            if (stream_control)
+            if (vertex_source_control)
                 for (UINT i : {0u, 2u, 4u}) {
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_COMMON,
                             D3D12_RESOURCE_STATE_COPY_DEST);
@@ -734,7 +738,7 @@ int wmain(int argc, wchar_t **argv) {
                 for (UINT i : {3u, 5u})
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                             D3D12_RESOURCE_STATE_COPY_DEST);
-            if (stream_control)
+            if (vertex_source_control)
                 for (UINT i : {0u, 2u, 4u}) {
                     barrier(lists[0].Get(), gpu_constants[i].Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
                             D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -827,14 +831,15 @@ int wmain(int argc, wchar_t **argv) {
             readback->Unmap(0, &no_write);
             if (!matches)
                 throw std::runtime_error("owned_pixel_control_failed");
-            if (stream_control) {
+            if (vertex_source_control) {
                 const std::array<std::byte, odv::research::VertexConstantStream::byte_count> expected{};
-                for (auto &sample : stream_samples) {
-                    const auto actual = sample.read();
-                    if (std::strcmp(actual.state, "READY") || actual.bytes.size() != expected.size() ||
-                        std::memcmp(actual.bytes.data(), expected.data(), expected.size()))
-                        throw std::runtime_error("stream_render_sample_failed");
-                }
+                if (stream_control)
+                    for (auto &sample : stream_samples) {
+                        const auto actual = sample.read();
+                        if (std::strcmp(actual.state, "READY") || actual.bytes.size() != expected.size() ||
+                            std::memcmp(actual.bytes.data(), expected.data(), expected.size()))
+                            throw std::runtime_error("stream_render_sample_failed");
+                    }
                 const D3D12_RANGE source_range{0, expected.size() * 3};
                 check(stream_originals->Map(0, &source_range, &bytes));
                 bool exact = true;
@@ -844,13 +849,15 @@ int wmain(int argc, wchar_t **argv) {
                 stream_originals->Unmap(0, &no_write);
                 if (!exact)
                     throw std::runtime_error("stream_render_original_source_modified");
-                check(allocators[0]->Reset());
-                check(lists[0]->Reset(allocators[0].Get(), nullptr));
-                check(lists[0]->Close());
-                for (auto &sample : stream_samples)
-                    if (!sample.release_retired())
-                        throw std::runtime_error("stream_render_retirement_failed");
-                odv::research::DeferredResourceRelease::drain();
+                if (stream_control) {
+                    check(allocators[0]->Reset());
+                    check(lists[0]->Reset(allocators[0].Get(), nullptr));
+                    check(lists[0]->Close());
+                    for (auto &sample : stream_samples)
+                        if (!sample.release_retired())
+                            throw std::runtime_error("stream_render_retirement_failed");
+                    odv::research::DeferredResourceRelease::drain();
+                }
             }
             if (scalar_control) {
                 check(perturbed_readback->Map(0, &range, &bytes));

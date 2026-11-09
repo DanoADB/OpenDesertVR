@@ -139,3 +139,39 @@ The next separately pinned wrapper must notify the observer of native SO
 changes before that resolution path. Native query/render-pass notifications
 should likewise establish actual execution boundaries. Unknown or incomplete
 state must reject the capture; the original application draw still proceeds.
+
+## Access-proof correction and next world-control experiment
+
+The vertex reader remains an owned experiment. A reflected active binding does
+not prove read access for an additional draw: the original may have zero work
+or skip that input. The component now requires a separate known-read-access
+contract. It cannot solve the unknown world-pass access state by itself.
+See [Microsoft's resource access-state requirement](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_states).
+
+Indirect commands also reset the root arguments and IA bindings named by their
+signature. A pre-indirect CPU cache can therefore contain stale replay values.
+Observer13 rejects indirect uncertainty rather than replaying those values.
+See [Microsoft ExecuteIndirect semantics](https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist-executeindirect).
+
+The [new draft report](../evidence/g1-native-draw-contract-2026-11-09.json)
+records ten local checks in each configuration and a separately compiled native
+SO/query/render-pass notification wrapper. Those metadata controls do not
+qualify its native runtime callbacks. The provisional owned observer returned
+four binding records and zero GPU samples; rendering stayed correct, but the
+observer failed qualification and was never staged into the game. Preserve its
+failure report. Do not turn compile success into game permission.
+
+The next useful world-control experiment is to compare the safely sampled
+shadow camera source and standard geometry source in the same capture. Record
+their exact range, command recording and native indirect-signature effects.
+If the source is shared and ordering is established, an earlier safe copy could
+supply a private camera input to the later geometry draw. That would avoid
+reading the unknown-state world source. Source equality and GPU ordering are
+still unproven; private binding replacement and game camera influence are still
+NOT_RUN. This replaces the plan to extend shader-stage reads as an access-state
+workaround.
+
+Hosted Debug and Release both pass for ca2b75a
+([run](https://github.com/DanoADB/OpenDesertVR/actions/runs/42675013345)); that
+earlier nine-test optional suite includes unsupported-enhanced skips. The new
+native notification draft has its own pending hosted/runtime evidence.

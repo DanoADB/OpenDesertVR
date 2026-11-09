@@ -203,7 +203,7 @@ Output main(uint id : SV_VertexID) {
             commands->ResolveQueryData(query.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0, 1, readback.Get(),
                                        bytes);
             odv::research::VertexConstantStream component;
-            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true, true};
             const auto restore = [&]() noexcept {
                 commands->SetGraphicsRootSignature(signature.Get());
                 commands->SetPipelineState(pipeline.Get());
@@ -284,7 +284,7 @@ Output main(uint id : SV_VertexID) {
             // Re-execute the SAME recording; all owned buffers must return to
             // their initial state, with a new covering fence for each execution.
             odv::research::VertexConstantStream repeated;
-            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true, true};
             const auto restore = [&]() noexcept {
                 commands->SetGraphicsRootSignature(signature.Get());
                 commands->SetPipelineState(pipeline.Get());
@@ -294,7 +294,7 @@ Output main(uint id : SV_VertexID) {
                 const std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> unbound{};
                 commands->SOSetTargets(0, static_cast<UINT>(unbound.size()), unbound.data());
             };
-            for (UINT rejected = 0; rejected < 6; ++rejected) {
+            for (UINT rejected = 0; rejected < 7; ++rejected) {
                 auto missing = context;
                 switch (rejected) {
                 case 0:
@@ -312,8 +312,11 @@ Output main(uint id : SV_VertexID) {
                 case 4:
                     missing.stream_output_bindings_known = false;
                     break;
-                default:
+                case 5:
                     missing.unprotected = false;
+                    break;
+                default:
+                    missing.known_constant_read_access = false;
                     break;
                 }
                 require(!repeated.record(device.Get(), commands.Get(), source.Get(), source_offset, missing, restore),
@@ -362,7 +365,7 @@ Output main(uint id : SV_VertexID) {
         {
             odv::research::ConstantCaptureDriver driver;
             driver.begin_capture();
-            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true};
+            const odv::research::VertexConstantStream::Context context{true, true, true, true, true, true, true};
             const auto restore = [&]() noexcept {
                 commands->SetGraphicsRootSignature(signature.Get());
                 commands->SetPipelineState(pipeline.Get());

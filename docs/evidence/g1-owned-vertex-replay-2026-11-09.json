@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "observed_date": "2026-11-09",
+  "source_commit": "ca2b75acfe925178308298349fbd8445ede4b095",
   "status": "QUALIFIED_OWNED_VERTEX_STREAM_COMPONENT_AND_PREPARED_REPLAY",
   "source_sha256": {
     "vertex_constant_stream.hpp": "f89452aaf6415171b7519aeb426079056221c2eb6935a0f5b93408c857f50da2",
