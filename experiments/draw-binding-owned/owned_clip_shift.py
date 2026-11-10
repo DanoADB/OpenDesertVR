@@ -39,7 +39,8 @@ with tempfile.TemporaryDirectory() as temporary:
                 raise RuntimeError("owned clip-shift GPU qualification failed: " + model)
         rejected = subprocess.run([str(helper), str(compiler.parent), str(ps), str(ps)],
                                   capture_output=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW)
-        if rejected.returncode != 1 or b"unsupported_position_store" not in rejected.stderr:
+        if (rejected.returncode != 1 or b"unsupported_position_store" not in rejected.stderr or
+                b"compile_failure_stage=4" not in rejected.stderr):
             raise RuntimeError("non-vertex shader was not rejected")
         if hashes != [hashlib.sha256(p.read_bytes()).hexdigest() for p in (vs, ps)]:
             raise RuntimeError("owned original shader files changed")

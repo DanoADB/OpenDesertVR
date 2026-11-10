@@ -1,0 +1,28 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "40447a7b9c08b01b902219558b71a528a8679e0825b16bef391b0c82e8670092"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "dbed0451bed903eac9aedc716814bccbd48ddcf1a2c0b7a56d4ea0d92bba2b2d"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3",
+    "renodx-devkit.addon64": "33b15373ec72f29367568c6e00110514d033d04598b8f53e0033565af53639ec",
+    "owned_app.exe": "ca32193d4584bb22fbc532443fb83670611e82b37366af44d1567adf91a76dfb"
+  },
+  "schema_version": 1,
+  "scope": "Owned resources/shaders only",
+  "local_clip_tests": "PASS_DEBUG_RELEASE_SM60_SM66_LEGACY_STREAM",
+  "non_vertex_failure_stage_control": "PASS_STAGE4",
+  "debug_validation": "UNAVAILABLE_LOCALLY"
+}

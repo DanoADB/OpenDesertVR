@@ -13,6 +13,16 @@
 
 namespace odv::research {
 enum class ClipShift { left, identity, right };
+enum class ClipCompileStage : unsigned { sdk_load = 1, interfaces, disassembly, position_store, assembly, validation };
+class ClipCompileError final : public std::runtime_error {
+  public:
+    const ClipCompileStage stage;
+    const HRESULT result;
+    ClipCompileError(ClipCompileStage where, HRESULT hr)
+        : std::runtime_error(where == ClipCompileStage::position_store ? "unsupported_position_store"
+                                                                       : "dxil_clip_probe_rejected"),
+          stage(where), result(hr) {}
+};
 // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
 // every other output unchanged. This is NOT a complete stereo/game adapter.
 // No source/descriptor/root/argument buffer is modified. Text stays in process.
@@ -104,16 +114,16 @@ inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipS
 class ClipShiftCompiler final {
     HMODULE compiler_ = nullptr, validator_ = nullptr;
     DxcCreateInstanceProc create_ = nullptr, validate_create_ = nullptr;
-    static void checked(HRESULT hr) {
+    static void checked(HRESULT hr, ClipCompileStage stage = ClipCompileStage::interfaces) {
         if (FAILED(hr))
-            throw std::runtime_error("dxil_clip_probe_rejected");
+            throw ClipCompileError(stage, hr);
     }
-    static Microsoft::WRL::ComPtr<IDxcBlob> result(IDxcOperationResult *operation) {
+    static Microsoft::WRL::ComPtr<IDxcBlob> result(IDxcOperationResult *operation, ClipCompileStage stage) {
         HRESULT status = E_FAIL;
-        checked(operation->GetStatus(&status));
-        checked(status);
+        checked(operation->GetStatus(&status), stage);
+        checked(status, stage);
         Microsoft::WRL::ComPtr<IDxcBlob> blob;
-        checked(operation->GetResult(&blob));
+        checked(operation->GetResult(&blob), stage);
         return blob;
     }
 
@@ -134,7 +144,7 @@ class ClipShiftCompiler final {
                 FreeLibrary(validator_);
             if (compiler_)
                 FreeLibrary(compiler_);
-            throw std::runtime_error("sdk_compiler_validator_unavailable");
+            throw ClipCompileError(ClipCompileStage::sdk_load, HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND));
         }
     }
     ~ClipShiftCompiler() {
@@ -152,7 +162,7 @@ class ClipShiftCompiler final {
         checked(create_(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
         Microsoft::WRL::ComPtr<IDxcBlobEncoding> source, text;
         checked(utils->CreateBlob(original.data(), static_cast<UINT32>(original.size()), DXC_CP_ACP, &source));
-        checked(compiler->Disassemble(source.Get(), &text));
+        checked(compiler->Disassemble(source.Get(), &text), ClipCompileStage::disassembly);
         if (text->GetBufferSize() > 1024 * 1024)
             throw std::runtime_error("shader_text_bound");
         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
@@ -160,19 +170,20 @@ class ClipShiftCompiler final {
             view.remove_suffix(1);
         auto shifted = shift_clip_x_text(view, shift);
         if (!shifted)
-            throw std::runtime_error("unsupported_position_store");
+            throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;
         checked(utils->CreateBlob(shifted->data(), static_cast<UINT32>(shifted->size()), DXC_CP_UTF8, &assembly));
         Microsoft::WRL::ComPtr<IDxcAssembler> assembler;
         checked(create_(CLSID_DxcAssembler, IID_PPV_ARGS(&assembler)));
         Microsoft::WRL::ComPtr<IDxcOperationResult> assembled;
-        checked(assembler->AssembleToContainer(assembly.Get(), &assembled));
-        auto binary = result(assembled.Get());
+        checked(assembler->AssembleToContainer(assembly.Get(), &assembled), ClipCompileStage::assembly);
+        auto binary = result(assembled.Get(), ClipCompileStage::assembly);
         Microsoft::WRL::ComPtr<IDxcValidator> validator;
         checked(validate_create_(CLSID_DxcValidator, IID_PPV_ARGS(&validator)));
         Microsoft::WRL::ComPtr<IDxcOperationResult> validated;
-        checked(validator->Validate(binary.Get(), DxcValidatorFlags_InPlaceEdit, &validated));
-        auto accepted = result(validated.Get());
+        checked(validator->Validate(binary.Get(), DxcValidatorFlags_InPlaceEdit, &validated),
+                ClipCompileStage::validation);
+        auto accepted = result(validated.Get(), ClipCompileStage::validation);
         if (accepted->GetBufferSize() < 32 || accepted->GetBufferSize() > 1024 * 1024)
             throw std::runtime_error("output_shader_bound");
         const auto *bytes = static_cast<const std::uint8_t *>(accepted->GetBufferPointer());

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "IDENTITY_REJECTED_ORIGINAL_DRAW_RETAINED",
+  "source_commit": "4e8e81efb04c5e39be822ecd74dc88ec77585153",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "scene": "DESKTOP_OBSERVED_STILL_3D_SCENE",
+  "addon_sha256": "c62b9040d31ab9ffb7b123ee2db528033e2abab3aeaf77fbaffa03243b90dd56",
+  "identity_probe": {
+    "mode": "IDENTITY",
+    "scene": "DESKTOP_OBSERVED_STILL_3D_SCENE",
+    "before": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "samples": [
+      {
+        "schema_version": 1,
+        "mode": 1,
+        "failed": false,
+        "candidates": 0,
+        "recorded": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "evidence": "CPU_RECORDING_ONLY",
+        "game_stereo": "NOT_RUN"
+      }
+    ],
+    "after": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": true,
+      "candidates": 1,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    }
+  },
+  "private_report_sha256": "6518562188c4a0b8e9c030af59b992fa245c69077d021fc83f2e6b38f7af9448",
+  "native_query_guard": "PASSED_TO_SHADER_COMPILER",
+  "compiler_failure_reason": "UNRESOLVED_GENERIC_EXCEPTION; precise stage reporting required",
+  "desktop_postflight": "SCENE_CONTINUED_NORMALLY",
+  "asset_files": 0,
+  "geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "hosted_ci": {
+    "run_id": 42840915404,
+    "result": "PASS_DEBUG_RELEASE"
+  }
+}

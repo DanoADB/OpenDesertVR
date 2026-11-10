@@ -10,6 +10,8 @@ std::atomic_uint64_t odv_clip_lease = 0;
 std::atomic_bool odv_clip_failed = false;
 std::array<std::atomic_uint64_t, 4> odv_clip_recordings{};
 std::atomic_uint64_t odv_clip_candidates = 0;
+std::atomic_uint odv_clip_compile_failure_stage = 0;
+std::atomic_uint32_t odv_clip_compile_failure_hr = 0;
 
 void PollODVClipProbe() noexcept {
   if (!odv_clip_enabled) return;
@@ -38,7 +40,9 @@ void PollODVClipProbe() noexcept {
     status << "{\"schema_version\":1,\"mode\":" << mode << ",\"failed\":" << (odv_clip_failed ? "true" : "false")
            << ",\"candidates\":" << odv_clip_candidates.load() << ",\"recorded\":[";
     for (unsigned i = 0; i < 4; ++i) status << (i ? "," : "") << odv_clip_recordings[i].load();
-    status << "],\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
+    status << "],\"compile_failure_stage\":" << odv_clip_compile_failure_stage.load()
+           << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
+           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
   } catch (...) {
     odv_clip_mode = 0;
     odv_clip_lease = 0;
@@ -130,6 +134,13 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
       ++odv_clip_recordings[mode];
       return true; // Original command was forwarded once, with native resets.
     }
+  } catch (const odv::research::ClipCompileError& error) {
+    odv_clip_compile_failure_stage = static_cast<unsigned>(error.stage);
+    odv_clip_compile_failure_hr = static_cast<uint32_t>(error.result);
+    odv_clip_failed = true;
+    odv_clip_mode = 0;
+    // Fixed stage/code only: never export compiler text or shader contents.
+    reshade::log::message(reshade::log::level::error, "ODV clip probe: compiler rejected identity/shift; see numeric failure stage and HRESULT; original draw retained");
   } catch (...) {
     odv_clip_failed = true;
     odv_clip_mode = 0;

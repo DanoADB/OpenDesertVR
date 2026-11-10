@@ -599,6 +599,9 @@ int wmain(int argc, wchar_t **argv) {
         return 0;
     } catch (const std::exception &error) {
         std::cerr << "stage=" << stage << ' ' << error.what() << '\n';
+        if (const auto *compile_error = dynamic_cast<const odv::research::ClipCompileError *>(&error))
+            std::cerr << "compile_failure_stage=" << static_cast<unsigned>(compile_error->stage)
+                      << " hresult=" << static_cast<UINT32>(compile_error->result) << '\n';
         // This executable accepts owned fixtures only. Keep creation errors in
         // its test log rather than losing the debug message during unwinding.
         if (info)

@@ -72,3 +72,9 @@ attachment controls also pass with the new addon and tracking enabled.
 The game retry with Probe19 remains NOT_RUN until the current game exits normally
 and the qualified observer is staged. No game stereo or headset result follows
 from these owned tests.
+
+Probe19 live retry reached shader processing but rejected its first identity
+candidate. No replacement draw was recorded; mode0 was restored and the original
+scene continued. Probe20 adds fixed numeric compiler-stage/HRESULT reporting
+without compiler text or shader export. Owned non-vertex controls verify stage4
+rejection, and Debug/Release geometry controls pass. Probe20 game retry is NOT_RUN.
