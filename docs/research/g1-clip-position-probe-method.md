@@ -269,3 +269,31 @@ new addon binary. Local debug-layer validation remains unavailable. Game
 window captures are NOT_RUN until the observer is replaced normally.
 See [window qualification](../evidence/g1-owned-snapshot-window27-2026-11-10.json)
 and [clip qualification](../evidence/g1-owned-clip-probe27-2026-11-10.json).
+
+
+Live Probe27 exposes a completion-timing defect that its initial owned checks
+missed. Three first0 windows each retain0 records, while removing the selector
+restores a128-record legacy snapshot in the same visible world scene. Graphics
+and native-metadata prerequisites are confirmed active. These empty windows are
+not evidence of zero draw activity. Probe27 remains mode0; game/tool/staged hashes
+remain unchanged and asset files0. See
+[live timing evidence](../evidence/g1-game-clip-probe27-2026-11-10.json).
+
+Probe28 corrects the completion rule: it allows at most four idle Present
+intervals before any eligible recording callback, then ends the first active
+interval even when its callbacks all precede the requested offset. No two
+intervals containing eligible recording activity are combined. The existing
+owned fixture can deliberately issue two Present calls with no intervening
+draws: the frozen observer27 ends first0 with0 records, while observer28 retains
+the expected four draws with ordinals0..3. Both preserve GPU pixels and exit
+cooperatively. The prior nine offset/malformed/recovery controls also pass with
+observer28, with native-device reference warnings0 and asset files0.
+
+Debug/Release helper tests additionally check bounded idle timeout, activity
+arriving after idle Presents, and an empty late window ending after skipped
+eligible callbacks. Exact wrapper25/addon28 clip/query legacy and stream controls
+pass separately. Source inputs and binary are locked; this fix still requires
+live game validation. The128-record capacity,4096 maximum start, resource/frame
+identity limitations and absence of compute/copy consumers remain unchanged.
+See [owned timing regression](../evidence/g1-owned-snapshot-window28-2026-11-10.json)
+and [clip qualification](../evidence/g1-owned-clip-probe28-2026-11-10.json).

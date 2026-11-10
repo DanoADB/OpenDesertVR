@@ -33,8 +33,19 @@ int main() {
         for (unsigned i = 0; i < 100; ++i)
             require(!window.take());
         require(window.seen() == 100 && !window.truncated()); // Empty later window stays empty.
+        require(window.finish_interval()); // Skipped callbacks are activity too.
+        window.begin(0);
+        require(!window.finish_interval() && !window.finish_interval() && !window.finish_interval());
+        require(window.finish_interval() && window.seen() == 0); // Bounded idle timeout.
+        window.begin(128);
+        require(!window.finish_interval() && !window.finish_interval());
+        require(!window.take()); // First eligible callback, still before requested offset.
+        require(window.finish_interval() && window.seen() == 1); // Do not accumulate another active interval.
+        window.begin(0);
+        require(!window.finish_interval());
+        require(window.take() == 0u && window.finish_interval()); // Normal admission after idle Present.
         window.begin(std::nullopt);
-        require(!window.valid() && !window.take() && window.seen() == 0u);
+        require(!window.valid() && !window.take() && window.seen() == 0u && window.finish_interval());
         window.begin(4097);
         require(!window.valid() && !window.take());
         std::cout << "PASS: bounded recording windows, exact ordinals, saturation, empty interval and malformed selector rejection; game=NOT_RUN\n";

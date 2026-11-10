@@ -8,7 +8,7 @@ namespace odv::research {
 // Caller serializes access. Ordinals describe eligible recording callbacks,
 // not GPU execution order. Separate windows are separate observations.
 class SnapshotWindow final {
-    std::uint32_t first_ = 0, seen_ = 0;
+    std::uint32_t first_ = 0, seen_ = 0, empty_intervals_ = 0;
     bool valid_ = false;
 
   public:
@@ -31,6 +31,7 @@ class SnapshotWindow final {
         valid_ = first && *first <= maximum_first;
         first_ = valid_ ? *first : 0;
         seen_ = 0;
+        empty_intervals_ = 0;
     }
     std::optional<std::uint32_t> take() noexcept {
         if (!valid_)
@@ -43,6 +44,11 @@ class SnapshotWindow final {
         return ordinal;
     }
     bool valid() const noexcept { return valid_; }
+    // Multiple Present callbacks may precede any eligible recording activity.
+    // Wait at most four empty intervals; never combine two active intervals.
+    bool finish_interval() noexcept {
+        return !valid_ || seen_ != 0 || ++empty_intervals_ >= 4;
+    }
     bool truncated() const noexcept { return valid_ && seen_ > first_ + capacity; }
     std::uint32_t first() const noexcept { return first_; }
     std::uint32_t seen() const noexcept { return seen_; }
