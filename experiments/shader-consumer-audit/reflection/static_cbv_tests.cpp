@@ -11,13 +11,18 @@ static void require(bool ok) {
 }
 int main(int argc, char **argv) {
     try {
-        if (argc == 2) {
+        if (argc == 2 || (argc == 3 && std::string_view(argv[2]) == "--position")) {
             // Owned SDK disassembly only in the qualification harness. Game
             // analysis calls the header in-process, never this file interface.
             std::ifstream input(argv[1], std::ios::binary);
             std::string text((std::istreambuf_iterator<char>(input)), {});
             auto result = odv::research::observe_static_cbv(text, 18, 35, 2816);
             std::cout << result.reason << " loads=" << result.loads << " end=" << result.maximum_byte_end << '\n';
+            if (argc == 3 && result.supported) {
+                require(result.position_dependencies_observed);
+                for (unsigned column = 0; column < 4; ++column)
+                    require(result.position_words[column] == std::set<std::uint32_t>{700 + column});
+            }
             return result.supported ? 0 : 3;
         }
         const std::string metadata = R"(
@@ -35,6 +40,56 @@ int main(int argc, char **argv) {
         };
         auto result = inspect(create + load);
         require(result.supported && result.loads == 1 && result.maximum_byte_end == 2816 && result.rows.contains(175));
+        {
+            const std::string signature = R"(
+!dx.shaderModel = !{!10}
+!10 = !{!"vs", i32 6, i32 6}
+!dx.entryPoints = !{!11}
+!11 = !{void ()* @main, !"main", !12, null, null}
+!12 = !{null, !13, null}
+!13 = !{!14}
+!14 = !{i32 0, !"SV_Position", i8 9, i8 3, null, i8 0, i32 1, i8 4, i32 0, i8 0, null}
+)";
+            const std::string body =
+                "define void @main() {\n" + create + load +
+                "%x = extractvalue %dx.types.CBufRet.f32 %2, 0\n"
+                "%y = fmul float %x, 2.0\n"
+                "%z = select i1 false, float %y, float 0.0\n"
+                "%p = phi float [ %x, %left ], [ %z, %right ]\n"
+                "call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 0, float %y)\n"
+                "call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 1, float 0.0)\n"
+                "call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 2, float %z)\n"
+                "call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 3, float %p)\nret void\n}\n";
+            const auto check = [&](std::string s) { return inspect(signature + s); };
+            auto dependencies = check(body);
+            require(dependencies.position_dependencies_observed && dependencies.position_rows[0].contains(175) &&
+                    dependencies.position_rows[1].empty() && dependencies.position_rows[2].contains(175) &&
+                    dependencies.position_rows[3].contains(175)); // Includes unexecuted select arm by design.
+            require(dependencies.position_words[0] == std::set<std::uint32_t>{700});
+            auto other_component = body;
+            const std::string extract = "extractvalue %dx.types.CBufRet.f32 %2, 0";
+            other_component.replace(other_component.find(extract), extract.size(),
+                                    "extractvalue %dx.types.CBufRet.f32 %2, 3");
+            require(check(other_component).position_words[0] == std::set<std::uint32_t>{703});
+            auto unknown = body;
+            unknown.replace(unknown.find("fmul float %x, 2.0"), 18, "call float @unknown(float %x)");
+            require(!check(unknown).position_dependencies_observed);
+            auto memory = body;
+            memory.replace(memory.find(extract), extract.size(), "load float, float* %ptr");
+            require(!check(memory).position_dependencies_observed);
+            auto unresolved = body;
+            unresolved.replace(unresolved.find("[ %x, %left ]"), 13, "[ %missing, %left ]");
+            require(!check(unresolved).position_dependencies_observed);
+            require(!check(body + "%x = fadd float 0.0, 0.0\n").position_dependencies_observed);
+            require(!check(body + "define void @other() {\nret void\n}\n").position_dependencies_observed);
+            require(!check(body + "call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 0, float %y)\n")
+                         .position_dependencies_observed);
+            require(!check(body + "call void @dx.op.storeOutput.f32(i32 5, i32 %dynamic, i32 0, i8 0, float %y)\n")
+                         .position_dependencies_observed);
+            auto missing = body;
+            missing.erase(missing.find("call void @dx.op.storeOutput.f32(i32 5, i32 0, i32 0, i8 3"));
+            require(!check(missing).position_dependencies_observed);
+        }
         std::uint32_t signless = 0;
         require(odv::research::cbv_detail::i32("i32 -1", signless) && signless == 0xffffffffu);
         require(odv::research::cbv_detail::i32("i32 -2147483648", signless) && signless == 0x80000000u);

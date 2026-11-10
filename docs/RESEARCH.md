@@ -264,3 +264,13 @@ valid draw context. No payload or camera identity is claimed. Observer33 adds
 source-state rejection detail without changing eligibility or capacity, so the
 next capture can distinguish a missing observation from incomplete state or
 tracker exhaustion rather than guessing which happened.
+
+[Live33 repeats](evidence/g1-game-camera-access33-2026-11-10.json) report
+NO_CURRENT_RESOURCE_OBSERVATION with86 retained entries in both captures;
+capacity exhaustion is ruled out at those points. No source words are read.
+The next narrow route is a component-level, in-process SSA value-dependency
+slice from the known terrain loads to SV_Position, followed by a reversible
+private-shader perturbation if a useful candidate exists. This avoids extending
+global buffer tracking merely to obtain a candidate's values. Potential value
+dependencies do not establish executed contribution, matrix meaning or camera
+ownership. Original buffers, descriptors and rendering remain unchanged.

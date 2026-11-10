@@ -23,7 +23,7 @@ with tempfile.TemporaryDirectory() as temporary:
             subprocess.run([str(compiler), "-T", target, "-E", "main", "-Fo", str(binary),
                             "-Fc", str(text), str(source)], check=True, capture_output=True, timeout=20,
                            creationflags=subprocess.CREATE_NO_WINDOW)
-            result = subprocess.run([str(helper), str(text)], capture_output=True, timeout=10,
+            result = subprocess.run([str(helper), str(text), "--position"], capture_output=True, timeout=10,
                                     creationflags=subprocess.CREATE_NO_WINDOW)
             expected = 3 if dynamic else 0
             if result.returncode != expected:

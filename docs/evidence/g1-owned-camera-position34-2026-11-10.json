@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "QUALIFIED_OWNED_CAMERA_POSITION34",
+  "scope": "Conservative numeric per-component SSA value dependencies; metadata-only game configuration, no camera claim",
+  "sha256": {
+    "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+    "renodx-devkit.addon64": "0ce725c214be56cd814710c2a1b584e774642bcf2f4e3136a1f420a3def7c8c7"
+  },
+  "controls": [
+    {
+      "control": "qualify-camera-access34",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_CBV_ACCESS",
+      "private_report_sha256": "6e7db7093475dad80415b55f6e332cc1faab12c7ef08385fdc416fadf19d6455"
+    },
+    {
+      "control": "qualify-predicated-copy34",
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "private_report_sha256": "2d815ddb951f2a7448f168e6b81ba95c0ecc5f03cb32c4e6d6923d02d954b729"
+    },
+    {
+      "control": "qualify-camera-access34-native-pass",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_NATIVE_RENDER_PASS_REJECTION",
+      "private_report_sha256": "d280e1b3074bd31582cb0f442e39feea2cff7631d1d131cbe0b83d9ca8cdcd77"
+    },
+    {
+      "control": "qualify-camera-position34-metadata",
+      "status": "QUALIFIED_OWNED_POSITION34_METADATA_NO_COPY",
+      "private_report_sha256": "270669765434879f96e0fb946a83e1004009ea516cc465fd40ee8429daad0163"
+    },
+    {
+      "control": "snapshot-window34",
+      "status": "QUALIFIED_OWNED_SNAPSHOT_WINDOWS",
+      "sha256": {
+        "owned_app.exe": "789db30d63d45d4936b5c6a715de56cfde4c36fd27bc58ec0c81c1ada56ba569",
+        "renodx-devkit.addon64": "0ce725c214be56cd814710c2a1b584e774642bcf2f4e3136a1f420a3def7c8c7",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "selector": "0\n",
+          "records": 4,
+          "ordinals": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "game": "NOT_RUN",
+      "gpu_pixels": "PASS",
+      "asset_files": 0,
+      "initial_two_empty_present_control": "PASS"
+    }
+  ],
+  "owned_ctest": {
+    "Debug": "17/17 PASS",
+    "Release": "17/17 PASS"
+  },
+  "reflection_ctest": {
+    "Debug": "3/3 PASS",
+    "Release": "3/3 PASS"
+  },
+  "actual_sdk_component_controls": [
+    "SM6.0 last-row component0/1/2/3",
+    "SM6.6 last-row component0/1/2/3",
+    "Additional unrelated resource bindings",
+    "Dynamic target row rejected"
+  ],
+  "first_metadata_harness_failure": {
+    "reason": "An inherited readback assertion still expected READY samples after copies were explicitly disabled. Corrected harness to require zero samples/attempts and correct submission labels.",
+    "corrected_metadata_control": "PASS",
+    "implementation_changed_to_pass": false
+  },
+  "native_wrapper": "UNCHANGED_FROM32",
+  "game_configuration": {
+    "constant_bytes": 0,
+    "clip_probe_enabled": false,
+    "work_queries": false,
+    "target_vertex_crc32": "C48DB423",
+    "slot": 18,
+    "space": 35
+  },
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "control_dependencies_included": false,
+  "memory_dependencies_included": false,
+  "asset_files": 0,
+  "local_debug_layer": "UNAVAILABLE",
+  "qualification_sources_dirty": true
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "91ce4c7e761ef316d07965fdedad75e3a535e895",
+  "status": "SOURCE_OBSERVATION_MISSING_NOT_CAPACITY_EXHAUSTED",
+  "game_build": "26480954",
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "slot": 18,
+  "space": 35,
+  "descriptor_bytes": 2816,
+  "captures": [
+    {
+      "label": "static1",
+      "submission_known": true,
+      "attempts": [
+        {
+          "slot": 18,
+          "sourceAllocationBytes": 65536,
+          "sourceHeapType": 1,
+          "sourceState": "DEFAULT_STATE_UNVERIFIED",
+          "sourceTrackedResources": 86,
+          "sourceTrackingState": "NO_CURRENT_RESOURCE_OBSERVATION",
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE"
+        }
+      ],
+      "private_report_sha256": "2f1774d35097c2fd7fe54e7b929f864932cb00a4f377a0a84ed6a0240b4c9a66"
+    },
+    {
+      "label": "static2",
+      "submission_known": true,
+      "attempts": [
+        {
+          "slot": 18,
+          "sourceAllocationBytes": 65536,
+          "sourceHeapType": 1,
+          "sourceState": "DEFAULT_STATE_UNVERIFIED",
+          "sourceTrackedResources": 86,
+          "sourceTrackingState": "NO_CURRENT_RESOURCE_OBSERVATION",
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE"
+        }
+      ],
+      "private_report_sha256": "d43a309afcb24f11250de9fa1a04678b7fe67e4a8d79f33a48d4ae7158c03cb9"
+    }
+  ],
+  "readback_payloads": 0,
+  "effect_enabled": false,
+  "asset_files": 0,
+  "camera_identity": "UNVERIFIED",
+  "game_stereo": "NOT_RUN",
+  "head_tracking": "NOT_RUN",
+  "openxr_game_delivery": "NOT_RUN",
+  "limits": [
+    "No current observation means only that this per-recording tracker has no retained source entry. It does not establish why that entry is absent.",
+    "The86 retained entries rule out tracker capacity exhaustion at these two capture points.",
+    "No persistent global source state is inferred from descriptor use, a prior recording, or GPU fence completion."
+  ],
+  "next_question": "Trace which loaded constant rows can feed terrain SV_Position, then choose between proven buffer provenance and GPU-local view manipulation."
+}

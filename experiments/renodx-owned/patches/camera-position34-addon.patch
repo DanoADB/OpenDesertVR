@@ -1,0 +1,220 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -4324,6 +4324,11 @@
+                   entry["loads"]=access.loads;entry["maximumByteEnd"]=access.maximum_byte_end;
+                   entry["malformedRecordFields"]=access.malformed_record_fields;entry["malformedRecordIntegerMask"]=access.malformed_record_integer_mask;
+                   entry["rows"]=access.rows;entry["shaderBytes"]=bytes->size();
++                  entry["positionValueDependenciesObserved"]=access.position_dependencies_observed;
++                  entry["positionDependencyStatus"]=access.position_reason;
++                  entry["positionPotentialRows"]=access.position_rows;
++                  entry["positionPotentialWords"]=access.position_words;
++                  entry["positionControlDependenciesIncluded"]=false;entry["positionMemoryDependenciesIncluded"]=false;
+                 }
+               } catch (...) { entry["status"]="IN_PROCESS_COMPILER_OR_OBSERVER_FAILURE"; }
+               observations.push_back(std::move(entry));
+--- a/src/addons/devkit/odv/static_cbv_access.hpp
++++ b/src/addons/devkit/odv/static_cbv_access.hpp
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: MIT
+ #pragma once
++#include <array>
+ #include <charconv>
+ #include <cstdint>
+ #include <map>
+@@ -20,6 +21,12 @@
+     std::uint32_t handles = 0, loads = 0, maximum_byte_end = 0;
+     std::uint32_t malformed_record_fields = 0, malformed_record_integer_mask = 0;
+     std::set<std::uint32_t> rows;
++    // Conservative SSA value dependencies only. Includes both phi/select
++    // alternatives, not control dependencies or proof of executed contribution.
++    bool position_dependencies_observed = false;
++    std::array<std::set<std::uint32_t>, 4> position_rows;
++    std::array<std::set<std::uint32_t>, 4> position_words;
++    const char *position_reason = "NOT_OBSERVED";
+     const char *reason = "UNSUPPORTED";
+ };
+ namespace cbv_detail {
+@@ -81,6 +88,138 @@
+         return {};
+     result.push_back(trim(s.substr(start)));
+     return result;
++}
++} // namespace cbv_detail
++
++namespace cbv_detail {
++inline void observe_position_dependencies(StaticCbvAccess &result, const std::vector<std::string> &lines,
++                                          const std::map<std::string, std::vector<std::string>> &metadata,
++                                          const std::map<std::string, std::uint32_t> &target_loads) {
++    const auto reject = [&](const char *reason) { result.position_reason = reason; };
++    const auto get = [&](const std::string &key) -> const std::vector<std::string> & {
++        static const std::vector<std::string> empty;
++        const auto found = metadata.find(key);
++        return found == metadata.end() ? empty : found->second;
++    };
++    const auto &models = get("!dx.shaderModel"), &entries = get("!dx.entryPoints");
++    if (models.size() != 1 || entries.size() != 1)
++        return reject("POSITION_METADATA_UNSUPPORTED");
++    const auto &model = get(models[0]), &entry = get(entries[0]);
++    if (model.size() != 3 || model[0] != "!\"vs\"" || entry.size() != 5)
++        return reject("NOT_SINGLE_VERTEX_ENTRY");
++    const auto &signature = get(entry[2]);
++    if (signature.size() != 3)
++        return reject("POSITION_SIGNATURE_UNSUPPORTED");
++    std::uint32_t position = 0;
++    unsigned positions = 0;
++    for (const auto &reference : get(signature[1])) {
++        const auto &element = get(reference);
++        if (element.size() != 11)
++            return reject("POSITION_SIGNATURE_UNSUPPORTED");
++        if (element[1] != "!\"SV_Position\"" && element[1] != "!\"SV_POSITION\"")
++            continue;
++        if (element[2] != "i8 9" || element[3] != "i8 3" || element[6] != "i32 1" || element[7] != "i8 4" ||
++            !i32(element[0], position))
++            return reject("POSITION_SIGNATURE_UNSUPPORTED");
++        ++positions;
++    }
++    if (positions != 1)
++        return reject("POSITION_NOT_UNIQUE");
++    static const std::regex assignment(R"(^(%[A-Za-z0-9_.]+) = (.*)$)");
++    static const std::regex token(R"(%[A-Za-z0-9_.]+)");
++    static const std::regex store(
++        R"(^call void @dx.op.storeOutput\.f32\(i32 5, i32 ([0-9]+), i32 ([0-9]+), i8 ([0-9]+), float ([A-Za-z0-9_%+.-]+)\)(?:,.*)?$)");
++    std::map<std::string, std::string> definitions;
++    std::array<std::string, 4> roots;
++    unsigned functions = 0;
++    for (const auto &line : lines) {
++        if (line.starts_with("define "))
++            ++functions;
++        std::smatch match;
++        if (std::regex_match(line, match, assignment)) {
++            if (definitions.size() >= 8192 || !definitions.emplace(match[1].str(), match[2].str()).second)
++                return reject("SSA_DEFINITION_BOUND_OR_DUPLICATE");
++        } else if (std::regex_match(line, match, store)) {
++            std::uint32_t id = 0, row = 0, column = 0;
++            if (!number(match[1].str(), id) || !number(match[2].str(), row) || !number(match[3].str(), column))
++                return reject("POSITION_STORE_UNSUPPORTED");
++            if (id == position) {
++                if (row != 0 || column > 3 || !roots[column].empty())
++                    return reject("POSITION_STORE_NOT_UNIQUE");
++                roots[column] = match[4].str();
++            }
++        } else if (!line.starts_with("declare ") && line.find("@dx.op.storeOutput.f32") != line.npos) {
++            return reject("POSITION_STORE_UNSUPPORTED");
++        }
++    }
++    if (functions != 1)
++        return reject("NOT_SINGLE_FUNCTION");
++    std::array<std::set<std::uint32_t>, 4> rows;
++    std::array<std::set<std::uint32_t>, 4> words;
++    std::size_t edges = 0;
++    for (unsigned column = 0; column < 4; ++column) {
++        if (roots[column].empty())
++            return reject("POSITION_STORE_MISSING");
++        std::vector<std::string> pending{roots[column]};
++        std::set<std::string> visited;
++        while (!pending.empty()) {
++            auto name = std::move(pending.back());
++            pending.pop_back();
++            if (!name.starts_with('%') || !visited.insert(name).second)
++                continue;
++            if (const auto load = target_loads.find(name); load != target_loads.end()) {
++                return reject("TARGET_AGGREGATE_USE_UNSUPPORTED");
++            }
++            const auto found = definitions.find(name);
++            if (found == definitions.end())
++                return reject("SSA_VALUE_UNRESOLVED");
++            const auto &rhs = found->second;
++            const auto op = rhs.substr(0, rhs.find(' '));
++            if (op == "extractvalue") {
++                static const std::regex extract(
++                    R"(^extractvalue %dx.types.CBufRet\.(?:f32|i32) (%[A-Za-z0-9_.]+), ([0-9]+)$)");
++                std::smatch match;
++                if (std::regex_match(rhs, match, extract)) {
++                    const auto load = target_loads.find(match[1].str());
++                    if (load != target_loads.end()) {
++                        std::uint32_t component = 0;
++                        if (!number(match[2].str(), component) || component > 3)
++                            return reject("TARGET_COMPONENT_UNSUPPORTED");
++                        rows[column].insert(load->second);
++                        words[column].insert(load->second * 4 + component);
++                        continue;
++                    }
++                }
++            }
++            static const std::set<std::string> allowed{
++                "extractvalue", "fadd",   "fsub",   "fmul", "fdiv", "fneg",  "select", "phi",  "bitcast", "uitofp",
++                "sitofp",       "fptoui", "fptosi", "zext", "sext", "trunc", "shl",    "lshr", "ashr",    "and",
++                "or",           "xor",    "icmp",   "fcmp", "add",  "sub",   "mul",    "udiv", "sdiv",    "call"};
++            if (!allowed.contains(op) || (op == "call" && rhs.find("@dx.op.") == rhs.npos))
++                return reject("SSA_OPERATION_UNSUPPORTED");
++            std::set<std::string> labels;
++            if (op == "phi") {
++                static const std::regex label(R"(,\s*(%[A-Za-z0-9_.]+)\s*\])");
++                for (auto it = std::sregex_iterator(rhs.begin(), rhs.end(), label); it != std::sregex_iterator(); ++it)
++                    labels.insert((*it)[1].str());
++            }
++            for (auto it = std::sregex_iterator(rhs.begin(), rhs.end(), token); it != std::sregex_iterator(); ++it) {
++                auto dependency = it->str();
++                if (dependency.starts_with("%dx.types."))
++                    continue; // DXIL aggregate type, not an SSA value.
++                if (++edges > 65536)
++                    return reject("SSA_EDGE_BOUND");
++                // A phi's block labels do not contribute numeric values.
++                if (op == "phi" && labels.contains(dependency))
++                    continue;
++                pending.push_back(std::move(dependency));
++            }
++        }
++    }
++    result.position_rows = std::move(rows);
++    result.position_words = std::move(words);
++    result.position_dependencies_observed = true;
++    result.position_reason = "POTENTIAL_SSA_VALUE_DEPENDENCIES";
+ }
+ } // namespace cbv_detail
+ 
+@@ -133,14 +272,15 @@
+         const auto &record = get(reference);
+         std::uint32_t id = 0, slot = 0, sp = 0, count = 0, bytes = 0;
+         if (record.size() != 8) {
+-            result.malformed_record_fields=static_cast<std::uint32_t>(record.size());
++            result.malformed_record_fields = static_cast<std::uint32_t>(record.size());
+             return fail("CBV_DECLARATION_FORMAT");
+         }
+-        const bool known_id=i32(record[0],id), known_space=i32(record[3],sp),
+-                   known_slot=i32(record[4],slot), known_count=i32(record[5],count);
++        const bool known_id = i32(record[0], id), known_space = i32(record[3], sp), known_slot = i32(record[4], slot),
++                   known_count = i32(record[5], count);
+         if (!known_id || !known_space || !known_slot || !known_count) {
+-            result.malformed_record_fields=8;
+-            result.malformed_record_integer_mask=(known_id?1u:0u)|(known_space?2u:0u)|(known_slot?4u:0u)|(known_count?8u:0u);
++            result.malformed_record_fields = 8;
++            result.malformed_record_integer_mask =
++                (known_id ? 1u : 0u) | (known_space ? 2u : 0u) | (known_slot ? 4u : 0u) | (known_count ? 8u : 0u);
+             return fail("CBV_DECLARATION_FORMAT");
+         }
+         if (sp != space || slot > reg || (count && std::uint64_t(slot) + count <= reg))
+@@ -166,6 +306,7 @@
+         R"(^%[A-Za-z0-9_.]+ = call %dx.types.CBufRet.(?:f32|i32) @dx.op.cbufferLoadLegacy.(?:f32|i32)\(i32 59, %dx.types.Handle (%[A-Za-z0-9_.]+), i32 ([0-9]+)\)$)");
+     static const std::regex token(R"(%[A-Za-z0-9_.]+)");
+     std::set<std::string> handles;
++    std::map<std::string, std::uint32_t> target_loads;
+     std::set<std::size_t> creations;
+     for (std::size_t i = 0; i < lines.size(); ++i) {
+         const auto &line = lines[i];
+@@ -229,6 +370,7 @@
+                 return fail("LOAD_OUT_OF_RANGE");
+             ++result.loads;
+             result.rows.insert(row);
++            target_loads.emplace(line.substr(0, line.find(" = ")), row);
+             if (end > result.maximum_byte_end)
+                 result.maximum_byte_end = static_cast<std::uint32_t>(end);
+             continue;
+@@ -242,6 +384,7 @@
+         return fail("NO_TARGET_LOADS");
+     result.supported = true;
+     result.reason = "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS";
++    observe_position_dependencies(result, lines, metadata, target_loads);
+     return result;
+ }
+ } // namespace odv::research
