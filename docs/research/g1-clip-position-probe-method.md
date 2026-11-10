@@ -78,3 +78,12 @@ candidate. No replacement draw was recorded; mode0 was restored and the original
 scene continued. Probe20 adds fixed numeric compiler-stage/HRESULT reporting
 without compiler text or shader export. Owned non-vertex controls verify stage4
 rejection, and Debug/Release geometry controls pass. Probe20 game retry is NOT_RUN.
+
+Probe20 live retry isolates stage6 validation failure, HRESULT0x80AA0009
+(DXC_E_IR_VERIFICATION_FAILED, per Microsoft ErrorCodes.h). No replacement draw
+was recorded. Probe21 checks the untouched original container and an untouched
+assembly round trip before the clip rewrite. These controls distinguish compiler
+compatibility from an edit-induced error; neither bypasses validation. It exports
+only a bounded plain-language diagnostic line, rejecting instruction, function
+and quoted-identifier excerpts. Owned Debug/Release tests and native attachment
+controls pass. Probe21 game retry is NOT_RUN.

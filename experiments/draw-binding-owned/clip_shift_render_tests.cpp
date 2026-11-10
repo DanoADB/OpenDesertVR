@@ -191,6 +191,11 @@ int wmain(int argc, wchar_t **argv) {
     TestModule warp;
     Com<ID3D12InfoQueue> info;
     try {
+        require(odv::research::clip_validation_summary("error: Flags must match usage.\n") ==
+                "Flags must match usage.");
+        require(odv::research::clip_validation_summary("error: %123 = fadd float %124, 0.0\n").empty());
+        require(odv::research::clip_validation_summary("error: Function 'gameMain' is invalid\n").empty());
+        require(odv::research::clip_validation_summary(std::string(65537, 'a')).empty());
         require(argc >= 4 && argc <= 6);
         bool use_stream = false, retained_native = false;
         for (int i = 4; i < argc; ++i) {

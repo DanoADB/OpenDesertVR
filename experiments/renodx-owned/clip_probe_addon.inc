@@ -141,6 +141,8 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
     odv_clip_mode = 0;
     // Fixed stage/code only: never export compiler text or shader contents.
     reshade::log::message(reshade::log::level::error, "ODV clip probe: compiler rejected identity/shift; see numeric failure stage and HRESULT; original draw retained");
+    if (!error.summary.empty())
+      reshade::log::message(reshade::log::level::error, (std::string("ODV clip probe validation summary: ") + error.summary).c_str());
   } catch (...) {
     odv_clip_failed = true;
     odv_clip_mode = 0;

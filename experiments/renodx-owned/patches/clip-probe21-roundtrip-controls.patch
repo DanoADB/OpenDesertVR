@@ -1,0 +1,117 @@
+--- a/src/addons/devkit/odv/clip_shift_dxil.hpp
++++ b/src/addons/devkit/odv/clip_shift_dxil.hpp
+@@ -13,15 +13,52 @@
+ 
+ namespace odv::research {
+ enum class ClipShift { left, identity, right };
+-enum class ClipCompileStage : unsigned { sdk_load = 1, interfaces, disassembly, position_store, assembly, validation };
++enum class ClipCompileStage : unsigned {
++    sdk_load = 1,
++    interfaces,
++    disassembly,
++    position_store,
++    assembly,
++    validation,
++    original_validation,
++    roundtrip_validation
++};
++// Return only a bounded, plain-language error line. Never retain instruction,
++// function, source-location or quoted-identifier excerpts from DXC diagnostics.
++inline std::string clip_validation_summary(std::string_view text) {
++    if (text.size() > 65536)
++        return {};
++    for (size_t p = 0; p < text.size();) {
++        auto end = text.find('\n', p);
++        if (end == text.npos)
++            end = text.size();
++        auto line = text.substr(p, end - p);
++        p = end + 1;
++        if (!line.empty() && line.back() == '\r')
++            line.remove_suffix(1);
++        if (!line.starts_with("error: "))
++            continue;
++        line.remove_prefix(7);
++        if (line.empty() || line.size() > 160 || line == "validation errors" || line.find("Function") != line.npos ||
++            line.find("function:") != line.npos)
++            continue;
++        bool plain = true;
++        for (const unsigned char c : line)
++            plain &= (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == ' ' || c == '.' || c == ',' || c == '-';
++        if (plain)
++            return std::string(line);
++    }
++    return {};
++}
+ class ClipCompileError final : public std::runtime_error {
+   public:
+     const ClipCompileStage stage;
+     const HRESULT result;
+-    ClipCompileError(ClipCompileStage where, HRESULT hr)
++    const std::string summary;
++    ClipCompileError(ClipCompileStage where, HRESULT hr, std::string message = {})
+         : std::runtime_error(where == ClipCompileStage::position_store ? "unsupported_position_store"
+                                                                        : "dxil_clip_probe_rejected"),
+-          stage(where), result(hr) {}
++          stage(where), result(hr), summary(std::move(message)) {}
+ };
+ // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
+ // every other output unchanged. This is NOT a complete stereo/game adapter.
+@@ -121,7 +158,14 @@
+     static Microsoft::WRL::ComPtr<IDxcBlob> result(IDxcOperationResult *operation, ClipCompileStage stage) {
+         HRESULT status = E_FAIL;
+         checked(operation->GetStatus(&status), stage);
+-        checked(status, stage);
++        if (FAILED(status)) {
++            Microsoft::WRL::ComPtr<IDxcBlobEncoding> errors;
++            std::string summary;
++            if (SUCCEEDED(operation->GetErrorBuffer(&errors)) && errors && errors->GetBufferSize() <= 65536)
++                summary = clip_validation_summary(
++                    {static_cast<const char *>(errors->GetBufferPointer()), errors->GetBufferSize()});
++            throw ClipCompileError(stage, status, std::move(summary));
++        }
+         Microsoft::WRL::ComPtr<IDxcBlob> blob;
+         checked(operation->GetResult(&blob), stage);
+         return blob;
+@@ -162,6 +206,12 @@
+         checked(create_(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
+         Microsoft::WRL::ComPtr<IDxcBlobEncoding> source, text;
+         checked(utils->CreateBlob(original.data(), static_cast<UINT32>(original.size()), DXC_CP_ACP, &source));
++        Microsoft::WRL::ComPtr<IDxcValidator> validator;
++        checked(validate_create_(CLSID_DxcValidator, IID_PPV_ARGS(&validator)));
++        Microsoft::WRL::ComPtr<IDxcOperationResult> original_validation;
++        checked(validator->Validate(source.Get(), DxcValidatorFlags_Default, &original_validation),
++                ClipCompileStage::original_validation);
++        (void)result(original_validation.Get(), ClipCompileStage::original_validation);
+         checked(compiler->Disassemble(source.Get(), &text), ClipCompileStage::disassembly);
+         if (text->GetBufferSize() > 1024 * 1024)
+             throw std::runtime_error("shader_text_bound");
+@@ -175,11 +225,16 @@
+         checked(utils->CreateBlob(shifted->data(), static_cast<UINT32>(shifted->size()), DXC_CP_UTF8, &assembly));
+         Microsoft::WRL::ComPtr<IDxcAssembler> assembler;
+         checked(create_(CLSID_DxcAssembler, IID_PPV_ARGS(&assembler)));
++        // Isolate an SDK round-trip failure from the actual clip-X rewrite.
++        Microsoft::WRL::ComPtr<IDxcOperationResult> roundtrip, roundtrip_validation;
++        checked(assembler->AssembleToContainer(text.Get(), &roundtrip), ClipCompileStage::roundtrip_validation);
++        auto unchanged = result(roundtrip.Get(), ClipCompileStage::roundtrip_validation);
++        checked(validator->Validate(unchanged.Get(), DxcValidatorFlags_Default, &roundtrip_validation),
++                ClipCompileStage::roundtrip_validation);
++        (void)result(roundtrip_validation.Get(), ClipCompileStage::roundtrip_validation);
+         Microsoft::WRL::ComPtr<IDxcOperationResult> assembled;
+         checked(assembler->AssembleToContainer(assembly.Get(), &assembled), ClipCompileStage::assembly);
+         auto binary = result(assembled.Get(), ClipCompileStage::assembly);
+-        Microsoft::WRL::ComPtr<IDxcValidator> validator;
+-        checked(validate_create_(CLSID_DxcValidator, IID_PPV_ARGS(&validator)));
+         Microsoft::WRL::ComPtr<IDxcOperationResult> validated;
+         checked(validator->Validate(binary.Get(), DxcValidatorFlags_InPlaceEdit, &validated),
+                 ClipCompileStage::validation);
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -141,6 +141,8 @@
+     odv_clip_mode = 0;
+     // Fixed stage/code only: never export compiler text or shader contents.
+     reshade::log::message(reshade::log::level::error, "ODV clip probe: compiler rejected identity/shift; see numeric failure stage and HRESULT; original draw retained");
++    if (!error.summary.empty())
++      reshade::log::message(reshade::log::level::error, (std::string("ODV clip probe validation summary: ") + error.summary).c_str());
+   } catch (...) {
+     odv_clip_failed = true;
+     odv_clip_mode = 0;
