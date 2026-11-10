@@ -6,6 +6,7 @@
 #include <array>
 #include <cstdint>
 #include <d3d12.h>
+#include <optional>
 
 namespace odv::research {
 // Bounded metadata only. Native creation/reset establishes empty state; dropped,
@@ -93,6 +94,39 @@ class DrawRecordingState final {
         return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
     }
     bool failed() const noexcept { return failed_; }
+    // Select a query family not already active in the application's recording.
+    // Keep binary/full occlusion and both statistics versions in one family.
+    std::optional<D3D12_QUERY_TYPE> work_query_type() const noexcept {
+        if (!eligible_single_forward())
+            return {};
+        bool statistics = false, occlusion = false;
+        for (const auto &query : queries_) {
+            if (!query.heap)
+                continue;
+            switch (query.type) {
+            case D3D12_QUERY_TYPE_PIPELINE_STATISTICS:
+            case D3D12_QUERY_TYPE_PIPELINE_STATISTICS1:
+                statistics = true;
+                break;
+            case D3D12_QUERY_TYPE_OCCLUSION:
+            case D3D12_QUERY_TYPE_BINARY_OCCLUSION:
+                occlusion = true;
+                break;
+            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0:
+            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM1:
+            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM2:
+            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM3:
+                break;
+            default:
+                return {};
+            }
+        }
+        if (!statistics)
+            return D3D12_QUERY_TYPE_PIPELINE_STATISTICS;
+        if (!occlusion)
+            return D3D12_QUERY_TYPE_OCCLUSION;
+        return {};
+    }
     UINT active_queries() const noexcept { return query_count_; }
     bool render_pass_blocked() const noexcept { return active_pass_ || suspended_; }
     const auto &stream_outputs() const noexcept { return stream_outputs_; }

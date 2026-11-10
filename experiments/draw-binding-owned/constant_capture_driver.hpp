@@ -81,6 +81,33 @@ class ConstantCaptureDriver final {
                           RecordStatus *status = nullptr) {
         return record_impl(list, device, commands, source, offset, bytes, &states, status);
     }
+    template <class Forward>
+    Ticket record_work(std::uintptr_t list, std::uintptr_t identity, ID3D12Device *device,
+                       ID3D12GraphicsCommandList *commands, D3D12_QUERY_TYPE type, Forward &&forward) {
+        const std::lock_guard lock(mutex_);
+        collect_retired();
+        if (!list || !identity || !capture_ || entries_.size() >= ConstantSnapshot::maximum_pending)
+            return {};
+        // Identity is the caller's immutable draw variant, not a resource to read.
+        for (const auto &entry : entries_)
+            if (!entry->retired && entry->list == list && entry->source == identity && entry->bytes == 0)
+                return {};
+        auto entry = std::make_shared<Entry>();
+        entry->list = list;
+        entry->source = identity;
+        entry->capture = capture_;
+        entries_.push_back(entry);
+        try {
+            if (!entry->snapshot.record_work(device, commands, type, std::forward<Forward>(forward))) {
+                entries_.pop_back();
+                return {};
+            }
+        } catch (...) {
+            entries_.pop_back();
+            throw;
+        }
+        return entry;
+    }
     template <class Restore>
     Ticket record_vertex(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
                          ID3D12Resource *source, UINT64 offset, const VertexConstantStream::Context &context,

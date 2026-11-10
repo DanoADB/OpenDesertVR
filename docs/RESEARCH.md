@@ -202,3 +202,10 @@ also produces no noticeable visual change. Probe25 selects an alternate observed
 material-pass vertex shader with a larger indirect capacity for the next
 influence test. Actual GPU counts and visible contribution are still unknown.
 These controls do not establish game stereo, head tracking or OpenXR delivery.
+
+
+Probe25's rotating-camera control also showed no noticeable influence.
+[Probe26 owned qualification](evidence/g1-owned-clip-probe26-2026-11-10.json)
+adds fenced GPU-work queries with predication skip/pass controls before any
+further shader selection. The private observer is built; live GPU-work results
+are pending. This does not establish visible geometry control or game VR.

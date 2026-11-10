@@ -184,3 +184,32 @@ yet observed by the metadata contract; a GPU readback inserted under unknown
 predication must not be interpreted as a measured zero. No GPU copy or game
 shader bypass has been added in this step.
 See [live Probe25 evidence](../evidence/g1-game-clip-probe25-2026-11-10.json).
+
+
+Probe26 adds a bounded GPU-work diagnostic instead of another shader target.
+At most six samples (three per mode) wrap the exact original single-forwarded
+indirect draw in a private query. It selects pipeline statistics when that
+family is absent from tracked active queries, otherwise occlusion when free;
+unknown query types, invalid recordings and unavailable families reject sampling.
+The existing capture driver supplies AFTER-native-execute fences and recording
+retirement; private query heaps and readback allocations survive until both.
+No game argument/count buffer is read and the predicate is never rebound.
+Microsoft documents that query begin/end/resolution are not predicated while
+indirect draws are; see [predication](https://learn.microsoft.com/en-us/windows/win32/direct3d12/predication).
+
+Owned Debug and Release controls pass all five affected test groups. Each of
+12 clip GPU runs preserves the existing eleven pixel/query cases and adds six
+fenced work samples: two occlusion samples under active pipeline statistics,
+and four statistics samples under active occlusion. Two consecutive draws
+under a zero skip predicate report zero; two under the allowing predicate report
+six IA vertices and two primitives, with nonzero shader work. Full-budget
+rejection records no callback. Family aliases and unknown types are checked.
+Hosted CI requires the new marker in all twelve GPU runs.
+
+The exact wrapper25/addon26 binaries also pass legacy/stream owned qualification
+with the modern compiler pair. Local debug-layer validation is unavailable;
+the owned harness does not exercise game-specific addon selection. The new
+addon is built and input-locked but live GPU-work collection is NOT_RUN.
+These counters measure executed work or depth/stencil-passing samples, not raw
+indirect counts or final visible pixels. Stereo and headset delivery remain
+NOT_RUN. See [owned qualification](../evidence/g1-owned-clip-probe26-2026-11-10.json).

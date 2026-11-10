@@ -93,6 +93,7 @@ jobs:
               [regex]::Matches($clipLog, 'near/far4/2-pixel displacement').Count -ne 4 -or
               [regex]::Matches($clipLog, 'shifted quad outside view').Count -ne 4 -or
               [regex]::Matches($clipLog, 'selected triangles zero area').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'PASS_FENCED_PREDICATION_SKIP_PASS_AND_FORWARDING').Count -ne 12 -or
               [regex]::Matches($clipLog, 'PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION').Count -ne 12 -or
               [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 12 -or
               [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 12 -or

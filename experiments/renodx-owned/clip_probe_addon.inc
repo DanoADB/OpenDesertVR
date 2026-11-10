@@ -7,6 +7,15 @@
 bool odv_clip_enabled = false;
 bool odv_clip_large = false; // Read once before publishing a nonzero mode.
 bool odv_clip_collapse = false; // Scale-independent influence diagnostic only.
+bool odv_clip_work_enabled = false;
+struct ODVClipWorkSample {
+  odv::research::ConstantCaptureDriver::Ticket ticket;
+  unsigned mode = 0;
+  D3D12_QUERY_TYPE type{};
+  UINT maximum_count = 0;
+};
+std::mutex odv_clip_work_mutex;
+std::array<ODVClipWorkSample, 6> odv_clip_work_samples{};
 std::atomic_uint odv_clip_mode = 0;
 std::atomic_uint64_t odv_clip_lease = 0;
 std::atomic_bool odv_clip_failed = false;
@@ -27,9 +36,16 @@ void PollODVClipProbe() noexcept {
   next_poll = now + 250;
   static bool config_read = false;
   if (!config_read) {
-    uint32_t large = 0, collapse = 0;
+    uint32_t large = 0, collapse = 0, work = 0;
     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeLarge", large);
     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeCollapse", collapse);
+    reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeWork", work);
+    if (work > 1) { odv_clip_failed = true; return; }
+    if (work) {
+      try { odv_constant_driver.begin_capture(); }
+      catch (...) { odv_clip_failed = true; return; }
+      odv_clip_work_enabled = true;
+    }
     if (large > 1 || collapse > 1 || (large && collapse)) { odv_clip_failed = true; return; }
     odv_clip_large = large == 1;
     odv_clip_collapse = collapse == 1;
@@ -56,7 +72,35 @@ void PollODVClipProbe() noexcept {
            << ",\"large_probe\":" << (odv_clip_large ? "true" : "false")
            << ",\"collapse_probe\":" << (odv_clip_collapse ? "true" : "false")
            << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
-           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
+           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\",\"gpu_work\":[";
+    {
+      const std::lock_guard work_lock(odv_clip_work_mutex);
+      bool comma = false;
+      for (const auto& work : odv_clip_work_samples) {
+        if (!work.ticket) continue;
+        const auto sample = odv_constant_driver.read(work.ticket);
+        status << (comma ? "," : "") << "{\"mode\":" << work.mode
+               << ",\"type\":" << static_cast<unsigned>(work.type)
+               << ",\"maximum_count\":" << work.maximum_count
+               << ",\"state\":\"" << sample.state << "\"";
+        comma = true;
+        if (std::strcmp(sample.state, "READY") == 0) {
+          if (work.type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS && sample.bytes.size() == sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS)) {
+            D3D12_QUERY_DATA_PIPELINE_STATISTICS stats{};
+            std::memcpy(&stats, sample.bytes.data(), sizeof(stats));
+            status << ",\"ia_vertices\":" << stats.IAVertices << ",\"ia_primitives\":" << stats.IAPrimitives
+                   << ",\"vs_invocations\":" << stats.VSInvocations << ",\"clip_primitives\":" << stats.CPrimitives
+                   << ",\"ps_invocations\":" << stats.PSInvocations;
+          } else if (work.type == D3D12_QUERY_TYPE_OCCLUSION && sample.bytes.size() == sizeof(UINT64)) {
+            UINT64 samples = 0;
+            std::memcpy(&samples, sample.bytes.data(), sizeof(samples));
+            status << ",\"occlusion_samples\":" << samples;
+          }
+        }
+        status << "}";
+      }
+    }
+    status << "]}\n";
   } catch (...) {
     odv_clip_mode = 0;
     odv_clip_lease = 0;
@@ -83,6 +127,7 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
     const auto& native = data->odv_native_state;
     odv::research::NativeIndirectCall call{};
     odv::research::NativeIndirectDescription description{};
+    std::optional<D3D12_QUERY_TYPE> work_type;
     {
       const std::lock_guard lock(native->mutex);
       if (native->failed || native->protected_session || !native->draw_capable || !native->indirect_capable ||
@@ -91,6 +136,7 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
         if (view.BufferLocation || view.SizeInBytes || view.BufferFilledSizeLocation) return false;
       call = native->indirect_call;
       description = native->indirect_description;
+      work_type = native->draw_state.work_query_type();
     }
     if (!odv::research::clip_probe_signature(description) || description.root_signature != tables->layout.handle)
       return false;
@@ -143,8 +189,31 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
         return false;
       }
     }
-    if (odv::research::record_clip_indirect(reinterpret_cast<ID3D12GraphicsCommandList*>(list->get_native()),
-                                          original, variant.Get(), call, description)) {
+    auto* commands = reinterpret_cast<ID3D12GraphicsCommandList*>(list->get_native());
+    bool forwarded = false, measured = false;
+    const auto forward = [&]() noexcept {
+      forwarded = odv::research::record_clip_indirect(commands, original, variant.Get(), call, description);
+    };
+    if (odv_clip_work_enabled && work_type) {
+      const std::lock_guard work_lock(odv_clip_work_mutex);
+      unsigned per_mode = 0;
+      ODVClipWorkSample* free = nullptr;
+      for (auto& sample : odv_clip_work_samples) {
+        if (sample.ticket && sample.mode == mode) ++per_mode;
+        if (!sample.ticket && !free) free = &sample;
+      }
+      if (free && per_mode < 3) {
+        auto ticket = odv_constant_driver.record_work(reinterpret_cast<uintptr_t>(list),
+            reinterpret_cast<uintptr_t>(variant.Get()), reinterpret_cast<ID3D12Device*>(device->get_native()),
+            commands, *work_type, forward);
+        if (ticket) {
+          *free = {std::move(ticket), mode, *work_type, call.maximum_count};
+          measured = true;
+        }
+      }
+    }
+    if (!measured) forward();
+    if (forwarded) {
       ++odv_clip_recordings[mode];
       return true; // Original command was forwarded once, with native resets.
     }

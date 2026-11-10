@@ -12,6 +12,7 @@
 #include <d3d12.h>
 #include <optional>
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 #include <vector>
 #include <wrl/client.h>
@@ -26,6 +27,7 @@ class ConstantSnapshot final {
     Phase phase_ = Phase::empty;
     Com<ID3D12Resource> source_, readback_;
     Com<ID3D12Fence> fence_;
+    Com<ID3D12QueryHeap> work_query_;
     UINT64 fence_value_ = 0;
     std::size_t bytes_ = 0;
     std::optional<std::vector<std::byte>> data_;
@@ -116,6 +118,7 @@ class ConstantSnapshot final {
             source_.Detach();
             readback_.Detach();
             fence_.Detach();
+            work_query_.Detach();
             return;
         }
         release_count();
@@ -134,6 +137,56 @@ class ConstantSnapshot final {
         if ((!state && !enhanced) || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
             return false;
         return record_copy(device, commands, source, offset, bytes, state, enhanced);
+    }
+    // Narrow original-draw diagnostic. Begin/End/ResolveQueryData are not
+    // predicated. Forward exactly once; never alter the application's predicate.
+    // Caller proves the query family is available and the draw is eligible.
+    template <class Forward>
+    bool record_work(ID3D12Device *device, ID3D12GraphicsCommandList *commands, D3D12_QUERY_TYPE type,
+                     Forward &&forward) {
+        static_assert(std::is_nothrow_invocable_v<Forward>);
+        if (phase_ != Phase::empty || !device || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT ||
+            (type != D3D12_QUERY_TYPE_PIPELINE_STATISTICS && type != D3D12_QUERY_TYPE_OCCLUSION))
+            return false;
+        const auto bytes = type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS ? sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS)
+                                                                        : sizeof(UINT64);
+        if (pending_.fetch_add(1) >= maximum_pending) {
+            --pending_;
+            return false;
+        }
+        counted_ = true;
+        try {
+            const D3D12_QUERY_HEAP_DESC query{type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS
+                                                  ? D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS
+                                                  : D3D12_QUERY_HEAP_TYPE_OCCLUSION,
+                                              1, 0};
+            checked(device->CreateQueryHeap(&query, IID_PPV_ARGS(&work_query_)));
+            D3D12_HEAP_PROPERTIES heap{};
+            heap.Type = D3D12_HEAP_TYPE_READBACK;
+            D3D12_RESOURCE_DESC target{};
+            target.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+            target.Width = bytes;
+            target.Height = 1;
+            target.DepthOrArraySize = 1;
+            target.MipLevels = 1;
+            target.SampleDesc.Count = 1;
+            target.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+            checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &target,
+                                                    D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&readback_)));
+        } catch (...) {
+            work_query_.Reset();
+            readback_.Reset();
+            release_count();
+            throw;
+        }
+        // All allocations and throwing operations precede native recording.
+        bytes_ = bytes;
+        phase_ = Phase::recorded;
+        commands->BeginQuery(work_query_.Get(), type, 0);
+        forward();
+        commands->EndQuery(work_query_.Get(), type, 0);
+        commands->ResolveQueryData(work_query_.Get(), type, 0, 1, readback_.Get(), 0);
+        return true;
     }
 
   private:
@@ -290,7 +343,7 @@ class ConstantSnapshot final {
         const auto completed = fence_->GetCompletedValue();
         if (completed == UINT64_MAX || completed < fence_value_)
             return false;
-        if (!DeferredResourceRelease::defer(source_, readback_))
+        if (!DeferredResourceRelease::defer(source_, readback_, work_query_))
             return false;
         fence_.Reset();
         phase_ = Phase::discarded;
@@ -301,7 +354,7 @@ class ConstantSnapshot final {
     bool discard_unsubmitted() noexcept {
         if (phase_ != Phase::recorded || execution_observed_)
             return false;
-        if (!DeferredResourceRelease::defer(source_, readback_))
+        if (!DeferredResourceRelease::defer(source_, readback_, work_query_))
             return false;
         phase_ = Phase::discarded;
         release_count();

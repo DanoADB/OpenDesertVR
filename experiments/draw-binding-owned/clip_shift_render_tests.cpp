@@ -5,6 +5,8 @@
 #include "../renodx-owned/native_clip_indirect.hpp"
 #include "../renodx-owned/native_vertex_pipeline_payload.hpp"
 #include "clip_shift_dxil.hpp"
+#include "constant_capture_driver.hpp"
+#include "draw_recording_state.hpp"
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -486,6 +488,12 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12GraphicsCommandList> list;
         checked(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr,
                                           IID_PPV_ARGS(&list)));
+        odv::research::ConstantCaptureDriver work_driver;
+        work_driver.begin_capture();
+        std::array<odv::research::ConstantCaptureDriver::Ticket, 6> work_tickets;
+        const auto list_id = reinterpret_cast<std::uintptr_t>(list.Get());
+        const UINT64 predicate_zero = 0;
+        auto predicate = upload(device.Get(), &predicate_zero, sizeof(predicate_zero));
         stage = "recording";
         list->CopyBufferRegion(arguments.Get(), 0, argument_upload.Get(), 0, 112);
         list->CopyBufferRegion(counts.Get(), 0, count_upload.Get(), 0, 16);
@@ -510,19 +518,41 @@ int wmain(int argc, wchar_t **argv) {
             const odv::research::NativeIndirectCall call{signature.Get(),   c.maximum,    arguments.Get(),
                                                          c.argument_offset, counts.Get(), c.count_offset};
             list->BeginQuery(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i);
-            list->BeginQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
-            if (c.shader)
-                require(odv::research::record_clip_indirect(list.Get(), pipelines[0].Get(), pipelines[c.shader].Get(),
-                                                            call, native_signature));
-            else
-                list->ExecuteIndirect(call.signature, call.maximum_count, call.argument_buffer, call.argument_offset,
-                                      call.count_buffer, call.count_offset);
-            list->EndQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
+            if (i >= 2)
+                list->BeginQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
+            bool forwarded = false;
+            const auto forward = [&]() noexcept {
+                if (c.shader)
+                    forwarded = odv::research::record_clip_indirect(list.Get(), pipelines[0].Get(),
+                                                                    pipelines[c.shader].Get(), call, native_signature);
+                else {
+                    list->ExecuteIndirect(call.signature, call.maximum_count, call.argument_buffer,
+                                          call.argument_offset, call.count_buffer, call.count_offset);
+                    forwarded = true;
+                }
+            };
+            if (i < 2) {
+                odv::research::DrawRecordingState guard;
+                guard.reset();
+                guard.capabilities(7);
+                guard.query(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i, true);
+                require(guard.work_query_type() == D3D12_QUERY_TYPE_OCCLUSION);
+                work_tickets[i] = work_driver.record_work(list_id, i + 1, device.Get(), list.Get(),
+                                                          *guard.work_query_type(), forward);
+                require(work_tickets[i] != nullptr);
+                guard.query(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i, true);
+                require(!guard.work_query_type());
+            } else
+                forward();
+            require(forwarded);
+            if (i >= 2)
+                list->EndQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
             list->EndQuery(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i);
             list->ResolveQueryData(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i, 1, query_readback.Get(),
                                    i * query_stride);
-            list->ResolveQueryData(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i, 1, query_readback.Get(),
-                                   i * query_stride + sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS));
+            if (i >= 2)
+                list->ResolveQueryData(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i, 1, query_readback.Get(),
+                                       i * query_stride + sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS));
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dst{};
             dst.pResource = readback.Get();
@@ -535,6 +565,31 @@ int wmain(int argc, wchar_t **argv) {
             list->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
         }
+        // Two consecutive draws per predicate catch accidental predicate mutation.
+        // Query operations resolve even when the original indirect draw is skipped.
+        for (UINT i = 2; i < work_tickets.size(); ++i) {
+            if (i == 2 || i == 4)
+                list->SetPredication(predicate.Get(), 0,
+                                     i == 2 ? D3D12_PREDICATION_OP_EQUAL_ZERO : D3D12_PREDICATION_OP_NOT_EQUAL_ZERO);
+            list->BeginQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, 0);
+            odv::research::DrawRecordingState guard;
+            guard.reset();
+            guard.capabilities(7);
+            guard.query(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, 0, true);
+            require(guard.work_query_type() == D3D12_QUERY_TYPE_PIPELINE_STATISTICS);
+            work_tickets[i] = work_driver.record_work(
+                list_id, i + 1, device.Get(), list.Get(), *guard.work_query_type(),
+                [&]() noexcept { list->ExecuteIndirect(signature.Get(), 1, arguments.Get(), 16, counts.Get(), 4); });
+            require(work_tickets[i] != nullptr);
+            list->EndQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, 0);
+        }
+        unsigned unexpected_forward = 0;
+        require(!work_driver.record_work(list_id, 99, device.Get(), list.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS,
+                                         [&]() noexcept { ++unexpected_forward; }));
+        require(unexpected_forward == 0); // Full budget rejection records no draw.
+        list->SetPredication(nullptr, 0, D3D12_PREDICATION_OP_EQUAL_ZERO);
+        for (const auto &ticket : work_tickets)
+            require(std::strcmp(work_driver.read(ticket).state, "UNSUBMITTED") == 0);
         transition(list.Get(), arguments.Get(), D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
                    D3D12_RESOURCE_STATE_COPY_SOURCE);
         transition(list.Get(), counts.Get(), D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -542,7 +597,9 @@ int wmain(int argc, wchar_t **argv) {
         list->CopyBufferRegion(input_readback.Get(), 112, counts.Get(), 0, 16);
         checked(list->Close());
         ID3D12CommandList *lists[]{list.Get()};
+        work_driver.before_execute(list_id, queue.Get());
         queue->ExecuteCommandLists(1, lists);
+        work_driver.after_execute(list_id, queue.Get());
         Com<ID3D12Fence> fence;
         checked(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
         checked(queue->Signal(fence.Get(), 1));
@@ -600,13 +657,33 @@ int wmain(int argc, wchar_t **argv) {
             UINT64 samples = 0;
             const auto *bytes = static_cast<const std::byte *>(mapped) + i * query_stride;
             std::memcpy(&stats, bytes, sizeof(stats));
-            std::memcpy(&samples, bytes + sizeof(stats), sizeof(samples));
+            if (i < 2) {
+                const auto sample = work_driver.read(work_tickets[i]);
+                require(std::strcmp(sample.state, "READY") == 0 && sample.bytes.size() == sizeof(samples));
+                std::memcpy(&samples, sample.bytes.data(), sizeof(samples));
+            } else
+                std::memcpy(&samples, bytes + sizeof(stats), sizeof(samples));
             const auto &c = cases[i];
             queries &= stats.IAVertices == (c.empty ? 0u : 6u) && stats.IAPrimitives == (c.empty ? 0u : 2u) &&
                        samples == (c.empty ? 0u : (64u - c.left_blank - c.right_blank) * 16u);
         }
         query_readback->Unmap(0, &no_write);
         require(queries);
+        stage = "fenced_predicated_work_queries";
+        for (UINT i = 2; i < work_tickets.size(); ++i) {
+            const auto sample = work_driver.read(work_tickets[i]);
+            D3D12_QUERY_DATA_PIPELINE_STATISTICS stats{};
+            require(std::strcmp(sample.state, "READY") == 0 && sample.bytes.size() == sizeof(stats));
+            std::memcpy(&stats, sample.bytes.data(), sizeof(stats));
+            require(stats.IAVertices == (i < 4 ? 0u : 6u) && stats.IAPrimitives == (i < 4 ? 0u : 2u));
+            require(i < 4 ? stats.VSInvocations == 0 && stats.PSInvocations == 0
+                          : stats.VSInvocations > 0 && stats.PSInvocations > 0);
+        }
+        unchanged(predicate.Get(), &predicate_zero, sizeof(predicate_zero));
+        list.Reset(); // Actual recording retirement, after its covering fence.
+        work_driver.destroyed(list_id);
+        odv::research::DeferredResourceRelease::drain();
+        std::cout << "gpu_work_queries=PASS_FENCED_PREDICATION_SKIP_PASS_AND_FORWARDING\n";
         std::cout << "query_accounting=PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION\n";
         std::cout << (collapse_probe
                           ? "PASS: collapsed clip-X probe; 11 cases x1024 pixels; selected triangles zero area; "
