@@ -103,3 +103,14 @@ between runs. Game/tool hashes remain unchanged; no Devkit assets are written.
 Visible displacement is still UNVERIFIED: the small shift is not confidently
 separable from animation in desktop observation. This is successful native
 replacement recording, not independent game eye rendering or headset acceptance.
+
+Probe23 adds a larger fixed diagnostic preset to make visible influence easier
+to assess: ODVClipProbeLarge0 uses the existing0.125 clip-X magnitude; value1
+uses128. Any other value disables the probe. The choice is read once before a
+nonzero mode is published and remains fixed for that process, preserving the
+three-slot native variant cache. Modes/expiry/original forwarding are unchanged.
+This magnitude is a visibility diagnostic, not an IPD or comfort calibration.
+Owned Debug/Release SM6.0/6.6 legacy/stream tests cover both presets. The large
+preset moves the test quad outside the view while identity/original restoration
+and exact primitive/occlusion accounting still pass. Game large-preset testing
+remains NOT_RUN. The currently running game is restored to original mode0.

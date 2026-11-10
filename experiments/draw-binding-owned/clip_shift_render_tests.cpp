@@ -196,15 +196,17 @@ int wmain(int argc, wchar_t **argv) {
         require(odv::research::clip_validation_summary("error: %123 = fadd float %124, 0.0\n").empty());
         require(odv::research::clip_validation_summary("error: Function 'gameMain' is invalid\n").empty());
         require(odv::research::clip_validation_summary(std::string(65537, 'a')).empty());
-        require(argc >= 4 && argc <= 6);
-        bool use_stream = false, retained_native = false;
+        require(argc >= 4 && argc <= 7);
+        bool use_stream = false, retained_native = false, large_probe = false;
         for (int i = 4; i < argc; ++i) {
             const std::wstring_view argument(argv[i]);
-            require(argument == L"--stream" || argument == L"--retained-native");
+            require(argument == L"--stream" || argument == L"--retained-native" || argument == L"--large");
             if (argument == L"--stream")
                 use_stream = true;
             if (argument == L"--retained-native")
                 retained_native = true;
+            if (argument == L"--large")
+                large_probe = true;
         }
 #ifdef ODV_TEST_WARP_DLL
         warp.value =
@@ -214,9 +216,10 @@ int wmain(int argc, wchar_t **argv) {
         odv::research::ClipShiftCompiler compiler{std::filesystem::path(argv[1])};
         const auto vs = read_owned(argv[2]), ps = read_owned(argv[3]);
         stage = "dxil_assembly_and_validation";
-        std::array<std::vector<std::uint8_t>, 4> shaders{vs, compiler.compile(vs, odv::research::ClipShift::identity),
-                                                         compiler.compile(vs, odv::research::ClipShift::left),
-                                                         compiler.compile(vs, odv::research::ClipShift::right)};
+        std::array<std::vector<std::uint8_t>, 4> shaders{
+            vs, compiler.compile(vs, odv::research::ClipShift::identity, large_probe),
+            compiler.compile(vs, odv::research::ClipShift::left, large_probe),
+            compiler.compile(vs, odv::research::ClipShift::right, large_probe)};
         Com<ID3D12Debug> debug;
         const HRESULT debug_status = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
         const bool validation = SUCCEEDED(debug_status);
@@ -429,17 +432,23 @@ int wmain(int argc, wchar_t **argv) {
             UINT shader, argument_offset, maximum, count_offset, left_blank, right_blank;
             bool empty;
         };
-        const std::array<Case, 11> cases{{{0, 16, 1, 4, 0, 0, false},
-                                          {1, 16, 1, 4, 0, 0, false},
-                                          {2, 16, 1, 4, 0, 4, false},
-                                          {3, 16, 1, 4, 4, 0, false},
-                                          {2, 56, 1, 4, 0, 2, false},
-                                          {3, 56, 1, 4, 2, 0, false},
-                                          {0, 56, 1, 4, 0, 0, false},
-                                          {1, 56, 1, 4, 0, 0, false},
-                                          {3, 16, 1, 0, 0, 0, true},
-                                          {2, 16, 0, 4, 0, 0, true},
-                                          {0, 16, 1, 4, 0, 0, false}}};
+        std::array<Case, 11> cases{{{0, 16, 1, 4, 0, 0, false},
+                                    {1, 16, 1, 4, 0, 0, false},
+                                    {2, 16, 1, 4, 0, 4, false},
+                                    {3, 16, 1, 4, 4, 0, false},
+                                    {2, 56, 1, 4, 0, 2, false},
+                                    {3, 56, 1, 4, 2, 0, false},
+                                    {0, 56, 1, 4, 0, 0, false},
+                                    {1, 56, 1, 4, 0, 0, false},
+                                    {3, 16, 1, 0, 0, 0, true},
+                                    {2, 16, 0, 4, 0, 0, true},
+                                    {0, 16, 1, 4, 0, 0, false}}};
+        if (large_probe)
+            for (auto &c : cases)
+                if (c.shader >= 2) {
+                    c.left_blank = 64;
+                    c.right_blank = 0;
+                }
         heap.Type = D3D12_HEAP_TYPE_READBACK;
         const auto read_desc = buffer(cases.size() * 4096);
         Com<ID3D12Resource> readback;
@@ -596,8 +605,10 @@ int wmain(int argc, wchar_t **argv) {
         query_readback->Unmap(0, &no_write);
         require(queries);
         std::cout << "query_accounting=PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION\n";
-        std::cout << "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; near/far4/2-pixel "
-                     "displacement; original root/signature/buffers unchanged; identity and original PSO restoration; "
+        std::cout << (large_probe ? "PASS: large fixed clip-X probe; 11 cases x1024 pixels; shifted quad outside view; "
+                                  : "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; "
+                                    "near/far4/2-pixel displacement; ")
+                  << "original root/signature/buffers unchanged; identity and original PSO restoration; "
                      "GPU count0/max0; debug="
                   << (validation ? "ENABLED" : "UNAVAILABLE")
                   << "; native_source=" << (use_stream ? "STREAM" : "LEGACY") << "; game=NOT_RUN; headset=NOT_RUN\n";

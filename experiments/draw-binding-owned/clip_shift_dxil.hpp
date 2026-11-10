@@ -63,7 +63,7 @@ class ClipCompileError final : public std::runtime_error {
 // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
 // every other output unchanged. This is NOT a complete stereo/game adapter.
 // No source/descriptor/root/argument buffer is modified. Text stays in process.
-inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift) {
+inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false) {
     using namespace cbv_detail;
     if (text.empty() || text.size() > 1024 * 1024 || text.find("odv_clip_probe_x") != text.npos)
         return {};
@@ -117,8 +117,8 @@ inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipS
         R"(^(\s*call void @dx.op.storeOutput\.f32\(i32 5, i32 ([0-9]+), i32 ([0-9]+), i8 ([0-9]+), float )([A-Za-z0-9_%+.-]+)(\).*)$)");
     std::string output;
     unsigned changed = 0;
-    const char *delta = shift == ClipShift::left    ? "-1.250000e-01"
-                        : shift == ClipShift::right ? "1.250000e-01"
+    const char *delta = shift == ClipShift::left    ? (large_probe ? "-1.280000e+02" : "-1.250000e-01")
+                        : shift == ClipShift::right ? (large_probe ? "1.280000e+02" : "1.250000e-01")
                                                     : "0.000000e+00";
     for (std::size_t p = 0; p < text.size();) {
         auto end = text.find('\n', p);
@@ -197,7 +197,8 @@ class ClipShiftCompiler final {
     }
     ClipShiftCompiler(const ClipShiftCompiler &) = delete;
     ClipShiftCompiler &operator=(const ClipShiftCompiler &) = delete;
-    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift) const {
+    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift,
+                                      bool large_probe = false) const {
         if (original.size() < 32 || original.size() > 1024 * 1024)
             throw std::runtime_error("shader_input_bound");
         Microsoft::WRL::ComPtr<IDxcUtils> utils;
@@ -218,7 +219,7 @@ class ClipShiftCompiler final {
         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
         if (!view.empty() && view.back() == '\0')
             view.remove_suffix(1);
-        auto shifted = shift_clip_x_text(view, shift);
+        auto shifted = shift_clip_x_text(view, shift, large_probe);
         if (!shifted)
             throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;
