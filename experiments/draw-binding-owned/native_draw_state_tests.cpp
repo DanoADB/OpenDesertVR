@@ -13,6 +13,7 @@ int main() {
         // Synthetic identities only; never dereferenced or sent to a device.
         auto *heap = reinterpret_cast<ID3D12QueryHeap *>(std::uintptr_t{123});
         require(!state.eligible());
+        require(!state.eligible_single_forward());
         state.reset();
         require(!state.eligible()); // Missing native-wrapper capability proof.
         state.capabilities(odv::research::native_draw_capabilities);
@@ -21,10 +22,12 @@ int main() {
         require(state.eligible());
         state.query(heap, D3D12_QUERY_TYPE_PIPELINE_STATISTICS, 0, true);
         require(!state.eligible() && state.active_queries() == 1);
+        require(state.eligible_single_forward());
         state.query(heap, D3D12_QUERY_TYPE_PIPELINE_STATISTICS, 0, false);
         require(state.eligible());
         state.query(heap, D3D12_QUERY_TYPE_PIPELINE_STATISTICS, 0, false);
         require(state.failed() && !state.eligible());
+        require(!state.eligible_single_forward());
         state.reset();
         for (UINT i = 0; i < 64; ++i)
             state.query(heap, D3D12_QUERY_TYPE_OCCLUSION, i, true);
@@ -50,6 +53,7 @@ int main() {
         state.reset();
         state.render_pass(true);
         require(!state.eligible() && state.render_pass_blocked());
+        require(!state.eligible_single_forward());
         state.render_pass(false);
         require(state.eligible());
         state.render_pass(true, D3D12_RENDER_PASS_FLAG_SUSPENDING_PASS);

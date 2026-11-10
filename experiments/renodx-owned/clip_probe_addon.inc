@@ -68,7 +68,7 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
     {
       const std::lock_guard lock(native->mutex);
       if (native->failed || native->protected_session || !native->draw_capable || !native->indirect_capable ||
-          !native->indirect_active || !native->indirect_known || !native->draw_state.eligible()) return false;
+          !native->indirect_active || !native->indirect_known || !native->draw_state.eligible_single_forward()) return false;
       for (const auto& view : native->draw_state.stream_outputs())
         if (view.BufferLocation || view.SizeInBytes || view.BufferFilledSizeLocation) return false;
       call = native->indirect_call;

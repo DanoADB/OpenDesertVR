@@ -85,8 +85,12 @@ class DrawRecordingState final {
             suspending_ = false;
         }
     }
-    bool eligible() const noexcept {
-        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_ && !query_count_;
+    bool eligible() const noexcept { return eligible_single_forward() && !query_count_; }
+    // A replacement forwards the application's existing command exactly once.
+    // Active queries still observe that command; replay/copy users retain the
+    // stricter eligible() gate. Unknown query lifetimes remain fail-closed.
+    bool eligible_single_forward() const noexcept {
+        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
     }
     bool failed() const noexcept { return failed_; }
     UINT active_queries() const noexcept { return query_count_; }

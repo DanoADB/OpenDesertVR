@@ -1,5 +1,15 @@
 # Private vertex-position influence probe
 
+Probe18 runtime configuration requires `ODVClipProbeEnabled=1`,
+`ODVDefaultConstants=1` and `ODVNativeMetadata=1`. The latter two install the
+native command-list state and draw/indirect callbacks needed by the probe.
+`ODVUploadInputs` remains0. No snapshot or constant-buffer copy is requested
+by the clip probe. These settings are read at addon initialization, so changing
+them requires a normal game restart. A mode1 status with zero recorded
+replacements is not an executed identity control. The first game attempt
+exposed this configuration error; see the
+[attempt record](../evidence/g1-game-clip-probe18-2026-11-10.json).
+
 The observed world VS has bounded target-CBV loads, while three PS variants
 still contain unsupported target-handle uses. A private vertex shader can test
 visible geometry influence without copying or changing any game buffer and
@@ -41,3 +51,24 @@ The private PSO must retain the original root and unchanged PS/other stages,
 forward the original native indirect call once, restore the original PSO and
 remain alive through submitted GPU use. No shader/root/signature replacement
 is enabled in the current game observer.
+
+## Active query correction (Probe19)
+
+The corrected Probe18 configuration found 6,123 tagged world-shader candidates,
+but recorded no replacement draws. A bounded current-scene snapshot found an
+active GPU query on both matching world draws. The generic replay eligibility
+gate therefore rejected them before variant creation.
+
+Probe19 uses a separate single-forward eligibility gate: known active queries
+may surround the unchanged application command, forwarded exactly once. Unknown
+state, missing native capabilities, protected sessions, render passes and stream
+output remain rejected. Replay/copy eligibility is unchanged. Owned GPU controls
+now wrap all eleven cases in pipeline-statistics and occlusion intervals; exact
+primitive and covered-sample counts detect accidental double execution.
+Debug and Release SM6.0/6.6 legacy/stream controls pass locally. Local D3D12 debug
+validation remains unavailable; hosted validation is separate. Native wrapper
+attachment controls also pass with the new addon and tracking enabled.
+
+The game retry with Probe19 remains NOT_RUN until the current game exits normally
+and the qualified observer is staged. No game stereo or headset result follows
+from these owned tests.

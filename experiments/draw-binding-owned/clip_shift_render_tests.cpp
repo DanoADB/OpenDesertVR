@@ -449,6 +449,19 @@ int wmain(int argc, wchar_t **argv) {
                                                 D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
                                                 IID_PPV_ARGS(&input_readback)));
         Com<ID3D12CommandQueue> queue;
+        // Query accounting detects a duplicated forwarding call even when its
+        // pixels overwrite the same area and would otherwise hide the error.
+        Com<ID3D12QueryHeap> statistics, occlusion;
+        D3D12_QUERY_HEAP_DESC query_desc{D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS, static_cast<UINT>(cases.size()), 0};
+        checked(device->CreateQueryHeap(&query_desc, IID_PPV_ARGS(&statistics)));
+        query_desc.Type = D3D12_QUERY_HEAP_TYPE_OCCLUSION;
+        checked(device->CreateQueryHeap(&query_desc, IID_PPV_ARGS(&occlusion)));
+        constexpr UINT64 query_stride = sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS) + sizeof(UINT64);
+        const auto query_read_desc = buffer(cases.size() * query_stride);
+        Com<ID3D12Resource> query_readback;
+        checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &query_read_desc,
+                                                D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
+                                                IID_PPV_ARGS(&query_readback)));
         D3D12_COMMAND_QUEUE_DESC queue_desc{};
         checked(device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(&queue)));
         Com<ID3D12CommandAllocator> allocator;
@@ -479,12 +492,20 @@ int wmain(int argc, wchar_t **argv) {
             // Only PSO changes; no root rebind or command-signature replacement.
             const odv::research::NativeIndirectCall call{signature.Get(),   c.maximum,    arguments.Get(),
                                                          c.argument_offset, counts.Get(), c.count_offset};
+            list->BeginQuery(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i);
+            list->BeginQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
             if (c.shader)
                 require(odv::research::record_clip_indirect(list.Get(), pipelines[0].Get(), pipelines[c.shader].Get(),
                                                             call, native_signature));
             else
                 list->ExecuteIndirect(call.signature, call.maximum_count, call.argument_buffer, call.argument_offset,
                                       call.count_buffer, call.count_offset);
+            list->EndQuery(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i);
+            list->EndQuery(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i);
+            list->ResolveQueryData(statistics.Get(), D3D12_QUERY_TYPE_PIPELINE_STATISTICS, i, 1, query_readback.Get(),
+                                   i * query_stride);
+            list->ResolveQueryData(occlusion.Get(), D3D12_QUERY_TYPE_OCCLUSION, i, 1, query_readback.Get(),
+                                   i * query_stride + sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS));
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dst{};
             dst.pResource = readback.Get();
@@ -553,6 +574,23 @@ int wmain(int argc, wchar_t **argv) {
         const D3D12_RANGE no_write{};
         readback->Unmap(0, &no_write);
         require(pixels);
+        stage = "single_forward_query_accounting";
+        const D3D12_RANGE query_range{0, SIZE_T(query_read_desc.Width)};
+        checked(query_readback->Map(0, &query_range, &mapped));
+        bool queries = true;
+        for (UINT i = 0; i < cases.size(); ++i) {
+            D3D12_QUERY_DATA_PIPELINE_STATISTICS stats{};
+            UINT64 samples = 0;
+            const auto *bytes = static_cast<const std::byte *>(mapped) + i * query_stride;
+            std::memcpy(&stats, bytes, sizeof(stats));
+            std::memcpy(&samples, bytes + sizeof(stats), sizeof(samples));
+            const auto &c = cases[i];
+            queries &= stats.IAVertices == (c.empty ? 0u : 6u) && stats.IAPrimitives == (c.empty ? 0u : 2u) &&
+                       samples == (c.empty ? 0u : (64u - c.left_blank - c.right_blank) * 16u);
+        }
+        query_readback->Unmap(0, &no_write);
+        require(queries);
+        std::cout << "query_accounting=PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION\n";
         std::cout << "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; near/far4/2-pixel "
                      "displacement; original root/signature/buffers unchanged; identity and original PSO restoration; "
                      "GPU count0/max0; debug="
