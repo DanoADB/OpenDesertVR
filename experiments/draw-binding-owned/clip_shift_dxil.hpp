@@ -156,6 +156,52 @@ inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipS
     return changed == 1 ? std::optional<std::string>(std::move(output)) : std::nullopt;
 }
 
+// Fixed hypothesis from the observed terrain value paths: perturb only the
+// float extraction at b18/space35 row21.x. This does not identify a camera.
+inline std::optional<std::string> shift_camera_field_text(std::string_view text, ClipShift shift) {
+    if (text.find("odv_camera_field") != text.npos)
+        return {};
+    std::map<std::string, std::uint32_t> loads;
+    const auto access = observe_static_cbv(text, 18, 35, 2816, &loads);
+    if (!access.supported || !access.position_dependencies_observed || !access.position_words[0].contains(84))
+        return {};
+    for (unsigned column = 1; column < 4; ++column)
+        if (access.position_words[column].contains(84))
+            return {};
+    static const std::regex extract(
+        R"(^(\s*)(%[A-Za-z0-9_.]+) = extractvalue %dx.types.CBufRet.f32 (%[A-Za-z0-9_.]+), 0$)");
+    const char *delta = shift == ClipShift::left    ? "-1.250000e-01"
+                        : shift == ClipShift::right ? "1.250000e-01"
+                                                    : "0.000000e+00";
+    std::string output;
+    unsigned changed = 0;
+    for (std::size_t p = 0; p < text.size();) {
+        auto end = text.find('\n', p);
+        if (end == text.npos)
+            end = text.size();
+        auto line = std::string(text.substr(p, end - p));
+        const bool newline = end < text.size();
+        p = end + 1;
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+        std::smatch match;
+        if (std::regex_match(line, match, extract)) {
+            const auto load = loads.find(match[3].str());
+            if (load != loads.end() && load->second == 21) {
+                if (++changed != 1)
+                    return {};
+                output += match[1].str() + "%odv_camera_field_original = extractvalue %dx.types.CBufRet.f32 " +
+                          match[3].str() + ", 0\n";
+                line = match[1].str() + match[2].str() + " = fadd float %odv_camera_field_original, " + delta;
+            }
+        }
+        output += line;
+        if (newline)
+            output += '\n';
+    }
+    return changed == 1 ? std::optional<std::string>(std::move(output)) : std::nullopt;
+}
+
 class ClipShiftCompiler final {
     HMODULE compiler_ = nullptr, validator_ = nullptr;
     DxcCreateInstanceProc create_ = nullptr, validate_create_ = nullptr;
@@ -206,7 +252,9 @@ class ClipShiftCompiler final {
     ClipShiftCompiler(const ClipShiftCompiler &) = delete;
     ClipShiftCompiler &operator=(const ClipShiftCompiler &) = delete;
     std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift, bool large_probe = false,
-                                      bool collapse_probe = false) const {
+                                      bool collapse_probe = false, bool camera_field_probe = false) const {
+        if (camera_field_probe && (large_probe || collapse_probe))
+            throw ClipCompileError(ClipCompileStage::position_store, E_INVALIDARG);
         if (original.size() < 32 || original.size() > 1024 * 1024)
             throw std::runtime_error("shader_input_bound");
         Microsoft::WRL::ComPtr<IDxcUtils> utils;
@@ -227,7 +275,8 @@ class ClipShiftCompiler final {
         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
         if (!view.empty() && view.back() == '\0')
             view.remove_suffix(1);
-        auto shifted = shift_clip_x_text(view, shift, large_probe, collapse_probe);
+        auto shifted = camera_field_probe ? shift_camera_field_text(view, shift)
+                                          : shift_clip_x_text(view, shift, large_probe, collapse_probe);
         if (!shifted)
             throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;

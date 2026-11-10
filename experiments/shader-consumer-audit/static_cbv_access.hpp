@@ -13,7 +13,7 @@
 namespace odv::research {
 // Narrow DXC-text observation, NOT a general LLVM verifier or permission to
 // replace a game binding. The caller must supply DXC output from the exact
-// retained shader. No text, names, instructions or payload leave this helper.
+// retained shader. No text, names, instructions or payload are serialized.
 // Downstream use of loaded words and frozen-payload safety remain unproven.
 struct StaticCbvAccess {
     bool supported = false;
@@ -224,9 +224,12 @@ inline void observe_position_dependencies(StaticCbvAccess &result, const std::ve
 } // namespace cbv_detail
 
 inline StaticCbvAccess observe_static_cbv(std::string_view text, std::uint32_t reg, std::uint32_t space,
-                                          std::uint32_t byte_limit) {
+                                          std::uint32_t byte_limit,
+                                          std::map<std::string, std::uint32_t> *private_load_values = nullptr) {
     using namespace cbv_detail;
     StaticCbvAccess result;
+    if (private_load_values)
+        private_load_values->clear();
     const auto fail = [&](const char *reason) {
         result.reason = reason;
         return result;
@@ -385,6 +388,8 @@ inline StaticCbvAccess observe_static_cbv(std::string_view text, std::uint32_t r
     result.supported = true;
     result.reason = "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS";
     observe_position_dependencies(result, lines, metadata, target_loads);
+    if (private_load_values)
+        *private_load_values = std::move(target_loads); // In-process rewrite only; never export SSA names.
     return result;
 }
 } // namespace odv::research

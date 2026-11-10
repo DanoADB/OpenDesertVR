@@ -51,6 +51,12 @@ Work in this order:
    Live32 identifies bounded vertex-stage loads but rejects both stationary
    readbacks because DEFAULT resource state is unverified. Resolve the precise
    source-state rejection before comparing camera-motion values.
+   Live33 identifies a missing per-recording source observation, not capacity
+   exhaustion. Live34 instead traces potential scalar position paths and finds
+   word84 (row21.x) on the X value path only within the supported SSA scope.
+   The immediate next test is an owned-qualified private-shader perturbation
+   of that component, with no source-buffer copy or rebinding. Matrix identity,
+   full camera semantics and game stereo remain unverified.
 2. Demonstrate a reversible camera/view change affecting actual world
    geometry, then establish how to render distinct eye views with correct
    submission and temporal history. Camera discovery alone is not stereo.

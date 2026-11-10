@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "8e5f3de",
+  "status": "POTENTIAL_TERRAIN_POSITION_COMPONENT_PATHS_OBSERVED",
+  "game_build": "26480954",
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "slot": 18,
+  "space": 35,
+  "copies_enabled": false,
+  "effects_enabled": false,
+  "captures": [
+    {
+      "label": "static1",
+      "submission_known": true,
+      "vertex_access": {
+        "declarations": 1,
+        "declaredBytes": 2768,
+        "descriptorCount": 1,
+        "downstreamConsumptionProven": false,
+        "frozenPayloadSafe": false,
+        "handles": 2,
+        "loads": 16,
+        "malformedRecordFields": 0,
+        "malformedRecordIntegerMask": 0,
+        "maximumByteEnd": 2720,
+        "positionControlDependenciesIncluded": false,
+        "positionDependencyStatus": "POTENTIAL_SSA_VALUE_DEPENDENCIES",
+        "positionMemoryDependenciesIncluded": false,
+        "positionPotentialRows": [
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ]
+        ],
+        "positionPotentialWords": [
+          [
+            9,
+            72,
+            76,
+            80,
+            84,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            73,
+            77,
+            81,
+            85,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            74,
+            78,
+            82,
+            86,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            75,
+            79,
+            83,
+            87,
+            668,
+            669,
+            670,
+            676,
+            677
+          ]
+        ],
+        "positionValueDependenciesObserved": true,
+        "rows": [
+          2,
+          8,
+          18,
+          19,
+          20,
+          21,
+          30,
+          31,
+          32,
+          33,
+          167,
+          169
+        ],
+        "shaderBytes": 25924,
+        "shaderHash": "0xC48DB423",
+        "slot": 18,
+        "space": 35,
+        "staticLegacyLoadBoundsObserved": true,
+        "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+      },
+      "private_report_sha256": "439baccb06359597b6e2535be9ef2a9639fcf43067637b1c1be56a4eb59c2c7b"
+    },
+    {
+      "label": "static2",
+      "submission_known": true,
+      "vertex_access": {
+        "declarations": 1,
+        "declaredBytes": 2768,
+        "descriptorCount": 1,
+        "downstreamConsumptionProven": false,
+        "frozenPayloadSafe": false,
+        "handles": 2,
+        "loads": 16,
+        "malformedRecordFields": 0,
+        "malformedRecordIntegerMask": 0,
+        "maximumByteEnd": 2720,
+        "positionControlDependenciesIncluded": false,
+        "positionDependencyStatus": "POTENTIAL_SSA_VALUE_DEPENDENCIES",
+        "positionMemoryDependenciesIncluded": false,
+        "positionPotentialRows": [
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          [
+            2,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ]
+        ],
+        "positionPotentialWords": [
+          [
+            9,
+            72,
+            76,
+            80,
+            84,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            73,
+            77,
+            81,
+            85,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            74,
+            78,
+            82,
+            86,
+            668,
+            669,
+            670,
+            676,
+            677
+          ],
+          [
+            9,
+            75,
+            79,
+            83,
+            87,
+            668,
+            669,
+            670,
+            676,
+            677
+          ]
+        ],
+        "positionValueDependenciesObserved": true,
+        "rows": [
+          2,
+          8,
+          18,
+          19,
+          20,
+          21,
+          30,
+          31,
+          32,
+          33,
+          167,
+          169
+        ],
+        "shaderBytes": 25924,
+        "shaderHash": "0xC48DB423",
+        "slot": 18,
+        "space": 35,
+        "staticLegacyLoadBoundsObserved": true,
+        "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+      },
+      "private_report_sha256": "641506662763dd2f14f0779273453197a05ad152d471471fecf4c0c3de28ceee"
+    }
+  ],
+  "candidate": {
+    "word_index": 84,
+    "row": 21,
+    "component": 0,
+    "type": "float32 extraction required by next rewrite",
+    "position_value_paths": "X only within the observed scalar SSA dependency scope",
+    "matrix_or_camera_identity": "UNVERIFIED"
+  },
+  "control_dependencies_included": false,
+  "memory_dependencies_included": false,
+  "executed_contribution": "UNVERIFIED",
+  "game_field_perturbation": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "head_tracking": "NOT_RUN",
+  "openxr_game_delivery": "NOT_RUN",
+  "asset_files": 0,
+  "next_question": "Qualify and visually test private-shader row21.x identity/opposite perturbations/restoration without modifying source buffers or descriptors."
+}

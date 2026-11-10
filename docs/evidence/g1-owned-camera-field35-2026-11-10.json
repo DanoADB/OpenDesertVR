@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "QUALIFIED_OWNED_CAMERA_FIELD35",
+  "scope": "Fixed private-shader b18/space35 row21.x perturbation hypothesis; no original buffer/descriptor changes",
+  "sha256": {
+    "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+    "renodx-devkit.addon64": "fd95e87c40c640cf6363ef7b5a670d15f0869345f1839047a9d0df3652369063",
+    "owned_gpu_control": "84e6dd64ee19e7b033e39dcb1fd906414c355c30bdbba027140737e150aa69a0",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+  },
+  "controls": [
+    {
+      "control": "metadata35",
+      "status": "QUALIFIED_OWNED_FIELD35_METADATA_NO_COPY",
+      "private_report_sha256": "dbd242449252a900f5eb88203c853cf3ff48ebff2254e07b903ed76ca58ca7f2"
+    },
+    {
+      "control": "snapshot-window35",
+      "status": "QUALIFIED_OWNED_SNAPSHOT_WINDOWS",
+      "sha256": {
+        "owned_app.exe": "789db30d63d45d4936b5c6a715de56cfde4c36fd27bc58ec0c81c1ada56ba569",
+        "renodx-devkit.addon64": "fd95e87c40c640cf6363ef7b5a670d15f0869345f1839047a9d0df3652369063",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "selector": "0\n",
+          "records": 4,
+          "ordinals": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "game": "NOT_RUN",
+      "gpu_pixels": "PASS",
+      "asset_files": 0,
+      "initial_two_empty_present_control": "PASS"
+    }
+  ],
+  "owned_ctest": {
+    "Debug": "17/17 PASS",
+    "Release": "17/17 PASS"
+  },
+  "reflection_ctest": {
+    "Debug": "3/3 PASS",
+    "Release": "3/3 PASS"
+  },
+  "scalar_gpu_controls": {
+    "models": [
+      "SM6.0",
+      "SM6.6"
+    ],
+    "creation": [
+      "LEGACY",
+      "STREAM"
+    ],
+    "compiler_pairs": [
+      "WINDOWS_SDK",
+      "PINNED_MODERN"
+    ],
+    "identity_left_right_restoration_pixels": "PASS",
+    "original2816_byte_input_unchanged": "PASS",
+    "missing_word84_rejection": "PASS",
+    "shared_X_Y_word84_rejection": "PASS",
+    "modern_log_sha256": "b878b8fb8c757ef972bad81475519813dfe3854830f901296f52ebc7b518acc8"
+  },
+  "initial_owned_failure": {
+    "reason": "Constant-array vertex lookup compiled to memory operations outside supported SSA scope. Replaced the owned lookup with equivalent scalar arithmetic; rejection unchanged.",
+    "corrected_control": "PASS"
+  },
+  "initial_addon_build_failure": {
+    "reason": "Copied public helper used a repository-relative include; adapted include to the existing flat private source layout.",
+    "corrected_build": "PASS"
+  },
+  "probe": {
+    "slot": 18,
+    "space": 35,
+    "row": 21,
+    "component": 0,
+    "word": 84,
+    "deltas": [
+      -0.125,
+      0,
+      0.125
+    ],
+    "one_float_extraction_required": true,
+    "large_or_collapse_combination": "REJECTED",
+    "original_inputs": "UNCHANGED"
+  },
+  "game_configuration": {
+    "copies_enabled": false,
+    "work_queries_enabled": false,
+    "initial_mode": 0,
+    "control_lease_ms": 1000,
+    "file_freshness_seconds": 3
+  },
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "camera_identity": "UNVERIFIED",
+  "game_stereo": "NOT_RUN",
+  "asset_files": 0,
+  "local_debug_layer": "UNAVAILABLE",
+  "qualification_sources_dirty": true
+}

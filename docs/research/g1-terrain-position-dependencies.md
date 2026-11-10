@@ -39,3 +39,32 @@ private-shader component perturbation requires a separately qualified identity,
 modified and restored control. It has not run in the game yet. Independent eye
 rendering, whole-world coverage, calibrated camera transforms and game OpenXR
 delivery remain NOT_RUN.
+
+## First live result and scalar control
+
+Two live34 captures report rows18–21 with component columns matching the four
+position outputs. Word84 (row21.x) has a potential scalar value path to X and
+no such path to Y/Z/W. Other rows also contribute; this is not matrix identity
+or a complete influence analysis. No source words or raw shader text are read
+out of the game.
+
+Observer35's separate opt-in ODVClipProbeCameraField=1 requires one exact
+float32 extraction for b18/space35 row21.x and the observed X-only value-path
+classification. It changes that scalar by0 or±0.125 in private shader code.
+Other extracted components and all original buffer contents are unchanged;
+every consumer of the selected scalar sees the perturbed value. Control and
+memory influences remain outside the analysis, so this does not promise that
+only one final output can change. The original root/PSO source, descriptors,
+indirect arguments/counts, predicate and single-forwarding path are preserved.
+The option is incompatible with the older large/collapse probes and is read
+once before nonzero control publication. The existing short control lease and
+mode0 restoration apply. Game copies and work queries stay disabled.
+
+Owned SM6.0/6.6 controls exercise legacy and stream PSO creation, both compiler
+pairs, per-pixel identity/left/right/restoration checks, near/far disparity and
+unchanged2816-byte source data. A missing selected extraction and an X/Y-shared
+value path reject before GPU recording. The initial positive test shader used
+a constant-array lookup that compiled to a memory load; the helper correctly
+rejected it. Equivalent scalar vertex math brings that owned control inside
+the documented SSA scope without weakening rejection. The candidate has not
+yet been perturbed in the game. Its delta has no calibrated world/IPD units.

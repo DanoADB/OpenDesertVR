@@ -274,3 +274,13 @@ private-shader perturbation if a useful candidate exists. This avoids extending
 global buffer tracking merely to obtain a candidate's values. Potential value
 dependencies do not establish executed contribution, matrix meaning or camera
 ownership. Original buffers, descriptors and rendering remain unchanged.
+
+[Live34](evidence/g1-game-camera-position34-2026-11-10.json) reports matching
+potential component paths in two loaded-scene captures. Rows18–21 contribute
+the corresponding X/Y/Z/W scalar columns; word84 (row21.x) appears only on the
+X scalar value path within this limited analysis. Observer35 therefore tests
+one private float extraction, rather than shifting the final clip output or
+copying/rebinding an unverified input buffer. Its owned controls qualify
+identity, opposite perturbations and restoration with unchanged original
+inputs. The game perturbation and camera semantics remain NOT_RUN/UNVERIFIED
+until observed. See the [experiment method](research/g1-terrain-position-dependencies.md).

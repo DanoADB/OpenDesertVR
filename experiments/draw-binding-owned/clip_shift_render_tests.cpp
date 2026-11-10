@@ -199,11 +199,12 @@ int wmain(int argc, wchar_t **argv) {
         require(odv::research::clip_validation_summary("error: Function 'gameMain' is invalid\n").empty());
         require(odv::research::clip_validation_summary(std::string(65537, 'a')).empty());
         require(argc >= 4 && argc <= 7);
-        bool use_stream = false, retained_native = false, large_probe = false, collapse_probe = false;
+        bool use_stream = false, retained_native = false, large_probe = false, collapse_probe = false,
+             camera_field_probe = false;
         for (int i = 4; i < argc; ++i) {
             const std::wstring_view argument(argv[i]);
             require(argument == L"--stream" || argument == L"--retained-native" || argument == L"--large" ||
-                    argument == L"--collapse");
+                    argument == L"--collapse" || argument == L"--camera-field");
             if (argument == L"--stream")
                 use_stream = true;
             if (argument == L"--retained-native")
@@ -212,6 +213,8 @@ int wmain(int argc, wchar_t **argv) {
                 large_probe = true;
             if (argument == L"--collapse")
                 collapse_probe = true;
+            if (argument == L"--camera-field")
+                camera_field_probe = true;
         }
 #ifdef ODV_TEST_WARP_DLL
         warp.value =
@@ -222,9 +225,10 @@ int wmain(int argc, wchar_t **argv) {
         const auto vs = read_owned(argv[2]), ps = read_owned(argv[3]);
         stage = "dxil_assembly_and_validation";
         std::array<std::vector<std::uint8_t>, 4> shaders{
-            vs, compiler.compile(vs, odv::research::ClipShift::identity, large_probe, collapse_probe),
-            compiler.compile(vs, odv::research::ClipShift::left, large_probe, collapse_probe),
-            compiler.compile(vs, odv::research::ClipShift::right, large_probe, collapse_probe)};
+            vs,
+            compiler.compile(vs, odv::research::ClipShift::identity, large_probe, collapse_probe, camera_field_probe),
+            compiler.compile(vs, odv::research::ClipShift::left, large_probe, collapse_probe, camera_field_probe),
+            compiler.compile(vs, odv::research::ClipShift::right, large_probe, collapse_probe, camera_field_probe)};
         Com<ID3D12Debug> debug;
         const HRESULT debug_status = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
         const bool validation = SUCCEEDED(debug_status);
@@ -388,7 +392,7 @@ int wmain(int argc, wchar_t **argv) {
                     HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS) &&
                 !rejected);
         stage = "original_resources";
-        const std::array<std::byte, 256> camera{};
+        const std::array<std::byte, 2816> camera{};
         auto source = upload(device.Get(), camera.data(), camera.size());
         const std::array<UINT16, 6> indices{0, 1, 2, 2, 1, 3};
         auto index = upload(device.Get(), indices.data(), sizeof(indices));
