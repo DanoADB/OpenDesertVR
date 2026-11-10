@@ -164,3 +164,23 @@ guards follow the same qualified path. Native wrapper legacy and stream pixel
 and query-accounting controls pass with the new binaries and modern compiler.
 The original-mode identity control must pass in the live scene before the
 scale-independent collapse check. Game geometry influence remains UNVERIFIED.
+
+Probe25 live identity records4,653 replacements and the static collapse control
+records3,411. No clear influence is visible. A separate scroll-input attempt
+records5,700 but does not visibly change camera distance, so it is not evidence
+of a motion check. The subsequent user-driven rotation is visibly confirmed:
+5,493 replacements record during the30-second run, and both the user and
+desktop observation report no noticeable probe influence. All runs restore
+mode0 with no failure; game/tool hashes remain unchanged and asset files0.
+Hosted Debug/Release core and owned controls pass; external wrapper/addon
+binaries retain their separate local qualification.
+
+This negative moving-view control removes a static-view-only explanation as
+a sufficient account of the lack of effect. It does not prove GPU commands
+executed with nonzero counts or affected visible pixels. Before another shader
+selection, the next diagnostic must establish actual indirect work, including
+count/argument values and predication if present. Native SetPredication is not
+yet observed by the metadata contract; a GPU readback inserted under unknown
+predication must not be interpreted as a measured zero. No GPU copy or game
+shader bypass has been added in this step.
+See [live Probe25 evidence](../evidence/g1-game-clip-probe25-2026-11-10.json).
