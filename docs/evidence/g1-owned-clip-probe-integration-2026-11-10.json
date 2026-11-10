@@ -107,5 +107,23 @@
   ],
   "game_geometry_influence": "NOT_RUN",
   "independent_game_views": "NOT_RUN",
-  "game_openxr": "NOT_RUN"
+  "game_openxr": "NOT_RUN",
+  "hosted": {
+    "run": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42829170659",
+    "source_commit": "5325c36486c5e08955247e8de2560ca39bd057f5",
+    "configurations": {
+      "debug": {
+        "result": "PASS",
+        "clip_gpu_runs": 4,
+        "debug_layer": "ENABLED",
+        "last_test_log_sha256": "6601b0cb7cf66e0a503b9122033dbf461cf01628211bd520c1971448d97c2238"
+      },
+      "release": {
+        "result": "PASS",
+        "clip_gpu_runs": 4,
+        "debug_layer": "ENABLED",
+        "last_test_log_sha256": "7b4fb7584d9bbdd9a7d2d0852c917aa0e59659025be308cbd4489b00a68df192"
+      }
+    }
+  }
 }

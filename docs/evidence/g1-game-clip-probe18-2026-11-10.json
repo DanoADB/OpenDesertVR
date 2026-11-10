@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "LOADED_DISABLED_AWAITING_SCENE_CONFIRMATION",
+  "source_commit": "5325c36486c5e08955247e8de2560ca39bd057f5",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "binary_sha256": {
+    "renodx-devkit.addon64": "e9cdf7703b22c843c50352287d581af8f2b7607dadffac9d8a0692cfeffed6c7",
+    "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+    "dxil.dll": "fda4dde92222ddb8564c3173ce48faa56f7e1c7b46b0b67dada1182ee07a4123",
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3"
+  },
+  "desktop_capture": "BLACK_WINDOW_CONTENT_UNUSABLE_FOR_SCENE_CONFIRMATION",
+  "scene": "UNCONFIRMED_AFTER_RELAUNCH",
+  "probe_status": {
+    "schema_version": 1,
+    "mode": 0,
+    "failed": false,
+    "candidates": 0,
+    "recorded": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "evidence": "CPU_RECORDING_ONLY",
+    "game_stereo": "NOT_RUN"
+  },
+  "devkit_asset_files": 0,
+  "private_gate_sha256": "e442437128cb179c5a24bf90ea7218c0385818de838a74d220fca1c41b9be196",
+  "private_controller_sha256": "e9c6e00087062e03e16661de3e13aad72f8f31ad996317d4bca84d8f11bdbb94",
+  "geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "cleanup": "NOT_RUN_GAME_RUNNING"
+}
