@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "b99558407adedd4c9e71bce7250331484f4f1fe2",
+  "status": "DISPLAYED_TERRAIN_LEFT_RIGHT_DISPLACEMENT_OBSERVED",
+  "game_build": "26480954",
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "target_entrypoint": "vsTerrainMesh",
+  "configuration": {
+    "collapse": false,
+    "large": false,
+    "left_clip_x_delta": -0.125,
+    "right_clip_x_delta": 0.125,
+    "native_addon_binaries": "UNCHANGED_FROM_PROBE29"
+  },
+  "recorded": [
+    0,
+    1645,
+    1160,
+    1177
+  ],
+  "gpu_work": [
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1154831
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1110083
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1111370
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1090666
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1062084
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15167,
+      "state": "READY",
+      "occlusion_samples": 1096056
+    }
+  ],
+  "desktop_observation": "Prominent pale terrain on the left shifts in opposite directions under modes2/3 and returns in mode0. Vegetation, character and HUD retain their original rendering.",
+  "evidence_grade": "DIRECT_DESKTOP_OBSERVATION",
+  "user_visual_verdict": "NOT_PROVIDED_AT_COMMIT; direct desktop observation only",
+  "depth_dependent_disparity_measurement": "NOT_MEASURED_IN_GAME",
+  "camera_transform_identity": "UNVERIFIED",
+  "world_coverage": "SELECTED_TERRAIN_ONLY",
+  "independent_eye_views": "NOT_RUN",
+  "head_tracking": "NOT_RUN",
+  "openxr_game_delivery": "NOT_RUN",
+  "limits": [
+    "GPU queries cover three identity and three left samples; six-entry budget leaves right mode without private GPU queries. Right has CPU forwards and desktop observations.",
+    "Samples span different draws/frames, not a controlled same-draw pair.",
+    "A homogeneous clip-X shift does not establish an authoritative camera pose, projection calibration, temporal history or whole-world coverage."
+  ],
+  "restoration": {
+    "mode": 0,
+    "failed": false,
+    "desktop_scene": "NORMAL_RENDERING_OBSERVED",
+    "game_identity_unchanged": true,
+    "tool_hashes_unchanged": true,
+    "staged_files_unchanged": true,
+    "asset_files": 0
+  },
+  "private_report_sha256": {
+    "identity-probe-report.json": "9113dfc1f5df157ef4963060128fc14b6dc12b00e4e7cf8c619e67316db2a9c8",
+    "left-probe-report.json": "d4124a7bc23667c2e5f10b2c3ebe7461bf0fa2dc95417e237aff802a47a6e6df",
+    "right-probe-report.json": "fb4b643062c7cb7ee98dd7ad2207356853a19fd42a993bd112141957cda2b74b"
+  },
+  "next_question": "Identify vertex-stage consumption of the shared camera-constant candidate before applying a consistent view transform across world geometry"
+}

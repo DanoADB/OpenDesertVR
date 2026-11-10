@@ -43,6 +43,11 @@ Work in this order:
    static-world and camera-movement data, then test the most credible camera
    candidate. Resolve capture lifetime problems only as needed to perform this
    experiment reliably; do not expand the observer into a general toolkit.
+   November10 evidence now includes visible terrain disappearance/restoration
+   and opposite small clip-X displacement in the loaded world. This covers
+   selected terrain only, not the complete camera. Next identify the consumed
+   shared camera-input bytes with native state/predication proof before
+   attempting a consistent view transform across world geometry.
 2. Demonstrate a reversible camera/view change affecting actual world
    geometry, then establish how to render distinct eye views with correct
    submission and temporal history. Camera discovery alone is not stereo.

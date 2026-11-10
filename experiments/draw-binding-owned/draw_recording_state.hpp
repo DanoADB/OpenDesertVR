@@ -22,6 +22,7 @@ class DrawRecordingState final {
     std::array<Query, 64> queries_{};
     UINT query_count_ = 0;
     bool failed_ = true, active_pass_ = false, suspended_ = false, suspending_ = false;
+    bool predicated_ = false;
     std::uint32_t capabilities_ = 0;
     std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> stream_outputs_{};
 
@@ -31,9 +32,26 @@ class DrawRecordingState final {
         query_count_ = 0;
         failed_ = active_pass_ = suspended_ = suspending_ = false;
         stream_outputs_ = {};
+        predicated_ = false; // Direct recordings start with predication disabled.
     }
     void invalidate() noexcept { failed_ = true; }
     void capabilities(std::uint32_t value) noexcept { capabilities_ = value; }
+    void predication(bool bound, UINT64 offset, D3D12_PREDICATION_OP operation) noexcept {
+        if ((bound && offset % 8 != 0) ||
+            (operation != D3D12_PREDICATION_OP_EQUAL_ZERO && operation != D3D12_PREDICATION_OP_NOT_EQUAL_ZERO)) {
+            invalidate();
+            return;
+        }
+        predicated_ = bound;
+    }
+    bool predication_known() const noexcept { return !failed_ && capabilities_ == 15; }
+    bool predicate_bound() const noexcept { return predicated_; }
+    // CopyBufferRegion is predicated. Completion alone cannot prove it ran.
+    // This guard never disables/rebinds the application's predicate and never
+    // assumes its GPU value. Active queries are independent of this copy gate.
+    bool copy_unpredicated() const noexcept {
+        return predication_known() && !predicated_ && !active_pass_ && !suspended_;
+    }
     void stream_output(UINT first, UINT count, const D3D12_STREAM_OUTPUT_BUFFER_VIEW *views) noexcept {
         if (!count || first > stream_outputs_.size() || count > stream_outputs_.size() - first) {
             invalidate();
@@ -86,12 +104,12 @@ class DrawRecordingState final {
             suspending_ = false;
         }
     }
-    bool eligible() const noexcept { return eligible_single_forward() && !query_count_; }
+    bool eligible() const noexcept { return eligible_single_forward() && !query_count_ && copy_unpredicated(); }
     // A replacement forwards the application's existing command exactly once.
     // Active queries still observe that command; replay/copy users retain the
     // stricter eligible() gate. Unknown query lifetimes remain fail-closed.
     bool eligible_single_forward() const noexcept {
-        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
+        return !failed_ && (capabilities_ == 7 || capabilities_ == 15) && !active_pass_ && !suspended_;
     }
     bool failed() const noexcept { return failed_; }
     // Select a query family not already active in the application's recording.

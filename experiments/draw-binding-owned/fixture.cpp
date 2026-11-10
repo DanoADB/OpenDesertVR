@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <source_location>
 #include <stdexcept>
 #include <string_view>
 #include <type_traits>
@@ -26,9 +27,10 @@
 #include <wrl/client.h>
 
 template <class T> using Com = Microsoft::WRL::ComPtr<T>;
-static void check(HRESULT hr) {
+static void check(HRESULT hr, const std::source_location where = std::source_location::current()) {
     if (FAILED(hr))
-        throw std::runtime_error("owned_draw_graphics_failure");
+        throw std::runtime_error("owned_draw_graphics_failure_hr=" + std::to_string(static_cast<std::uint32_t>(hr)) +
+                                 " line=" + std::to_string(where.line()));
 }
 static constexpr UINT width = 64, height = 32;
 #if defined(ODV_SCALAR_PATCH_RENDER) || defined(ODV_PRIVATE_TABLE_RENDER) || defined(ODV_PRIVATE_TABLE_SPLIT_RENDER)
@@ -117,12 +119,19 @@ int wmain(int argc, wchar_t **argv) {
               std::wstring_view(argv[2]) != L"--loop-dxil-enhanced-2816" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-native-pass" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-native-words" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-native-predication" &&
+              std::wstring_view(argv[2]) != L"--loop-dxil-native-predication-upload" &&
               std::wstring_view(argv[2]) != L"--loop-vertex-source" &&
               std::wstring_view(argv[2]) != L"--loop-dxil-world-aspect")))
             throw std::runtime_error("provide_fresh_output_directory");
         const bool budget_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-budget";
         const bool native_pass_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-pass";
-        const bool word_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-words";
+        const bool predicate_upload_control =
+            argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-predication-upload";
+        const bool predicate_control =
+            predicate_upload_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-predication");
+        const bool word_control =
+            predicate_control || (argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-native-words");
         const bool vertex_observer_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-vertex-source";
         const bool vertex_source_control = stream_control || vertex_observer_control;
         const bool empty_upload_control = argc == 3 && std::wstring_view(argv[2]) == L"--loop-dxil-upload-empty";
@@ -414,6 +423,8 @@ int wmain(int argc, wchar_t **argv) {
             }
         }
         const auto bound_constant = [&](UINT i) {
+            if (predicate_upload_control && i == 3)
+                return constants[i].Get();
             return gpu_constants[i] ? gpu_constants[i].Get() : constants[i].Get();
         };
         const auto constant_ready = [&](ID3D12GraphicsCommandList *list, UINT index) {
@@ -558,9 +569,21 @@ int wmain(int argc, wchar_t **argv) {
         };
         write_ground(L"ground-truth.private.json");
         bool rolled_over = false;
+        unsigned published_predicate_mode = 3;
         UINT completed = 0;
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
         for (UINT frame = 1; loop || frame <= 2; ++frame) {
+            unsigned predicate_mode = 0;
+            if (predicate_control && std::filesystem::exists(output.parent_path() / L"predication-mode.txt")) {
+                const auto path = output.parent_path() / L"predication-mode.txt";
+                if (std::filesystem::file_size(path) != 2)
+                    throw std::runtime_error("owned_predication_selector_invalid");
+                std::ifstream input(path, std::ios::binary);
+                char mode[2]{};
+                if (!input.read(mode, 2) || mode[0] < '0' || mode[0] > '2' || mode[1] != '\n')
+                    throw std::runtime_error("owned_predication_selector_invalid");
+                predicate_mode = static_cast<unsigned>(mode[0] - '0');
+            }
             odv::research::ScopedScalarPatch scalar_patch;
             std::array<odv::research::VertexConstantStream, 3> stream_samples;
             Com<ID3D12GraphicsCommandList7> scalar_commands;
@@ -719,6 +742,14 @@ int wmain(int argc, wchar_t **argv) {
                     target_pass.BeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
                     target_pass.EndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
                     render_pass->BeginRenderPass(1, &target_pass, nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+                }
+                if (predicate_control) {
+                    // First two columns cover UPLOAD and DEFAULT CBVs. A zero
+                    // predicate suppresses phase1 and permits phase2; both must
+                    // reject capture. Blue explicitly clears it and stays valid.
+                    list->SetPredication(column < 2 && predicate_mode ? constants[0].Get() : nullptr, 0,
+                                         column < 2 && predicate_mode == 2 ? D3D12_PREDICATION_OP_NOT_EQUAL_ZERO
+                                                                           : D3D12_PREDICATION_OP_EQUAL_ZERO);
                 }
                 if (indirect_control)
                     list->ExecuteIndirect(indirect_signature.Get(), 1, indirect_arguments.Get(), 0, nullptr, 0);
@@ -903,9 +934,10 @@ int wmain(int argc, wchar_t **argv) {
                     const auto *pixel = static_cast<const unsigned char *>(bytes) + footprint.Offset +
                                         y * footprint.Footprint.RowPitch + x * 4;
                     const bool yellow = submit_fourth && x >= 48;
+                    const bool predicate_skip = predicate_control && predicate_mode == 1 && x < 32;
                     const unsigned char expected[4] = {
-                        static_cast<unsigned char>(x < 16 || yellow ? 255 : 0),
-                        static_cast<unsigned char>((x >= 16 && x < 32) || yellow ? 255 : 0),
+                        static_cast<unsigned char>(!predicate_skip && (x < 16 || yellow) ? 255 : 0),
+                        static_cast<unsigned char>(!predicate_skip && ((x >= 16 && x < 32) || yellow) ? 255 : 0),
                         static_cast<unsigned char>(x >= 32 && x < 48 ? 255 : 0), 255};
                     if (std::memcmp(pixel, expected, 4))
                         matches = false;
@@ -914,6 +946,13 @@ int wmain(int argc, wchar_t **argv) {
             readback->Unmap(0, &no_write);
             if (!matches)
                 throw std::runtime_error("owned_pixel_control_failed");
+            if (predicate_control && published_predicate_mode != predicate_mode) {
+                std::ofstream ready(output / L"predication-mode.ready", std::ios::binary);
+                ready << static_cast<char>('0' + predicate_mode) << '\n';
+                if (!ready)
+                    throw std::runtime_error("owned_predication_phase_publication_failed");
+                published_predicate_mode = predicate_mode;
+            }
             if (vertex_source_control) {
                 const std::array<std::byte, odv::research::VertexConstantStream::byte_count> expected{};
                 if (stream_control)

@@ -243,3 +243,17 @@ not a camera transform or stereo. The next experiment reuses the exact29
 binaries with collapse disabled to test small left/right clip-X displacement.
 [Owned shift controls](evidence/g1-owned-terrain-shift30-2026-11-10.json) pass
 legacy and stream creation with pixel-checked near/far disparity and restoration.
+
+[Live terrain-shift30](evidence/g1-game-terrain-shift30-2026-11-10.json)
+now shows opposite displayed terrain displacement under small left/right clip-X
+offsets, with original rendering restored after each. Identity and both shifts
+validate and forward without failure. This is selected terrain control; the
+character, vegetation and HUD still use their original views. It does not prove
+camera-pose identity, calibrated eye separation or independent game eye views.
+
+Before collecting the shared camera-input candidate, the
+[predication32 change](research/g1-camera-predication-method.md) closes a capture
+validity gap: a completed fence alone cannot prove a predicated buffer copy ran.
+The exact new binaries pass owned skip/allow/unbind tests for UPLOAD and DEFAULT
+CBVs; older-wrapper and disabled-metadata controls reject copies. Camera-input
+collection from the game with this configuration is still NOT_RUN.
