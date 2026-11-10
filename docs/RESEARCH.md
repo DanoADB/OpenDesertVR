@@ -224,3 +224,12 @@ later graphics records after correcting idle-Present completion. They reveal
 an explicit `vsTerrainMesh` candidate beyond the original128-record cutoff.
 Probe29 is built and locally qualified for a reversible terrain-only test;
 actual terrain influence, camera control and game stereo remain unverified.
+
+[Probe29's live terrain control](evidence/g1-game-clip-probe29-2026-11-10.json)
+passes shader validation and records1,539 identity and1,121 collapse forwards.
+Three fenced identity samples exceed1.16million depth/stencil-passing samples;
+three collapse samples are zero. The user reports no noticeable visual change.
+This establishes sampled GPU influence without proving visible-world control.
+Normal mode0 is restored, hashes are unchanged and asset files remain0.
+Hosted Debug/Release CI for02b24a7 passes. The next question is the downstream
+connection to the presented image; another shader name alone is insufficient.

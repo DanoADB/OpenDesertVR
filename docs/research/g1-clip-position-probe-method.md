@@ -331,3 +331,16 @@ run must validate identity first, then reversible collapse and GPU-query results
 followed by a visual verdict. No game camera or stereo success is claimed.
 See [clip qualification](../evidence/g1-owned-clip-probe29-2026-11-10.json)
 and [window qualification](../evidence/g1-owned-snapshot-window29-2026-11-10.json).
+
+The [live Probe29 run](../evidence/g1-game-clip-probe29-2026-11-10.json) validates
+identity and collapse with no compile failure:1,539 and1,121 CPU forwards.
+Fenced identity occlusion samples are1,230,726 /1,165,379 /1,244,588;
+collapse samples are0 /0 /0. These are different draws/frames, not a same-draw
+A/B comparison. The user reports "No noticeable change". Desktop observations
+do not establish a reproducible visible disappearance. Thus the terrain
+entrypoint, screen-shaped attachments and GPU response still do not prove a
+connection to the presented world. Restore mode0, original game/tool/staged
+hash checks and asset files0 all pass. Both hosted CI configurations pass.
+Investigate the resource-consumer connection before selecting another shader;
+camera transforms, independently rendered eyes and headset delivery remain
+unverified or NOT_RUN.
