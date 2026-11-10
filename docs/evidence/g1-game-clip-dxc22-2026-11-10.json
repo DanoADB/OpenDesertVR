@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "GAME_NATIVE_VARIANTS_RECORDED_VISUAL_DISPLACEMENT_UNVERIFIED",
+  "source_commit": "99b1286dca4b466f2b43a65d3054a2bcb64f09a2",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "addon": "Probe21",
+  "binary_sha256": {
+    "renodx-devkit.addon64": "3a37caae221225ebfe35755ad0f22f68dadf90e5feee7c27d8f7fb8d34977e1b",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "original_shader_validation": "PASS",
+  "unchanged_roundtrip_validation": "PASS",
+  "modified_shader_validation": "PASS_IDENTITY_LEFT_RIGHT",
+  "recorded_replacements": {
+    "identity": 4635,
+    "left": 3414,
+    "right": 3429
+  },
+  "private_report_sha256": {
+    "identity": "20756b06dc35d5a8e74051e9e427dfb5b43a11d4557dc2fdb4c387370097d95c",
+    "left": "c1f737316492a26d2f971e9833551fcf75b6521691317cc786d676a6048a3a28",
+    "right": "5598c53e9efe2086b0e4341078912cb7ab27ba3705a657f8279d13453b31cdda"
+  },
+  "restored_original_mode": 0,
+  "failed": false,
+  "original_game_identity_postflight": "PASS_UNCHANGED",
+  "tool_postflight": "PASS_UNCHANGED",
+  "asset_files": 0,
+  "desktop_observation": "SCENE_REMAINED_NORMAL_DURING_AND_AFTER_PROBES",
+  "visual_displacement": "UNVERIFIED_SMALL_PROBE_NOT_CONFIDENTLY_DISTINGUISHED_FROM_ANIMATION",
+  "geometry_influence": "UNVERIFIED",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "limitations": [
+    "CPU recording counters do not constitute GPU pixel readback or stereo acceptance.",
+    "Only selected world VS/signature/screen-target path is affected.",
+    "Fixed clip-X probes do not solve camera culling, temporal history, pose or XR delivery."
+  ]
+}

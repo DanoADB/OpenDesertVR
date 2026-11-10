@@ -95,3 +95,11 @@ Microsoft.Direct3D.DXC1.9.2609.5, pinned from Microsoft NuGet with valid Microso
 Authenticode signatures and retained licenses. Owned native legacy/stream
 controls pass with this pair. Compatibility with the game original remains
 UNVERIFIED until the new live control. No validation is disabled.
+
+The newer compiler-pair game retry now passes original and untouched-round-trip
+validation, plus identity and both clip-X modifications. It records4,635 identity,
+3,414 left and3,429 right replacements, with no failure and original mode restored
+between runs. Game/tool hashes remain unchanged; no Devkit assets are written.
+Visible displacement is still UNVERIFIED: the small shift is not confidently
+separable from animation in desktop observation. This is successful native
+replacement recording, not independent game eye rendering or headset acceptance.

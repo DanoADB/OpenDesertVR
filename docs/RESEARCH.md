@@ -1,6 +1,24 @@
 # M0 references and next G1 experiment
 
-Current integration state, 2026-11-09: actual game GPU observations identified
+Latest live result, 2026-11-10: the [private native vertex-position probe](evidence/g1-game-clip-dxc22-2026-11-10.json)
+records replacements in the actual Steam game: 4,635 identity, 3,414 left and
+3,429 right calls. Native PSO cloning and original-signature forwarding now run
+with unchanged original root/argument/count/constant buffers. All three shader
+variants pass validation; the original mode is restored after each brief run.
+The desktop scene continues normally. These are CPU recording counters with
+desktop observation, not GPU pixel measurements or headset acceptance.
+
+Two blockers were isolated and fixed: a replay-only query guard rejected single
+forwarding inside active queries, and the older SDK validator rejected even the
+untouched game shader. The pinned Microsoft.Direct3D.DXC1.9.2609.5 pair accepts
+the original, an untouched assembly round trip, and all three modified variants.
+The small clip-X displacement is not confidently visible in desktop captures;
+geometry influence remains UNVERIFIED pending visible or measured displacement.
+Independent game eye views, camera culling/history, head pose and OpenXR delivery
+remain NOT_RUN. The next experiment must confirm visible displacement, then
+establish complete eye views; this result does not complete G2.
+
+Earlier integration observations, 2026-11-09: actual game GPU observations identified
 a camera-like shadow input whose selected view fields respond to a controlled
 camera turn. A later capture identified a screen-shaped standard-geometry
 input, but its buffer state prevented a safe read. These are distinct captures;
