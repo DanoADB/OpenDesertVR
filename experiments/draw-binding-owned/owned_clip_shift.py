@@ -30,7 +30,8 @@ with tempfile.TemporaryDirectory() as temporary:
                             "-Fo", str(binary), str(hlsl)], check=True, capture_output=True,
                            timeout=20, creationflags=subprocess.CREATE_NO_WINDOW)
         hashes = [hashlib.sha256(p.read_bytes()).hexdigest() for p in (vs, ps)]
-        for extra in ([], ["--stream"], ["--large"], ["--stream", "--large"]):
+        for extra in ([], ["--stream"], ["--large"], ["--stream", "--large"],
+                      ["--collapse"], ["--stream", "--collapse"]):
             run = subprocess.run([str(helper), str(compiler.parent), str(vs), str(ps)]+extra,
                                  capture_output=True, timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
             print(run.stdout.decode(errors="replace"), end="")

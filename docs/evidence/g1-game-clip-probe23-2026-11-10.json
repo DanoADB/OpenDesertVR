@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "GAME_NATIVE_VARIANTS_RECORDED_VISUAL_DISPLACEMENT_UNVERIFIED",
+  "source_commit": "cf01d9eeb06455789e6fdab32b91e27e6efcabce",
+  "game_build": {
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "addon": "Probe23",
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "large_probe": true,
+  "fixed_clip_x_magnitude": 128,
+  "binary_sha256": {
+    "renodx-devkit.addon64": "01c9f3cb220f37d95fe99b7da8f5bf869f4a7e6f3609affef44c3c27eb7dc299",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "recorded_replacements": {
+    "identity": 4779,
+    "left": 3363,
+    "right": 3414
+  },
+  "private_report_sha256": {
+    "identity": "71864b84defdb59035644afbb1f1457efb33c1c7ee1233555d9ccc9791aca4be",
+    "left": "d2d04c7d51786a78b10b76ba7be4af3487483bcb0a3343d60630287879fd9cc4",
+    "right": "a0a094c5dd2d90e184157c483f44f799629e804ae73f13c6e5d310befa48e2e9"
+  },
+  "restored_original_mode": 0,
+  "failed": false,
+  "original_game_identity_postflight": "PASS_UNCHANGED",
+  "tool_postflight": "PASS_UNCHANGED",
+  "asset_files": 0,
+  "desktop_observation": "NO_CLEAR_WORLD_DISPLACEMENT_IN_BASELINE_LEFT_RIGHT_RESTORED_CAPTURES",
+  "geometry_influence": "UNVERIFIED",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "ci": {
+    "run": 42846323240,
+    "result": "PASS_DEBUG_RELEASE"
+  },
+  "limitations": [
+    "CPU recording counters do not prove nonzero GPU indirect work or visible contribution.",
+    "Fixed homogeneous clip-X changes can depend on the unknown game coordinate scale.",
+    "Only the selected VS/signature/screen-target path is affected."
+  ],
+  "user_observation": "NO_NOTICEABLE_CHANGE_DURING_LARGE_SHIFT_TESTS"
+}

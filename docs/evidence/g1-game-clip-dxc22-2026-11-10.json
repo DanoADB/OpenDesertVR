@@ -35,7 +35,7 @@
   "tool_postflight": "PASS_UNCHANGED",
   "asset_files": 0,
   "desktop_observation": "SCENE_REMAINED_NORMAL_DURING_AND_AFTER_PROBES",
-  "visual_displacement": "UNVERIFIED_SMALL_PROBE_NOT_CONFIDENTLY_DISTINGUISHED_FROM_ANIMATION",
+  "visual_displacement": "NOT_CONFIRMED_BY_USER",
   "geometry_influence": "UNVERIFIED",
   "independent_game_eye_views": "NOT_RUN",
   "game_openxr": "NOT_RUN",
@@ -44,5 +44,6 @@
     "CPU recording counters do not constitute GPU pixel readback or stereo acceptance.",
     "Only selected world VS/signature/screen-target path is affected.",
     "Fixed clip-X probes do not solve camera culling, temporal history, pose or XR delivery."
-  ]
+  ],
+  "user_observation": "NO_NOTICEABLE_CHANGE_DURING_SMALL_SHIFT_TESTS"
 }

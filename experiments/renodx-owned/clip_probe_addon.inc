@@ -6,6 +6,7 @@
 
 bool odv_clip_enabled = false;
 bool odv_clip_large = false; // Read once before publishing a nonzero mode.
+bool odv_clip_collapse = false; // Scale-independent influence diagnostic only.
 std::atomic_uint odv_clip_mode = 0;
 std::atomic_uint64_t odv_clip_lease = 0;
 std::atomic_bool odv_clip_failed = false;
@@ -26,10 +27,12 @@ void PollODVClipProbe() noexcept {
   next_poll = now + 250;
   static bool config_read = false;
   if (!config_read) {
-    uint32_t large = 0;
+    uint32_t large = 0, collapse = 0;
     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeLarge", large);
-    if (large > 1) { odv_clip_failed = true; return; }
+    reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeCollapse", collapse);
+    if (large > 1 || collapse > 1 || (large && collapse)) { odv_clip_failed = true; return; }
     odv_clip_large = large == 1;
+    odv_clip_collapse = collapse == 1;
     config_read = true;
   }
   unsigned mode = 0;
@@ -51,6 +54,7 @@ void PollODVClipProbe() noexcept {
     for (unsigned i = 0; i < 4; ++i) status << (i ? "," : "") << odv_clip_recordings[i].load();
     status << "],\"compile_failure_stage\":" << odv_clip_compile_failure_stage.load()
            << ",\"large_probe\":" << (odv_clip_large ? "true" : "false")
+           << ",\"collapse_probe\":" << (odv_clip_collapse ? "true" : "false")
            << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
            << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
   } catch (...) {
@@ -128,7 +132,7 @@ bool TryODVClipProbe(reshade::api::command_list* list) noexcept {
       if (renodx::utils::hash::ComputeCRC32(bytes, vertex.BytecodeLength) != 0xC02F6FB5u) return false;
       odv::research::ClipShiftCompiler compiler(renodx::utils::path::GetReShadeBasePath());
       const auto shift = mode == 1 ? odv::research::ClipShift::identity : mode == 2 ? odv::research::ClipShift::left : odv::research::ClipShift::right;
-      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large);
+      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large, odv_clip_collapse);
       const HRESULT created = source->CreateVariant(reinterpret_cast<ID3D12Device*>(device->get_native()), slot,
           modified.data(), modified.size(), &variant);
       if (created == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {

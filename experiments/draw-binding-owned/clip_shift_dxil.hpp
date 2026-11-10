@@ -63,9 +63,11 @@ class ClipCompileError final : public std::runtime_error {
 // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
 // every other output unchanged. This is NOT a complete stereo/game adapter.
 // No source/descriptor/root/argument buffer is modified. Text stays in process.
-inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false) {
+inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false,
+                                                    bool collapse_probe = false) {
     using namespace cbv_detail;
-    if (text.empty() || text.size() > 1024 * 1024 || text.find("odv_clip_probe_x") != text.npos)
+    if ((large_probe && collapse_probe) || text.empty() || text.size() > 1024 * 1024 ||
+        text.find("odv_clip_probe_x") != text.npos)
         return {};
     std::map<std::string, std::vector<std::string>> nodes;
     static const std::regex metadata(R"(^(![A-Za-z0-9_.]+) = !\{(.*)\}$)");
@@ -137,7 +139,13 @@ inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipS
             if (id == position && column == 0) {
                 if (row != 0 || ++changed != 1)
                     return {};
-                output += "  %odv_clip_probe_x = fadd float " + match[5].str() + ", " + delta + "\n";
+                // Collapse is a scale-independent influence diagnostic: every
+                // selected triangle has the same normalized X and no area.
+                // Identity retains the original position, including its scale.
+                if (collapse_probe && shift != ClipShift::identity)
+                    output += "  %odv_clip_probe_x = fadd float 0.000000e+00, 0.000000e+00\n";
+                else
+                    output += "  %odv_clip_probe_x = fadd float " + match[5].str() + ", " + delta + "\n";
                 line = match[1].str() + "%odv_clip_probe_x" + match[6].str();
             }
         }
@@ -197,8 +205,8 @@ class ClipShiftCompiler final {
     }
     ClipShiftCompiler(const ClipShiftCompiler &) = delete;
     ClipShiftCompiler &operator=(const ClipShiftCompiler &) = delete;
-    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift,
-                                      bool large_probe = false) const {
+    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift, bool large_probe = false,
+                                      bool collapse_probe = false) const {
         if (original.size() < 32 || original.size() > 1024 * 1024)
             throw std::runtime_error("shader_input_bound");
         Microsoft::WRL::ComPtr<IDxcUtils> utils;
@@ -219,7 +227,7 @@ class ClipShiftCompiler final {
         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
         if (!view.empty() && view.back() == '\0')
             view.remove_suffix(1);
-        auto shifted = shift_clip_x_text(view, shift, large_probe);
+        auto shifted = shift_clip_x_text(view, shift, large_probe, collapse_probe);
         if (!shifted)
             throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;

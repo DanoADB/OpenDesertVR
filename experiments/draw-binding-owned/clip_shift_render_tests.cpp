@@ -197,16 +197,19 @@ int wmain(int argc, wchar_t **argv) {
         require(odv::research::clip_validation_summary("error: Function 'gameMain' is invalid\n").empty());
         require(odv::research::clip_validation_summary(std::string(65537, 'a')).empty());
         require(argc >= 4 && argc <= 7);
-        bool use_stream = false, retained_native = false, large_probe = false;
+        bool use_stream = false, retained_native = false, large_probe = false, collapse_probe = false;
         for (int i = 4; i < argc; ++i) {
             const std::wstring_view argument(argv[i]);
-            require(argument == L"--stream" || argument == L"--retained-native" || argument == L"--large");
+            require(argument == L"--stream" || argument == L"--retained-native" || argument == L"--large" ||
+                    argument == L"--collapse");
             if (argument == L"--stream")
                 use_stream = true;
             if (argument == L"--retained-native")
                 retained_native = true;
             if (argument == L"--large")
                 large_probe = true;
+            if (argument == L"--collapse")
+                collapse_probe = true;
         }
 #ifdef ODV_TEST_WARP_DLL
         warp.value =
@@ -217,9 +220,9 @@ int wmain(int argc, wchar_t **argv) {
         const auto vs = read_owned(argv[2]), ps = read_owned(argv[3]);
         stage = "dxil_assembly_and_validation";
         std::array<std::vector<std::uint8_t>, 4> shaders{
-            vs, compiler.compile(vs, odv::research::ClipShift::identity, large_probe),
-            compiler.compile(vs, odv::research::ClipShift::left, large_probe),
-            compiler.compile(vs, odv::research::ClipShift::right, large_probe)};
+            vs, compiler.compile(vs, odv::research::ClipShift::identity, large_probe, collapse_probe),
+            compiler.compile(vs, odv::research::ClipShift::left, large_probe, collapse_probe),
+            compiler.compile(vs, odv::research::ClipShift::right, large_probe, collapse_probe)};
         Com<ID3D12Debug> debug;
         const HRESULT debug_status = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
         const bool validation = SUCCEEDED(debug_status);
@@ -443,7 +446,7 @@ int wmain(int argc, wchar_t **argv) {
                                     {3, 16, 1, 0, 0, 0, true},
                                     {2, 16, 0, 4, 0, 0, true},
                                     {0, 16, 1, 4, 0, 0, false}}};
-        if (large_probe)
+        if (large_probe || collapse_probe)
             for (auto &c : cases)
                 if (c.shader >= 2) {
                     c.left_blank = 64;
@@ -605,9 +608,12 @@ int wmain(int argc, wchar_t **argv) {
         query_readback->Unmap(0, &no_write);
         require(queries);
         std::cout << "query_accounting=PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION\n";
-        std::cout << (large_probe ? "PASS: large fixed clip-X probe; 11 cases x1024 pixels; shifted quad outside view; "
-                                  : "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; "
-                                    "near/far4/2-pixel displacement; ")
+        std::cout << (collapse_probe
+                          ? "PASS: collapsed clip-X probe; 11 cases x1024 pixels; selected triangles zero area; "
+                      : large_probe
+                          ? "PASS: large fixed clip-X probe; 11 cases x1024 pixels; shifted quad outside view; "
+                          : "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; "
+                            "near/far4/2-pixel displacement; ")
                   << "original root/signature/buffers unchanged; identity and original PSO restoration; "
                      "GPU count0/max0; debug="
                   << (validation ? "ENABLED" : "UNAVAILABLE")

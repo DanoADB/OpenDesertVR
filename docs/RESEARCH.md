@@ -192,3 +192,11 @@ Cyberpunk VR and REFramework camera/render/submission paths, selected direct
 dependency licenses, limits and adoption decision. No mod code or dependencies
 were adopted; builds and game/hardware execution were NOT_RUN. This read-only
 preparation does not advance the M0 hardware gate.
+
+
+The later [Probe23 live control](evidence/g1-game-clip-probe23-2026-11-10.json)
+records identity and both larger fixed shifts without errors, but neither desktop
+observation nor the user confirms visible displacement. Geometry influence is
+still UNVERIFIED. Probe24 therefore prepares a scale-independent zero-area
+triangle control, qualified on owned geometry before any live use. This does
+not establish game stereo, head tracking or OpenXR game delivery.

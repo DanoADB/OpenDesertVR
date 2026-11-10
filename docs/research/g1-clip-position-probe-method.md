@@ -114,3 +114,24 @@ Owned Debug/Release SM6.0/6.6 legacy/stream tests cover both presets. The large
 preset moves the test quad outside the view while identity/original restoration
 and exact primitive/occlusion accounting still pass. Game large-preset testing
 remains NOT_RUN. The currently running game is restored to original mode0.
+
+Probe23 live tests record4,779 identity,3,363 left and3,414 right replacements
+with no compiler failure and original mode0 restored. Original game/tool hashes
+remain unchanged; Devkit asset files0. Both desktop observation and the user
+report no noticeable world change, even with the128 preset. Geometry influence
+remains UNVERIFIED. Successful CPU recording is insufficient to establish that
+the selected indirect work is nonzero or contributes to the displayed world.
+See [live evidence](../evidence/g1-game-clip-probe23-2026-11-10.json).
+
+Probe24 adds a scale-independent influence control. ODVClipProbeCollapse1
+forces selected nonidentity SV_Position.x outputs to zero, collapsing triangles
+to zero rasterized area without depending on unknown homogeneous coordinate
+scale. Identity and original rendering remain intact. This is a diagnostic,
+not a camera or stereo technique. The preset is disabled by default, mutually
+exclusive with the large preset, and fixed before nonzero mode publication.
+The original narrow shader/signature/target filters, single forwarding,
+three-slot immutable variant cache and expiring control lease remain in place.
+Owned Debug/Release SM6.0/6.6 legacy/stream tests check all1,024 pixels in11
+cases per run for standard, large and collapsed presets; exact primitive and
+occlusion counts distinguish disappearance from forwarding twice or no work.
+Game collapse control is NOT_RUN.

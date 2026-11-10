@@ -89,15 +89,16 @@ jobs:
             throw 'Missing actual pinned-WARP 19-case GPU execution with debug validation'
           }
           $clipLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_clip_shift_render.*?<end of output>').Value
-          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 8 -or
+          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 12 -or
               [regex]::Matches($clipLog, 'near/far4/2-pixel displacement').Count -ne 4 -or
               [regex]::Matches($clipLog, 'shifted quad outside view').Count -ne 4 -or
-              [regex]::Matches($clipLog, 'PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION').Count -ne 8 -or
-              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 8 -or
-              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 8 -or
-              [regex]::Matches($clipLog, 'native_source=LEGACY').Count -ne 4 -or
-              [regex]::Matches($clipLog, 'native_source=STREAM').Count -ne 4 -or
-              [regex]::Matches($clipLog, 'agility_requested=619').Count -ne 8 -or
+              [regex]::Matches($clipLog, 'selected triangles zero area').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION').Count -ne 12 -or
+              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 12 -or
+              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 12 -or
+              [regex]::Matches($clipLog, 'native_source=LEGACY').Count -ne 6 -or
+              [regex]::Matches($clipLog, 'native_source=STREAM').Count -ne 6 -or
+              [regex]::Matches($clipLog, 'agility_requested=619').Count -ne 12 -or
               -not $clipLog.Contains('owned SDK SM6.0/6.6 assembly, validation, private-PSO geometry')) {
             throw 'Missing actual SM6.0/6.6 clip geometry execution with pinned WARP and debug validation'
           }
