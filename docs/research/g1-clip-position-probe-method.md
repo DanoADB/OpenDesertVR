@@ -154,3 +154,13 @@ former role0 candidate87BF0C9A is identified by reflection as a shadow VS;
 its matrix observations must not be promoted to a proven main-view camera.
 No shader bodies, texture assets or constant-buffer contents were exported.
 See [Probe24 evidence](../evidence/g1-game-clip-probe24-2026-11-10.json).
+
+Probe25 selects the actually observed alternate material-pass vertex variant
+80800FE6/18,680 bytes instead of C02F6FB5. Both the native source attachment
+and addon check this exact observed identity; the owned4344-byte control stays
+allowlisted for qualification. No generic shader-family hook is enabled. The
+compiled shader, native PSO fields, original root/indirect/count resources and
+guards follow the same qualified path. Native wrapper legacy and stream pixel
+and query-accounting controls pass with the new binaries and modern compiler.
+The original-mode identity control must pass in the live scene before the
+scale-independent collapse check. Game geometry influence remains UNVERIFIED.
