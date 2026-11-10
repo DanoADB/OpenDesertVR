@@ -87,3 +87,11 @@ compatibility from an edit-induced error; neither bypasses validation. It export
 only a bounded plain-language diagnostic line, rejecting instruction, function
 and quoted-identifier excerpts. Owned Debug/Release tests and native attachment
 controls pass. Probe21 game retry is NOT_RUN.
+
+Probe21 live control rejects the untouched original shader at stage7 with the
+same IR-verification HRESULT; the round trip and clip rewrite are not reached.
+The next isolated test changes only the private compiler/validator sidecars to
+Microsoft.Direct3D.DXC1.9.2609.5, pinned from Microsoft NuGet with valid Microsoft
+Authenticode signatures and retained licenses. Owned native legacy/stream
+controls pass with this pair. Compatibility with the game original remains
+UNVERIFIED until the new live control. No validation is disabled.

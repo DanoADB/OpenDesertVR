@@ -1,0 +1,31 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "40447a7b9c08b01b902219558b71a528a8679e0825b16bef391b0c82e8670092"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "dbed0451bed903eac9aedc716814bccbd48ddcf1a2c0b7a56d4ea0d92bba2b2d"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3",
+    "renodx-devkit.addon64": "3a37caae221225ebfe35755ad0f22f68dadf90e5feee7c27d8f7fb8d34977e1b",
+    "owned_app.exe": "ff87d08078802f829b230b996deaf32d639234143a27bf96d2a4b4c95cc1932b",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "schema_version": 1,
+  "compiler_package": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "original_and_roundtrip_validation": "PASS_OWNED_SM66",
+  "scope": "Owned shader fixtures only; no game or headset result"
+}
