@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "25163c7ed5af355b2b9ea522320a5c8992ce2dec",
+  "game_build": "26480954",
+  "target_vertex_crc32": "80800FE6",
+  "target_vertex_bytes": 18680,
+  "scene": "Loaded save, Hills of No Return, stationary world view",
+  "status": "FENCED_GPU_OCCLUSION_RESPONSE_OBSERVED",
+  "recorded": [
+    0,
+    4704,
+    3399,
+    0
+  ],
+  "gpu_work": [
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 3099,
+      "state": "READY",
+      "occlusion_samples": 23254
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 623,
+      "state": "READY",
+      "occlusion_samples": 2383
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 3099,
+      "state": "READY",
+      "occlusion_samples": 23324
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 3099,
+      "state": "READY",
+      "occlusion_samples": 0
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 623,
+      "state": "READY",
+      "occlusion_samples": 0
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 3099,
+      "state": "READY",
+      "occlusion_samples": 0
+    }
+  ],
+  "interpretation": {
+    "identity": "Three completed private query samples have nonzero depth/stencil-passing samples, establishing actual rasterized work for sampled draws",
+    "collapse": "Three completed samples report zero; consistent with the homogeneous clip-X collapse eliminating rasterized area",
+    "limits": "Samples are from different draws/frames, not a controlled same-draw A/B pair; predicate values and raw indirect GPU counts are not read; zero samples alone do not prove why each individual draw had no output",
+    "visible_geometry": "UNVERIFIED; no obvious scene difference in desktop observations",
+    "stereo": "NOT_RUN",
+    "head_tracking": "NOT_RUN",
+    "openxr_delivery": "NOT_RUN"
+  },
+  "restoration": {
+    "mode": 0,
+    "failed": false,
+    "desktop_scene": "NORMAL_RENDERING_OBSERVED",
+    "game_identity_unchanged": true,
+    "tool_hashes_unchanged": true,
+    "staged_files_unchanged": true,
+    "asset_files": 0
+  },
+  "metadata": {
+    "records": 128,
+    "truncated": true,
+    "selected_target_draw_indices": [
+      62,
+      65
+    ],
+    "limitation": "Snapshot ends during indirect graphics; it does not cover the complete frame or establish downstream connection to presented image"
+  },
+  "input_locks": [
+    "experiments/renodx-owned/devkit-clip-probe26-input-lock.json",
+    "experiments/renodx-owned/reshade-native-vertex25-input-lock.json"
+  ],
+  "private_report_sha256": {
+    "identity-probe-report.json": "9d3202d5e1495b818d9636a9be27458575f4975774e7b10384349439f90aa4e0",
+    "left-probe-report.json": "8e360fac1e47b1f4075ab5fd3249781adb67dfdad432577e137989750e7d4043",
+    "metadata-draws.private.json": "306047d7c9f2dbc76f9764b3750188991d2a387c790adbee0d5488c2199aa03c"
+  },
+  "next_decision": "Trace downstream resource/view metadata across a bounded window later in the frame; do not promote screen-shaped-target heuristic to visible main camera proof"
+}

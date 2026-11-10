@@ -213,3 +213,25 @@ addon is built and input-locked but live GPU-work collection is NOT_RUN.
 These counters measure executed work or depth/stencil-passing samples, not raw
 indirect counts or final visible pixels. Stereo and headset delivery remain
 NOT_RUN. See [owned qualification](../evidence/g1-owned-clip-probe26-2026-11-10.json).
+
+
+The live Probe26 run completes 4,704 identity and 3,399 collapse replacements,
+then restores mode0 without failure. All six private occlusion-query samples
+become READY after covering fences. Identity reports23,254 /2,383 /23,324
+samples at maximum command capacities3,099 /623 /3,099. Collapse reports0 /0 /0
+at the same capacities. These are different sampled draws/frames, not identical
+A/B replay inputs. The response is consistent with the collapsed shader affecting
+rasterization; it establishes nonzero rasterized work in the sampled identity
+pass, not main-camera visibility or raw indirect counts. Desktop observations
+still show no obvious geometry change. No additional user visual verdict was
+collected in this run.
+
+The mode0 metadata snapshot again reaches its128-record bound while still
+recording indirect graphics. Target VS80800FE6 appears at indices62 and65.
+Consequently the existing snapshot cannot establish a complete downstream chain
+to the presented image. The next observer change should expose a bounded later
+capture window and resource/view relationships, preserving the128-record storage
+bound and clearly separating across-frame observations. Repeated blind shader
+target changes are not supported by this result. Original game identity, staged
+files and tool hashes remain unchanged; asset files0. See
+[live GPU evidence](../evidence/g1-game-clip-probe26-2026-11-10.json).

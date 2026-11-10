@@ -209,3 +209,11 @@ Probe25's rotating-camera control also showed no noticeable influence.
 adds fenced GPU-work queries with predication skip/pass controls before any
 further shader selection. The private observer is built; live GPU-work results
 are pending. This does not establish visible geometry control or game VR.
+
+
+[Live Probe26 GPU evidence](evidence/g1-game-clip-probe26-2026-11-10.json)
+now establishes nonzero occlusion samples in the selected identity pass and zero
+in three collapse samples. This supports a real rasterization effect, while
+visible scene influence remains unverified. The metadata snapshot truncates at
+128 records before completing the frame; tracing later consumers is the next
+step. Mode0 and normal rendering are restored; no game stereo is claimed.
