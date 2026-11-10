@@ -1,0 +1,140 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -10,6 +10,7 @@
+ #define ImTextureID ImU64
+ 
+ #include "odv/constant_capture_driver.hpp"
++#include "odv/snapshot_window.hpp"
+ #include "odv/upload_input_observer.hpp"
+ #include "odv/native_barrier_events.hpp"
+ #include "odv/native_draw_events.hpp"
+@@ -553,6 +554,7 @@
+   // std::vector<CommandListData> command_list_data;
+   std::vector<DrawDetails> draw_details_list;
+   bool capture_truncated = false;
++  std::optional<odv::research::SnapshotWindow> odv_snapshot_window;
+   std::array<uint32_t,2> odv_role_counts{};
+   uint32_t odv_empty_present_intervals = 0;
+   std::unordered_map<uint64_t, std::vector<size_t>> draw_detail_indexes_by_cmd_list;
+@@ -5382,6 +5384,17 @@
+ 
+     auto* command_list_data = renodx::utils::data::Get<CommandListData>(cmd_list);
+     if (command_list_data == nullptr) return false;
++    std::optional<uint32_t> window_ordinal;
++    uint32_t window_first = 0;
++    {
++      std::unique_lock window_lock(device_data->mutex);
++      if (device_data->odv_snapshot_window) {
++        window_ordinal = device_data->odv_snapshot_window->take();
++        window_first = device_data->odv_snapshot_window->first();
++        device_data->capture_truncated |= device_data->odv_snapshot_window->truncated();
++        if (!window_ordinal) return false;
++      }
++    }
+     DrawDetails draw_details = {};
+     draw_details.odv_native_state = command_list_data->odv_native_state;
+     draw_details.timestamp = std::chrono::system_clock::now();
+@@ -5427,6 +5440,14 @@
+         context["signatureArguments"] = std::move(arguments);
+       }
+       draw_details.odv_recording_context = std::move(context);
++    }
++    if (window_ordinal) {
++      if (!draw_details.odv_recording_context.is_object()) draw_details.odv_recording_context = devkit_draw_summary::json::object();
++      auto& context = draw_details.odv_recording_context;
++      context["windowFirst"] = window_first;
++      context["eligibleRecordingOrdinal"] = *window_ordinal;
++      context["windowDomain"] = "POST_FILTER_GRAPHICS_RECORDING_CALLBACKS";
++      context["sameGpuFrameProven"] = false;
+     }
+     if (odv_native_metadata) {
+       auto root_info = devkit_draw_summary::json{{"tagPresent",false},{"descriptorKnown",false}};
+@@ -9923,6 +9944,26 @@
+       try { odv_constant_driver.begin_capture(); odv_upload_observer.begin_capture(); } catch (...) {}
+       device_data->draw_details_list.clear();
+       device_data->capture_truncated = false; device_data->odv_role_counts = {};
++      device_data->odv_snapshot_window.reset();
++      // Explicit per-capture selector. Never increase stored-record capacity.
++      try {
++        const auto window_path = renodx::utils::path::GetReShadeBasePath() / "snapshot-window-start.txt";
++        if (std::filesystem::exists(window_path)) {
++          device_data->odv_snapshot_window.emplace();
++          std::optional<uint32_t> first;
++          if (odv_graphics_only && odv_native_metadata && std::filesystem::is_regular_file(window_path)
++              && std::filesystem::file_size(window_path) <= 5) {
++            std::ifstream input(window_path, std::ios::binary);
++            std::array<char, 6> text{};
++            input.read(text.data(), text.size());
++            if (!input.bad()) first = odv::research::SnapshotWindow::parse({text.data(), static_cast<size_t>(input.gcount())});
++          }
++          device_data->odv_snapshot_window->begin(first); // Invalid selectors capture nothing.
++        }
++      } catch (...) {
++        device_data->odv_snapshot_window.emplace();
++        device_data->odv_snapshot_window->begin(std::nullopt);
++      }
+       device_data->odv_empty_present_intervals = 0;
+       device_data->draw_detail_indexes_by_cmd_list.clear();
+       device_data->resource_usage_by_handle.clear();
+@@ -9937,7 +9978,7 @@
+   } else if (device == active_snapshot_device) {
+     auto* device_data = get_data();
+     std::unique_lock lock(device_data->mutex);
+-    if (device_data->draw_details_list.empty() && ++device_data->odv_empty_present_intervals < 4u) return;
++    if (!device_data->odv_snapshot_window && device_data->draw_details_list.empty() && ++device_data->odv_empty_present_intervals < 4u) return;
+     snapshot_device = nullptr;
+     for (auto& draw : device_data->draw_details_list) draw.capture_truncated = device_data->capture_truncated;
+     std::ranges::sort(device_data->draw_details_list, [](const DrawDetails& a, const DrawDetails& b) {
+--- a/src/addons/devkit/odv/snapshot_window.hpp
++++ b/src/addons/devkit/odv/snapshot_window.hpp
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: MIT
++#pragma once
++#include <cstdint>
++#include <optional>
++#include <string_view>
++
++namespace odv::research {
++// Caller serializes access. Ordinals describe eligible recording callbacks,
++// not GPU execution order. Separate windows are separate observations.
++class SnapshotWindow final {
++    std::uint32_t first_ = 0, seen_ = 0;
++    bool valid_ = false;
++
++  public:
++    static constexpr std::uint32_t maximum_first = 4096, capacity = 128;
++    static std::optional<std::uint32_t> parse(std::string_view text) noexcept {
++        if (text.size() < 2 || text.size() > 5 || text.back() != '\n')
++            return {};
++        text.remove_suffix(1);
++        if (text.size() > 1 && text.front() == '0')
++            return {};
++        std::uint32_t value = 0;
++        for (const auto c : text) {
++            if (c < '0' || c > '9')
++                return {};
++            value = value * 10 + static_cast<unsigned>(c - '0');
++        }
++        return value <= maximum_first ? std::optional{value} : std::nullopt;
++    }
++    void begin(std::optional<std::uint32_t> first) noexcept {
++        valid_ = first && *first <= maximum_first;
++        first_ = valid_ ? *first : 0;
++        seen_ = 0;
++    }
++    std::optional<std::uint32_t> take() noexcept {
++        if (!valid_)
++            return {};
++        const auto ordinal = seen_;
++        if (seen_ <= first_ + capacity)
++            ++seen_; // Saturate after the first record beyond the window.
++        if (ordinal < first_ || ordinal >= first_ + capacity)
++            return {};
++        return ordinal;
++    }
++    bool valid() const noexcept { return valid_; }
++    bool truncated() const noexcept { return valid_ && seen_ > first_ + capacity; }
++    std::uint32_t first() const noexcept { return first_; }
++    std::uint32_t seen() const noexcept { return seen_; }
++};
++} // namespace odv::research

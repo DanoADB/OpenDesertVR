@@ -235,3 +235,37 @@ bound and clearly separating across-frame observations. Repeated blind shader
 target changes are not supported by this result. Original game identity, staged
 files and tool hashes remain unchanged; asset files0. See
 [live GPU evidence](../evidence/g1-game-clip-probe26-2026-11-10.json).
+
+
+Probe27 adds opt-in metadata windows via `snapshot-window-start.txt` in the
+private case directory. Its exact contents are a canonical decimal start0..4096
+followed by LF, at most five bytes. The selector is read once when a queued
+snapshot starts. Absence retains legacy capture behavior; malformed/unreadable
+selectors or missing graphics-only/native-metadata prerequisites capture no
+window records. A selected window spans at most128 eligible graphics recording
+callbacks after the existing filters. Skipped callbacks do not allocate draw
+metadata. The ordinal counter saturates after the first callback beyond the
+window, and later eligible callbacks mark truncation without increasing storage.
+
+Each retained window record carries `windowFirst`, `eligibleRecordingOrdinal`,
+its recording-callback domain and `sameGpuFrameProven:false`. Metadata does not
+need a native state payload merely to identify its window ordinal. A selected
+window ends at the next relevant Present interval even when it contains no
+records; it does not silently accumulate an empty late window across four
+intervals. Separate windows are separate observations, and recording callback
+order is not GPU submission/execution order. Graphics-only capture still omits
+compute/copy consumers; this change alone cannot prove the complete frame graph.
+
+
+The helper passes MSVC /W4 /WX Debug and Release tests, including128 retained
+records at starts0 /128 /4096, bounded counter saturation, short/empty intervals
+and malformed selectors. Exact wrapper25/addon27 qualification passes nine
+owned-loop snapshots: absent selector, starts0 /1 /2, empty starts4 /4096,
+invalid4097 /malformed text, then a fresh start0 restoration. The four authored
+draws yield4 /3 /2 retained records with exact recording ordinals. Independent
+GPU pixels and cooperative exit pass; native-device reference warnings0 and
+asset files0. The original native clip/query owned controls also pass with the
+new addon binary. Local debug-layer validation remains unavailable. Game
+window captures are NOT_RUN until the observer is replaced normally.
+See [window qualification](../evidence/g1-owned-snapshot-window27-2026-11-10.json)
+and [clip qualification](../evidence/g1-owned-clip-probe27-2026-11-10.json).
