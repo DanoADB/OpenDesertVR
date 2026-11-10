@@ -750,7 +750,7 @@
   "scope": "Full private owned-Devkit build source/header/license inputs, no game addon/replacement shaders. Files are references, not an exhaustive line-by-line or transitive binary audit.",
   "local_patch": {
     "path": "experiments/renodx-owned/patches/clip-probe26-fenced-work-queries.patch",
-    "sha256": "cf2bbd5c56274ac49f14f3b4b67656d407b05aaddc9c65d1b6ccfeed7a2457e3"
+    "sha256": "e502efac9b0464f5320fbe1224f59c3898a890ee0d192f2e9a42e1b4e36ddba9"
   },
   "binary": {
     "path": "out/build/renodx-devkit-clip-probe26-owned/Release/renodx-devkit.addon64",
