@@ -65,8 +65,8 @@
     }
   ],
   "desktop_observation": "Prominent pale terrain on the left shifts in opposite directions under modes2/3 and returns in mode0. Vegetation, character and HUD retain their original rendering.",
-  "evidence_grade": "DIRECT_DESKTOP_OBSERVATION",
-  "user_visual_verdict": "NOT_PROVIDED_AT_COMMIT; direct desktop observation only",
+  "evidence_grade": "USER_CONFIRMED_AND_DIRECT_DESKTOP_OBSERVATION",
+  "user_visual_verdict": "Yes, I saw both shifts",
   "depth_dependent_disparity_measurement": "NOT_MEASURED_IN_GAME",
   "camera_transform_identity": "UNVERIFIED",
   "world_coverage": "SELECTED_TERRAIN_ONLY",
