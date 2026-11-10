@@ -62,6 +62,15 @@ geometry-influence diagnostic, not complete game stereo. The next integration
 step retains the actual native PSO description and changes only its VS; generic
 pipeline subobjects omit some native state and cannot establish exact cloning.
 
+The [native source clone](evidence/g1-owned-native-pso-clone-2026-11-10.json)
+now passes local and hosted SM6.0/6.6 legacy/stream tests. The
+[scoped probe integration](evidence/g1-owned-clip-probe-integration-2026-11-10.json)
+also passes owned execution through the wrapper's actual PSO attachment and
+shared indirect forwarding path, including subsequent draws without rebinding
+the original PSO. Probe18 starts disabled, expires stale control input and
+retains at most three private variants on each tagged original PSO. Game
+geometry influence, independent eye views and OpenXR submission remain NOT_RUN.
+
 The [owned indirect GPU test](evidence/g1-owned-warp-runtime-2026-11-09.json)
 passes all 19 rendering/count/reset/preservation cases in hosted Debug and
 Release with the debug layer enabled, using explicitly loaded test-only

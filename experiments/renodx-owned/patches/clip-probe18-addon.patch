@@ -1,0 +1,54 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -1,4 +1,7 @@
+ #include "odv/static_cbv_access.hpp"
++#include "odv/native_vertex_pipeline_payload.hpp"
++#include "odv/native_clip_indirect.hpp"
++#include "odv/clip_shift_dxil.hpp"
+ /*
+  * Copyright (C) 2024 Carlos Lopez
+  * SPDX-License-Identifier: MIT
+@@ -247,6 +250,8 @@
+ uint32_t odv_constant_bytes = 0u; // Exact-size mode, OFF by default.
+ uint32_t odv_constant_max_bytes = 0u; // Optional finite-size mode, at most4096.
+ bool odv_graphics_only = false;
++extern bool odv_clip_enabled;
++void PollODVClipProbe() noexcept;
+ 
+ struct ODVNativeState {
+   std::mutex mutex;
+@@ -5930,6 +5935,8 @@
+   return OnDraw(cmd_list, DrawDetails::DrawMethods::DRAW_INDEXED, "DrawIndexed");
+ }
+ 
++#include "odv/clip_probe_addon.inc"
++
+ bool OnDrawOrDispatchIndirect(
+     reshade::api::command_list* cmd_list,
+     reshade::api::indirect_command type,
+@@ -5937,6 +5944,7 @@
+     uint64_t offset,
+     uint32_t draw_count,
+     uint32_t stride) {
++  if (TryODVClipProbe(cmd_list)) return true;
+   bool is_dispatch = false, known = true;
+   switch (type) {
+     case reshade::api::indirect_command::unknown: {
+@@ -9423,6 +9431,9 @@
+   if (reshade::get_config_value(nullptr, "renodx-dev", "ODVSceneAspectFilter", scene_aspect_filter))
+     odv_scene_aspect_filter = scene_aspect_filter == 1;
+ 
++  uint32_t clip_probe_enabled = 0;
++  if (reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeEnabled", clip_probe_enabled))
++    odv_clip_enabled = clip_probe_enabled == 1;
+   uint32_t default_constants = 0;
+   if (reshade::get_config_value(nullptr, "renodx-dev", "ODVDefaultConstants", default_constants))
+     odv_default_constants = default_constants == 1;
+@@ -9808,6 +9819,7 @@
+     const reshade::api::rect* dirty_rects) {
+   // Resource destruction can reenter OnDestroyResource. No device-data,
+   // capture, or deferred-queue locks may be held while draining.
++  PollODVClipProbe();
+   odv::research::DeferredResourceRelease::drain();
+   auto* device = swapchain->get_device();
+   if (renodx::utils::device_proxy::IsProxyDevice(device)) return;

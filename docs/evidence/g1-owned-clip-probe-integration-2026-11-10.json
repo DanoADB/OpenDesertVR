@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_NATIVE_ATTACHMENT_AND_SCOPED_INDIRECT_FORWARDING",
+  "native_wrapper_version": 15,
+  "probe_addon_version": 18,
+  "owned_runtime": {
+    "status": "PASS_OWNED_NATIVE_ATTACHMENT_AND_SHARED_INDIRECT_FORWARDING",
+    "controls": [
+      {
+        "path": "legacy",
+        "exit_code": 0,
+        "stdout_sha256": "3b622e5b9747024a4039d50e6be7d2c0e53b54155e0f5b129115650022b14a8e"
+      },
+      {
+        "path": "stream",
+        "exit_code": 0,
+        "stdout_sha256": "e4f142929356d6897142fcd5f512333552e7bb2ac132dbe4718613f24d09275a"
+      }
+    ],
+    "binary_sha256": {
+      "owned_app.exe": "cbb828feae14202045523d7941b3e0e72854bdcafc4283ef633fbaab380b4760",
+      "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3",
+      "renodx-devkit.addon64": "e9cdf7703b22c843c50352287d581af8f2b7607dadffac9d8a0692cfeffed6c7"
+    },
+    "asset_files": 0,
+    "native_reference_warnings": 0,
+    "game": "NOT_RUN",
+    "headset": "NOT_RUN"
+  },
+  "control_lease": {
+    "status": "PASS_OWNED_CONTROL_LEASE",
+    "initial": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "armed_unmatched_shader": {
+      "schema_version": 1,
+      "mode": 2,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "expired": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "malformed": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "owned_exit_code": 0,
+    "devkit_asset_files": 0
+  },
+  "local_tests": {
+    "Debug": 16,
+    "Release": 16,
+    "debug_layer": "UNAVAILABLE_LOCALLY"
+  },
+  "source_sha256": {
+    "experiments/renodx-owned/native_vertex_pipeline_payload.hpp": "d469efdc63775edb70517b5530d98a720eba4a7d065cbd118cd8473282e440bc",
+    "experiments/renodx-owned/native_clip_indirect.hpp": "fb337cc4b677d7701b0c49cc544a40a005d99dc2fac701603070a67b02798dbf",
+    "experiments/renodx-owned/clip_probe_addon.inc": "f2671a6443d146d423ca0f85a8102e35576477fe56caa4f5fbbbe3c2db0abc31",
+    "experiments/draw-binding-owned/clip_shift_render_tests.cpp": "50948b0e1d78d084d0ab7c9bb636ab1a787c308cbfb8adcd170622af2079786f"
+  },
+  "limits": [
+    "Full selected-game shader route not run",
+    "Owned runtime tests exercise actual wrapper source attachment and shared indirect forwarding; scene eligibility is not a game compatibility claim",
+    "COM payload owns at most three private PSOs without referencing original; application original-PSO lifetime must cover recorded GPU use",
+    "CPU recordings do not prove visible influence or GPU completion"
+  ],
+  "game_geometry_influence": "NOT_RUN",
+  "independent_game_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN"
+}

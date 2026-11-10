@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "QUALIFIED_LOCAL_HOSTED_PENDING",
+  "status": "QUALIFIED_LOCAL_AND_HOSTED",
   "scope": "Owned VS/PS native pipeline source clone, legacy and stream creation; game probe NOT_RUN",
   "local_configurations": {
     "Debug": {
@@ -55,8 +55,17 @@
   "independent_game_eye_views": "NOT_RUN",
   "game_openxr_submission": "NOT_RUN",
   "limits": [
-    "Local debug layer unavailable; hosted debug validation remains required",
+    "Local debug layer unavailable; hosted Debug and Release require and passed debug validation.",
     "No actual game private PSO source attachment or draw replacement yet",
     "Clip displacement is a geometry diagnostic, not a complete stereo camera"
-  ]
+  ],
+  "hosted": {
+    "run": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42827230983",
+    "source_commit": "ebf8989cbdd4bac89c9bc15244e2f1f78bd934f0",
+    "Debug": "PASS",
+    "Release": "PASS",
+    "four_clip_runs_per_configuration": true,
+    "debug_validation": "ENABLED",
+    "debug_draw_log_sha256": "1c45f62c874fee74d13405a93b51759331567f7b5f687d35d6252a728d9c31f5"
+  }
 }

@@ -2,7 +2,8 @@
 // Owned native GPU control for the measured 40-byte indirect format. No game.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include "../renodx-owned/native_vertex_pipeline_source.hpp"
+#include "../renodx-owned/native_clip_indirect.hpp"
+#include "../renodx-owned/native_vertex_pipeline_payload.hpp"
 #include "clip_shift_dxil.hpp"
 #include <algorithm>
 #include <array>
@@ -190,8 +191,16 @@ int wmain(int argc, wchar_t **argv) {
     TestModule warp;
     Com<ID3D12InfoQueue> info;
     try {
-        require(argc == 4 || (argc == 5 && std::wstring_view(argv[4]) == L"--stream"));
-        const bool use_stream = argc == 5;
+        require(argc >= 4 && argc <= 6);
+        bool use_stream = false, retained_native = false;
+        for (int i = 4; i < argc; ++i) {
+            const std::wstring_view argument(argv[i]);
+            require(argument == L"--stream" || argument == L"--retained-native");
+            if (argument == L"--stream")
+                use_stream = true;
+            if (argument == L"--retained-native")
+                retained_native = true;
+        }
 #ifdef ODV_TEST_WARP_DLL
         warp.value =
             LoadLibraryExW(ODV_TEST_WARP_DLL, nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -207,7 +216,8 @@ int wmain(int argc, wchar_t **argv) {
         const HRESULT debug_status = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
         const bool validation = SUCCEEDED(debug_status);
         if (!validation)
-            std::cout << "debug_interface_hresult=0x" << std::hex << static_cast<unsigned long>(debug_status) << std::dec << '\n';
+            std::cout << "debug_interface_hresult=0x" << std::hex << static_cast<unsigned long>(debug_status)
+                      << std::dec << '\n';
         if (validation)
             debug->EnableDebugLayer();
         Com<IDXGIFactory4> factory;
@@ -283,7 +293,15 @@ int wmain(int argc, wchar_t **argv) {
         pso_desc.NodeMask = 1;
         pso_desc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFF;
         std::array<Com<ID3D12PipelineState>, 4> pipelines;
-        checked(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pipelines[0])));
+        if (use_stream) {
+            OwnedStream original_stream{pso_desc};
+            const D3D12_PIPELINE_STATE_STREAM_DESC original_desc{sizeof(original_stream), &original_stream};
+            Com<ID3D12Device2> device2;
+            checked(device.As(&device2));
+            checked(device2->CreatePipelineState(&original_desc, IID_PPV_ARGS(&pipelines[0])));
+        } else {
+            checked(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pipelines[0])));
+        }
         stage = "native_source_bounds_and_ownership";
         {
             auto reject = [](const D3D12_GRAPHICS_PIPELINE_STATE_DESC &d) {
@@ -324,6 +342,15 @@ int wmain(int argc, wchar_t **argv) {
         odv::research::NativeVertexPipelineSource native_source;
         const D3D12_PIPELINE_STATE_STREAM_DESC stream_desc{sizeof(stream), &stream};
         require(use_stream ? native_source.prepare(stream_desc) : native_source.prepare(pso_desc));
+        if (!retained_native)
+            checked(use_stream ? odv::research::NativeVertexPipelinePayload::attach(pipelines[0].Get(), stream_desc)
+                               : odv::research::NativeVertexPipelinePayload::attach(pipelines[0].Get(), pso_desc));
+        require(odv::research::NativeVertexPipelinePayload::attach(pipelines[0].Get(), pso_desc) ==
+                HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS));
+        auto retained_source = odv::research::load_native_vertex_source(pipelines[0].Get());
+        require(retained_source != nullptr);
+        std::cout << "payload_source=" << (retained_native ? "WRAPPER_NATIVE_CREATION" : "OWNED_DIRECT_ATTACHMENT")
+                  << '\n';
         require(native_source.root() == root.Get() && native_source.vertex().BytecodeLength == vs.size() &&
                 std::memcmp(native_source.vertex().pShaderBytecode, vs.data(), vs.size()) == 0 &&
                 native_source.cleared_cache() && native_source.stream_source() == use_stream);
@@ -332,12 +359,21 @@ int wmain(int argc, wchar_t **argv) {
         std::fill(temporary_ps.begin(), temporary_ps.end(), std::uint8_t{0});
         std::memset(&stream, 0, sizeof(stream));
         require(std::memcmp(native_source.vertex().pShaderBytecode, vs.data(), vs.size()) == 0);
+        D3D12_SHADER_BYTECODE retained_vertex{};
+        checked(retained_source->GetVertex(&retained_vertex));
+        require(retained_vertex.BytecodeLength == vs.size() &&
+                std::memcmp(retained_vertex.pShaderBytecode, vs.data(), vs.size()) == 0);
         std::cout << "native_source_controls=bounds,unknown,duplicate,stages,ownership,cache_discard\n";
         stage = "native_private_vs_variant";
         for (UINT i = 1; i < 4; ++i) {
             std::cout << "creating_variant=" << i << '\n';
-            checked(native_source.create_variant(device.Get(), shaders[i].data(), shaders[i].size(), &pipelines[i]));
+            checked(retained_source->CreateVariant(device.Get(), i - 1, shaders[i].data(), shaders[i].size(),
+                                                   &pipelines[i]));
         }
+        Com<ID3D12PipelineState> rejected;
+        require(retained_source->CreateVariant(device.Get(), 0, shaders[1].data(), shaders[1].size(), &rejected) ==
+                    HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS) &&
+                !rejected);
         stage = "original_resources";
         const std::array<std::byte, 256> camera{};
         auto source = upload(device.Get(), camera.data(), camera.size());
@@ -362,6 +398,9 @@ int wmain(int argc, wchar_t **argv) {
         const D3D12_COMMAND_SIGNATURE_DESC sig_desc{40, 3, indirect, 0};
         Com<ID3D12CommandSignature> signature;
         checked(device->CreateCommandSignature(&sig_desc, root.Get(), IID_PPV_ARGS(&signature)));
+        odv::research::NativeIndirectDescription native_signature{};
+        require(odv::research::describe_indirect_signature(&sig_desc, root.Get(), native_signature));
+        require(odv::research::clip_probe_signature(native_signature));
         Com<ID3D12DescriptorHeap> rtv_heap;
         const D3D12_DESCRIPTOR_HEAP_DESC heap_desc{D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
                                                    0};
@@ -432,13 +471,20 @@ int wmain(int argc, wchar_t **argv) {
         list->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
         for (UINT i = 0; i < cases.size(); ++i) {
             const auto &c = cases[i];
-            list->SetPipelineState(pipelines[c.shader].Get());
+            if (i == 0)
+                list->SetPipelineState(pipelines[0].Get());
             const float black[4]{};
             list->ClearRenderTargetView(rtv, black, 0, nullptr);
             // Same original root, signature, CBV, index/argument/count buffers.
             // Only PSO changes; no root rebind or command-signature replacement.
-            list->ExecuteIndirect(signature.Get(), c.maximum, arguments.Get(), c.argument_offset, counts.Get(),
-                                  c.count_offset);
+            const odv::research::NativeIndirectCall call{signature.Get(),   c.maximum,    arguments.Get(),
+                                                         c.argument_offset, counts.Get(), c.count_offset};
+            if (c.shader)
+                require(odv::research::record_clip_indirect(list.Get(), pipelines[0].Get(), pipelines[c.shader].Get(),
+                                                            call, native_signature));
+            else
+                list->ExecuteIndirect(call.signature, call.maximum_count, call.argument_buffer, call.argument_offset,
+                                      call.count_buffer, call.count_offset);
             transition(list.Get(), target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE);
             D3D12_TEXTURE_COPY_LOCATION dst{};
             dst.pResource = readback.Get();
