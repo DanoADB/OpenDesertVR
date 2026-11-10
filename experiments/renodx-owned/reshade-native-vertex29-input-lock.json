@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "upstream_repository": "https://github.com/crosire/reshade",
+  "upstream_revision": "4a50d1eddace85734871d91792ff214f13f66c01",
+  "reference_directory": "reshade-native-vertex-4a50d1e-29",
+  "dependency_commits": [
+    {
+      "path": "deps/d3d12",
+      "revision": "dde59d560da2760fec612d6634124edc2a26b82f"
+    },
+    {
+      "path": "deps/fpng",
+      "revision": "925796543b9d26b8edfcdcecd94c1dac280f29fc"
+    },
+    {
+      "path": "deps/glad",
+      "revision": "27bed1181560211b55e39a9b132fef8c5846aae5"
+    },
+    {
+      "path": "deps/imgui",
+      "revision": "3912b3d9a9c1b3f17431aebafd86d2f40ee6e59c"
+    },
+    {
+      "path": "deps/jxl_simple_lossless",
+      "revision": "8dc970fc771e35239db55dfbce8f46f83f8e9b73"
+    },
+    {
+      "path": "deps/minhook",
+      "revision": "8fda4f5481fed5797dc2651cd91e238e9b3928c6"
+    },
+    {
+      "path": "deps/openxr",
+      "revision": "288d3a7ebc1ad959f62d51da75baa3d27438c499"
+    },
+    {
+      "path": "deps/spirv",
+      "revision": "7845730cab6ebbdeb621e7349b7dc1a59c3377be"
+    },
+    {
+      "path": "deps/stb",
+      "revision": "f1c79c02822848a9bed4315b12c8c8f3761e1296"
+    },
+    {
+      "path": "deps/utfcpp",
+      "revision": "63d64de49fd6b829f7c8694df5ab2ee625cb7134"
+    },
+    {
+      "path": "deps/vma",
+      "revision": "1076b348abd17859a116f4b111c43d58a588a086"
+    }
+  ],
+  "expected_modified_tracked_files": [
+    "deps/glad.vcxproj",
+    "source/d3d12/d3d12_command_list.cpp",
+    "source/d3d12/d3d12_command_queue.cpp",
+    "source/d3d12/d3d12_device.cpp",
+    "source/d3d12/d3d12_impl_device.cpp",
+    "ReShade.vcxproj"
+  ],
+  "files": [
+    {
+      "path": "ReShade.vcxproj",
+      "sha256": "cd0db6f851c43f16f5f3e3f67defbb79828e1bbefcc886cfebb226eea1835ef6"
+    },
+    {
+      "path": "ReShade.sln",
+      "sha256": "7258c3a5cefe8aae4752ccc125ab899515209a67883fcab3c6a44872b4c57809"
+    },
+    {
+      "path": "Common.props",
+      "sha256": "4f3c03e2026c606c4b70441967eb6b2f6e7b5a3cc594cde28a0abdba50cfeec1"
+    },
+    {
+      "path": "LICENSE.md",
+      "sha256": "d2bb5eb908e9aa7ac2f7f4cf6441d62e1f6ac1256cf22bb5289516c9f30e5f0a"
+    },
+    {
+      "path": "deps/glad.vcxproj",
+      "sha256": "9868da739f43ec29bd70edf4f18e507763287ebce7b90ae1de34fe1ac06273de"
+    },
+    {
+      "path": "source/d3d12/d3d12_command_list.cpp",
+      "sha256": "7987d3103aef5960cb9973283de4cb82344c678a2801f4bbcfda075daa3bd63a"
+    },
+    {
+      "path": "source/d3d12/d3d12_command_queue.cpp",
+      "sha256": "e8b0a08330e0b679b4b9b62e25da7b66fbec3fb11b68e544ee82aa4ba6fcc9a5"
+    },
+    {
+      "path": "source/d3d12/odv/native_barrier_events.hpp",
+      "sha256": "84ea84ce84f2bed3b11b3207a8625b567120540315615793da178f3c8c47d927"
+    },
+    {
+      "path": "res/version.h",
+      "sha256": "49610cebd7a19ca8421c606ca9c37cff5e5bdbacb3f17fbfa5c17722244f9596"
+    },
+    {
+      "path": "deps/khronos/gl.xml",
+      "sha256": "b04d7a210ca00d22a8fc4dbf93f8fab54968d5e9f48910a5dd5014f6c321350a"
+    },
+    {
+      "path": "deps/khronos/vk.xml",
+      "sha256": "dbb9a59fdd7b343e0fa34810894ef56b451d0978a2addb74b94e019b133624fc"
+    },
+    {
+      "path": "deps/khronos/wgl.xml",
+      "sha256": "971f72a31f61b5c37e667ff8895cef6b402ed623ca20a4df9b0c4d5e1239d748"
+    },
+    {
+      "path": "deps/glad/target/include/vk_platform.h",
+      "sha256": "11c7e79e6128e8c6abed873e414340dcd3a51f93ff4bbce617ffebf5555f8729"
+    },
+    {
+      "path": "deps/glad/target/src/gl.c",
+      "sha256": "2c047e64a99b7a525affadc900f52eab641d9c659a28fc30cbe694e2b2304a33"
+    },
+    {
+      "path": "deps/glad/target/src/vulkan.c",
+      "sha256": "ce31c04556f3d1d5ff7cd6be3786af33ce042fd00d71cbd26225c905c4f1b682"
+    },
+    {
+      "path": "deps/glad/target/src/wgl.c",
+      "sha256": "76e288892aa92abd509da175d7b13bb307fbe308f1ba4b8034b77e56b49a7256"
+    },
+    {
+      "path": "deps/glad/target/include/glad/gl.h",
+      "sha256": "ddf7beaed477e7e81a317d5161b19ddc17af41f43a7319a27c414eaf2d211878"
+    },
+    {
+      "path": "deps/glad/target/include/glad/vulkan.h",
+      "sha256": "e3ae95f6120912fe6f76a09dc67ebdc6c3217d7a10f3182031918730318a7d03"
+    },
+    {
+      "path": "deps/glad/target/include/glad/wgl.h",
+      "sha256": "62f442bf6ca76422e1bcefce6b8d09a08c82ebb9c9708b5f2b8760b612caf923"
+    },
+    {
+      "path": "deps/glad/target/include/KHR/khrplatform.h",
+      "sha256": "7b1e01aaa7ad8f6fc34b5c7bdf79ebf5189bb09e2c4d2e79fc5d350623d11e83"
+    },
+    {
+      "path": "res/shaders/copy_ps.cso",
+      "sha256": "d2ac8542c4237b40c69731ba557773035b52eff7683d0fe332dcf86b835f6d9a"
+    },
+    {
+      "path": "res/shaders/fullscreen_vs.cso",
+      "sha256": "5379a59949704fddcb8db7464aa85375fb46fe4b36ed306d1c02ef7f4ccccc8b"
+    },
+    {
+      "path": "res/shaders/imgui_ps_3_0.cso",
+      "sha256": "27c218daaf534a4afd7c8a2fb70abd0f660878cbc81e7c80b7c65d1adbbb2801"
+    },
+    {
+      "path": "res/shaders/imgui_ps_4_0.cso",
+      "sha256": "322967195c5398b2a1c328b8a6f26a5c535196acc4cea3b4d67a4544a516d9d8"
+    },
+    {
+      "path": "res/shaders/imgui_vs_3_0.cso",
+      "sha256": "f8e1c65816351bb0c624437da7e17e8f93bc74c4e416d3284e6ef8dbd09cc589"
+    },
+    {
+      "path": "res/shaders/imgui_vs_4_0.cso",
+      "sha256": "bd8014feaad284a335acdc17be6e0d077d75d72cebb44737746b08e44adab18d"
+    },
+    {
+      "path": "res/shaders/mipmap_cs_5_0.cso",
+      "sha256": "ac44231dc1bd0c90407f113a3a298fa2be16abf0d34ee7b68667a24df2391fee"
+    },
+    {
+      "path": "source/d3d12/odv/native_draw_events.hpp",
+      "sha256": "105d4fe530cdd4decdc0ab0eedbe636c268abe78f4b9ceddc4a0f4bb230fb890"
+    },
+    {
+      "path": "source/d3d12/d3d12_device.cpp",
+      "sha256": "0de02202a75482a6a7aa0e7766b30d99df202e491033ec04a7b64133baadcc60"
+    },
+    {
+      "path": "source/d3d12/d3d12_impl_device.cpp",
+      "sha256": "314fcee17edd2890db03ddf52bb5051e88c149f2ceb30d783c4e1bd95f169d3f"
+    },
+    {
+      "path": "source/d3d12/odv/native_indirect_events.hpp",
+      "sha256": "601778a90770ca87111cad7d939e73d405af41716c65d080bfa9874be6566175"
+    },
+    {
+      "path": "source/d3d12/odv/native_root_signature.hpp",
+      "sha256": "b59369f6c4523840c6c7f1cf131e4597f8c9ef39cabeaff7f0dbaecdc34b097a"
+    },
+    {
+      "path": "source/d3d12/odv/native_vertex_pipeline_source.hpp",
+      "sha256": "306f4edb5b74804dc51a9e243c9d636adbf22055b6df218931b84e2398c9f7db"
+    },
+    {
+      "path": "source/d3d12/odv/native_vertex_pipeline_payload.hpp",
+      "sha256": "d469efdc63775edb70517b5530d98a720eba4a7d065cbd118cd8473282e440bc"
+    }
+  ],
+  "native_patch": {
+    "path": "experiments/renodx-owned/patches/reshade-native-vertex29-terrain-target.patch",
+    "sha256": "79d1320499504904f9f31ae834f822e73597d1cba1f25cd238a44b2b8dd4a68f"
+  },
+  "original_header": {
+    "path": "experiments/renodx-owned/native_barrier_events.hpp",
+    "sha256": "84ea84ce84f2bed3b11b3207a8625b567120540315615793da178f3c8c47d927",
+    "contract_version": 1
+  },
+  "binary": {
+    "reference_relative_path": "bin/x64/Release/ReShade64.dll",
+    "sha256": "69b3359e22f388fcf011c28e7d8cf8761e892d5045b4380344f40a88385a8a7e",
+    "bytes": 5505024,
+    "version": "6.7.3.9013 UNOFFICIAL"
+  },
+  "build_tooling": {
+    "msvc": "19.44.35229.0",
+    "windows_sdk": "10.0.26100.0",
+    "python": "3.14.5",
+    "Jinja2": "3.1.6",
+    "MarkupSafe": "3.0.3",
+    "environment": "private venv; generator uses copied pinned local XML; project tool paths are private hash-pinned inputs"
+  },
+  "scope": "Native metadata and exact source attachment for observed terrain VSC48DB423/25924 bytes and owned VS56EC8691/4344 bytes; three immutable variants per original PSO; no shader export or application buffer writes.",
+  "draw_header": {
+    "path": "experiments/renodx-owned/native_draw_events.hpp",
+    "sha256": "105d4fe530cdd4decdc0ab0eedbe636c268abe78f4b9ceddc4a0f4bb230fb890",
+    "contract_version": 1,
+    "bytes": 48
+  },
+  "derivation": {
+    "base_lock": "experiments/renodx-owned/reshade-native-vertex25-input-lock.json",
+    "base_lock_sha256": "4b0fd800e8bdadb36df59f16037e452375d7c3192402d4df52436774a52f9286",
+    "method": "Independent source copy; exact observed terrain target substitution; historical references unchanged."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "9b7c1b3a5e02fe5874748c20535c94b4d322396fa2a1bc0eb38c323c46ea8359"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "ff8e4df4fd35b30b38b151c854ab77dcb081b4a17fcd61c62d0facdef18c3c84"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "69b3359e22f388fcf011c28e7d8cf8761e892d5045b4380344f40a88385a8a7e",
+    "renodx-devkit.addon64": "d0ca57c1f5f7ac15d10b62aeab12d5967aecead5cc0a6488b0383d6a3801bbe8",
+    "owned_app.exe": "69bb1266fb5917adcd46770001118e1450e0597397a02607ff0d1bc8d4c927cb",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "schema_version": 1,
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "scope": "Exact wrapper29/addon29 loaded in owned native payload/clip-query controls; actual terrain-specific addon selection NOT_RUN.",
+  "collapse_probe": true,
+  "large_probe": false,
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "query_accounting": "PASS",
+  "all_cases_check_pixels": true,
+  "cases_per_gpu_run": 11,
+  "original_and_identity_restoration": "PASS",
+  "debug_validation": "UNAVAILABLE_LOCALLY",
+  "game": "NOT_RUN",
+  "gpu_work_queries": "PASS_FENCED_PREDICATION_SKIP_PASS_AND_FORWARDING",
+  "samples_per_run": 6,
+  "native_wrapper": "experiments/renodx-owned/reshade-native-vertex29-input-lock.json"
+}

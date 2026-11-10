@@ -217,3 +217,10 @@ in three collapse samples. This supports a real rasterization effect, while
 visible scene influence remains unverified. The metadata snapshot truncates at
 128 records before completing the frame; tracing later consumers is the next
 step. Mode0 and normal rendering are restored; no game stereo is claimed.
+
+
+[Probe28 live windows](evidence/g1-game-clip-probe28-2026-11-10.json) now reach
+later graphics records after correcting idle-Present completion. They reveal
+an explicit `vsTerrainMesh` candidate beyond the original128-record cutoff.
+Probe29 is built and locally qualified for a reversible terrain-only test;
+actual terrain influence, camera control and game stereo remain unverified.

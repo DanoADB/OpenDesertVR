@@ -297,3 +297,37 @@ live game validation. The128-record capacity,4096 maximum start, resource/frame
 identity limitations and absence of compute/copy consumers remain unchanged.
 See [owned timing regression](../evidence/g1-owned-snapshot-window28-2026-11-10.json)
 and [clip qualification](../evidence/g1-owned-clip-probe28-2026-11-10.json).
+
+
+Probe28's live retry succeeds: starts0 /128 /256 each initially return128
+records; start384 returns97 and start512 returns0. Later recaptures vary
+(start384 returns62), so these are separate observations, not a stitched single
+frame. Every retained record carries the expected bounded recording ordinal.
+The visual effect stays mode0 throughout, with no failure, unchanged original
+identity/tool/staged hashes and asset files0. Both hosted Debug/Release jobs for
+c231e04 pass. See [live window evidence](../evidence/g1-game-clip-probe28-2026-11-10.json).
+
+The later window exposes an explicit terrain candidate: VSC48DB423/25,924 bytes,
+entry `vsTerrainMesh`, paired with PS2F35F124/36,840 bytes, `psTerrainMesh`.
+It is observed after the original128-record limit, submitted with maximum
+command capacity15,140 and an original GPU count buffer. The actual GPU count
+is not read. Its original40-byte IBV/root0word/DrawIndexed signature matches
+the existing single-forward control; active queries1, draw state valid, no
+render-pass block. Its five2560x720 targets match the material-target format set.
+Reflection marks b18/space35,2,816 bytes used by an active shader, but neither
+vertex-stage-specific consumption nor camera-transform identity is proved.
+Stage summaries also identify voxel generation, dynamic-shadow and glare
+families; their apparent frequency/capacity is not main-camera evidence.
+
+Probe29 selects only this exact observed terrain VS in both independently
+copied native wrapper and addon. The owned4344-byte vertex control remains
+allowed. Default-off lease/control behavior, original signature/root/buffers,
+private PSO ownership, modern compiler validation, bounded GPU queries and
+snapshot timing guards are unchanged. Exact wrapper29/addon29 pass legacy and
+stream clip/pixel/query controls, the nine owned metadata windows and the idle
+Present regression, with cooperative exit and native-device reference warnings0.
+These owned runs do not exercise actual terrain shader selection. The next live
+run must validate identity first, then reversible collapse and GPU-query results,
+followed by a visual verdict. No game camera or stereo success is claimed.
+See [clip qualification](../evidence/g1-owned-clip-probe29-2026-11-10.json)
+and [window qualification](../evidence/g1-owned-snapshot-window29-2026-11-10.json).
