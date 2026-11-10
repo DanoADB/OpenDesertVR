@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_LOCAL_HOSTED_PENDING",
+  "scope": "Owned VS/PS native pipeline source clone, legacy and stream creation; game probe NOT_RUN",
+  "local_configurations": {
+    "Debug": {
+      "tests_passed": 16,
+      "debug_layer": "UNAVAILABLE_SDK_COMPONENT_MISSING"
+    },
+    "Release": {
+      "tests_passed": 16,
+      "debug_layer": "UNAVAILABLE_SDK_COMPONENT_MISSING"
+    }
+  },
+  "clip_gpu_runs_per_configuration": 4,
+  "shader_models": [
+    "6.0",
+    "6.6"
+  ],
+  "native_paths": [
+    "legacy_graphics_description",
+    "pipeline_state_stream"
+  ],
+  "pixel_assertions_per_run": 11264,
+  "controls": [
+    "original and identity geometry",
+    "near/far 4/2-pixel clip displacement",
+    "original root, signature, source, DEFAULT arguments and counts unchanged",
+    "original PSO restoration",
+    "zero GPU count and maximum",
+    "deep-copied original VS and PS survive input mutation",
+    "driver cache discarded without dereference",
+    "reject non-VS/PS stages, stream output, oversized shader and input layout",
+    "reject truncated, unknown and duplicate stream records",
+    "reject second preparation"
+  ],
+  "agility": {
+    "package": "Microsoft.Direct3D.D3D12/1.619.6",
+    "requested_sdk": 619,
+    "loaded_sdk": 619,
+    "loaded_source": "ISOLATED_TEST",
+    "scope": "clip test executable only, never runtime package"
+  },
+  "source_sha256": {
+    "experiments/renodx-owned/native_vertex_pipeline_source.hpp": "306f4edb5b74804dc51a9e243c9d636adbf22055b6df218931b84e2398c9f7db",
+    "experiments/draw-binding-owned/clip_shift_render_tests.cpp": "c5142ab75ed3d330cace5a866a1b8ac7019c0d4fd97080411f3c47b1e9e2767e",
+    "experiments/draw-binding-owned/owned_clip_shift.py": "6bd5b5f410d5a2afdc19d7dbb9335eb8f1165460efc06e42cc988de5ed7818b4",
+    "scripts/prepare-owned-agility.ps1": "46e2c0da0136c9712327c7ba883967530f4fcbb2a6a4efa7e9ff9e21406ab1a6"
+  },
+  "private_log_sha256": {
+    "native-clone-debug-LastTest.log": "23e492b423bb4b35f247dcc8037112129a5fefa8121955accdada6af2b398e6b",
+    "native-clone-release-LastTest.log": "3d8482538f6f304a3ccc516f60cbafc05d7270540761e1e2e727f4ca17cae774"
+  },
+  "game_geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr_submission": "NOT_RUN",
+  "limits": [
+    "Local debug layer unavailable; hosted debug validation remains required",
+    "No actual game private PSO source attachment or draw replacement yet",
+    "Clip displacement is a geometry diagnostic, not a complete stereo camera"
+  ]
+}

@@ -260,9 +260,10 @@
   "private_evidence_sha256": {
     "details.private.json": "8703ac1ededd92e434da644368dee762039c9e419cbe940691609fe97738aab3",
     "draws.private.json": "10096fa63430f85df0320574a9738a508181986c8adf4a00f18e1c442e6509a2",
-    "report.json": "59a3e28a1d1bf343e72563dc9bd0415080b37224af7a999aa998624355cf10c0"
+    "report.json": "59a3e28a1d1bf343e72563dc9bd0415080b37224af7a999aa998624355cf10c0",
+    "cleanup.json": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
   },
-  "cleanup": "NOT_RUN_GAME_STILL_RUNNING",
+  "cleanup": "PASS_EXACT_STAGED_FILES_REMOVED_GAME_IDENTITY_UNCHANGED",
   "world_camera_influence": "NOT_RUN",
   "independent_game_eye_views": "NOT_RUN",
   "headset": "NOT_RUN",

@@ -149,6 +149,27 @@ endif()
 add_test(NAME owned_private_indirect_render COMMAND odv_private_indirect_render_tests)
 set_tests_properties(owned_private_indirect_render PROPERTIES TIMEOUT 20)
 add_executable(odv_clip_shift_render_tests clip_shift_render_tests.cpp)
+set(ODV_TEST_AGILITY_DIR "" CACHE PATH "Optional hash-pinned isolated Agility runtime for clip tests only")
+if(ODV_TEST_AGILITY_DIR)
+  set(agility_files D3D12Core.dll d3d12SDKLayers.dll LICENSE.txt)
+  set(agility_hashes
+    37fa14281a58cc834076971873006feb8a8d25cddc908d1a345bda1b149ffc7d
+    7ab48d56d1c18708ebcf16c7c9259b2d783e2b935b85add4a244573b9f03cab4
+    5239850894610071566f7ecee0b751fde43c862032d92b99d7d0f596b3433ebd)
+  foreach(index RANGE 0 2)
+    list(GET agility_files ${index} name)
+    list(GET agility_hashes ${index} expected)
+    file(SHA256 "${ODV_TEST_AGILITY_DIR}/${name}" actual)
+    if(NOT actual STREQUAL expected)
+      message(FATAL_ERROR "Test-only Agility ${name} does not match Microsoft 1.619.6 pin")
+    endif()
+    add_custom_command(TARGET odv_clip_shift_render_tests POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:odv_clip_shift_render_tests>/D3D12Test"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ODV_TEST_AGILITY_DIR}/${name}"
+        "$<TARGET_FILE_DIR:odv_clip_shift_render_tests>/D3D12Test/${name}")
+  endforeach()
+  target_compile_definitions(odv_clip_shift_render_tests PRIVATE ODV_TEST_AGILITY_SDK=619)
+endif()
 target_compile_features(odv_clip_shift_render_tests PRIVATE cxx_std_20)
 target_link_libraries(odv_clip_shift_render_tests PRIVATE d3d12 dxgi d3dcompiler version)
 if(ODV_TEST_WARP_DLL)

@@ -68,7 +68,8 @@ jobs:
       - name: Verify original WARP draw pixels and unsubmitted-list control (no capture tool)
         run: |
           ./scripts/prepare-owned-warp.ps1
-          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64 "-DODV_TEST_WARP_DLL:FILEPATH=$PWD/out/deps/warp-1.0.22/d3d10warp.dll"
+          ./scripts/prepare-owned-agility.ps1
+          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64 "-DODV_TEST_WARP_DLL:FILEPATH=$PWD/out/deps/warp-1.0.22/d3d10warp.dll" "-DODV_TEST_AGILITY_DIR:PATH=$PWD/out/deps/agility-1.619.6"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build out/build/draw-binding-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -88,9 +89,12 @@ jobs:
             throw 'Missing actual pinned-WARP 19-case GPU execution with debug validation'
           }
           $clipLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_clip_shift_render.*?<end of output>').Value
-          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 2 -or
-              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 2 -or
-              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 2 -or
+          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'native_source=LEGACY').Count -ne 2 -or
+              [regex]::Matches($clipLog, 'native_source=STREAM').Count -ne 2 -or
+              [regex]::Matches($clipLog, 'agility_requested=619').Count -ne 4 -or
               -not $clipLog.Contains('owned SDK SM6.0/6.6 assembly, validation, private-PSO geometry')) {
             throw 'Missing actual SM6.0/6.6 clip geometry execution with pinned WARP and debug validation'
           }

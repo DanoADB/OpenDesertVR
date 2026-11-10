@@ -30,12 +30,13 @@ with tempfile.TemporaryDirectory() as temporary:
                             "-Fo", str(binary), str(hlsl)], check=True, capture_output=True,
                            timeout=20, creationflags=subprocess.CREATE_NO_WINDOW)
         hashes = [hashlib.sha256(p.read_bytes()).hexdigest() for p in (vs, ps)]
-        run = subprocess.run([str(helper), str(compiler.parent), str(vs), str(ps)],
-                             capture_output=True, timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
-        print(run.stdout.decode(errors="replace"), end="")
-        if run.returncode:
-            print(run.stderr.decode(errors="replace"), file=sys.stderr)
-            raise RuntimeError("owned clip-shift GPU qualification failed: " + model)
+        for extra in ([], ["--stream"]):
+            run = subprocess.run([str(helper), str(compiler.parent), str(vs), str(ps)]+extra,
+                                 capture_output=True, timeout=25, creationflags=subprocess.CREATE_NO_WINDOW)
+            print(run.stdout.decode(errors="replace"), end="")
+            if run.returncode:
+                print(run.stderr.decode(errors="replace"), file=sys.stderr)
+                raise RuntimeError("owned clip-shift GPU qualification failed: " + model)
         rejected = subprocess.run([str(helper), str(compiler.parent), str(ps), str(ps)],
                                   capture_output=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW)
         if rejected.returncode != 1 or b"unsupported_position_store" not in rejected.stderr:

@@ -2,7 +2,9 @@
 // Owned native GPU control for the measured 40-byte indirect format. No game.
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#include "../renodx-owned/native_vertex_pipeline_source.hpp"
 #include "clip_shift_dxil.hpp"
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstring>
@@ -16,6 +18,13 @@
 #include <stdexcept>
 #include <string_view>
 #include <vector>
+
+#ifdef ODV_TEST_AGILITY_SDK
+extern "C" {
+__declspec(dllexport) extern const UINT D3D12SDKVersion = ODV_TEST_AGILITY_SDK;
+__declspec(dllexport) extern const char *D3D12SDKPath = ".\\D3D12Test\\";
+}
+#endif
 
 template <class T> using Com = Microsoft::WRL::ComPtr<T>;
 static const char *stage = "initialization";
@@ -124,15 +133,65 @@ static void report_warp(HMODULE expected) {
               << HIWORD(version->dwFileVersionLS) << '.' << LOWORD(version->dwFileVersionLS) << '\n';
 }
 
+// Native D3D12 stream records require pointer-aligned trailing padding.
+#pragma warning(push)
+#pragma warning(disable : 4324)
+template <D3D12_PIPELINE_STATE_SUBOBJECT_TYPE Kind, class T> struct alignas(void *) StreamPart {
+    D3D12_PIPELINE_STATE_SUBOBJECT_TYPE kind = Kind;
+    T data{};
+};
+struct OwnedStream {
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_ROOT_SIGNATURE, ID3D12RootSignature *> root;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_VS, D3D12_SHADER_BYTECODE> vs;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_PS, D3D12_SHADER_BYTECODE> ps;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_BLEND, D3D12_BLEND_DESC> blend;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_SAMPLE_MASK, UINT> mask;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_RASTERIZER, D3D12_RASTERIZER_DESC> raster;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_DEPTH_STENCIL, D3D12_DEPTH_STENCIL_DESC> depth;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_PRIMITIVE_TOPOLOGY, D3D12_PRIMITIVE_TOPOLOGY_TYPE> topology;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_RENDER_TARGET_FORMATS, D3D12_RT_FORMAT_ARRAY> formats;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_DEPTH_STENCIL_FORMAT, DXGI_FORMAT> depthformat;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_SAMPLE_DESC, DXGI_SAMPLE_DESC> samples;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_IB_STRIP_CUT_VALUE, D3D12_INDEX_BUFFER_STRIP_CUT_VALUE> strip;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_NODE_MASK, UINT> node;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_FLAGS, D3D12_PIPELINE_STATE_FLAGS> flags;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_STREAM_OUTPUT, D3D12_STREAM_OUTPUT_DESC> so;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_INPUT_LAYOUT, D3D12_INPUT_LAYOUT_DESC> input;
+    StreamPart<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_CACHED_PSO, D3D12_CACHED_PIPELINE_STATE> cache;
+    explicit OwnedStream(const D3D12_GRAPHICS_PIPELINE_STATE_DESC &d) {
+        root.data = d.pRootSignature;
+        vs.data = d.VS;
+        ps.data = d.PS;
+        blend.data = d.BlendState;
+        mask.data = d.SampleMask;
+        raster.data = d.RasterizerState;
+        depth.data = d.DepthStencilState;
+        topology.data = d.PrimitiveTopologyType;
+        depthformat.data = d.DSVFormat;
+        samples.data = d.SampleDesc;
+        strip.data = d.IBStripCutValue;
+        node.data = d.NodeMask;
+        flags.data = d.Flags;
+        so.data = d.StreamOutput;
+        input.data = d.InputLayout;
+        cache.data = d.CachedPSO;
+        formats.data.NumRenderTargets = d.NumRenderTargets;
+        std::memcpy(formats.data.RTFormats, d.RTVFormats, sizeof(d.RTVFormats));
+    }
+};
+#pragma warning(pop)
+static_assert(alignof(OwnedStream) == alignof(void *));
 static std::vector<std::uint8_t> read_owned(const std::filesystem::path &path) {
     require(std::filesystem::is_regular_file(path) && std::filesystem::file_size(path) <= 1024 * 1024);
     std::ifstream stream(path, std::ios::binary);
     return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 int wmain(int argc, wchar_t **argv) {
+    TestModule warp;
+    Com<ID3D12InfoQueue> info;
     try {
-        require(argc == 4);
-        TestModule warp;
+        require(argc == 4 || (argc == 5 && std::wstring_view(argv[4]) == L"--stream"));
+        const bool use_stream = argc == 5;
 #ifdef ODV_TEST_WARP_DLL
         warp.value =
             LoadLibraryExW(ODV_TEST_WARP_DLL, nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -145,7 +204,10 @@ int wmain(int argc, wchar_t **argv) {
                                                          compiler.compile(vs, odv::research::ClipShift::left),
                                                          compiler.compile(vs, odv::research::ClipShift::right)};
         Com<ID3D12Debug> debug;
-        const bool validation = SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug)));
+        const HRESULT debug_status = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+        const bool validation = SUCCEEDED(debug_status);
+        if (!validation)
+            std::cout << "debug_interface_hresult=0x" << std::hex << static_cast<unsigned long>(debug_status) << std::dec << '\n';
         if (validation)
             debug->EnableDebugLayer();
         Com<IDXGIFactory4> factory;
@@ -155,7 +217,22 @@ int wmain(int argc, wchar_t **argv) {
         Com<ID3D12Device> device;
         checked(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device)));
         report_warp(warp.value);
-        Com<ID3D12InfoQueue> info;
+        D3D12_FEATURE_DATA_SHADER_MODEL model{D3D_SHADER_MODEL_6_6};
+        checked(device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &model, sizeof(model)));
+        std::cout << "shader_model=0x" << std::hex << model.HighestShaderModel << std::dec;
+#ifdef ODV_TEST_AGILITY_SDK
+        const auto core = GetModuleHandleW(L"D3D12Core.dll");
+        require(core != nullptr);
+        const auto sdk = reinterpret_cast<const UINT *>(GetProcAddress(core, "D3D12SDKVersion"));
+        require(sdk && *sdk >= ODV_TEST_AGILITY_SDK);
+        std::array<wchar_t, 32768> core_path{};
+        require(GetModuleFileNameW(core, core_path.data(), static_cast<DWORD>(core_path.size())) > 0);
+        const bool bundled = std::filesystem::path(core_path.data()).parent_path().filename() == L"D3D12Test";
+        std::cout << " agility_requested=" << ODV_TEST_AGILITY_SDK << " core_sdk=" << *sdk
+                  << " core_source=" << (bundled ? "ISOLATED_TEST" : "OS_NEWER");
+#endif
+        std::cout << '\n';
+        require(model.HighestShaderModel >= D3D_SHADER_MODEL_6_6);
         if (validation)
             checked(device.As(&info));
         stage = "original_root_and_private_pso";
@@ -203,10 +280,63 @@ int wmain(int argc, wchar_t **argv) {
         pso_desc.SampleDesc.Count = 1;
 
         pso_desc.pRootSignature = root.Get();
+        pso_desc.NodeMask = 1;
+        pso_desc.IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_0xFFFF;
         std::array<Com<ID3D12PipelineState>, 4> pipelines;
-        for (UINT i = 0; i < 4; ++i) {
-            pso_desc.VS = {shaders[i].data(), shaders[i].size()};
-            checked(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pipelines[i])));
+        checked(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pipelines[0])));
+        stage = "native_source_bounds_and_ownership";
+        {
+            auto reject = [](const D3D12_GRAPHICS_PIPELINE_STATE_DESC &d) {
+                odv::research::NativeVertexPipelineSource invalid;
+                require(!invalid.prepare(d) && !invalid.root() && !invalid.vertex().BytecodeLength);
+                require(!invalid.prepare(d));
+            };
+            auto invalid = pso_desc;
+            invalid.GS = invalid.VS;
+            reject(invalid);
+            invalid = pso_desc;
+            invalid.StreamOutput.NumEntries = 1;
+            reject(invalid);
+            invalid = pso_desc;
+            invalid.InputLayout.NumElements = 65;
+            reject(invalid);
+            invalid = pso_desc;
+            invalid.VS.BytecodeLength = 1024 * 1024 + 1;
+            reject(invalid);
+            OwnedStream truncated{pso_desc};
+            odv::research::NativeVertexPipelineSource bad_size;
+            require(!bad_size.prepare(D3D12_PIPELINE_STATE_STREAM_DESC{sizeof(truncated) - 1, &truncated}));
+            truncated.ps.kind = D3D12_PIPELINE_STATE_SUBOBJECT_TYPE_VS;
+            odv::research::NativeVertexPipelineSource duplicate;
+            require(!duplicate.prepare(D3D12_PIPELINE_STATE_STREAM_DESC{sizeof(truncated), &truncated}));
+            truncated.ps.kind = static_cast<D3D12_PIPELINE_STATE_SUBOBJECT_TYPE>(63);
+            odv::research::NativeVertexPipelineSource unknown;
+            require(!unknown.prepare(D3D12_PIPELINE_STATE_STREAM_DESC{sizeof(truncated), &truncated}));
+        }
+        auto temporary_vs = vs, temporary_ps = ps;
+        pso_desc.VS = {temporary_vs.data(), temporary_vs.size()};
+        pso_desc.PS = {temporary_ps.data(), temporary_ps.size()};
+        // A driver cache belongs to its original shader. The variant must
+        // discard it without ever dereferencing this owned sentinel pointer.
+        const std::byte cache_sentinel{0xAD};
+        pso_desc.CachedPSO = {&cache_sentinel, 1};
+        OwnedStream stream{pso_desc};
+        odv::research::NativeVertexPipelineSource native_source;
+        const D3D12_PIPELINE_STATE_STREAM_DESC stream_desc{sizeof(stream), &stream};
+        require(use_stream ? native_source.prepare(stream_desc) : native_source.prepare(pso_desc));
+        require(native_source.root() == root.Get() && native_source.vertex().BytecodeLength == vs.size() &&
+                std::memcmp(native_source.vertex().pShaderBytecode, vs.data(), vs.size()) == 0 &&
+                native_source.cleared_cache() && native_source.stream_source() == use_stream);
+        require(!native_source.prepare(pso_desc));
+        std::fill(temporary_vs.begin(), temporary_vs.end(), std::uint8_t{0});
+        std::fill(temporary_ps.begin(), temporary_ps.end(), std::uint8_t{0});
+        std::memset(&stream, 0, sizeof(stream));
+        require(std::memcmp(native_source.vertex().pShaderBytecode, vs.data(), vs.size()) == 0);
+        std::cout << "native_source_controls=bounds,unknown,duplicate,stages,ownership,cache_discard\n";
+        stage = "native_private_vs_variant";
+        for (UINT i = 1; i < 4; ++i) {
+            std::cout << "creating_variant=" << i << '\n';
+            checked(native_source.create_variant(device.Get(), shaders[i].data(), shaders[i].size(), &pipelines[i]));
         }
         stage = "original_resources";
         const std::array<std::byte, 256> camera{};
@@ -380,10 +510,24 @@ int wmain(int argc, wchar_t **argv) {
         std::cout << "PASS: validated private DXIL clip-X geometry probe; 11 cases x1024 pixels; near/far4/2-pixel "
                      "displacement; original root/signature/buffers unchanged; identity and original PSO restoration; "
                      "GPU count0/max0; debug="
-                  << (validation ? "ENABLED" : "UNAVAILABLE") << "; game=NOT_RUN; headset=NOT_RUN\n";
+                  << (validation ? "ENABLED" : "UNAVAILABLE")
+                  << "; native_source=" << (use_stream ? "STREAM" : "LEGACY") << "; game=NOT_RUN; headset=NOT_RUN\n";
         return 0;
     } catch (const std::exception &error) {
         std::cerr << "stage=" << stage << ' ' << error.what() << '\n';
+        // This executable accepts owned fixtures only. Keep creation errors in
+        // its test log rather than losing the debug message during unwinding.
+        if (info)
+            for (UINT64 i = 0; i < info->GetNumStoredMessagesAllowedByRetrievalFilter(); ++i) {
+                SIZE_T bytes = 0;
+                if (FAILED(info->GetMessage(i, nullptr, &bytes)) || bytes > 1024 * 1024)
+                    break;
+                std::vector<std::byte> storage(bytes);
+                auto *message = reinterpret_cast<D3D12_MESSAGE *>(storage.data());
+                if (SUCCEEDED(info->GetMessage(i, message, &bytes)) &&
+                    message->Severity <= D3D12_MESSAGE_SEVERITY_ERROR)
+                    std::cerr << "D3D12 id=" << message->ID << ' ' << message->pDescription << '\n';
+            }
         return 1;
     }
 }

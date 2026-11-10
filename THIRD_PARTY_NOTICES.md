@@ -31,11 +31,22 @@ The optional owned indirect-render test can explicitly load Microsoft.Direct3D.W
 and Authenticode signature. Its Microsoft Software License Terms allow Windows
 development/testing and prohibit redistribution. The DLL and package stay in
 ignored `out/deps`; they are not committed, uploaded as CI artifacts, installed
-globally, or included in OpenDesertVR packages. Only the indirect test process
-uses this optional input; other tests retain their system-runtime coverage.
+globally, or included in OpenDesertVR packages. Only the indirect and clip-shift
+test processes use this optional input; other tests retain system-runtime coverage.
 See [the official package and license](https://www.nuget.org/packages/Microsoft.Direct3D.WARP/1.0.22)
 and `scripts/prepare-owned-warp.ps1` for the exact pins. This is a test runtime,
 not a production game or XR dependency.
+
+The optional clip-shift test also selects Microsoft.Direct3D.D3D12 Agility
+1.619.6 through executable-local SDK exports. Its Core and matching debug layer
+and LICENSE.txt come from the official NuGet package, with package/file SHA256
+and Microsoft Authenticode checks in `scripts/prepare-owned-agility.ps1`.
+Microsoft Software License Terms (MICROSOFT DIRECTX) govern these Windows-only
+inputs. The full license accompanies them in ignored `out/deps` and the test
+executable's isolated `D3D12Test` subdirectory. No SDK headers are imported.
+Neither DLL nor package is committed, uploaded, globally installed, or added
+to application packaging. Hosted Server 2022 needs this opt-in runtime for
+the SM6.6 qualification; it is not a game or XR runtime dependency.
 
 ## Optional camera research
 
