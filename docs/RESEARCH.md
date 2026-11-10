@@ -233,3 +233,13 @@ This establishes sampled GPU influence without proving visible-world control.
 Normal mode0 is restored, hashes are unchanged and asset files remain0.
 Hosted Debug/Release CI for02b24a7 passes. The next question is the downstream
 connection to the presented image; another shader name alone is insufficient.
+
+A later stationary-view repeat of the same control resolves visible influence
+on the desktop: prominent pale rock faces disappear during collapse and return
+in original mode. Grass, trees and the character remain visible. This direct
+desktop observation is recorded separately from the earlier user's negative
+verdict in the same Probe29 evidence. It proves selected terrain influence,
+not a camera transform or stereo. The next experiment reuses the exact29
+binaries with collapse disabled to test small left/right clip-X displacement.
+[Owned shift controls](evidence/g1-owned-terrain-shift30-2026-11-10.json) pass
+legacy and stream creation with pixel-checked near/far disparity and restoration.

@@ -7,7 +7,7 @@
   "target_vertex_bytes": 25924,
   "target_entrypoint": "vsTerrainMesh",
   "scene": "Loaded save, Hills of No Return, stationary world view",
-  "status": "FENCED_GPU_RESPONSE_WITHOUT_USER_CONFIRMED_VISIBLE_CHANGE",
+  "status": "VISIBLE_TERRAIN_INFLUENCE_OBSERVED_ON_DESKTOP",
   "recorded": [
     0,
     1539,
@@ -64,7 +64,7 @@
     "limits": "Different draws/frames, not controlled same-draw A/B. GPU counts and predicate values not read. Query samples do not establish downstream contribution to the presented scene.",
     "user_visual_verdict": "No noticeable change",
     "desktop_observation": "Possible differences in left rocky foreground are not established as reproducible terrain disappearance; no positive visible-world claim",
-    "visible_world_control": "UNVERIFIED",
+    "visible_world_control": "SELECTED_TERRAIN_GEOMETRY_INFLUENCE_OBSERVED; camera/view control remains UNVERIFIED",
     "camera_control": "UNVERIFIED",
     "game_stereo": "NOT_RUN",
     "head_tracking": "NOT_RUN",
@@ -92,7 +92,7 @@
     "experiments/renodx-owned/devkit-clip-probe29-input-lock.json",
     "experiments/renodx-owned/reshade-native-vertex29-input-lock.json"
   ],
-  "next_decision": "Identify downstream resource consumers and presented-image connection before another shader target; entrypoint and occlusion response alone are insufficient",
+  "next_decision": "Test small left/right homogeneous clip-X shifts on the same observed terrain target; require displayed displacement and restoration before any stereo claim",
   "downstream_metadata": {
     "status": "CANDIDATE_HANDLE_RECURRENCE_ACROSS_OBSERVATIONS",
     "captures": [
@@ -148,5 +148,16 @@
         "programVersion": "ps_6_6"
       }
     }
+  },
+  "confirmation": {
+    "scene": "Same save, stationary later view with prominent pale rock faces",
+    "duration_seconds": 18,
+    "additional_collapse_forwards": 1180,
+    "desktop_observation": "Large pale rock faces at left and behind the character disappear during mode2 and return in mode0. Trees, grass and character remain visible.",
+    "evidence_grade": "DIRECT_DESKTOP_OBSERVATION",
+    "new_user_visual_verdict": "NOT_REQUESTED",
+    "mode_after": 0,
+    "failed_after": false,
+    "report_sha256": "ac58b59689ed3776c66bf20fe5329e051a6e534d6f1ea2f88cc390bb69a53423"
   }
 }

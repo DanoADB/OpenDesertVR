@@ -344,3 +344,30 @@ hash checks and asset files0 all pass. Both hosted CI configurations pass.
 Investigate the resource-consumer connection before selecting another shader;
 camera transforms, independently rendered eyes and headset delivery remain
 unverified or NOT_RUN.
+
+## Same-binary terrain confirmation and displacement control
+
+A second bounded18-second mode2 control is performed from a stationary view
+with prominent pale rock faces. Direct desktop observations before, during and
+after show those rock faces at the left and behind the character disappear,
+then return. The character, trees and grass persist. The confirmation records
+1,180 additional collapse forwards and restores mode0 without failure. It does
+not replace the earlier user's "No noticeable change" verdict; it is separately
+graded desktop evidence. Selected displayed terrain influence is now observed.
+Camera semantics, whole-world coverage and independently rendered eyes remain
+unverified.
+
+The next configuration, terrain-shift30, reuses the immutable native29/addon29
+binaries and modern compiler pair. No new shader family is selected. Set
+ODVClipProbeCollapse=0 and ODVClipProbeLarge=0 at a fresh launch; the addon reads
+these flags once and caches variants, so do not change them in a running game.
+After identity, bounded modes2/3 apply the existing -/+0.125 homogeneous clip-X
+offset. This tests displayed displacement, not a full camera adapter. The
+original projection, root/signature, argument/count and descriptor buffers
+remain unchanged. Exact-binary owned legacy/stream controls each pass11 pixel
+cases, near/far4/2-pixel displacement, restoration and fenced query controls.
+Local debug-layer validation is unavailable. See
+[qualification](../evidence/g1-owned-terrain-shift30-2026-11-10.json).
+Normal exit and exact manifest cleanup precede staging this configuration;
+keep original mode0 until a stationary loaded scene is observed. Live shift,
+game stereo, head tracking and game OpenXR delivery are still NOT_RUN.

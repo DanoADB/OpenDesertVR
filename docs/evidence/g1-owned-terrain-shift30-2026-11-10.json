@@ -1,0 +1,40 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "63facb127b14a1b098836f2e4bec1b6377d871e7daab75bef76f8d0f96c077a8"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "7a28aecb24d8e98a74cf5d5944d40cf14c2178e75f46493c38724919f030de6c"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "69b3359e22f388fcf011c28e7d8cf8761e892d5045b4380344f40a88385a8a7e",
+    "renodx-devkit.addon64": "d0ca57c1f5f7ac15d10b62aeab12d5967aecead5cc0a6488b0383d6a3801bbe8",
+    "owned_app.exe": "69bb1266fb5917adcd46770001118e1450e0597397a02607ff0d1bc8d4c927cb",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "schema_version": 1,
+  "scope": "Same qualified native29/addon29 binaries; collapse disabled, small clip-X shift; owned tests do not establish game camera or terrain movement.",
+  "collapse_probe": false,
+  "large_probe": false,
+  "cases_per_gpu_run": 11,
+  "owned_depth_disparity": "near/far4/2 pixels PASS",
+  "debug_validation": "UNAVAILABLE_LOCALLY",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "input_locks": [
+    "experiments/renodx-owned/reshade-native-vertex29-input-lock.json",
+    "experiments/renodx-owned/devkit-clip-probe29-input-lock.json"
+  ]
+}
