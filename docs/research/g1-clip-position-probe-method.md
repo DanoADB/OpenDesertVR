@@ -135,3 +135,22 @@ Owned Debug/Release SM6.0/6.6 legacy/stream tests check all1,024 pixels in11
 cases per run for standard, large and collapsed presets; exact primitive and
 occlusion counts distinguish disappearance from forwarding twice or no work.
 Game collapse control is NOT_RUN.
+
+The live Probe24 identity and collapse controls record4,713 and3,342 native
+replacements without compiler errors, restore mode0, and leave original game
+and tool hashes unchanged. Both desktop observation and the user report no
+noticeable change. Thus the fixed homogeneous coordinate scale does not alone
+explain the negative visual result. No second equivalent collapse run is needed.
+
+A bounded metadata-only snapshot retains128 submitted graphics records and is
+truncated. Selected VS C02F6FB5 appears in two native indirect draws into five
+2560x720 material targets, with maximum counts36 and30 and GPU count buffers.
+Actual GPU counts remain UNMEASURED. The same snapshot includes another
+vsStandard vertex variant80800FE6/18,680 bytes in that material-target pass,
+maximum count3,099, with the same40-byte IBV/root0/DrawIndexed signature and
+one active query. This is a more substantial alternate candidate for the next
+reversible influence check, not proof of visibility or camera semantics. The
+former role0 candidate87BF0C9A is identified by reflection as a shadow VS;
+its matrix observations must not be promoted to a proven main-view camera.
+No shader bodies, texture assets or constant-buffer contents were exported.
+See [Probe24 evidence](../evidence/g1-game-clip-probe24-2026-11-10.json).
