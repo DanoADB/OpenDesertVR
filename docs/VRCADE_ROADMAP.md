@@ -48,6 +48,9 @@ Work in this order:
    selected terrain only, not the complete camera. Next identify the consumed
    shared camera-input bytes with native state/predication proof before
    attempting a consistent view transform across world geometry.
+   Live32 identifies bounded vertex-stage loads but rejects both stationary
+   readbacks because DEFAULT resource state is unverified. Resolve the precise
+   source-state rejection before comparing camera-motion values.
 2. Demonstrate a reversible camera/view change affecting actual world
    geometry, then establish how to render distinct eye views with correct
    submission and temporal history. Camera discovery alone is not stereo.

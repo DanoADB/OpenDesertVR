@@ -30,6 +30,25 @@ class KnownBufferStates final {
     }
 
   public:
+    // Diagnostic only: never grants copy eligibility or changes tracking limits.
+    const char *diagnostic(ID3D12Resource *resource) const noexcept {
+        if (overflow_)
+            return "CAPACITY_EXHAUSTED";
+        for (std::size_t i = 0; i < size_; ++i) {
+            const auto &entry = entries_[i];
+            if (entry.resource != resource)
+                continue;
+            if (entry.phase == Phase::split)
+                return "SPLIT_INCOMPLETE";
+            if (entry.phase != Phase::known)
+                return "RANGE_OR_TRANSITION_UNVERIFIED";
+            if (entry.enhanced)
+                return enhanced_constant_scope(resource) ? "ENHANCED_CONSTANT_SCOPE" : "ENHANCED_OTHER_ACCESS";
+            return constant_read_state(resource) ? "LEGACY_CONSTANT_READ" : "LEGACY_OTHER_STATE";
+        }
+        return "NO_CURRENT_RESOURCE_OBSERVATION";
+    }
+    std::size_t tracked_resources() const noexcept { return size_; }
     void reset() noexcept {
         size_ = 0;
         overflow_ = false;

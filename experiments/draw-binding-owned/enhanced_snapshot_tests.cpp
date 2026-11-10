@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
             barrier.SyncAfter = D3D12_BARRIER_SYNC_ALL;
             probe.observe_enhanced(1, &group);
             require(!probe.enhanced_constant_scope(source.Get())); // Missing BEGIN.
+            require(std::strcmp(probe.diagnostic(source.Get()), "RANGE_OR_TRANSITION_UNVERIFIED") == 0);
             barrier.SyncBefore = D3D12_BARRIER_SYNC_COPY;
             barrier.SyncAfter = D3D12_BARRIER_SYNC_SPLIT;
             probe.observe_enhanced(1, &group);
@@ -106,6 +107,8 @@ int main(int argc, char **argv) {
             barrier.Offset = 0;
             probe.observe_enhanced(1, &group);
             require(probe.enhanced_constant_scope(source.Get()));
+            require(std::strcmp(probe.diagnostic(source.Get()), "ENHANCED_CONSTANT_SCOPE") == 0);
+            require(probe.tracked_resources() == 1);
             D3D12_RESOURCE_BARRIER legacy{};
             legacy.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
             legacy.Transition = {source.Get(), 0, D3D12_RESOURCE_STATE_COMMON,

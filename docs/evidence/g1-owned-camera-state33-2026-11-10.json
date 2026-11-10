@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "QUALIFIED_OWNED_CAMERA_STATE33",
+  "scope": "Metadata-only source-state rejection categories; gates and128-resource capacity unchanged",
+  "sha256": {
+    "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+    "renodx-devkit.addon64": "be9fbf0e542e8216c1132eb07e70f4b6fee08a0853d765414d3948664a99ed23"
+  },
+  "controls": [
+    {
+      "control": [
+        "camera",
+        "access33",
+        "c383e43027594c8cb997a7faae362187"
+      ],
+      "status": "QUALIFIED_PROVISIONAL_OWNED_CBV_ACCESS",
+      "private_report_sha256": "bd4d231c0aa2b5127419959832262eee2f5739aeac1eddc3c2b09682252d8d55",
+      "source_dirty_at_qualification": true
+    },
+    {
+      "control": [
+        "camera",
+        "access33",
+        "native"
+      ],
+      "status": "QUALIFIED_PROVISIONAL_OWNED_NATIVE_RENDER_PASS_REJECTION",
+      "private_report_sha256": "52a81167499f517ed6e60dec85885871a68d829d2cfe2b3618e5940c6f4d9090",
+      "source_dirty_at_qualification": true
+    },
+    {
+      "control": [
+        "predicated",
+        "copy33",
+        "b6b98b711ae5416c846cabb12f1a6fad"
+      ],
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "private_report_sha256": "2ff5dca5b3789dec75124a82bafe0c61d32732b49a95aa81eca0c22596292afe",
+      "source_dirty_at_qualification": "NOT_RECORDED"
+    },
+    {
+      "control": "snapshot-window33",
+      "status": "QUALIFIED_OWNED_SNAPSHOT_WINDOWS",
+      "sha256": {
+        "owned_app.exe": "42c1c3fabc74f215845fd1fe9625afac9a27fd918663c11205b86512d3269581",
+        "renodx-devkit.addon64": "be9fbf0e542e8216c1132eb07e70f4b6fee08a0853d765414d3948664a99ed23",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "selector": "0\n",
+          "records": 4,
+          "ordinals": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "game": "NOT_RUN",
+      "gpu_pixels": "PASS",
+      "asset_files": 0,
+      "initial_two_empty_present_control": "PASS"
+    }
+  ],
+  "owned_ctest": {
+    "Debug": "17/17 PASS",
+    "Release": "17/17 PASS"
+  },
+  "diagnostics": {
+    "known_default_source": "LEGACY_CONSTANT_READ",
+    "entry_count_range_checked": [
+      1,
+      128
+    ],
+    "capacity_exhaustion_reset_control": "PASS",
+    "missing_split_and_partial_range_controls": "PASS"
+  },
+  "native_wrapper": "UNCHANGED_FROM32",
+  "application_predicate": "UNCHANGED",
+  "source_buffer": "READ_ONLY",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "asset_files": 0,
+  "local_debug_layer": "UNAVAILABLE",
+  "limits": [
+    "The new diagnostics identify tracker status, not GPU camera semantics.",
+    "Owned qualification ran with uncommitted diagnostic sources; exact source and binary SHA256 are pinned separately."
+  ]
+}

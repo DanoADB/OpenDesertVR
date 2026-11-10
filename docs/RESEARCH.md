@@ -255,5 +255,12 @@ Before collecting the shared camera-input candidate, the
 [predication32 change](research/g1-camera-predication-method.md) closes a capture
 validity gap: a completed fence alone cannot prove a predicated buffer copy ran.
 The exact new binaries pass owned skip/allow/unbind tests for UPLOAD and DEFAULT
-CBVs; older-wrapper and disabled-metadata controls reject copies. Camera-input
-collection from the game with this configuration is still NOT_RUN.
+CBVs; older-wrapper and disabled-metadata controls reject copies.
+[Two stationary live32 captures](evidence/g1-game-camera-access32-2026-11-10.json)
+now identify 16 static terrain-VS loads in b18/space35, with the last observed
+load ending at byte2720 inside the 2816-byte descriptor. Both attempts reject
+readback as DEFAULT_STATE_UNVERIFIED despite known unbound predication and
+valid draw context. No payload or camera identity is claimed. Observer33 adds
+source-state rejection detail without changing eligibility or capacity, so the
+next capture can distinguish a missing observation from incomplete state or
+tracker exhaustion rather than guessing which happened.

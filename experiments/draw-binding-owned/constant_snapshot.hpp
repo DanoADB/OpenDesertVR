@@ -52,6 +52,8 @@ class ConstantSnapshot final {
     struct SourceInfo {
         const char *state = "INVALID_SOURCE";
         uint32_t heap_type = 0;
+        const char *tracking_state = "NOT_APPLICABLE";
+        std::size_t tracked_resources = 0;
         UINT64 width = 0;
         bool supported = false;
     };
@@ -86,6 +88,8 @@ class ConstantSnapshot final {
     static SourceInfo inspect_default_source(ID3D12Resource *source, UINT64 offset, std::size_t bytes,
                                              const KnownBufferStates &states) {
         auto info = inspect_source(source, offset, bytes);
+        info.tracking_state = states.diagnostic(source);
+        info.tracked_resources = states.tracked_resources();
         info.supported = false;
         if (info.heap_type != D3D12_HEAP_TYPE_DEFAULT) {
             info.state = "HEAP_NOT_DEFAULT";

@@ -61,6 +61,7 @@ int main() {
             // Metadata-only controls; incomplete barriers are not recorded on
             // a native command list. All identities are owned real resources.
             odv::research::KnownBufferStates probe;
+            require(std::strcmp(probe.diagnostic(source.Get()), "NO_CURRENT_RESOURCE_OBSERVATION") == 0);
             D3D12_RESOURCE_BARRIER barrier{};
             barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
             barrier.Transition = {source.Get(), D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, D3D12_RESOURCE_STATE_COPY_DEST,
@@ -68,12 +69,15 @@ int main() {
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
             probe.observe(1, &barrier);
             require(!probe.constant_read_state(source.Get())); // Missing BEGIN.
+            require(std::strcmp(probe.diagnostic(source.Get()), "RANGE_OR_TRANSITION_UNVERIFIED") == 0);
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
             probe.observe(1, &barrier);
             require(probe.constant_read_state(source.Get()).has_value());
+            require(std::strcmp(probe.diagnostic(source.Get()), "LEGACY_CONSTANT_READ") == 0);
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_BEGIN_ONLY;
             probe.observe(1, &barrier);
             require(!probe.constant_read_state(source.Get()));
+            require(std::strcmp(probe.diagnostic(source.Get()), "SPLIT_INCOMPLETE") == 0);
             barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
             barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
             probe.observe(1, &barrier);
@@ -95,6 +99,27 @@ int main() {
             barrier.Aliasing = {nullptr, nullptr};
             probe.observe(1, &barrier);
             require(!probe.constant_read_state(source.Get()));
+        }
+        {
+            // Exhaustion must stay distinguishable from a missing observation,
+            // and cannot recover copy proof until the recording resets.
+            odv::research::KnownBufferStates probe;
+            std::array<Com<ID3D12Resource>, 129> resources;
+            for (auto &resource : resources) {
+                resource = buffer(D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_COMMON);
+                D3D12_RESOURCE_BARRIER b{};
+                b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+                b.Transition = {resource.Get(), 0, D3D12_RESOURCE_STATE_COMMON,
+                                D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER};
+                probe.observe(1, &b); // Metadata only; no native transition.
+            }
+            require(std::strcmp(probe.diagnostic(resources.front().Get()), "CAPACITY_EXHAUSTED") == 0);
+            require(probe.tracked_resources() == 0);
+            require(!probe.constant_read_state(resources.back().Get()));
+            probe.invalidate_all();
+            require(std::strcmp(probe.diagnostic(source.Get()), "CAPACITY_EXHAUSTED") == 0);
+            probe.reset();
+            require(std::strcmp(probe.diagnostic(source.Get()), "NO_CURRENT_RESOURCE_OBSERVATION") == 0);
         }
         std::array<float, 16> initial{}, expected{};
         for (unsigned i = 0; i < expected.size(); ++i) {

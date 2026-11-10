@@ -64,4 +64,13 @@ constant samples, with original rendering untouched. Inspect vertex-stage
 load bounds before assigning any camera field meaning. GPU readback completion
 does not establish the engine's CPU camera publication contract, writer
 ownership, whole-world coverage, stereo history or additional world rendering.
-Live32 capture, game stereo, head tracking and game OpenXR delivery are NOT_RUN.
+[Live32](../evidence/g1-game-camera-access32-2026-11-10.json) now has two
+stationary scene captures. The vertex stage declares2768 bytes and has16 static
+loads at rows2,8,18–21,30–33,167,169, ending at byte2720. This is bounded load
+metadata, not an assignment of camera semantics. The descriptor is2816 bytes
+in a65536-byte DEFAULT allocation. Both recordings have known unbound
+predication and no render-pass block, but the separate source-state gate
+rejects readback as DEFAULT_STATE_UNVERIFIED. No source words were exported.
+Observer33 exposes the tracker's current rejection category and entry count;
+it does not increase capacity, infer states from CBV binding, or change copy
+eligibility. Game stereo, head tracking and game OpenXR delivery remain NOT_RUN.
