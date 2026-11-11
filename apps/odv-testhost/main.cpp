@@ -7,13 +7,19 @@
 int main(int argc, char **argv) {
     try {
         std::string config_path, output = "headset-report.json", stream_channel, stream_file;
+        bool depth_preview = false;
         for (int i = 1; i < argc; ++i) {
             std::string arg = argv[i];
             if (arg == "--help") {
                 std::cout << "odv-testhost [--config config.json] [--report headset-report.json]\nDefault duration: 60 "
                              "seconds. Ctrl+C requests orderly exit.\n"
-                             "Stereo images: --stereo-stream CHANNEL or --stereo-stream-file FILE.\n";
+                             "Stereo images: --stereo-stream CHANNEL or --stereo-stream-file FILE.\n"
+                             "Owned scene through depth reconstruction and transport: --depth-preview\n";
                 return 0;
+            }
+            if (arg == "--depth-preview") {
+                depth_preview = true;
+                continue;
             }
             if ((arg == "--config" || arg == "--report" || arg == "--stereo-stream" || arg == "--stereo-stream-file") &&
                 i + 1 < argc) {
@@ -33,6 +39,8 @@ int main(int argc, char **argv) {
             }
         }
         const auto config = odv::load_config(config_path);
+        if (depth_preview && (!stream_channel.empty() || !stream_file.empty()))
+            throw odv::Failure(odv::ErrorCode::configuration, "Choose preview or external stream");
         if (!stream_file.empty()) {
             if (!stream_channel.empty())
                 throw odv::Failure(odv::ErrorCode::configuration, "Choose one stereo stream source");
@@ -48,11 +56,15 @@ int main(int argc, char **argv) {
             if (stream_channel.empty())
                 throw odv::Failure(odv::ErrorCode::configuration, "Stereo channel file did not become ready");
         }
-        if (stream_channel.empty())
+        if (depth_preview)
+            std::cout << "Owned courtyard: depth-reconstructed stereo, static camera, no game source or game head "
+                         "tracking.\n";
+        else if (stream_channel.empty())
             std::cout << "Synthetic stereo test only. Red: 1 m, green: 3 m, blue: 8 m. LOCAL eye-height origin.\n";
         else
             std::cout << "Static stereo image stream. Source camera validity and game head tracking are unverified.\n";
-        auto report = stream_channel.empty()
+        auto report = depth_preview ? odv::xr::run_depth_preview(config)
+                      : stream_channel.empty()
                           ? odv::xr::run(config)
                           : odv::xr::run_stream(config, std::wstring(stream_channel.begin(), stream_channel.end()));
         std::ofstream file(output);

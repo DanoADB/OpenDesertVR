@@ -21,6 +21,14 @@ One free, local-first launcher for compatible PC games that selects honest, evid
 
 ## Roadmap and gates
 
+Offline stream progress (2026-11-11): the app now defaults to an owned courtyard
+with matched color/linear depth, GPU stereo reconstruction, image-pair transport
+and OpenXR. It is explicitly reconstructed stereo with a static camera, and
+does not launch the game. The original tracked cubes remain selectable. Local
+pixel and mock-runtime tests cover this path; game capture/native stereo and
+this build's headset acceptance remain unverified. See the
+[preview contract](research/depth-stereo-preview.md).
+
 Delivery progress (2026-11-10): the optional desktop/CLI receiver now accepts a
 cross-process D3D12 left/right image stream and submits it through OpenXR.
 Owned pixel tests and mock-runtime checks cover the delivery path. There is no

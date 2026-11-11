@@ -6,6 +6,11 @@ Crimson Desert showcase. It does **not** capture the game or create its missing
 second camera view. Crimson Desert stereo and headset acceptance of this new
 path remain unverified.
 
+The current app also includes an [owned depth stereo preview](depth-stereo-preview.md)
+as its default mode. It creates reconstructed eye images from an original scene,
+without opening the game. Transport version 2 labels reconstruction explicitly;
+version 1 senders/receivers are incompatible with this version.
+
 ## Run
 
 A producer creates `odv::d3d::StereoPublisher` on its direct queue and supplies

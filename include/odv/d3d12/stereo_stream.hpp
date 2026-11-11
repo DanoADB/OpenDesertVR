@@ -8,6 +8,7 @@ namespace odv::d3d {
 // Transport origin is a label, never evidence that a game adapter is validated.
 enum class StreamOrigin : UINT { owned_geometry = 1, game_candidate = 2 };
 enum class StreamColor : UINT { linear = 1, srgb = 2 };
+enum class StereoTechnique : UINT { independent_images = 1, depth_reconstructed = 2 };
 struct StreamDescription {
     UINT width{}, height{};
     DXGI_FORMAT format{};
@@ -15,6 +16,7 @@ struct StreamDescription {
     DWORD producer_pid{};
     StreamOrigin origin{};
     StreamColor color{};
+    StereoTechnique technique{};
 };
 struct FrameStamp {
     UINT64 left_source_frame{}, right_source_frame{};
@@ -27,15 +29,16 @@ struct StereoReadFrame {
 enum class PublishResult { published, busy };
 
 // Local, same-adapter, two-slot image-pair transport. It does not manufacture
-// stereo or capture the desktop. The producer supplies independently generated
-// eye textures; proving their game-camera provenance is a separate adapter test.
+// stereo or capture the desktop. The producer supplies eye textures and labels
+// their technique; proving game-camera provenance is a separate adapter test.
 class StereoPublisher {
     struct Impl;
     std::unique_ptr<Impl> impl_;
 
   public:
     StereoPublisher(ID3D12CommandQueue *queue, UINT width, UINT height, StreamOrigin origin,
-                    StreamColor color = StreamColor::linear);
+                    StreamColor color = StreamColor::linear,
+                    StereoTechnique technique = StereoTechnique::independent_images);
     ~StereoPublisher();
     StereoPublisher(const StereoPublisher &) = delete;
     StereoPublisher &operator=(const StereoPublisher &) = delete;

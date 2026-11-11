@@ -15,7 +15,11 @@ Crimson Desert. Game adapter capabilities stay Unsupported/Unverified.
 ## Test from the Windows app
 
 Extract the complete portable ZIP and double-click **OpenDesertVR.exe**.
-Connect Quest Link, then choose **Check readiness** or **Start 60-second test**.
+Connect your usual PCVR/OpenXR setup, then choose **Check readiness** or **Start 60-second test**.
+The default **Offline depth stereo - owned courtyard** mode reconstructs left/right
+images from an original scene's matched color/depth and streams them to OpenXR.
+It has a static source camera and no head tracking; thin black disocclusion gaps
+may appear. Select **Original tracked cube calibration** for the earlier tracked test.
 **Stop** requests an orderly exit. After the test, tick the visual checks you
 personally completed, add optional notes, and select **Save observations**.
 **Open reports** opens the current run folder. No terminal, Python or PowerShell
@@ -25,7 +29,9 @@ Each operation creates a fresh folder under `reports`; if the package folder is
 not writable, reports go to `%LOCALAPPDATA%/OpenDesertVR/reports`.
 Technical results and your observations are separate. Unchecked visual checks
 stay NOT_RUN. The app clearly labels simulated runtimes and disables saving
-headset observations for them. This tests the standalone cubes, not the game.
+headset observations for them. This tests owned content and never opens the game.
+The new preview still needs its own headset acceptance. See the
+[reconstruction contract and tests](docs/research/depth-stereo-preview.md).
 
 ## Build and test
 

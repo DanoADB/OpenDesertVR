@@ -24,6 +24,9 @@ class Renderer {
     Com<ID3D12RootSignature> texture_root_;
     Com<ID3D12PipelineState> texture_pipeline_;
     Com<ID3D12DescriptorHeap> texture_srv_;
+    Com<ID3D12RootSignature> depth_image_root_;
+    Com<ID3D12PipelineState> depth_image_pipeline_;
+    Com<ID3D12DescriptorHeap> depth_image_srv_;
     DXGI_FORMAT texture_format_{};
     Com<ID3D12DescriptorHeap> rtv_, dsv_;
     Com<ID3D12Resource> upload_, depth_;
@@ -34,6 +37,7 @@ class Renderer {
     UINT width_{}, height_{};
     UINT64 serial_{};
     HANDLE event_{};
+    void ensure_depth(UINT width, UINT height);
 
   public:
     ~Renderer();
@@ -45,6 +49,12 @@ class Renderer {
     // remains RENDER_TARGET, as required by the OpenXR D3D12 graphics binding.
     void render_texture(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height, ID3D12Resource *source,
                         bool source_srgb = false);
+    // Rectified, parallel-eye reconstruction from matched RGBA8 color and R32
+    // positive axial depth in metres. Inputs arrive/leave COMMON, output stays
+    // RENDER_TARGET. No raw hardware depth, hole invention or game camera claim.
+    void render_depth_eye(ID3D12Resource *target, ID3D12Resource *color, ID3D12Resource *linear_depth,
+                          float focal_x_pixels, float eye_offset_m, float near_z, float far_z, UINT64 color_frame,
+                          UINT64 depth_frame, UINT64 projection_frame);
     void sync();
     ID3D12Device *device() const { return device_.Get(); }
     ID3D12CommandQueue *queue() const { return queue_.Get(); }

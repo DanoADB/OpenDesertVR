@@ -30,7 +30,7 @@ if(WIN32)
   set(DYNAMIC_LOADER ON CACHE BOOL "" FORCE)
   FetchContent_Declare(openxr URL https://codeload.github.com/KhronosGroup/OpenXR-SDK/zip/781f2eab3698d653c804ecbd11e0aed47eaad1c6 URL_HASH SHA256=91b35885bcf4e7cc22696c87dafae02b033d1df98a120b1a910912c520350267)
   FetchContent_MakeAvailable(openxr)
-  add_library(odv_d3d12 STATIC src/d3d12/renderer.cpp src/d3d12/stereo_stream.cpp)
+  add_library(odv_d3d12 STATIC src/d3d12/renderer.cpp src/d3d12/stereo_stream.cpp src/d3d12/depth_stereo.cpp src/d3d12/depth_preview.cpp)
   target_link_libraries(odv_d3d12 PUBLIC odv_core odv_stereo d3d12 dxgi d3dcompiler)
   add_library(odv_openxr STATIC src/openxr/host.cpp)
   target_link_libraries(odv_openxr PUBLIC odv_d3d12 OpenXR::openxr_loader)
@@ -83,6 +83,12 @@ if(BUILD_TESTING)
     set_tests_properties(odv_stereo_stream_warp PROPERTIES TIMEOUT 30)
     add_test(NAME odv_stereo_stream_validation COMMAND odv_stereo_stream_tests --debug-layer)
     set_tests_properties(odv_stereo_stream_validation PROPERTIES TIMEOUT 30 SKIP_RETURN_CODE 77)
+    add_executable(odv_depth_stereo_tests tests/depth_stereo_tests.cpp)
+    target_link_libraries(odv_depth_stereo_tests PRIVATE odv_d3d12)
+    add_test(NAME odv_depth_stereo_warp COMMAND odv_depth_stereo_tests)
+    add_test(NAME odv_depth_stereo_validation COMMAND odv_depth_stereo_tests --debug-layer)
+    set_tests_properties(odv_depth_stereo_warp PROPERTIES TIMEOUT 30)
+    set_tests_properties(odv_depth_stereo_validation PROPERTIES TIMEOUT 30 SKIP_RETURN_CODE 77)
     add_test(NAME odv_graphics_validation COMMAND odv_graphics_tests --debug-layer)
     set_tests_properties(odv_graphics_validation PROPERTIES TIMEOUT 60 SKIP_RETURN_CODE 77)
     set_tests_properties(odv_graphics_warp PROPERTIES TIMEOUT 60)
@@ -97,6 +103,10 @@ if(BUILD_TESTING)
       -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
       -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/stream.cmake)
     set_tests_properties(odv_xr_stereo_stream PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
+    add_test(NAME odv_xr_depth_preview COMMAND ${CMAKE_COMMAND}
+      -DHOST=$<TARGET_FILE:odv-testhost> -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/depth_preview.cmake)
+    set_tests_properties(odv_xr_depth_preview PROPERTIES TIMEOUT 45 LABELS "mock-runtime")
     add_executable(odv_stop_tests tests/stop_tests.cpp)
     target_link_libraries(odv_stop_tests PRIVATE odv_openxr)
     add_test(NAME odv_xr_cooperative_stop COMMAND ${CMAKE_COMMAND}
@@ -104,6 +114,10 @@ if(BUILD_TESTING)
       -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
       -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/stop.cmake)
     set_tests_properties(odv_xr_cooperative_stop PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
+    add_test(NAME odv_xr_depth_preview_stop COMMAND ${CMAKE_COMMAND}
+      -DHOST=$<TARGET_FILE:odv_stop_tests> -DMANIFEST=${CMAKE_CURRENT_BINARY_DIR}/mock-runtime-$<CONFIG>.json
+      -DPREVIEW=ON -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/mock_runtime/stop.cmake)
+    set_tests_properties(odv_xr_depth_preview_stop PROPERTIES TIMEOUT 20 LABELS "mock-runtime")
     foreach(scenario normal request_exit skip_render invalid_tracking all_skip wait_timeout
         session_loss instance_loss missing_headset missing_extension wrong_adapter allocation_failure
         acquire_failure wait_failure release_failure second_acquire_failure second_wait_failure

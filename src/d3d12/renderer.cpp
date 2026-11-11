@@ -147,9 +147,7 @@ void Renderer::sync() {
         hr(device_->GetDeviceRemovedReason(), "GPU completion");
     }
 }
-void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height,
-                      const std::vector<stereo::Vertex> &vertices) {
-    sync();
+void Renderer::ensure_depth(UINT width, UINT height) {
     if (!depth_ || width != width_ || height != height_) {
         depth_.Reset();
         width_ = width;
@@ -172,6 +170,11 @@ void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UI
                                             &clear, IID_PPV_ARGS(&depth_)),
            "depth allocation");
     }
+}
+void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height,
+                      const std::vector<stereo::Vertex> &vertices) {
+    sync();
+    ensure_depth(width, height);
     const size_t size = vertices.size() * sizeof(stereo::Vertex);
     if (size > 65536)
         throw Failure(ErrorCode::allocation, "vertex upload capacity exceeded");

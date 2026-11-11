@@ -22,6 +22,11 @@ tests use process environment overrides from a non-elevated shell.
 See m0-hardening-2026-11-04.json for the linked successful Debug/Release run.
 No software test artifact is evidence of a real headset or game render.
 
+Owned depth stream (2026-11-11):
+[GPU reconstruction, stream delivery and desktop verification](owned-depth-stream-2026-11-11.json).
+The app defaults to an original courtyard, without launching the game. This is
+depth reconstruction; native game stereo and headset acceptance remain unverified.
+
 Owned stereo image delivery (2026-11-10):
 [cross-process pixels and mock OpenXR](stereo-image-stream-2026-11-10.json).
 The optional desktop/CLI stream receiver is implemented; a validated game

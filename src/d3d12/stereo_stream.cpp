@@ -8,7 +8,7 @@
 
 namespace odv::d3d {
 namespace {
-constexpr UINT magic = 0x5356444f, version = 1, slot_count = 2;
+constexpr UINT magic = 0x5356444f, version = 2, slot_count = 2;
 enum class SlotState : UINT { free, published, reading, faulted };
 struct SlotMetadata {
     UINT64 sequence{};
@@ -95,6 +95,8 @@ void validate(const SharedHeader &h) {
                 h.description.height <= 8192 && h.description.format == DXGI_FORMAT_R8G8B8A8_UNORM &&
                 h.description.producer_pid != 0 &&
                 (h.description.color == StreamColor::linear || h.description.color == StreamColor::srgb) &&
+                (h.description.technique == StereoTechnique::independent_images ||
+                 h.description.technique == StereoTechnique::depth_reconstructed) &&
                 (h.description.origin == StreamOrigin::owned_geometry ||
                  h.description.origin == StreamOrigin::game_candidate),
             "Invalid stereo stream descriptor");
@@ -165,12 +167,15 @@ struct StereoPublisher::Impl {
     StreamDescription description{};
     UINT64 sequence{}, drops{};
     bool faulted{};
-    Impl(ID3D12CommandQueue *q, UINT width, UINT height, StreamOrigin origin, StreamColor color)
+    Impl(ID3D12CommandQueue *q, UINT width, UINT height, StreamOrigin origin, StreamColor color,
+         StereoTechnique technique)
         : device(queue_device(q)), queue(q) {
         require(width && width <= 8192 && height && height <= 8192, "Invalid stereo dimensions");
         require(origin == StreamOrigin::owned_geometry || origin == StreamOrigin::game_candidate,
                 "Invalid stereo origin");
         require(color == StreamColor::linear || color == StreamColor::srgb, "Invalid stereo color encoding");
+        require(technique == StereoTechnique::independent_images || technique == StereoTechnique::depth_reconstructed,
+                "Invalid stereo technique");
         LARGE_INTEGER counter{};
         QueryPerformanceCounter(&counter);
         channel =
@@ -209,7 +214,8 @@ struct StereoPublisher::Impl {
         require(lock.locked, "Stereo initialization lock unavailable");
         auto &h = *mapping->header;
         h = {};
-        description = {width, height, desc.Format, device->GetAdapterLuid(), GetCurrentProcessId(), origin, color};
+        description = {width,  height, desc.Format, device->GetAdapterLuid(), GetCurrentProcessId(),
+                       origin, color,  technique};
         h.description = description;
         h.revision = version;
         h.bytes = sizeof(SharedHeader);
@@ -248,8 +254,9 @@ struct StereoPublisher::Impl {
         }
     }
 };
-StereoPublisher::StereoPublisher(ID3D12CommandQueue *q, UINT w, UINT h, StreamOrigin origin, StreamColor color)
-    : impl_(std::make_unique<Impl>(q, w, h, origin, color)) {}
+StereoPublisher::StereoPublisher(ID3D12CommandQueue *q, UINT w, UINT h, StreamOrigin origin, StreamColor color,
+                                 StereoTechnique technique)
+    : impl_(std::make_unique<Impl>(q, w, h, origin, color, technique)) {}
 StereoPublisher::~StereoPublisher() = default;
 const std::wstring &StereoPublisher::channel() const { return impl_->channel; }
 UINT64 StereoPublisher::dropped_pairs() const { return impl_->drops; }
@@ -283,14 +290,24 @@ PublishResult StereoPublisher::publish(ID3D12Resource *left, ID3D12Resource *rig
             "Stereo descriptor changed");
     const auto ready = completed(p.ready.Get()), released = completed(p.released.Get());
     UINT selected = slot_count;
+    UINT64 oldest = UINT64_MAX;
     for (UINT i = 0; i < slot_count; ++i) {
         const auto &metadata = header.frames[i];
         const bool available = metadata.state == SlotState::free ||
                                (metadata.state == SlotState::published && ready >= metadata.sequence) ||
                                (metadata.state == SlotState::reading && released >= metadata.sequence);
         if (available && ready >= p.slots[i].last_copy) {
-            selected = i;
-            break;
+            // Preserve another completed publication while this copy is pending.
+            // Always overwriting slot zero can starve a reader that polls right
+            // after each publish, even though the GPU is keeping up.
+            if (metadata.state != SlotState::published) {
+                selected = i;
+                break;
+            }
+            if (metadata.sequence < oldest) {
+                selected = i;
+                oldest = metadata.sequence;
+            }
         }
     }
     if (selected == slot_count) {

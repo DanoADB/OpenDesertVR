@@ -5,7 +5,8 @@
 #include <iostream>
 #include <thread>
 int main(int argc, char **argv) {
-    if (argc != 2)
+    const bool preview = argc == 3 && std::string_view(argv[2]) == "--depth-preview";
+    if (argc != 2 && !preview)
         return 2;
     const auto start = std::chrono::steady_clock::now();
     std::stop_source source;
@@ -15,7 +16,8 @@ int main(int argc, char **argv) {
     });
     odv::Config config;
     config.duration_seconds = 60;
-    auto report = odv::xr::run(config, source.get_token());
+    auto report =
+        preview ? odv::xr::run_depth_preview(config, source.get_token()) : odv::xr::run(config, source.get_token());
     std::ofstream file(argv[1]);
     file << report.dump(2);
     if (!file || !source.stop_requested() || !report.value("test_runtime", false) ||

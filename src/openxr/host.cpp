@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "odv/openxr/host.hpp"
 #include "odv/core/metrics.hpp"
+#include "odv/d3d12/depth_preview.hpp"
 #include "odv/d3d12/renderer.hpp"
 #include "odv/d3d12/stereo_stream.hpp"
 #include "odv/openxr/lifecycle.hpp"
@@ -52,6 +53,8 @@ class Host final : public IXrFrame {
     };
     std::array<Eye, 2> eyes;
     d3d::Renderer graphics;
+    bool owned_preview{};
+    std::unique_ptr<d3d::DepthPreview> preview;
     std::wstring stream_channel;
     std::unique_ptr<d3d::StereoReceiver> stream;
     std::optional<d3d::StereoReadFrame> stream_frame;
@@ -136,6 +139,10 @@ class Host final : public IXrFrame {
         if (!create_session) {
             checks.push_back(check("session_rendering", "NOT_RUN", "doctor does not create a presentation session"));
             return;
+        }
+        if (owned_preview) {
+            preview = std::make_unique<d3d::DepthPreview>(graphics);
+            stream_channel = preview->channel();
         }
         if (!stream_channel.empty()) {
             stream = std::make_unique<d3d::StereoReceiver>(graphics.queue(), stream_channel);
@@ -288,6 +295,11 @@ class Host final : public IXrFrame {
                 if (stream_frame)
                     ++received_pairs;
             }
+            // Consume the previous completed publication before replacing the
+            // unleased slot. Publishing first would repeatedly hide that pair
+            // behind a newly pending copy when producer and reader share a loop.
+            if (preview)
+                preview->publish();
             return stream_frame.has_value(); // No synthetic fallback for a missing image pair.
         }
         return true;
@@ -452,12 +464,14 @@ Json doctor() {
     }
     return report;
 }
-static Json run_host(const Config &config, std::stop_token stop, const std::wstring &channel) {
+static Json run_host(const Config &config, std::stop_token stop, const std::wstring &channel,
+                     bool owned_preview = false) {
     auto report = empty_report();
     Host host;
     host.config = config;
     host.stop = stop;
     host.stream_channel = channel;
+    host.owned_preview = owned_preview;
     interrupted = false;
     SetConsoleCtrlHandler(control, TRUE);
     try {
@@ -514,7 +528,7 @@ static Json run_host(const Config &config, std::stop_token stop, const std::wstr
     report["timing_scope"] = "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, "
                              "excludes compositor/display latency";
     report["reprojection_metrics"] = "NOT_RUN";
-    if (!channel.empty()) {
+    if (!channel.empty() || owned_preview) {
         report["presentation_mode"] = "STATIC_STEREO_IMAGE_STREAM";
         report["source_pairs_received"] = host.received_pairs;
         report["stream_origin"] =
@@ -523,10 +537,16 @@ static Json run_host(const Config &config, std::stop_token stop, const std::wstr
                         : "UNAVAILABLE";
         report["game_camera_tracking"] = "NOT_RUN";
         report["game_stereo"] = "UNVERIFIED";
+        report["stereo_technique"] = !host.stream ? "UNAVAILABLE"
+                                     : host.stream->description().technique == d3d::StereoTechnique::depth_reconstructed
+                                         ? "DEPTH_RECONSTRUCTED"
+                                         : "PRODUCER_SUPPLIED_EYES";
+        report["owned_depth_preview"] = owned_preview;
     }
     return report;
 }
 Json run(const Config &config, std::stop_token stop) { return run_host(config, stop, {}); }
+Json run_depth_preview(const Config &config, std::stop_token stop) { return run_host(config, stop, {}, true); }
 Json run_stream(const Config &config, const std::wstring &channel, std::stop_token stop) {
     if (channel.empty())
         throw Failure(ErrorCode::configuration, "Stereo stream channel required");
