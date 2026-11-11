@@ -72,6 +72,7 @@ with tempfile.TemporaryDirectory() as temporary:
             if run.returncode:
                 raise RuntimeError("owned camera-field GPU qualification failed: " + model + ": " +
                                    run.stderr.decode(errors="replace"))
+            print(run.stdout.decode(errors="replace"), end="")
             print("PASS: camera-field row21.x " + model + " " + ("stream" if "--stream" in extra else "legacy") +
                   "; identity/left/right/restoration pixels and original2816-byte input unchanged")
         if field_hashes != [hashlib.sha256(p.read_bytes()).hexdigest() for p in (vs, ps)]:
