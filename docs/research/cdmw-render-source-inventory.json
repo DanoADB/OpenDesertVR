@@ -1,0 +1,134 @@
+{
+  "game_shader_payload_retained": false,
+  "schema_version": 1,
+  "code_adopted": true,
+  "scope": "Selected static review, adapted bounded metadata/PASC readers, and SHA-pinned execution of five pure filename-format routines in the optional technique contract experiment. No upstream application imports or full parser execution. Runtime camera capabilities remain unverified.",
+  "root_license": "MIT",
+  "files": [
+    {
+      "sha256": "557e4c4af360db6d9190c5e0f989fb41243ae950cd66713300025ccdaf31978a",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/LICENSE",
+      "path": "LICENSE"
+    },
+    {
+      "sha256": "87a1dd7f97cff0c4c563dd8ccc374de230ec181c71811c6f184f24b1ee190758",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/README.md",
+      "path": "README.md"
+    },
+    {
+      "sha256": "317292de41f3b1840d30e9e144b6b21c39b2bc19aa245f46fd2a2a502691694a",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/docs/crimson-desert-research.md",
+      "path": "docs/crimson-desert-research.md"
+    },
+    {
+      "sha256": "aa06decc0f35b5ffb75886bb297a9b206fc177741d1e40ea22102a2d15ce5984",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/run_crimson_renderdoc_hotkey_capture.py",
+      "path": "tools/run_crimson_renderdoc_hotkey_capture.py"
+    },
+    {
+      "sha256": "2bdfb26b18be45915b8621ec43fb6af9207b15cbc1c000a146190873f2e1d5ab",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/trigger_renderdoc_capture_api.py",
+      "path": "tools/trigger_renderdoc_capture_api.py"
+    },
+    {
+      "sha256": "d97b19364d662355a6017d8a80b8479e7ce85d5038d0781e4a2840b4ece5a56c",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/analyze_renderdoc_capture_xml.py",
+      "path": "tools/analyze_renderdoc_capture_xml.py"
+    },
+    {
+      "sha256": "9babf390235a31f512cefe578883e7f639e12ae4b53b4c40ea63e256bad1fe30",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/capture_crimson_renderdoc_frame.py",
+      "path": "tools/capture_crimson_renderdoc_frame.py"
+    },
+    {
+      "sha256": "ef8ef0517cfaab816379fb6173df552e9391ebf169171ef2581d481ddfbb8d37",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/rendering/ingame_capture.py",
+      "path": "cdmw/rendering/ingame_capture.py"
+    },
+    {
+      "sha256": "bc33585340a91c69ff45d58fd1b817173b7af62f9304e32d6412bf1f21f4f709",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md",
+      "path": "cdmw/ui/mesh_editor/EYECOVER_OVERLAP.md"
+    },
+    {
+      "path": "cdmw/core/archive_shader_preview.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_shader_preview.py",
+      "sha256": "5d3f8821c34b2071fa6ff2e80b22585642866230662656e8b75d5eb975a2bebe"
+    },
+    {
+      "path": "tools/pac_shader_consumer_study.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tools/pac_shader_consumer_study.py",
+      "sha256": "4e846999ea4e23160cc8fa46218fcf44c1bec31f74bfbda69a044b41e19041bd"
+    },
+    {
+      "path": "cdmw/core/archive_format.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_format.py",
+      "sha256": "507a2e252b45abd30205a770a8256b2906ddb333ce852026ac5ad1f5d676d990"
+    },
+    {
+      "path": "cdmw/core/archive_extraction.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/archive_extraction.py",
+      "sha256": "23e04bc733e1d1566179a23a86ee977365c7ff37fe4a275a0c9b5f33d383b53f"
+    },
+    {
+      "sha256": "5bf4b99dc015e98eaf0a373ef4fe8c80a3934f5686b2449eea009a8d1bce6459",
+      "path": "cdmw/models.py",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/models.py"
+    },
+    {
+      "path": "cdmw/core/prefab_binary.py",
+      "sha256": "147b132b531aff27cd316fec9c9e56d218fe02c102d3bbc04d27c18fcdb04b04",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/prefab_binary.py"
+    },
+    {
+      "path": "schemas/archive_content_capabilities.v1.json",
+      "sha256": "094725be82ef5d669349f01302084e46b54e154e5877cbc0a8776a643cab58b9",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/schemas/archive_content_capabilities.v1.json"
+    },
+    {
+      "path": "tests/test_archive_format_inspectors.py",
+      "sha256": "5c3a709bbb5c6f0db97e960e5769ef5540ff7c30cfda0901e8f82c7f1235e59d",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/tests/test_archive_format_inspectors.py"
+    },
+    {
+      "path": "cdmw/ui/archive_browser/README.md",
+      "sha256": "e44724c950dc6501902f080c6a3ecbc59b2c349ae83bca9e1e1ae29c319b7918",
+      "url": "https://github.com/Ratty123/CDMW-Full/blob/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/ui/archive_browser/README.md"
+    },
+    {
+      "path": "cdmw/core/upscale_profiles.py",
+      "sha256": "23e8aa8a4f334f68d0730a2d499af9769b6c2c1a266ac5a7da558d04bbb7cc1e",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/core/upscale_profiles.py"
+    },
+    {
+      "path": "cdmw/rendering/material_channels.py",
+      "sha256": "bb78e8c8769c836760d7f0d20a294fc6d3574109005f576dba806b7a08fdf603",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/cdmw/rendering/material_channels.py"
+    },
+    {
+      "path": "native/cdmw_preview_core/src/owners/material_graph.cpp",
+      "sha256": "f79642b46d9b7ef9353b98aec39ab70b8fffaca0adc30922109844b6ce561c21",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/native/cdmw_preview_core/src/owners/material_graph.cpp"
+    },
+    {
+      "path": "native/cdmw_preview_core/src/owners/material_semantics.cpp",
+      "sha256": "1d920193301341ef0160f0b01b4e5f32eba7d7e5eaad959cb1efb41e1e21fb03",
+      "url": "https://raw.githubusercontent.com/Ratty123/CDMW-Full/0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b/native/cdmw_preview_core/src/owners/material_semantics.cpp"
+    }
+  ],
+  "date": "2026-11-06",
+  "dependencies_adopted": true,
+  "execution": "SELECTED_PURE_FORMAT_ROUTINES_ONLY",
+  "revision": "0dfc3b18f8fcf6fdfe087060dd0f0f4cdb25ca6b",
+  "root_copyright": "Copyright (c) 2026 Ratrider",
+  "repository": "https://github.com/Ratty123/CDMW-Full",
+  "selected_header_layout_used": true,
+  "layout_destination": "experiments/shader-consumer-audit: original bounded metadata/PASC readers and technique_contract.py; the latter executes only five reviewed pure functions from the pinned archive_format.py, using existing optional local codecs.",
+  "license_notice": "docs/licenses/CDMW-MIT.txt",
+  "application_execution": "NOT_RUN",
+  "optional_local_codec_versions": {
+    "cryptography": "50.0.2",
+    "lz4": "4.4.5"
+  },
+  "dependency_scope": "Optional research recipe only: uses existing local cryptography/lz4. No M0 or CI dependency change."
+}

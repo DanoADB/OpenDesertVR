@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_GAME_SHADER_DECLARATION_CANDIDATE_ACCESS_UNQUALIFIED",
+  "observer_version": "bc0ead3-cbv-access-16",
+  "source_commit": "4ea32d6",
+  "scene": "WORLD_STATIC",
+  "scene_observation": "Desktop screenshot confirms loaded third-person 3D world after automated Play selection.",
+  "retained_records": 5,
+  "detail_records": 4,
+  "draw_shader_observations": [
+    {
+      "draw_index": 1,
+      "role": 0,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 25212,
+          "shaderHash": "0x87BF0C9A",
+          "slot": 17,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 15916,
+          "shaderHash": "0x344CE166",
+          "slot": 17,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        }
+      ]
+    },
+    {
+      "draw_index": 2,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 21588,
+          "shaderHash": "0xF25B25BC",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        }
+      ]
+    },
+    {
+      "draw_index": 3,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 22580,
+          "shaderHash": "0xEF095A1B",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        }
+      ]
+    },
+    {
+      "draw_index": 4,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 0,
+          "maximumByteEnd": 0,
+          "rows": [],
+          "shaderBytes": 21584,
+          "shaderHash": "0xBA2D6B67",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "CBV_DECLARATION_FORMAT"
+        }
+      ]
+    }
+  ],
+  "private_evidence_sha256": {
+    "details.private.json": "36703b497963deb47b8c096cad70702eadea735a887b5eb6dc4ffedcf28ed8dd",
+    "draws.private.json": "e7e4532bb91e403cb6e29dc5b44c37dc7865380639c0a055961afc8e450efb9b",
+    "report.json": "144a21eb7f52961bbd9ad29e70e03e848ec148e13b6dedaac6fe9aa0dae1b9c3"
+  },
+  "cleanup": "PASS",
+  "world_camera_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "limits": [
+    "Target declaration encountered as one descriptor with2768 bytes in both shader stages. Later CBV_DECLARATION_FORMAT rejection prevents complete declaration uniqueness and access-envelope qualification.",
+    "The exact unsupported declaration is not established by observer16 output. Signed signless-i32 representations and unrelated dynamic handles are separately reproduced with owned SDK fixtures; game cause remains unverified until corrected observer runs.",
+    "No shader bytes, names or instruction text exported. No private game binding or source modification enabled."
+  ],
+  "cleanup_postflight": {
+    "status": "PASS",
+    "game_identity_unchanged": true,
+    "created_files_removed": [
+      "dxgi.dll",
+      "ReShade.ini"
+    ],
+    "devkit_asset_files": 0,
+    "private_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  }
+}

@@ -1,0 +1,19 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -5128,6 +5128,7 @@
+                   continue;
+                 }
+                 if (draw_method != DrawDetails::DrawMethods::DISPATCH
++                    && range.type != reshade::api::descriptor_type::constant_buffer
+                     && !renodx::utils::bitwise::HasFlag(range.visibility, reshade::api::shader_stage::pixel)) {
+                   continue;
+                 }
+@@ -5178,7 +5179,7 @@
+                 const bool is_vulkan = device->get_api() == reshade::api::device_api::vulkan;
+                 const uint32_t range_slot = is_vulkan ? range.binding : range.dx_register_index;
+                 const uint32_t range_space = is_vulkan ? param_index : range.dx_register_space;
+-                if (has_reflected_resource_binds) {
++                if (has_reflected_resource_binds && range_bind_type != ResourceBind::BindType::CBV) {
+                   candidate_slots.reserve(draw_details.resource_binds->size());
+                   for (const auto& bind : *draw_details.resource_binds) {
+                     if (bind.type != range_bind_type) continue;

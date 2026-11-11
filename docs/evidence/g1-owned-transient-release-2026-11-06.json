@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "QUALIFIED_OWNED_TRANSIENT_RELEASE",
+  "observer_version": "bc0ead3-deferred-release-9",
+  "observer_sha256": "268c5edd732603031f569382d5761f4138a318997b64c7d10e00e42ef0e9fc83",
+  "before": {
+    "observer_version": "bc0ead3-command-provenance-8",
+    "report_sha256": "58ccf0e6d65ca0cb40b240042f22523c722d694b161759b3a0df49925950061c",
+    "status": "FAILED",
+    "stage": "BINDING_COMPARISON",
+    "failure": "bounded detail RPC timed out with transient UPLOAD allocations; no native stack captured",
+    "owned_target_terminated": true
+  },
+  "after": [
+    {
+      "control": "owned-command-transient-after",
+      "source_commit": "c8b50bd7bf50d8930d799149da96a3de212d8e0e",
+      "report_sha256": "7568c4b6d57a19fada37b21eee8545c92f2197378f925af15b061edeb2da2338",
+      "controller_sha256": "1cee15c0128dc2b06788cf53a7f21d641685d4df036ff4132cec9e34f2c7f40c",
+      "status": "QUALIFIED_OWNED_GAME_OPTIONS",
+      "normal_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixels": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 10,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "resource_rollover": null
+    },
+    {
+      "control": "owned-command-rollover-after",
+      "source_commit": "f9887b944be2ffb5cbcd6090713156bcc0c1463b",
+      "report_sha256": "f40e924c32dcfd9c7d8db4a33048081bbdc91389922d641285a13cd79f50ad46",
+      "controller_sha256": "2d0c70c3645bd998dd087cd0a4b70224f898563d1cf5b1f7b2682ac19369ee4e",
+      "status": "QUALIFIED_OWNED_GAME_OPTIONS",
+      "normal_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixels": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 20,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "resource_rollover": {
+        "default_identities_changed": 3,
+        "second_capture_ready_inputs": 2,
+        "unsubmitted_inputs_returned_bytes": 0,
+        "second_capture_completed": true
+      }
+    },
+    {
+      "control": "owned-deferred-direct-max",
+      "source_commit": "f9887b944be2ffb5cbcd6090713156bcc0c1463b",
+      "report_sha256": "f62fc6a47b2795f033b1fe90fd1a5dd6ae938470eab56d1a053f950e98a7621a",
+      "controller_sha256": "4e84fdb52692306a1889e5c43d20ec2639b9076d2975b72a8ee6b88f3fd419bb",
+      "status": "QUALIFIED_OWNED_DIRECT_MAXIMUM",
+      "normal_exit_code": 0,
+      "native_device_reference_warning_count": 0,
+      "input_postflight": "PASS",
+      "devkit_asset_files": 0,
+      "gpu_pixels": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "resource_rollover": null
+    }
+  ],
+  "native_tests": {
+    "Debug": "2/2 PASS",
+    "Release": "2/2 PASS",
+    "coverage": "Real WARP direct/compute/copy queues; deferred queue capacity and all-or-none transfer; full queue retains unsubmitted snapshot until drain; original copy/submission/retirement controls"
+  },
+  "interpretation": "The transient owned workload failed with observer8 and passed with deferred release observer9. Source review identifies final resource Release under capture/device-data locks as a reentrancy path. Native stack diagnosis was not collected. Captured game camera and stereo semantics remain unverified.",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

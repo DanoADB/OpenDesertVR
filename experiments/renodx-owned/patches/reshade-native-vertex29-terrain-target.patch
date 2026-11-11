@@ -1,0 +1,36 @@
+--- a/res/version.h
++++ b/res/version.h
+@@ -1,10 +1,10 @@
+ #pragma once
+ 
+-#define VERSION_FULL 6.7.3.9012
++#define VERSION_FULL 6.7.3.9013
+ #define VERSION_MAJOR 6
+ #define VERSION_MINOR 7
+ #define VERSION_REVISION 3
+-#define VERSION_BUILD 9012
++#define VERSION_BUILD 9013
+ 
+-#define VERSION_STRING_FILE "6.7.3.9012"
++#define VERSION_STRING_FILE "6.7.3.9013"
+ #define VERSION_STRING_PRODUCT "6.7.3 UNOFFICIAL"
+--- a/source/d3d12/d3d12_device.cpp
++++ b/source/d3d12/d3d12_device.cpp
+@@ -2675,7 +2675,7 @@
+ 	{
+         // Exact native source only for the observed world VS. Build identity
+         // is verified separately; CRC32/length only route the private probe.
+-        if (odv_native_source_exact && vs_desc.code != nullptr && (vs_desc.code_size == 18680 || vs_desc.code_size == 4344))
++        if (odv_native_source_exact && vs_desc.code != nullptr && (vs_desc.code_size == 25924 || vs_desc.code_size == 4344))
+         {
+             uint32_t crc = 0xFFFFFFFFu;
+             const auto *bytes = static_cast<const uint8_t *>(vs_desc.code);
+@@ -2685,7 +2685,7 @@
+                 for (unsigned bit = 0; bit < 8; ++bit)
+                     crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
+             }
+-            if ((vs_desc.code_size == 18680 && (crc ^ 0xFFFFFFFFu) == 0x80800FE6u) ||
++            if ((vs_desc.code_size == 25924 && (crc ^ 0xFFFFFFFFu) == 0xC48DB423u) ||
+                 (vs_desc.code_size == 4344 && (crc ^ 0xFFFFFFFFu) == 0x56EC8691u))
+                 (void)odv::research::NativeVertexPipelinePayload::attach(d3d_pipeline, internal_desc);
+         }

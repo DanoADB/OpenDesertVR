@@ -1,0 +1,793 @@
+--- a/src/addons/devkit/odv/constant_snapshot.hpp
++++ b/src/addons/devkit/odv/constant_snapshot.hpp
+@@ -12,6 +12,7 @@
+ #include <d3d12.h>
+ #include <optional>
+ #include <stdexcept>
++#include <type_traits>
+ #include <utility>
+ #include <vector>
+ #include <wrl/client.h>
+@@ -26,6 +27,7 @@
+     Phase phase_ = Phase::empty;
+     Com<ID3D12Resource> source_, readback_;
+     Com<ID3D12Fence> fence_;
++    Com<ID3D12QueryHeap> work_query_;
+     UINT64 fence_value_ = 0;
+     std::size_t bytes_ = 0;
+     std::optional<std::vector<std::byte>> data_;
+@@ -116,6 +118,7 @@
+             source_.Detach();
+             readback_.Detach();
+             fence_.Detach();
++            work_query_.Detach();
+             return;
+         }
+         release_count();
+@@ -134,6 +137,56 @@
+         if ((!state && !enhanced) || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT)
+             return false;
+         return record_copy(device, commands, source, offset, bytes, state, enhanced);
++    }
++    // Narrow original-draw diagnostic. Begin/End/ResolveQueryData are not
++    // predicated. Forward exactly once; never alter the application's predicate.
++    // Caller proves the query family is available and the draw is eligible.
++    template <class Forward>
++    bool record_work(ID3D12Device *device, ID3D12GraphicsCommandList *commands, D3D12_QUERY_TYPE type,
++                     Forward &&forward) {
++        static_assert(std::is_nothrow_invocable_v<Forward>);
++        if (phase_ != Phase::empty || !device || !commands || commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT ||
++            (type != D3D12_QUERY_TYPE_PIPELINE_STATISTICS && type != D3D12_QUERY_TYPE_OCCLUSION))
++            return false;
++        const auto bytes = type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS ? sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS)
++                                                                        : sizeof(UINT64);
++        if (pending_.fetch_add(1) >= maximum_pending) {
++            --pending_;
++            return false;
++        }
++        counted_ = true;
++        try {
++            const D3D12_QUERY_HEAP_DESC query{type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS
++                                                  ? D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS
++                                                  : D3D12_QUERY_HEAP_TYPE_OCCLUSION,
++                                              1, 0};
++            checked(device->CreateQueryHeap(&query, IID_PPV_ARGS(&work_query_)));
++            D3D12_HEAP_PROPERTIES heap{};
++            heap.Type = D3D12_HEAP_TYPE_READBACK;
++            D3D12_RESOURCE_DESC target{};
++            target.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
++            target.Width = bytes;
++            target.Height = 1;
++            target.DepthOrArraySize = 1;
++            target.MipLevels = 1;
++            target.SampleDesc.Count = 1;
++            target.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
++            checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &target,
++                                                    D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&readback_)));
++        } catch (...) {
++            work_query_.Reset();
++            readback_.Reset();
++            release_count();
++            throw;
++        }
++        // All allocations and throwing operations precede native recording.
++        bytes_ = bytes;
++        phase_ = Phase::recorded;
++        commands->BeginQuery(work_query_.Get(), type, 0);
++        forward();
++        commands->EndQuery(work_query_.Get(), type, 0);
++        commands->ResolveQueryData(work_query_.Get(), type, 0, 1, readback_.Get(), 0);
++        return true;
+     }
+ 
+   private:
+@@ -290,7 +343,7 @@
+         const auto completed = fence_->GetCompletedValue();
+         if (completed == UINT64_MAX || completed < fence_value_)
+             return false;
+-        if (!DeferredResourceRelease::defer(source_, readback_))
++        if (!DeferredResourceRelease::defer(source_, readback_, work_query_))
+             return false;
+         fence_.Reset();
+         phase_ = Phase::discarded;
+@@ -301,7 +354,7 @@
+     bool discard_unsubmitted() noexcept {
+         if (phase_ != Phase::recorded || execution_observed_)
+             return false;
+-        if (!DeferredResourceRelease::defer(source_, readback_))
++        if (!DeferredResourceRelease::defer(source_, readback_, work_query_))
+             return false;
+         phase_ = Phase::discarded;
+         release_count();
+--- a/src/addons/devkit/odv/constant_capture_driver.hpp
++++ b/src/addons/devkit/odv/constant_capture_driver.hpp
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: MIT
+ #pragma once
+ #include "constant_snapshot.hpp"
++#include "vertex_constant_stream.hpp"
+ #include <algorithm>
+ #include <memory>
+ #include <mutex>
+@@ -19,6 +20,7 @@
+       private:
+         friend class ConstantCaptureDriver;
+         ConstantSnapshot snapshot;
++        std::unique_ptr<VertexConstantStream> vertex;
+         std::uintptr_t list = 0, source = 0;
+         UINT64 offset = 0, capture = 0;
+         std::size_t bytes = 0;
+@@ -46,11 +48,15 @@
+             if (!entry->retired || entry->failed)
+                 return false;
+             if (!entry->executed)
+-                return entry->snapshot.discard_unsubmitted();
++                return entry->vertex ? entry->vertex->discard_unsubmitted() : entry->snapshot.discard_unsubmitted();
+             if (entry->pending || entry->ambiguous)
+                 return false;
+             // Preserve an immutable CPU sample before retiring its allocation.
+             try {
++                if (entry->vertex) {
++                    (void)entry->vertex->read();
++                    return entry->vertex->release_retired();
++                }
+                 (void)entry->snapshot.read_completed();
+                 return entry->snapshot.release_retired();
+             } catch (...) {
+@@ -74,6 +80,80 @@
+                           ID3D12Resource *source, UINT64 offset, std::size_t bytes, const KnownBufferStates &states,
+                           RecordStatus *status = nullptr) {
+         return record_impl(list, device, commands, source, offset, bytes, &states, status);
++    }
++    template <class Forward>
++    Ticket record_work(std::uintptr_t list, std::uintptr_t identity, ID3D12Device *device,
++                       ID3D12GraphicsCommandList *commands, D3D12_QUERY_TYPE type, Forward &&forward) {
++        const std::lock_guard lock(mutex_);
++        collect_retired();
++        if (!list || !identity || !capture_ || entries_.size() >= ConstantSnapshot::maximum_pending)
++            return {};
++        // Identity is the caller's immutable draw variant, not a resource to read.
++        for (const auto &entry : entries_)
++            if (!entry->retired && entry->list == list && entry->source == identity && entry->bytes == 0)
++                return {};
++        auto entry = std::make_shared<Entry>();
++        entry->list = list;
++        entry->source = identity;
++        entry->capture = capture_;
++        entries_.push_back(entry);
++        try {
++            if (!entry->snapshot.record_work(device, commands, type, std::forward<Forward>(forward))) {
++                entries_.pop_back();
++                return {};
++            }
++        } catch (...) {
++            entries_.pop_back();
++            throw;
++        }
++        return entry;
++    }
++    template <class Restore>
++    Ticket record_vertex(std::uintptr_t list, ID3D12Device *device, ID3D12GraphicsCommandList *commands,
++                         ID3D12Resource *source, UINT64 offset, const VertexConstantStream::Context &context,
++                         Restore &&restore, RecordStatus *status = nullptr) {
++        const std::lock_guard lock(mutex_);
++        RecordStatus result;
++        const auto reject = [&](const char *reason) -> Ticket {
++            result.state = reason;
++            if (status)
++                *status = result;
++            return {};
++        };
++        collect_retired();
++        if (!list || !capture_ || !device || !commands)
++            return reject("INVALID_CAPTURE_CONTEXT");
++        if (entries_.size() >= VertexConstantStream::maximum_pending)
++            return reject("CAPACITY_REACHED");
++        result.source = ConstantSnapshot::inspect_source(source, offset, VertexConstantStream::byte_count);
++        const auto identity = reinterpret_cast<std::uintptr_t>(source);
++        for (const auto &entry : entries_)
++            if (!entry->retired && entry->list == list && entry->source == identity && entry->offset == offset &&
++                entry->bytes == VertexConstantStream::byte_count)
++                return reject("DUPLICATE_SOURCE_RANGE");
++        auto entry = std::make_shared<Entry>();
++        entry->vertex = std::make_unique<VertexConstantStream>();
++        entry->list = list;
++        entry->source = identity;
++        entry->offset = offset;
++        entry->bytes = VertexConstantStream::byte_count;
++        entry->capture = capture_;
++        entries_.push_back(entry); // Tracking allocation precedes GPU recording.
++        try {
++            if (!entry->vertex->record(device, commands, source, offset, context, std::forward<Restore>(restore))) {
++                entries_.pop_back();
++                return reject("VERTEX_READ_NOT_RECORDED");
++            }
++        } catch (...) {
++            entries_.pop_back();
++            throw;
++        }
++        result.source.state = "ELIGIBLE_ACTIVE_VERTEX_CBV";
++        result.source.supported = true;
++        result.state = "RECORDED_VERTEX_STREAM";
++        if (status)
++            *status = result;
++        return entry;
+     }
+ 
+   private:
+@@ -145,7 +225,10 @@
+             }
+             entry->executed = true;
+             entry->pending = true;
+-            (void)entry->snapshot.before_execute();
++            if (entry->vertex)
++                (void)entry->vertex->before_execute();
++            else
++                (void)entry->snapshot.before_execute();
+         }
+     }
+     void after_present(ID3D12CommandQueue *queue) { after_submission(queue, std::nullopt); }
+@@ -161,7 +244,8 @@
+         const std::lock_guard lock(mutex_);
+         for (const auto &entry : entries_) {
+             if (!queue || !entry->pending || entry->ambiguous || entry->failed || entry->queue.Get() != queue ||
+-                entry->thread != std::this_thread::get_id() || (list && entry->list != *list))
++                entry->thread != std::this_thread::get_id() || (list && entry->list != *list) ||
++                (entry->vertex && !list)) // Shader reads require exact native after-execute, never Present.
+                 continue;
+             Com<ID3D12Device> device;
+             Com<ID3D12Fence> fence;
+@@ -173,7 +257,9 @@
+             }
+             // Caller has returned from native execution submission, either via
+             // the exact callback or the qualified same-thread present route.
+-            if (!entry->snapshot.submitted_after_execute(fence.Get(), 1)) {
++            const bool submitted = entry->vertex ? entry->vertex->submitted_after_execute(fence.Get(), 1)
++                                                 : entry->snapshot.submitted_after_execute(fence.Get(), 1);
++            if (!submitted) {
+                 entry->failed = true;
+                 continue;
+             }
+@@ -213,6 +299,10 @@
+         if (entry->failed || entry->ambiguous)
+             return {"UNVERIFIED_SUBMISSION", {}};
+         try {
++            if (entry->vertex) {
++                auto result = entry->vertex->read();
++                return {result.state, std::move(result.bytes)};
++            }
+             const auto &bytes = entry->snapshot.read_completed();
+             if (bytes)
+                 return {"READY", *bytes};
+--- a/src/addons/devkit/odv/deferred_resource_release.hpp
++++ b/src/addons/devkit/odv/deferred_resource_release.hpp
+@@ -18,7 +18,7 @@
+   private:
+     struct State {
+         std::mutex mutex;
+-        std::array<Com<ID3D12Resource>, capacity> resources;
++        std::array<Com<IUnknown>, capacity> resources;
+         ~State() {
+             // A missing explicit drain must not call into an unloading addon.
+             // Bounded quarantine; callers retain ownership on queue overflow.
+@@ -33,10 +33,11 @@
+ 
+   public:
+     // All-or-none transfer. No AddRef/Release or allocation under the mutex.
+-    static bool defer(Com<ID3D12Resource> &first, Com<ID3D12Resource> &second) noexcept {
++    template <class... T> static bool defer(Com<T> &...resources) noexcept {
++        static_assert(sizeof...(T) > 0);
+         auto &value = state();
+         const std::lock_guard lock(value.mutex);
+-        const std::size_t needed = (first ? 1u : 0u) + (second ? 1u : 0u);
++        const std::size_t needed = ((resources ? 1u : 0u) + ...);
+         std::size_t free = 0;
+         for (const auto &resource : value.resources)
+             free += resource ? 0u : 1u;
+@@ -45,19 +46,16 @@
+         for (auto &resource : value.resources) {
+             if (resource)
+                 continue;
+-            if (first)
+-                resource.Swap(first);
+-            else if (second)
+-                resource.Swap(second);
++            const auto transfer = [&](auto &source) {
++                if (!resource && source)
++                    resource.Attach(source.Detach());
++            };
++            (transfer(resources), ...);
+         }
+         return true;
+     }
+-    static bool defer(Com<ID3D12Resource> &resource) noexcept {
+-        Com<ID3D12Resource> empty;
+-        return defer(resource, empty);
+-    }
+     static void drain() noexcept {
+-        std::array<Com<ID3D12Resource>, capacity> release;
++        std::array<Com<IUnknown>, capacity> release;
+         auto &value = state();
+         {
+             const std::lock_guard lock(value.mutex);
+--- a/src/addons/devkit/odv/draw_recording_state.hpp
++++ b/src/addons/devkit/odv/draw_recording_state.hpp
+@@ -6,6 +6,7 @@
+ #include <array>
+ #include <cstdint>
+ #include <d3d12.h>
++#include <optional>
+ 
+ namespace odv::research {
+ // Bounded metadata only. Native creation/reset establishes empty state; dropped,
+@@ -93,6 +94,39 @@
+         return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
+     }
+     bool failed() const noexcept { return failed_; }
++    // Select a query family not already active in the application's recording.
++    // Keep binary/full occlusion and both statistics versions in one family.
++    std::optional<D3D12_QUERY_TYPE> work_query_type() const noexcept {
++        if (!eligible_single_forward())
++            return {};
++        bool statistics = false, occlusion = false;
++        for (const auto &query : queries_) {
++            if (!query.heap)
++                continue;
++            switch (query.type) {
++            case D3D12_QUERY_TYPE_PIPELINE_STATISTICS:
++            case D3D12_QUERY_TYPE_PIPELINE_STATISTICS1:
++                statistics = true;
++                break;
++            case D3D12_QUERY_TYPE_OCCLUSION:
++            case D3D12_QUERY_TYPE_BINARY_OCCLUSION:
++                occlusion = true;
++                break;
++            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0:
++            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM1:
++            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM2:
++            case D3D12_QUERY_TYPE_SO_STATISTICS_STREAM3:
++                break;
++            default:
++                return {};
++            }
++        }
++        if (!statistics)
++            return D3D12_QUERY_TYPE_PIPELINE_STATISTICS;
++        if (!occlusion)
++            return D3D12_QUERY_TYPE_OCCLUSION;
++        return {};
++    }
+     UINT active_queries() const noexcept { return query_count_; }
+     bool render_pass_blocked() const noexcept { return active_pass_ || suspended_; }
+     const auto &stream_outputs() const noexcept { return stream_outputs_; }
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -7,6 +7,15 @@
+ bool odv_clip_enabled = false;
+ bool odv_clip_large = false; // Read once before publishing a nonzero mode.
+ bool odv_clip_collapse = false; // Scale-independent influence diagnostic only.
++bool odv_clip_work_enabled = false;
++struct ODVClipWorkSample {
++  odv::research::ConstantCaptureDriver::Ticket ticket;
++  unsigned mode = 0;
++  D3D12_QUERY_TYPE type{};
++  UINT maximum_count = 0;
++};
++std::mutex odv_clip_work_mutex;
++std::array<ODVClipWorkSample, 6> odv_clip_work_samples{};
+ std::atomic_uint odv_clip_mode = 0;
+ std::atomic_uint64_t odv_clip_lease = 0;
+ std::atomic_bool odv_clip_failed = false;
+@@ -27,9 +36,16 @@
+   next_poll = now + 250;
+   static bool config_read = false;
+   if (!config_read) {
+-    uint32_t large = 0, collapse = 0;
++    uint32_t large = 0, collapse = 0, work = 0;
+     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeLarge", large);
+     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeCollapse", collapse);
++    reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeWork", work);
++    if (work > 1) { odv_clip_failed = true; return; }
++    if (work) {
++      try { odv_constant_driver.begin_capture(); }
++      catch (...) { odv_clip_failed = true; return; }
++      odv_clip_work_enabled = true;
++    }
+     if (large > 1 || collapse > 1 || (large && collapse)) { odv_clip_failed = true; return; }
+     odv_clip_large = large == 1;
+     odv_clip_collapse = collapse == 1;
+@@ -56,7 +72,35 @@
+            << ",\"large_probe\":" << (odv_clip_large ? "true" : "false")
+            << ",\"collapse_probe\":" << (odv_clip_collapse ? "true" : "false")
+            << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
+-           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
++           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\",\"gpu_work\":[";
++    {
++      const std::lock_guard work_lock(odv_clip_work_mutex);
++      bool comma = false;
++      for (const auto& work : odv_clip_work_samples) {
++        if (!work.ticket) continue;
++        const auto sample = odv_constant_driver.read(work.ticket);
++        status << (comma ? "," : "") << "{\"mode\":" << work.mode
++               << ",\"type\":" << static_cast<unsigned>(work.type)
++               << ",\"maximum_count\":" << work.maximum_count
++               << ",\"state\":\"" << sample.state << "\"";
++        comma = true;
++        if (std::strcmp(sample.state, "READY") == 0) {
++          if (work.type == D3D12_QUERY_TYPE_PIPELINE_STATISTICS && sample.bytes.size() == sizeof(D3D12_QUERY_DATA_PIPELINE_STATISTICS)) {
++            D3D12_QUERY_DATA_PIPELINE_STATISTICS stats{};
++            std::memcpy(&stats, sample.bytes.data(), sizeof(stats));
++            status << ",\"ia_vertices\":" << stats.IAVertices << ",\"ia_primitives\":" << stats.IAPrimitives
++                   << ",\"vs_invocations\":" << stats.VSInvocations << ",\"clip_primitives\":" << stats.CPrimitives
++                   << ",\"ps_invocations\":" << stats.PSInvocations;
++          } else if (work.type == D3D12_QUERY_TYPE_OCCLUSION && sample.bytes.size() == sizeof(UINT64)) {
++            UINT64 samples = 0;
++            std::memcpy(&samples, sample.bytes.data(), sizeof(samples));
++            status << ",\"occlusion_samples\":" << samples;
++          }
++        }
++        status << "}";
++      }
++    }
++    status << "]}\n";
+   } catch (...) {
+     odv_clip_mode = 0;
+     odv_clip_lease = 0;
+@@ -83,6 +127,7 @@
+     const auto& native = data->odv_native_state;
+     odv::research::NativeIndirectCall call{};
+     odv::research::NativeIndirectDescription description{};
++    std::optional<D3D12_QUERY_TYPE> work_type;
+     {
+       const std::lock_guard lock(native->mutex);
+       if (native->failed || native->protected_session || !native->draw_capable || !native->indirect_capable ||
+@@ -91,6 +136,7 @@
+         if (view.BufferLocation || view.SizeInBytes || view.BufferFilledSizeLocation) return false;
+       call = native->indirect_call;
+       description = native->indirect_description;
++      work_type = native->draw_state.work_query_type();
+     }
+     if (!odv::research::clip_probe_signature(description) || description.root_signature != tables->layout.handle)
+       return false;
+@@ -143,8 +189,31 @@
+         return false;
+       }
+     }
+-    if (odv::research::record_clip_indirect(reinterpret_cast<ID3D12GraphicsCommandList*>(list->get_native()),
+-                                          original, variant.Get(), call, description)) {
++    auto* commands = reinterpret_cast<ID3D12GraphicsCommandList*>(list->get_native());
++    bool forwarded = false, measured = false;
++    const auto forward = [&]() noexcept {
++      forwarded = odv::research::record_clip_indirect(commands, original, variant.Get(), call, description);
++    };
++    if (odv_clip_work_enabled && work_type) {
++      const std::lock_guard work_lock(odv_clip_work_mutex);
++      unsigned per_mode = 0;
++      ODVClipWorkSample* free = nullptr;
++      for (auto& sample : odv_clip_work_samples) {
++        if (sample.ticket && sample.mode == mode) ++per_mode;
++        if (!sample.ticket && !free) free = &sample;
++      }
++      if (free && per_mode < 3) {
++        auto ticket = odv_constant_driver.record_work(reinterpret_cast<uintptr_t>(list),
++            reinterpret_cast<uintptr_t>(variant.Get()), reinterpret_cast<ID3D12Device*>(device->get_native()),
++            commands, *work_type, forward);
++        if (ticket) {
++          *free = {std::move(ticket), mode, *work_type, call.maximum_count};
++          measured = true;
++        }
++      }
++    }
++    if (!measured) forward();
++    if (forwarded) {
+       ++odv_clip_recordings[mode];
+       return true; // Original command was forwarded once, with native resets.
+     }
+--- a/src/addons/devkit/odv/vertex_constant_stream.hpp
++++ b/src/addons/devkit/odv/vertex_constant_stream.hpp
+@@ -0,0 +1,305 @@
++// SPDX-License-Identifier: MIT
++#pragma once
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include "deferred_resource_release.hpp"
++#include <atomic>
++#include <cstddef>
++#include <cstdint>
++#include <cstring>
++#include <d3dcompiler.h>
++#include <optional>
++#include <stdexcept>
++#include <type_traits>
++#include <vector>
++
++namespace odv::research {
++// Finite research reader for the 2816-byte camera candidate. Caller supplies
++// actual vertex-stage usage and a prepared, allocation-free state replay.
++// Not a generic application-state tracker and not enabled in a game adapter.
++class VertexConstantStream final {
++    template <class T> using Com = Microsoft::WRL::ComPtr<T>;
++    enum class Phase { empty, recorded, submitted, complete, retired };
++    Phase phase_ = Phase::empty;
++    Com<ID3D12Resource> source_, stream_, counter_, zero_, readback_;
++    Com<ID3D12RootSignature> root_;
++    Com<ID3D12PipelineState> pipeline_;
++    Com<ID3D12QueryHeap> query_;
++    Com<ID3D12Fence> fence_;
++    UINT64 fence_value_ = 0;
++    bool counted_ = false, executed_ = false;
++    static inline std::atomic_uint32_t pending_ = 0;
++
++    static void checked(HRESULT result) {
++        if (FAILED(result))
++            throw std::runtime_error("vertex_constant_stream_graphics_failure");
++    }
++    static void barrier(ID3D12GraphicsCommandList *commands, ID3D12Resource *resource, D3D12_RESOURCE_STATES before,
++                        D3D12_RESOURCE_STATES after) noexcept {
++        D3D12_RESOURCE_BARRIER b{};
++        b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
++        b.Transition = {resource, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, before, after};
++        commands->ResourceBarrier(1, &b);
++    }
++    void prepare(ID3D12Device *device) {
++        const auto buffer = [&](Com<ID3D12Resource> &resource, UINT64 bytes, D3D12_HEAP_TYPE type,
++                                D3D12_RESOURCE_STATES state) {
++            D3D12_HEAP_PROPERTIES heap{};
++            heap.Type = type;
++            D3D12_RESOURCE_DESC desc{};
++            desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
++            desc.Width = bytes;
++            desc.Height = 1;
++            desc.DepthOrArraySize = 1;
++            desc.MipLevels = 1;
++            desc.SampleDesc.Count = 1;
++            desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
++            checked(device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &desc, state, nullptr,
++                                                    IID_PPV_ARGS(&resource)));
++        };
++        buffer(stream_, byte_count, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_COMMON);
++        buffer(counter_, 8, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_COMMON);
++        buffer(zero_, 8, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
++        buffer(readback_, counter_offset + 8, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST);
++        void *mapped = nullptr;
++        const D3D12_RANGE empty{};
++        checked(zero_->Map(0, &empty, &mapped));
++        std::memset(mapped, 0, 8);
++        zero_->Unmap(0, nullptr);
++        constexpr char shader[] = R"(
++cbuffer Input : register(b0) { uint4 words[176]; };
++struct Output { float4 position : SV_Position; uint4 data : DATA; };
++Output main(uint id : SV_VertexID) {
++    Output o; o.position = float4(0, 0, 0, 1); o.data = words[id]; return o;
++})";
++        Com<ID3DBlob> bytecode, errors, serialized;
++        checked(D3DCompile(shader, sizeof(shader) - 1, "owned-vertex-stream", nullptr, nullptr, "main", "vs_5_0",
++                           D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &bytecode, &errors));
++        D3D12_ROOT_PARAMETER parameter{};
++        parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
++        parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
++        D3D12_ROOT_SIGNATURE_DESC desc{};
++        desc.NumParameters = 1;
++        desc.pParameters = &parameter;
++        desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
++        checked(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &errors));
++        checked(device->CreateRootSignature(0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
++                                            IID_PPV_ARGS(&root_)));
++        const D3D12_SO_DECLARATION_ENTRY declaration{0, "DATA", 0, 0, 4, 0};
++        const UINT stride = 16;
++        D3D12_GRAPHICS_PIPELINE_STATE_DESC p{};
++        p.pRootSignature = root_.Get();
++        p.VS = {bytecode->GetBufferPointer(), bytecode->GetBufferSize()};
++        p.StreamOutput = {&declaration, 1, &stride, 1, D3D12_SO_NO_RASTERIZED_STREAM};
++        p.SampleMask = UINT_MAX;
++        p.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
++        p.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
++        p.RasterizerState.DepthClipEnable = TRUE;
++        p.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
++        p.SampleDesc.Count = 1;
++        checked(device->CreateGraphicsPipelineState(&p, IID_PPV_ARGS(&pipeline_)));
++        D3D12_QUERY_HEAP_DESC q{D3D12_QUERY_HEAP_TYPE_SO_STATISTICS, 1, 0};
++        checked(device->CreateQueryHeap(&q, IID_PPV_ARGS(&query_)));
++    }
++    void release_count() noexcept {
++        if (counted_) {
++            --pending_;
++            counted_ = false;
++        }
++    }
++    bool defer_all() noexcept {
++        return DeferredResourceRelease::defer(source_, stream_, counter_, zero_, readback_, root_, pipeline_, query_,
++                                              fence_);
++    }
++
++  public:
++    static constexpr UINT byte_count = 2816, vertex_count = byte_count / 16;
++    static constexpr UINT counter_offset = byte_count + sizeof(D3D12_QUERY_DATA_SO_STATISTICS);
++    static constexpr UINT64 maximum_source_bytes = 64ULL * 1024 * 1024;
++    static constexpr uint32_t maximum_pending = 6;
++    struct Context {
++        // These must come from the same command recording, not user settings.
++        bool active_vertex_cbv = false;
++        bool outside_render_pass = false;
++        bool no_active_app_query = false;
++        bool complete_replay_prepared = false;
++        bool stream_output_bindings_known = false;
++        bool unprotected = false;
++        // A reflected binding is not access proof, particularly for a skipped
++        // or zero-work draw. Require a separately established read scope.
++        bool known_constant_read_access = false;
++    };
++    struct Sample {
++        const char *state;
++        std::vector<std::byte> bytes;
++    };
++
++  private:
++    std::optional<Sample> sample_;
++
++  public:
++    VertexConstantStream() = default;
++    VertexConstantStream(const VertexConstantStream &) = delete;
++    VertexConstantStream &operator=(const VertexConstantStream &) = delete;
++    ~VertexConstantStream() {
++        if (!counted_)
++            return;
++        // Unknown retirement/completion: quarantine resources AND capacity.
++        // A completed recording may still execute again until reset/destroyed.
++        source_.Detach();
++        stream_.Detach();
++        counter_.Detach();
++        zero_.Detach();
++        readback_.Detach();
++        root_.Detach();
++        pipeline_.Detach();
++        query_.Detach();
++        fence_.Detach();
++    }
++    template <class Restore>
++    bool record(ID3D12Device *device, ID3D12GraphicsCommandList *commands, ID3D12Resource *source, UINT64 offset,
++                const Context &context, Restore &&restore) {
++        static_assert(std::is_nothrow_invocable_v<Restore>, "Replay must be prepared and noexcept");
++        if (phase_ != Phase::empty || !device || !commands || !source ||
++            commands->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT || !context.active_vertex_cbv ||
++            !context.outside_render_pass || !context.no_active_app_query || !context.complete_replay_prepared ||
++            !context.stream_output_bindings_known || !context.unprotected || !context.known_constant_read_access ||
++            offset % 256)
++            return false;
++        const auto desc = source->GetDesc();
++        D3D12_HEAP_PROPERTIES heap{};
++        D3D12_HEAP_FLAGS flags{};
++        if (FAILED(source->GetHeapProperties(&heap, &flags)) || heap.Type != D3D12_HEAP_TYPE_DEFAULT ||
++            (flags & D3D12_HEAP_FLAG_HARDWARE_PROTECTED) || desc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER ||
++            desc.Width > maximum_source_bytes || offset > desc.Width || byte_count > desc.Width - offset)
++            return false;
++        Com<ID3D12Device> source_device, list_device;
++        if (FAILED(source->GetDevice(IID_PPV_ARGS(&source_device))) || source_device.Get() != device ||
++            FAILED(commands->GetDevice(IID_PPV_ARGS(&list_device))) || list_device.Get() != device ||
++            !source->GetGPUVirtualAddress() || source->GetGPUVirtualAddress() % 256)
++            return false;
++        if (pending_.fetch_add(1) >= maximum_pending) {
++            --pending_;
++            return false;
++        }
++        counted_ = true;
++        try {
++            source_ = source;
++            prepare(device); // All allocation/compilation before any GPU command.
++        } catch (...) {
++            source_.Reset();
++            stream_.Reset();
++            counter_.Reset();
++            zero_.Reset();
++            readback_.Reset();
++            root_.Reset();
++            pipeline_.Reset();
++            query_.Reset();
++            release_count();
++            throw;
++        }
++        barrier(commands, counter_.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
++        commands->CopyBufferRegion(counter_.Get(), 0, zero_.Get(), 0, 8);
++        barrier(commands, counter_.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT);
++        barrier(commands, stream_.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_STREAM_OUT);
++        commands->OMSetRenderTargets(0, nullptr, FALSE, nullptr);
++        commands->SetGraphicsRootSignature(root_.Get());
++        commands->SetPipelineState(pipeline_.Get());
++        commands->SetGraphicsRootConstantBufferView(0, source->GetGPUVirtualAddress() + offset);
++        commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
++        const D3D12_STREAM_OUTPUT_BUFFER_VIEW view{stream_->GetGPUVirtualAddress(), byte_count,
++                                                   counter_->GetGPUVirtualAddress()};
++        commands->SOSetTargets(0, 1, &view);
++        commands->BeginQuery(query_.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0);
++        commands->DrawInstanced(vertex_count, 1, 0, 0);
++        commands->EndQuery(query_.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0);
++        const D3D12_STREAM_OUTPUT_BUFFER_VIEW unbound{};
++        commands->SOSetTargets(0, 1, &unbound);
++        barrier(commands, stream_.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
++        barrier(commands, counter_.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
++        commands->CopyBufferRegion(readback_.Get(), 0, stream_.Get(), 0, byte_count);
++        commands->CopyBufferRegion(readback_.Get(), counter_offset, counter_.Get(), 0, 8);
++        commands->ResolveQueryData(query_.Get(), D3D12_QUERY_TYPE_SO_STATISTICS_STREAM0, 0, 1, readback_.Get(),
++                                   byte_count);
++        barrier(commands, stream_.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
++        barrier(commands, counter_.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COMMON);
++        restore();
++        phase_ = Phase::recorded;
++        return true;
++    }
++    bool before_execute() noexcept {
++        if (phase_ == Phase::empty || phase_ == Phase::retired)
++            return false;
++        executed_ = true;
++        phase_ = Phase::recorded;
++        return true;
++    }
++    bool submitted_after_execute(ID3D12Fence *fence, UINT64 value) noexcept {
++        if (phase_ == Phase::empty || phase_ == Phase::retired || !fence || !value)
++            return false;
++        executed_ = true;
++        fence_ = fence;
++        fence_value_ = value;
++        phase_ = Phase::submitted;
++        return true;
++    }
++    Sample read() {
++        if (sample_)
++            return *sample_; // Immutable first sample, even on re-execution.
++        if (phase_ != Phase::submitted)
++            return {executed_ ? "GPU_PENDING" : "UNSUBMITTED", {}};
++        const auto completed = fence_->GetCompletedValue();
++        if (completed == UINT64_MAX)
++            throw std::runtime_error("vertex_constant_stream_device_removed");
++        if (completed < fence_value_)
++            return {"GPU_PENDING", {}};
++        void *mapped = nullptr;
++        const D3D12_RANGE range{0, counter_offset + 8};
++        checked(readback_->Map(0, &range, &mapped));
++        try {
++            D3D12_QUERY_DATA_SO_STATISTICS statistics{};
++            UINT64 filled = 0;
++            std::memcpy(&statistics, static_cast<const std::byte *>(mapped) + byte_count, sizeof(statistics));
++            std::memcpy(&filled, static_cast<const std::byte *>(mapped) + counter_offset, sizeof(filled));
++            Sample value{"SO_INCOMPLETE", {}};
++            if (statistics.NumPrimitivesWritten == vertex_count && statistics.PrimitivesStorageNeeded == vertex_count &&
++                filled == byte_count) {
++                value.state = "READY";
++                value.bytes.resize(byte_count);
++                std::memcpy(value.bytes.data(), mapped, byte_count);
++            } else if (!statistics.NumPrimitivesWritten && !statistics.PrimitivesStorageNeeded) {
++                value.state = "SO_NOT_EXECUTED";
++            }
++            sample_ = std::move(value);
++        } catch (...) {
++            const D3D12_RANGE empty{};
++            readback_->Unmap(0, &empty);
++            throw;
++        }
++        const D3D12_RANGE empty{};
++        readback_->Unmap(0, &empty);
++        phase_ = Phase::complete;
++        return *sample_;
++    }
++    // Caller proves successful recording reset/destruction and reports EVERY
++    // execution, with the latest fence covering all of them (same queue).
++    bool release_retired() noexcept {
++        if ((phase_ != Phase::submitted && phase_ != Phase::complete) || !fence_)
++            return false;
++        const auto completed = fence_->GetCompletedValue();
++        if (completed == UINT64_MAX || completed < fence_value_ || !defer_all())
++            return false;
++        phase_ = Phase::retired;
++        release_count();
++        return true;
++    }
++    bool discard_unsubmitted() noexcept {
++        if (phase_ != Phase::recorded || executed_ || !defer_all())
++            return false;
++        phase_ = Phase::retired;
++        release_count();
++        return true;
++    }
++};
++} // namespace odv::research

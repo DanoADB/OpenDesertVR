@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_PRIVATE_INDIRECT_SIGNATURE_CREATION",
+  "game": "NOT_RUN",
+  "GPU_replay": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "format": {
+    "byte_stride": 40,
+    "arguments": [
+      "INDEX_BUFFER_VIEW",
+      "CONSTANT root0 word0 count1",
+      "DRAW_INDEXED"
+    ]
+  },
+  "source_sha256": {
+    "experiments/draw-binding-owned/private_indirect_signature.hpp": "33964118916bbc8008f6e580f88957841d275f45e06bcba18ccc1c93af9abc32",
+    "experiments/draw-binding-owned/native_root_tests.cpp": "02c779ada06cfd37119ef83357fa836083da5f018ccef4f33dc7e4978726d455"
+  },
+  "configurations": [
+    {
+      "name": "Debug",
+      "targeted_tests_passed": 1,
+      "targeted_tests_failed": 0,
+      "test_log_sha256": "a872cc1073be683fcb9cef2cc39f406b0f13739c1e7622ab0418005630285cae",
+      "stdout_sha256": "60a5921a1be76bfd87bb171a7d217a0d5b4f2b6e5954622b9472fbaa8830b70f",
+      "binary_sha256": "3f611f54cf73f734627933bb80198d5ad8498c8e3776e0b4c61b2e8afe2123a7"
+    },
+    {
+      "name": "Release",
+      "targeted_tests_passed": 1,
+      "targeted_tests_failed": 0,
+      "test_log_sha256": "8ff68beab9939ca380d55320f8ce7145fdfb645ccce35ac68886c8b0ebe3819c",
+      "stdout_sha256": "60a5921a1be76bfd87bb171a7d217a0d5b4f2b6e5954622b9472fbaa8830b70f",
+      "binary_sha256": "1fccf1e10eb39eed312d99dbd58b6e89a996acb5948e69b8aec73017a46d8821"
+    }
+  ],
+  "controls": [
+    "Real WARP original and derived root objects; actual native original and cloned command signatures.",
+    "Derived singleton camera table retains root constant at index0 and lifts camera CBV at index1.",
+    "Original normalized signature metadata unchanged after cloning.",
+    "Missing metadata, private-root mutation and original/private identity mismatch rejected."
+  ],
+  "limits": [
+    "Owned authored metadata tag; actual wrapper tagging is separately qualified by observer14.",
+    "Creation only; forwarding exact GPU argument/count buffers, nonzero/zero count execution, post-indirect resets and restoration remain NOT_RUN.",
+    "No game root replacement, source writes, camera influence or stereo."
+  ]
+}

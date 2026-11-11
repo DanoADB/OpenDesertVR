@@ -1,0 +1,35 @@
+OpenDesertVR - Windows headset testing app
+
+Double-click OpenDesertVR.exe. No terminal or scripts are required.
+
+1. Connect your Quest Pro to PCVR as usual and wake the headset.
+   Use your existing SteamVR/Quest Link setup and active OpenXR runtime.
+2. Click Check readiness. If something is missing, read the checks in the app.
+3. Leave "Offline depth stereo - owned courtyard" selected and click Start.
+4. Put on the headset. Look for an amber sphere, a teal sphere, pillars and a floor.
+   Check that near/far objects have depth and the image remains visible.
+   This mode has a static source camera: head tracking is unavailable.
+   Thin black gaps are unfilled areas exposed by depth reconstruction.
+5. If comfortable, open and close your runtime menu and check that the scene returns.
+6. Let the test finish, or click Stop and wait for reports to be saved.
+7. Tick only the checks you personally completed. Add issue notes if needed.
+8. Click Save observations, then Open reports to find the result files.
+
+Normal double-click mode waits for Start. Reports remain on this PC.
+Each operation gets its own folder; previous test reports are preserved.
+If this folder is not writable, reports use your local application-data folder.
+Open reports finds the current run in either location.
+
+The default mode runs an original procedural scene through GPU depth reconstruction,
+two-eye image transport and OpenXR. It does not open or capture Crimson Desert.
+It is reconstructed stereo; native game stereo is not implemented.
+For the original tracked cubes, select "Original tracked cube calibration".
+Earlier Quest Pro results do not count as acceptance of this new build.
+The old command-line tools remain available for troubleshooting.
+
+Developer stream mode: OpenDesertVR.exe --stereo-stream CHANNEL
+This starts receiving automatically from an already running stereo producer.
+Stop and reports remain available. It does not create a Crimson Desert source.
+Source stereo validity and game head tracking remain unverified.
+See docs/research/stereo-image-stream.md for the transport contract.
+See docs/research/depth-stereo-preview.md for the reconstruction input contract.

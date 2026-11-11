@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "IDENTITY_REJECTED_AT_DXIL_VALIDATION",
+  "source_commit": "50765e54c43075b26342c4cb1140f2e6f9ebb4b2",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "scene": "DESKTOP_OBSERVED_STILL_3D_SCENE",
+  "addon_sha256": "33b15373ec72f29367568c6e00110514d033d04598b8f53e0033565af53639ec",
+  "identity_probe": {
+    "mode": "IDENTITY",
+    "scene": "DESKTOP_OBSERVED_STILL_3D_SCENE",
+    "before": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compile_failure_stage": 0,
+      "compile_failure_hr": 0,
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "samples": [
+      {
+        "schema_version": 1,
+        "mode": 1,
+        "failed": false,
+        "candidates": 0,
+        "recorded": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "compile_failure_stage": 0,
+        "compile_failure_hr": 0,
+        "evidence": "CPU_RECORDING_ONLY",
+        "game_stereo": "NOT_RUN"
+      }
+    ],
+    "after": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": true,
+      "candidates": 1,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compile_failure_stage": 6,
+      "compile_failure_hr": 2158624777,
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    }
+  },
+  "private_report_sha256": "8853e94e86d14279ff9788d153c08e16a621a1dfba3436d2d6ed06d435e33b05",
+  "failure_stage": "VALIDATION",
+  "hresult": "0x80AA0009",
+  "hresult_name": "DXC_E_IR_VERIFICATION_FAILED",
+  "hresult_reference": "https://github.com/microsoft/DirectXShaderCompiler/blob/main/include/dxc/Support/ErrorCodes.h",
+  "inference": "Processing reached validation after disassembly, bounded position-store rewrite and assembly; precise IR rule remains unknown.",
+  "desktop_postflight": "SCENE_CONTINUED_NORMALLY",
+  "asset_files": 0,
+  "geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "user_setup": {
+    "headset": "Meta Quest Pro",
+    "connection": "PCVR",
+    "game_storefront": "Steam",
+    "active_OpenXR_runtime": "NOT_RECONFIRMED_THIS_SESSION"
+  }
+}

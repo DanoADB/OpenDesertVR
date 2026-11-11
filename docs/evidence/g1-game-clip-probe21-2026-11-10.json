@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "UNTOUCHED_ORIGINAL_SHADER_REJECTED_BY_VALIDATOR",
+  "source_commit": "7fff10c806c8797086bf8f5dff67d3eded7a3a51",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "addon_sha256": "3a37caae221225ebfe35755ad0f22f68dadf90e5feee7c27d8f7fb8d34977e1b",
+  "identity_probe": {
+    "mode": "IDENTITY",
+    "scene": "DESKTOP_OBSERVED_STILL_3D_SCENE",
+    "before": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": false,
+      "candidates": 0,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compile_failure_stage": 0,
+      "compile_failure_hr": 0,
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    },
+    "samples": [
+      {
+        "schema_version": 1,
+        "mode": 1,
+        "failed": false,
+        "candidates": 0,
+        "recorded": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "compile_failure_stage": 0,
+        "compile_failure_hr": 0,
+        "evidence": "CPU_RECORDING_ONLY",
+        "game_stereo": "NOT_RUN"
+      }
+    ],
+    "after": {
+      "schema_version": 1,
+      "mode": 0,
+      "failed": true,
+      "candidates": 1,
+      "recorded": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compile_failure_stage": 7,
+      "compile_failure_hr": 2158624777,
+      "evidence": "CPU_RECORDING_ONLY",
+      "game_stereo": "NOT_RUN"
+    }
+  },
+  "private_report_sha256": "113e7e1bac1e6900ba7a0b8512822bd44d40aa45b231acafbb9ea1f1a27dc960",
+  "original_validation": "FAIL_0x80AA0009",
+  "unchanged_roundtrip": "NOT_RUN",
+  "clip_rewrite": "NOT_RUN",
+  "recorded_replacements": 0,
+  "desktop_postflight": "SCENE_CONTINUED_NORMALLY",
+  "compiler_compatibility": "UNRESOLVED",
+  "asset_files": 0,
+  "geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: MIT
+cmake_minimum_required(VERSION 3.24)
+set(directory "${CMAKE_CURRENT_BINARY_DIR}/mock-stereo-stream")
+file(MAKE_DIRECTORY "${directory}")
+set(channel "${directory}/channel.txt")
+set(report "${directory}/report.json")
+set(audit "${directory}/audit.json")
+file(REMOVE "${channel}" "${report}" "${audit}")
+file(WRITE "${directory}/config.json" "{\"schema_version\":1,\"duration_seconds\":1}")
+set(ENV{XR_RUNTIME_JSON} "${MANIFEST}")
+# Keep the runtime alive until the host requests exit, so producer loss is
+# exercised rather than the mock's automatic six-frame stop.
+set(ENV{ODV_MOCK_SCENARIO} "request_exit")
+set(ENV{ODV_MOCK_AUDIT} "${audit}")
+# CMake pipelines start these concurrently. The host waits for the bounded
+# channel file; the owned producer exits itself after three seconds.
+execute_process(COMMAND "${PUBLISHER}" --serve "${channel}"
+  COMMAND "${HOST}" --stereo-stream-file "${channel}" --config "${directory}/config.json" --report "${report}"
+  RESULTS_VARIABLE results OUTPUT_VARIABLE output ERROR_VARIABLE errors TIMEOUT 15)
+foreach(result IN LISTS results)
+  if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Stereo stream process failed: ${results}\n${output}\n${errors}")
+  endif()
+endforeach()
+file(READ "${report}" json)
+string(JSON mode GET "${json}" presentation_mode)
+string(JSON origin GET "${json}" stream_origin)
+string(JSON pairs GET "${json}" source_pairs_received)
+string(JSON submitted GET "${json}" stereo_frames)
+string(JSON game GET "${json}" game_validation)
+string(JSON headset GET "${json}" headset_validation)
+if(NOT mode STREQUAL "STATIC_STEREO_IMAGE_STREAM" OR NOT origin STREQUAL "OWNED_GEOMETRY" OR
+   pairs LESS 2 OR submitted LESS 2 OR NOT game STREQUAL "NOT_RUN" OR NOT headset STREQUAL "NOT_RUN")
+  message(FATAL_ERROR "Missing owned stream delivery or dishonest hardware/game evidence: ${json}")
+endif()
+file(REMOVE "${channel}")
+file(WRITE "${directory}/long-config.json" "{\"schema_version\":1,\"duration_seconds\":5}")
+set(ENV{ODV_MOCK_AUDIT} "${directory}/disconnect-audit.json")
+execute_process(COMMAND "${PUBLISHER}" --serve "${channel}"
+  COMMAND "${HOST}" --stereo-stream-file "${channel}" --config "${directory}/long-config.json"
+    --report "${directory}/disconnect-report.json"
+  RESULTS_VARIABLE disconnected OUTPUT_VARIABLE disconnect_output ERROR_VARIABLE disconnect_errors TIMEOUT 12)
+if(NOT disconnected STREQUAL "0;3")
+  message(FATAL_ERROR "Stream disconnect did not stop the viewer: ${disconnected}\n${disconnect_output}\n${disconnect_errors}")
+endif()
+file(READ "${directory}/disconnect-report.json" disconnect_json)
+string(JSON disconnect_frames GET "${disconnect_json}" stereo_frames)
+if(disconnect_frames LESS 2 OR disconnect_json MATCHES "EYE_GEOMETRY")
+  message(FATAL_ERROR "Disconnect did not preserve stream-only rendering: ${disconnect_json}")
+endif()
+file(READ "${directory}/disconnect-audit.json" disconnect_audit)
+string(JSON disconnect_violations GET "${disconnect_audit}" violations)
+string(JSON disconnect_destroyed GET "${disconnect_audit}" session_destroyed)
+if(NOT disconnect_violations EQUAL 0 OR NOT disconnect_destroyed)
+  message(FATAL_ERROR "Disconnect broke XR teardown: ${disconnect_audit}")
+endif()
+file(READ "${audit}" execution)
+string(JSON violations GET "${execution}" violations)
+string(JSON acquired GET "${execution}" acquisitions)
+string(JSON released GET "${execution}" releases)
+string(JSON session_destroyed GET "${execution}" session_destroyed)
+if(NOT violations EQUAL 0 OR NOT acquired EQUAL released OR NOT session_destroyed)
+  message(FATAL_ERROR "Stream OpenXR ownership/lifecycle failure: ${execution}")
+endif()
+message(STATUS "PASS: cross-process moving stereo stream, ${pairs} source pairs, ${submitted} XR frames; headset/game NOT_RUN")
+set(ENV{ODV_MOCK_AUDIT} "${directory}/missing-audit.json")
+execute_process(COMMAND "${HOST}" --stereo-stream OpenDesertVR.Stereo.Missing
+  --config "${directory}/config.json" --report "${directory}/missing-report.json"
+  RESULT_VARIABLE missing OUTPUT_VARIABLE missing_output ERROR_VARIABLE missing_errors TIMEOUT 10)
+file(READ "${directory}/missing-report.json" missing_json)
+string(JSON missing_frames GET "${missing_json}" stereo_frames)
+string(JSON missing_origin GET "${missing_json}" stream_origin)
+if(NOT missing EQUAL 3 OR NOT missing_frames EQUAL 0 OR NOT missing_origin STREQUAL "UNAVAILABLE" OR
+   missing_json MATCHES "EYE_GEOMETRY")
+  message(FATAL_ERROR "Missing stream fell back to synthetic content: ${missing_json}")
+endif()

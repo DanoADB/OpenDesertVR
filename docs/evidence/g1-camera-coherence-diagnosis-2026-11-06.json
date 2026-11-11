@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_candidate_field_hypothesis",
+  "status": "FAILED",
+  "stage": "SAMPLING",
+  "process_memory_access": "ATTEMPTED",
+  "camera_field_layout": "UNVERIFIED",
+  "runtime_camera_semantics": "UNVERIFIED",
+  "camera_control": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "scope": "Published source-pointer and selected field offsets are hypotheses, not a relocated profile. No raw data, position, orientation, matrix, counter, address, PID or path is exported. File/path/module-size identity is checked; live image bytes are not hashed. Bracketed reads do not guarantee atomicity. No writes, hooks, debugger, privileges, scans, fallback or automatic retry.",
+  "source_sha256": {
+    "probe_fields.py": "0d4f52ee6eb4ba2c12c7ce029c6b9c557644b8d64d4a203a622e5e19a0edff3e",
+    "camera_fields.py": "626111a00d4f05dadc8c0c2f7f45a9d812f636339946af2b18245b083bbbf2ea",
+    "probe_association.py": "12a465cf3814b880f2b6d07af3cc14ab4f716233edc7bceb379b548123e82b0c",
+    "association.py": "0e97f59b11e11a6f8de5a9b7771c4cff8fa22c114bf0c6ca47a0227da6c95e2b",
+    "audit_profile.py": "a9a85cd1625d98217795f978a86a15784ca047aff5c1b3b5555ea97c75dcb2e0"
+  },
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "profile_sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "failure_stage": "SAMPLING",
+  "failure_reason": "candidate_fields_changed_within_sample",
+  "failure_type": "CoherenceError",
+  "coherence_checks": {
+    "global_stable": true,
+    "source_pointer_stable": true,
+    "table_pointer_stable": true,
+    "selected_ranges_stable": false,
+    "counter_bracket_stable": false
+  },
+  "changed_hypothesis_ranges": [
+    "buffer_counter_hypothesis"
+  ],
+  "date": "2026-11-06",
+  "probe_source_commit": "21dcc6289dcc883749ab1f42cf70a083772db522",
+  "probe_exit_code": 3,
+  "experiment_purpose": "component_level_coherence_diagnosis",
+  "scene": "UNVERIFIED",
+  "post_observation": {
+    "original_process_live": true,
+    "exit_code": 3,
+    "responding": true
+  },
+  "interpretation": "One explicitly scoped attribution observation after owned tests. Global/source/table remained equal across the bracket; only bytes in the hypothetical counter range differed. Numeric field validation did not produce a result. Counter semantics, exact timing cause, atomicity and layout remain unverified. No relaxed checks, offset fallback or automatic retry."
+}

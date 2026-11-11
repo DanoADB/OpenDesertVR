@@ -1,0 +1,125 @@
+{
+  "source_files": [
+    {
+      "path": "experiments/capture-lab/present_fixture.cpp",
+      "sha256": "853bfcc1e078cc669dfcf6deed4884d331c9b90d9c2e6aca60fca3aa788a65b1"
+    },
+    {
+      "path": "experiments/frame-capture/capture_once.py",
+      "sha256": "b6b0f002b4876cd6e03415cbc599d561266f2e656cc086a85dcc0322b62d267c"
+    },
+    {
+      "path": "experiments/frame-capture/test-owned-control.ps1",
+      "sha256": "1fb557c40120b3dc9478fb0d77c8ee4af5fb05d2479fecb2db3250b7ce50decd"
+    },
+    {
+      "path": "experiments/capture-lab/analyse_owned.py",
+      "sha256": "77b64d61b34e81502ce3c1f1bd76955316d1377f3c1bc7818fe584fbc271d989"
+    }
+  ],
+  "tool": {
+    "name": "RenderDoc",
+    "version": "1.47"
+  },
+  "scope": "Owned D3D12 content only. Capture/replay and pre-capture disconnect/timeout checked locally. No game launched, attached or captured by these tests. Raw captures and process/path context remain local. CI only compiles this optional fixture and checks script syntax.",
+  "scenarios": [
+    {
+      "test": {
+        "schema_version": 1,
+        "scenario": "capture",
+        "game_capture": "NOT_RUN",
+        "status": "PASS",
+        "fixture_exit_code": 0
+      },
+      "capture_report": {
+        "schema_version": 1,
+        "evidence_kind": "controlled_external_frame_capture",
+        "status": "OWNED_CONTROL_CAPTURED",
+        "game_gpu_capture": "NOT_RUN",
+        "world_render_pass_identity": "UNVERIFIED",
+        "camera_control": "UNVERIFIED",
+        "native_stereo": "UNVERIFIED",
+        "script_sha256": "b6b0f002b4876cd6e03415cbc599d561266f2e656cc086a85dcc0322b62d267c",
+        "mode": "owned_control",
+        "executable_sha256": "9c22c85c1d45ca2d6c717abd70d323eeb8245ca986a3368b645e96a6d7848e64",
+        "capture_sha256": "52387bcd4d874396ddea30e8ea72ed92c6424ab08c8db23d4904f5769ffef6d3",
+        "capture_bytes": 1537772,
+        "api": "D3D12"
+      },
+      "rdc_file_count": 2,
+      "replay": {
+        "schema_version": 1,
+        "evidence_kind": "owned_capture_tool_fixture",
+        "capture_sha256": "52387bcd4d874396ddea30e8ea72ed92c6424ab08c8db23d4904f5769ffef6d3",
+        "api": "GraphicsAPI.D3D12",
+        "clear_actions": 2,
+        "verified_rgba8_targets": 1,
+        "dimensions": [
+          16,
+          16
+        ],
+        "all_pixels_rgba8": [
+          0,
+          255,
+          255,
+          255
+        ],
+        "status": "PASS",
+        "game_capture": "NOT_RUN",
+        "camera_control": "UNVERIFIED",
+        "native_stereo": "UNVERIFIED"
+      }
+    },
+    {
+      "test": {
+        "schema_version": 1,
+        "scenario": "disconnect",
+        "game_capture": "NOT_RUN",
+        "status": "PASS",
+        "fixture_exit_code": 0
+      },
+      "capture_report": {
+        "schema_version": 1,
+        "evidence_kind": "controlled_external_frame_capture",
+        "status": "FAILED",
+        "game_gpu_capture": "NOT_RUN",
+        "world_render_pass_identity": "UNVERIFIED",
+        "camera_control": "UNVERIFIED",
+        "native_stereo": "UNVERIFIED",
+        "script_sha256": "b6b0f002b4876cd6e03415cbc599d561266f2e656cc086a85dcc0322b62d267c",
+        "mode": "owned_control",
+        "executable_sha256": "9c22c85c1d45ca2d6c717abd70d323eeb8245ca986a3368b645e96a6d7848e64",
+        "failure_stage": "READY_FOR_FRAME",
+        "failure_type": "RuntimeError"
+      },
+      "rdc_file_count": 0
+    },
+    {
+      "test": {
+        "schema_version": 1,
+        "scenario": "timeout",
+        "game_capture": "NOT_RUN",
+        "status": "PASS",
+        "fixture_exit_code": 0
+      },
+      "capture_report": {
+        "schema_version": 1,
+        "evidence_kind": "controlled_external_frame_capture",
+        "status": "FAILED",
+        "game_gpu_capture": "NOT_RUN",
+        "world_render_pass_identity": "UNVERIFIED",
+        "camera_control": "UNVERIFIED",
+        "native_stereo": "UNVERIFIED",
+        "script_sha256": "b6b0f002b4876cd6e03415cbc599d561266f2e656cc086a85dcc0322b62d267c",
+        "mode": "owned_control",
+        "executable_sha256": "9c22c85c1d45ca2d6c717abd70d323eeb8245ca986a3368b645e96a6d7848e64",
+        "failure_stage": "READY_FOR_FRAME",
+        "failure_type": "RuntimeError"
+      },
+      "rdc_file_count": 0
+    }
+  ],
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "owned_presenting_capture_control_validation"
+}

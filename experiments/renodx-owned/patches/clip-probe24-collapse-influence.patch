@@ -1,0 +1,93 @@
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -6,6 +6,7 @@
+ 
+ bool odv_clip_enabled = false;
+ bool odv_clip_large = false; // Read once before publishing a nonzero mode.
++bool odv_clip_collapse = false; // Scale-independent influence diagnostic only.
+ std::atomic_uint odv_clip_mode = 0;
+ std::atomic_uint64_t odv_clip_lease = 0;
+ std::atomic_bool odv_clip_failed = false;
+@@ -26,10 +27,12 @@
+   next_poll = now + 250;
+   static bool config_read = false;
+   if (!config_read) {
+-    uint32_t large = 0;
++    uint32_t large = 0, collapse = 0;
+     reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeLarge", large);
+-    if (large > 1) { odv_clip_failed = true; return; }
++    reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeCollapse", collapse);
++    if (large > 1 || collapse > 1 || (large && collapse)) { odv_clip_failed = true; return; }
+     odv_clip_large = large == 1;
++    odv_clip_collapse = collapse == 1;
+     config_read = true;
+   }
+   unsigned mode = 0;
+@@ -51,6 +54,7 @@
+     for (unsigned i = 0; i < 4; ++i) status << (i ? "," : "") << odv_clip_recordings[i].load();
+     status << "],\"compile_failure_stage\":" << odv_clip_compile_failure_stage.load()
+            << ",\"large_probe\":" << (odv_clip_large ? "true" : "false")
++           << ",\"collapse_probe\":" << (odv_clip_collapse ? "true" : "false")
+            << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
+            << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
+   } catch (...) {
+@@ -128,7 +132,7 @@
+       if (renodx::utils::hash::ComputeCRC32(bytes, vertex.BytecodeLength) != 0xC02F6FB5u) return false;
+       odv::research::ClipShiftCompiler compiler(renodx::utils::path::GetReShadeBasePath());
+       const auto shift = mode == 1 ? odv::research::ClipShift::identity : mode == 2 ? odv::research::ClipShift::left : odv::research::ClipShift::right;
+-      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large);
++      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large, odv_clip_collapse);
+       const HRESULT created = source->CreateVariant(reinterpret_cast<ID3D12Device*>(device->get_native()), slot,
+           modified.data(), modified.size(), &variant);
+       if (created == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {
+--- a/src/addons/devkit/odv/clip_shift_dxil.hpp
++++ b/src/addons/devkit/odv/clip_shift_dxil.hpp
+@@ -63,9 +63,11 @@
+ // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
+ // every other output unchanged. This is NOT a complete stereo/game adapter.
+ // No source/descriptor/root/argument buffer is modified. Text stays in process.
+-inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false) {
++inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false,
++                                                    bool collapse_probe = false) {
+     using namespace cbv_detail;
+-    if (text.empty() || text.size() > 1024 * 1024 || text.find("odv_clip_probe_x") != text.npos)
++    if ((large_probe && collapse_probe) || text.empty() || text.size() > 1024 * 1024 ||
++        text.find("odv_clip_probe_x") != text.npos)
+         return {};
+     std::map<std::string, std::vector<std::string>> nodes;
+     static const std::regex metadata(R"(^(![A-Za-z0-9_.]+) = !\{(.*)\}$)");
+@@ -137,7 +139,13 @@
+             if (id == position && column == 0) {
+                 if (row != 0 || ++changed != 1)
+                     return {};
+-                output += "  %odv_clip_probe_x = fadd float " + match[5].str() + ", " + delta + "\n";
++                // Collapse is a scale-independent influence diagnostic: every
++                // selected triangle has the same normalized X and no area.
++                // Identity retains the original position, including its scale.
++                if (collapse_probe && shift != ClipShift::identity)
++                    output += "  %odv_clip_probe_x = fadd float 0.000000e+00, 0.000000e+00\n";
++                else
++                    output += "  %odv_clip_probe_x = fadd float " + match[5].str() + ", " + delta + "\n";
+                 line = match[1].str() + "%odv_clip_probe_x" + match[6].str();
+             }
+         }
+@@ -197,8 +205,8 @@
+     }
+     ClipShiftCompiler(const ClipShiftCompiler &) = delete;
+     ClipShiftCompiler &operator=(const ClipShiftCompiler &) = delete;
+-    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift,
+-                                      bool large_probe = false) const {
++    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift, bool large_probe = false,
++                                      bool collapse_probe = false) const {
+         if (original.size() < 32 || original.size() > 1024 * 1024)
+             throw std::runtime_error("shader_input_bound");
+         Microsoft::WRL::ComPtr<IDxcUtils> utils;
+@@ -219,7 +227,7 @@
+         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
+         if (!view.empty() && view.back() == '\0')
+             view.remove_suffix(1);
+-        auto shifted = shift_clip_x_text(view, shift, large_probe);
++        auto shifted = shift_clip_x_text(view, shift, large_probe, collapse_probe);
+         if (!shifted)
+             throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
+         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-04",
+  "source_commit": "fd69e0077ef944e83a588917f5846e4756cd15aa",
+  "environment": {
+    "os": "Windows x64",
+    "compiler": "MSVC 19.44.35229",
+    "sdk": "10.0.26100.0"
+  },
+  "debug": {
+    "configure": "PASS",
+    "build": "PASS",
+    "ctest_passed": 6,
+    "ctest_failed": 0
+  },
+  "release": {
+    "configure": "PASS",
+    "build": "PASS",
+    "ctest_passed": 6,
+    "ctest_failed": 0
+  },
+  "graphics": {
+    "backend": "D3D12 WARP software adapter",
+    "raster_readback": "PASS",
+    "near_mid_far_disparity_pixels": [
+      20.1375,
+      7,
+      4.95688
+    ],
+    "invalid_adapter_failure": "PASS",
+    "allocation_device_hresult_injection": "PASS"
+  },
+  "runtime": {
+    "family": "Meta",
+    "discovery": "PASS",
+    "XR_KHR_D3D12_enable": true,
+    "headset_system": "UNAVAILABLE",
+    "host_exit": 3,
+    "xr_result": -35,
+    "stereo_frames": 0
+  },
+  "missing_runtime_override": {
+    "test": "PASS",
+    "readiness": "FAIL",
+    "cli_exit": 3,
+    "sanitized_json": "PASS"
+  },
+  "package": {
+    "filename": "OpenDesertVR-M0-win64.zip",
+    "sha256": "28ebbcf24aac064eb7c47b6290174d27bb5b6bad4832050117efb5e6af47c323",
+    "size_bytes": 1092009,
+    "extracted_executable_smoke": "PASS",
+    "doctor_exit_without_headset": 3,
+    "host_exit_without_headset": 3,
+    "source_dirty": false
+  },
+  "headset_visual_validation": "NOT_RUN",
+  "headset_shutdown_disconnect_validation": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "hosted_github_actions": "NOT_RUN",
+  "next_gate": "Manual headset checklist in docs/M0_ACCEPTANCE.md; M0 exit remains pending"
+}

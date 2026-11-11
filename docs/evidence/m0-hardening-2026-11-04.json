@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-04",
+  "tested_source_commit": "da631437dd890d19a2d9d6f9f62647bb62e61ab5",
+  "local_debug": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 1
+  },
+  "local_release": {
+    "passed": 33,
+    "failed": 0,
+    "skipped": 1
+  },
+  "local_skip": "D3D12 debug layer unavailable; no validation result claimed",
+  "native_test_runtime": {
+    "scenarios": [
+      {
+        "scenario": "acquire_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 1,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "all_skip",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 6,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "allocation_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "begin_frame_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "begin_session_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "end_frame_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 2,
+          "frames": 0,
+          "releases": 2,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "image_timeout",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 1,
+          "frames": 1,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "instance_loss",
+        "ready": false,
+        "stereo_frames": 2,
+        "audit": {
+          "acquisitions": 4,
+          "frames": 2,
+          "releases": 4,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 2,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "invalid_tracking",
+        "ready": true,
+        "stereo_frames": 3,
+        "audit": {
+          "acquisitions": 6,
+          "frames": 6,
+          "releases": 6,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 3,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "locate_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 1,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "missing_extension",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": null
+      },
+      {
+        "scenario": "missing_headset",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "normal",
+        "ready": true,
+        "stereo_frames": 6,
+        "audit": {
+          "acquisitions": 12,
+          "frames": 6,
+          "releases": 12,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 6,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "release_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 1,
+          "frames": 1,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "request_exit",
+        "ready": true,
+        "stereo_frames": 65,
+        "audit": {
+          "acquisitions": 130,
+          "frames": 65,
+          "releases": 130,
+          "request_exit_called": true,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 65,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "second_acquire_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 1,
+          "frames": 1,
+          "releases": 1,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "second_allocation_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "second_release_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 2,
+          "frames": 1,
+          "releases": 1,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "second_wait_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 2,
+          "frames": 1,
+          "releases": 1,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "session_loss",
+        "ready": false,
+        "stereo_frames": 2,
+        "audit": {
+          "acquisitions": 4,
+          "frames": 2,
+          "releases": 4,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 2,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "skip_render",
+        "ready": true,
+        "stereo_frames": 3,
+        "audit": {
+          "acquisitions": 6,
+          "frames": 6,
+          "releases": 6,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 3,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "wait_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 1,
+          "frames": 1,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "wait_frame_failure",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "wait_timeout",
+        "ready": true,
+        "stereo_frames": 6,
+        "audit": {
+          "acquisitions": 12,
+          "frames": 6,
+          "releases": 12,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 6,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      },
+      {
+        "scenario": "wrong_adapter",
+        "ready": false,
+        "stereo_frames": 0,
+        "audit": {
+          "acquisitions": 0,
+          "frames": 0,
+          "releases": 0,
+          "request_exit_called": false,
+          "session_destroyed": true,
+          "space_destroyed": true,
+          "stereo_submissions": 0,
+          "swapchains_remaining": 0,
+          "test_runtime": true,
+          "violations": 0
+        }
+      }
+    ],
+    "hardware_validation": "NOT_RUN",
+    "kind": "loader protocol and D3D12 WARP software evidence"
+  },
+  "gpu_timestamps": "Measured on WARP; not a hardware/compositor performance claim",
+  "package": {
+    "source_commit": "6c0932b23c269e5ecd943e8cfce85642f7049c12",
+    "filename": "OpenDesertVR-M0-6c0932b-win64.zip",
+    "sha256": "22e31dfa5060bbb19f3639427ffddf4652b5a1e942fc70370cb6d37ec32826ab",
+    "bytes": 1123080,
+    "source_dirty": false,
+    "test_runtime_excluded": true,
+    "collector_smoke_exit_without_headset": 3
+  },
+  "headset_validation": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "hosted_ci": {
+    "status": "PASS",
+    "debug": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "release": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "debug_layer_validation": "PASS",
+    "run": "https://github.com/DanoADB/OpenDesertVR/actions/runs/41965528980",
+    "pr": "https://github.com/DanoADB/OpenDesertVR/pull/12",
+    "fixture": "Disposable GitHub worker temporarily registers the test runtime, then restores its prior selection in finally. Product and local tests do not write runtime registration."
+  }
+}

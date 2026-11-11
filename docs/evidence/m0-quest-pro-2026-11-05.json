@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "user_reported_headset_observation",
+  "headset_model": "Meta Quest Pro",
+  "suggested_build_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+  "actual_build_commit": "404d38a5b3691f7b8d79836b155e1fa493fc5660",
+  "runtime_version": null,
+  "gpu_model": null,
+  "connection_mode": null,
+  "duration_seconds": null,
+  "observations": {
+    "three_colored_cubes_visible": "PASS",
+    "perceived_depth_separation": "PASS",
+    "world_anchored_during_head_translation_and_rotation": "PASS",
+    "alternating_eye_viewpoint_shift_without_double_vision": "PASS",
+    "comfortable_motion_without_reported_flicker_or_strong_judder": "PASS",
+    "timed_or_requested_orderly_shutdown": "PASS_USER_REPORTED_AND_HOST_EXIT_0",
+    "runtime_menu_return": "PASS_USER_REPORTED_AND_FOCUS_TRANSITIONS_RECORDED",
+    "disconnect_and_fresh_process_recovery": "PASS_QUEST_LINK_DISCONNECT_AND_FRESH_LAUNCH",
+    "hardware_graphics_debug_validation": "NOT_RUN"
+  },
+  "frame_timing_report": "m0-quest-pro-reports-2026-11-05.json",
+  "host_report": "m0-quest-pro-reports-2026-11-05.json",
+  "m0_exit_gate": "PASS_TESTED_CONFIGURATION",
+  "game_validation": "NOT_RUN",
+  "limitations": [
+    "Visual observations were reported by the user in chat; no headset capture was inspected.",
+    "Packaged executable SHA256 and clean build-info match the user extracted build; actual host reports are preserved separately.",
+    "Unreported checks remain NOT_RUN; they are not inferred from successful viewing."
+  ]
+}

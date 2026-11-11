@@ -1,0 +1,14 @@
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -173,9 +173,9 @@
+     const unsigned slot = mode - 1;
+     if (FAILED(source->GetVariant(slot, &variant))) {
+       D3D12_SHADER_BYTECODE vertex{};
+-      if (FAILED(source->GetVertex(&vertex)) || vertex.BytecodeLength != 18680) return false;
++      if (FAILED(source->GetVertex(&vertex)) || vertex.BytecodeLength != 25924) return false;
+       const auto* bytes = static_cast<const uint8_t*>(vertex.pShaderBytecode);
+-      if (renodx::utils::hash::ComputeCRC32(bytes, vertex.BytecodeLength) != 0x80800FE6u) return false;
++      if (renodx::utils::hash::ComputeCRC32(bytes, vertex.BytecodeLength) != 0xC48DB423u) return false;
+       odv::research::ClipShiftCompiler compiler(renodx::utils::path::GetReShadeBasePath());
+       const auto shift = mode == 1 ? odv::research::ClipShift::identity : mode == 2 ? odv::research::ClipShift::left : odv::research::ClipShift::right;
+       const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large, odv_clip_collapse);

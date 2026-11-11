@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "bfc636d",
+  "status": "STATIC_VERTEX_LOAD_BOUNDS_OBSERVED_READBACK_REJECTED",
+  "game_build": "26480954",
+  "scene": "Loaded 3D world; stationary camera reported by user and scene observed on desktop",
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "target_slot": 18,
+  "target_space": 35,
+  "descriptor_bytes": 2816,
+  "vertex_static_access": {
+    "declarations": 1,
+    "declaredBytes": 2768,
+    "descriptorCount": 1,
+    "downstreamConsumptionProven": false,
+    "frozenPayloadSafe": false,
+    "handles": 2,
+    "loads": 16,
+    "malformedRecordFields": 0,
+    "malformedRecordIntegerMask": 0,
+    "maximumByteEnd": 2720,
+    "rows": [
+      2,
+      8,
+      18,
+      19,
+      20,
+      21,
+      30,
+      31,
+      32,
+      33,
+      167,
+      169
+    ],
+    "shaderBytes": 25924,
+    "shaderHash": "0xC48DB423",
+    "slot": 18,
+    "space": 35,
+    "staticLegacyLoadBoundsObserved": true,
+    "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+  },
+  "captures": [
+    {
+      "label": "static1",
+      "records": 1,
+      "submission_known": true,
+      "predication_known": true,
+      "predicate_bound": false,
+      "copy_allowed_by_predication_and_render_pass": true,
+      "attempts": [
+        {
+          "slot": 18,
+          "sourceAllocationBytes": 65536,
+          "sourceHeapType": 1,
+          "sourceState": "DEFAULT_STATE_UNVERIFIED",
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE"
+        }
+      ],
+      "sample_count": 0,
+      "private_report_sha256": "d4c9a73a146ee2b3557d3985d9ba66a98f640ae3ae5570bd20d04a6690ca574c"
+    },
+    {
+      "label": "static2",
+      "records": 1,
+      "submission_known": true,
+      "predication_known": true,
+      "predicate_bound": false,
+      "copy_allowed_by_predication_and_render_pass": true,
+      "attempts": [
+        {
+          "slot": 18,
+          "sourceAllocationBytes": 65536,
+          "sourceHeapType": 1,
+          "sourceState": "DEFAULT_STATE_UNVERIFIED",
+          "space": 35,
+          "state": "INELIGIBLE_SOURCE"
+        }
+      ],
+      "sample_count": 0,
+      "private_report_sha256": "70ce72d1938d94b43346605752a0305aec4956f08d5db28602474435902f02b9"
+    }
+  ],
+  "readback_payloads": 0,
+  "camera_identity": "UNVERIFIED",
+  "independent_eye_views": "NOT_RUN",
+  "head_tracking": "NOT_RUN",
+  "openxr_game_delivery": "NOT_RUN",
+  "effects_enabled": false,
+  "asset_files": 0,
+  "next_question": "Distinguish missing/reset resource observations, incomplete barrier state, other access scope and tracker capacity exhaustion without relaxing copy guards.",
+  "limits": [
+    "Static constant-buffer load bounds do not identify camera semantics or prove which loaded components reach clip position.",
+    "copyUnpredicatedAllowed covers draw context only; the separate source-state gate rejected both attempts.",
+    "Observed barrier counts do not establish tracker overflow or source-specific state; no guessed state or broader read was used."
+  ]
+}

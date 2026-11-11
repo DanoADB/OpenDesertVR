@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "NATIVE_VARIANTS_RECORDED_GEOMETRY_INFLUENCE_UNVERIFIED",
+  "source_commit": "78ac87b1afd0539670051b8989c7d8c21b18eff7",
+  "game_build": {
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "addon": "Probe25",
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "target_vertex_crc32": "80800FE6",
+  "target_vertex_bytes": 18680,
+  "collapse_probe": true,
+  "large_probe": false,
+  "native_wrapper_sha256": "a57e90449c75ae06d3eb37663d527e28bc31a1f0b88fe139b013aee5f115fffa",
+  "binary_sha256": {
+    "renodx-devkit.addon64": "8400aa9fe3aee29d173dfd13c096a26cfb5b279b3dd3f713316a6a2967ecd7ad",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "recorded_replacements": {
+    "identity": 4653,
+    "static_collapse": 3411,
+    "camera_distance_attempt": 5700,
+    "camera_rotation": 5493
+  },
+  "private_report_sha256": {
+    "identity": "1c8f34fcc632ffdd2d002390afb8047010fb3fa3fc154cfc1f3678e32e2b063b",
+    "static_collapse": "2432c2932a3143df555a553146d554ac16fc6c06c9c66d9ba1c1574fcb64bd94",
+    "camera_distance_attempt": "904b8dd3b9e8c7946d20b1eaf7011a8cadcec74215521d997d99c24900719b39",
+    "camera_rotation": "9c3d844fa3d9f29adf700f74474dd3ee912bc76c810db75c1a7b28a80f900092"
+  },
+  "restored_original_mode": 0,
+  "failed": false,
+  "original_game_identity_postflight": "PASS_UNCHANGED",
+  "tool_postflight": "PASS_UNCHANGED",
+  "asset_files": 0,
+  "desktop_observation": {
+    "static_collapse": "NO_CLEAR_GEOMETRY_DISAPPEARANCE",
+    "camera_distance_attempt": "SCROLL_INPUT_DID_NOT_VISIBLY_CHANGE_CAMERA_DISTANCE",
+    "camera_rotation": "CAMERA_ROTATION_OBSERVED_NO_CLEAR_PROBE_INFLUENCE",
+    "restored": "NORMAL_SCENE_OBSERVED"
+  },
+  "user_camera_rotation_observation": "NO_NOTICEABLE_CHANGE",
+  "geometry_influence": "UNVERIFIED",
+  "actual_gpu_indirect_counts": "UNMEASURED",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "ci": {
+    "run": 42850063811,
+    "result": "PASS_DEBUG_RELEASE_CORE_AND_OWNED_CONTROLS",
+    "external_wrapper_addon_binaries": "LOCAL_QUALIFICATION_ONLY"
+  },
+  "limitations": [
+    "CPU recording counts are not GPU primitive or sample counts.",
+    "Known capacity3099 does not establish actual nonzero GPU work.",
+    "Shader identity alone does not prove final visible contribution.",
+    "Camera rotation prevents treating this solely as a static-view coordinate-scale issue, but is not a pixel-difference measurement."
+  ],
+  "decision": "Do not infer visible geometry control from recorded shader variants. Next measure actual indirect count/arguments and inspect predication before selecting further shader targets."
+}

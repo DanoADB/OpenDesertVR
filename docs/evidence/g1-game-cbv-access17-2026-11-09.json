@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_WORLD_VS_STATIC_CBV_BOUNDS_PS_UNRESOLVED",
+  "observer_version": "bc0ead3-cbv-access-17",
+  "source_commit": "c0d92c7604bf536a6567f30b29191ee7bbe58de1",
+  "scene": "WORLD_STATIC",
+  "scene_confirmation": "USER_CONFIRMED_3D_SCENE_CAMERA_STILL",
+  "retained_records": 5,
+  "detail_records": 4,
+  "draw_shader_observations": [
+    {
+      "draw_index": 1,
+      "role": 0,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 13,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2720,
+          "rows": [
+            2,
+            8,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          "shaderBytes": 25212,
+          "shaderHash": "0x87BF0C9A",
+          "slot": 17,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 1,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 144,
+          "rows": [
+            8
+          ],
+          "shaderBytes": 15916,
+          "shaderHash": "0x344CE166",
+          "slot": 17,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        }
+      ]
+    },
+    {
+      "draw_index": 2,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 12,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2720,
+          "rows": [
+            2,
+            8,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 12,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2752,
+          "rows": [
+            0,
+            4,
+            8,
+            30,
+            31,
+            32,
+            33,
+            149,
+            161,
+            171
+          ],
+          "shaderBytes": 21588,
+          "shaderHash": "0xF25B25BC",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "UNSUPPORTED_HANDLE_USE"
+        }
+      ]
+    },
+    {
+      "draw_index": 3,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 12,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2720,
+          "rows": [
+            2,
+            8,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 14,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2752,
+          "rows": [
+            0,
+            2,
+            4,
+            8,
+            30,
+            31,
+            32,
+            33,
+            149,
+            161,
+            171
+          ],
+          "shaderBytes": 22580,
+          "shaderHash": "0xEF095A1B",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "UNSUPPORTED_HANDLE_USE"
+        }
+      ]
+    },
+    {
+      "draw_index": 4,
+      "role": 1,
+      "shaders": [
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 2,
+          "loads": 12,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2720,
+          "rows": [
+            2,
+            8,
+            18,
+            19,
+            20,
+            21,
+            167,
+            169
+          ],
+          "shaderBytes": 19800,
+          "shaderHash": "0xC02F6FB5",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": true,
+          "status": "OBSERVED_STATIC_LEGACY_LOAD_BOUNDS"
+        },
+        {
+          "declarations": 1,
+          "declaredBytes": 2768,
+          "descriptorCount": 1,
+          "downstreamConsumptionProven": false,
+          "frozenPayloadSafe": false,
+          "handles": 0,
+          "loads": 12,
+          "malformedRecordFields": 0,
+          "malformedRecordIntegerMask": 0,
+          "maximumByteEnd": 2752,
+          "rows": [
+            0,
+            4,
+            8,
+            30,
+            31,
+            32,
+            33,
+            149,
+            161,
+            171
+          ],
+          "shaderBytes": 21584,
+          "shaderHash": "0xBA2D6B67",
+          "slot": 18,
+          "space": 35,
+          "staticLegacyLoadBoundsObserved": false,
+          "status": "UNSUPPORTED_HANDLE_USE"
+        }
+      ]
+    }
+  ],
+  "private_evidence_sha256": {
+    "details.private.json": "8703ac1ededd92e434da644368dee762039c9e419cbe940691609fe97738aab3",
+    "draws.private.json": "10096fa63430f85df0320574a9738a508181986c8adf4a00f18e1c442e6509a2",
+    "report.json": "59a3e28a1d1bf343e72563dc9bd0415080b37224af7a999aa998624355cf10c0",
+    "cleanup.json": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  },
+  "cleanup": "PASS_EXACT_STAGED_FILES_REMOVED_GAME_IDENTITY_UNCHANGED",
+  "world_camera_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "limits": [
+    "World VS C02F6FB5: one singleton declaration2768 bytes; twelve supported static loads, eight unique16-byte rows, maximum byte end2720. This is bounded syntax observation, not downstream semantics or executed-work proof.",
+    "All three world PS variants encounter unsupported target-handle use after partial supported loads. ALL-stage root-CBV lifting remains unqualified.",
+    "No source copy at unknown state, frozen payload substitution, shader replacement or game buffer write enabled."
+  ]
+}

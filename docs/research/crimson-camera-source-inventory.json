@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "repository": "fitzforge/UltimateCameraMod",
+  "commit": "d84e1a8a7812e8afc4671434962c12033eab877c",
+  "scope": "Selected static source review only; not a complete repository/dependency clearance. No build, install, archive decoding, game-file edit or execution.",
+  "root_license_observed": "MIT",
+  "adopted_code": [],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "a7b557520675f5dfadb2f359e82fabb6ed091bfe9f41a13c2caec0617d6d755c",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/README.md"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "e37396c57ef97d05a1282d7507710267eadec2c864c6525072d5af2e05843b4e",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/LICENSE"
+    },
+    {
+      "path": "src/UltimateCameraMod.V3/Services/CameraMod.cs",
+      "sha256": "6f5782a0e52e8a53ee27ffb4f60b818ba894ffa3a8f805ed0c23b68bb9d0a4eb",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/src/UltimateCameraMod.V3/Services/CameraMod.cs"
+    },
+    {
+      "path": "src/UltimateCameraMod.V3/MainWindow.Export.cs",
+      "sha256": "63261778bc6b60a825b92f713a40695154ec676b43d15c2c6cae229a5c1ea30e",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/src/UltimateCameraMod.V3/MainWindow.Export.cs"
+    },
+    {
+      "path": "src/UltimateCameraMod.V3/Models/CameraRules.cs",
+      "sha256": "94672d38205edadd67f0863cb21adce97e3daef10224cc4cce7c5ac7f2adc10e",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/src/UltimateCameraMod.V3/Models/CameraRules.cs"
+    },
+    {
+      "path": "src/UltimateCameraMod.V3/Controls/CameraPreview.cs",
+      "sha256": "7cf203e60c0dc0a70e72b81cfcd7057d71193f7b3b61252867bb28d79c6364f0",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/src/UltimateCameraMod.V3/Controls/CameraPreview.cs"
+    },
+    {
+      "path": "src/UltimateCameraMod.V3/UltimateCameraMod.V3.csproj",
+      "sha256": "f1cc7c80cef0ca54f81a061d980a491136ebcb24c42125e63bee11ed159ff245",
+      "url": "https://github.com/fitzforge/UltimateCameraMod/blob/d84e1a8a7812e8afc4671434962c12033eab877c/src/UltimateCameraMod.V3/UltimateCameraMod.V3.csproj"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_PRIVATE_SPLIT_TABLE_RENDER",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "source_sha256": {
+    "experiments/draw-binding-owned/private_cbv_layout.hpp": "57f6672b13d08ccf7d2bd99308fd9ae27691337f4cfcf62143326fbcee13f549",
+    "experiments/draw-binding-owned/fixture.cpp": "862325bd1e6650451ccb4326af8798553b6a63d002c2cfba4740d53561c754fa",
+    "experiments/draw-binding-owned/CMakeLists.txt": "cd2a877b7e8fcb955d8844db107ac225b7bfc467e5fb2982d10b176d59eab73b"
+  },
+  "configurations": [
+    {
+      "name": "Debug",
+      "passed": 14,
+      "failed": 0,
+      "test_log_sha256": "a9ddf9063c510bb1a692c6bcdcafb1623ff9c6c3d90d8353936b051ca7b7c16a",
+      "binary_sha256": "29e3f31b80f78f543e95930aa7134b218b5f4c16788e30dc1b7671ca9abdd3d4"
+    },
+    {
+      "name": "Release",
+      "passed": 14,
+      "failed": 0,
+      "test_log_sha256": "b41b3bdaf7e30fef141baac14da9edc7de3f36e72c047d01b511c8624c13e068",
+      "binary_sha256": "90437cf746a273864b86b76025cb412173af04f1bc08cb17142536d19131abda"
+    }
+  ],
+  "controls": [
+    "Authored non-array b2 CBV inside original b1-b3 vertex descriptor table.",
+    "Derived layout retains b1 and b3 table ranges at original offsets, appends private b2 root CBV at index 2, and retains pixel root at index 1.",
+    "Same authored VS/PS bytes; separately created root and PSO. Original descriptor heap is never edited.",
+    "Private copy moves geometry outside viewport; 2048 black pixels verified.",
+    "Original root, PSO and table restore 2048 RGB/black pixels per frame for two frames; all 256 original input bytes remain exact."
+  ],
+  "limits": [
+    "Owned WARP only; game camera binding and stereo NOT_RUN.",
+    "The adjacent b1/b3 bindings are populated but unused by the authored shader; native roundtrip separately verifies preserved offsets.",
+    "Finite table, proven non-array bounded CBV access, direct draw only; root-mutating indirect replay and actual game layout compatibility UNVERIFIED.",
+    "Local debug layer unavailable."
+  ],
+  "private_render_results": [
+    {
+      "result": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 2,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 5,
+        "submittedDrawsPerFrame": 4,
+        "fourthColumn": "black",
+        "captureTool": "NOT_RUN",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "result_sha256": "4da01e54c7d10d4beed3b3b9ef44199c7ea57d1ef2ce8dacba66ffdd8fd7a35e",
+      "stdout_sha256": "b4a2d973ebe2792fa0bf88cab5e23e158e63c34051ed5530daefec3d8fd1c9bb"
+    },
+    {
+      "result": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 2,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 5,
+        "submittedDrawsPerFrame": 4,
+        "fourthColumn": "black",
+        "captureTool": "NOT_RUN",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "result_sha256": "4da01e54c7d10d4beed3b3b9ef44199c7ea57d1ef2ce8dacba66ffdd8fd7a35e",
+      "stdout_sha256": "b4a2d973ebe2792fa0bf88cab5e23e158e63c34051ed5530daefec3d8fd1c9bb"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "owned_devkit_transport_qualification",
+  "status": "OBSERVED_OWNED_DEVKIT_TRANSPORT",
+  "stage": "COMPLETE",
+  "source_commit": "07d12e8ea5c9990acfc78d7a1cf4ac2d39d68a12",
+  "source_dirty": false,
+  "source_sha256": {
+    "qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+    "bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+    "devkit-input-lock.json": "c966826f742643f24f96918f092acbee020bd6db61754c1c689027c53267d741"
+  },
+  "game_access": "NOT_RUN",
+  "headset_test": "NOT_RUN_USER_DEFERRED",
+  "draw_binding_qualification": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "input_postflight": "PASS",
+  "scope": "Clear-only owned app and private pinned Devkit/stdio bridge, not game instrumentation. Exact pipe server PID must equal the created owned child. Observer selection/snapshot state changes are requested; shader text/dumps, replacements and resource mutation tools are excluded. No global MCP registration or game-folder writes. Metadata transport is not draw tracking, per-draw bytes, GPU completion or camera proof. Raw local metadata/logs remain private; file hashes are not full loaded-code or external-I/O attestation.",
+  "binary_sha256": {
+    "owned_app.exe": "f10cfa2e9c63ababef7f2125d678a085fa10a1869809fe52d89c72e112dbe049",
+    "renodx-devkit.addon64": "7d61585c925197c5000ed99fae8f97aed1ac5bb5fd93166cb317640a53cf6b82",
+    "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+    "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25"
+  },
+  "config_before_sha256": "215365fe52e4530e37820bce198e72a7268c722f2c7bde7624e5115a322f07ba",
+  "pipe_server_matches_owned_child": true,
+  "snapshot_counts": {
+    "capturedDraws": 0,
+    "trackedShaders": 0,
+    "resourceUsageEntries": 0,
+    "shaderUsageEntries": 0,
+    "snapshotRows": 0
+  },
+  "snapshot_observed_complete": true,
+  "owned_device_count": 1,
+  "presenting_api": "d3d12",
+  "fresh_bridge_reconnect": true,
+  "owned_exit_code": 0,
+  "devkit_asset_files": 0,
+  "case_kind": "OWNED_PROCESS_SOFTWARE_TRANSPORT_QUALIFICATION",
+  "method": "docs/research/g1-owned-devkit-transport-method.md",
+  "controller_exit_code": 0,
+  "presenting_fixture": "Original clear-only D3D12/DXGI fixture with --hidden; no geometry draws.",
+  "observed_fixture_frame_count": 6,
+  "private_tool_build_recipe": {
+    "upstream_revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+    "upstream_cmake_sha256": "9c079ce00a873a4f9239e7185c3d9d009d5775a5d334eca6e6f51f17bd98cb75",
+    "extracted_recipe_sha256": "27f824986a3d831d85b5cbdff3cff7bdaec88c80161e9558564f26bd28aa07a2",
+    "private_cmake_sha256": "fe1a87a3c1f7c9e26efafdd002c828ad13c55d90ae7880293ce5c28103acbfb6",
+    "shader_dependency_helper_sha256": "08e8725dcb8a230948ae39ad71992a2ddbc29e83dd694d5c724a6062d4d1e9ba",
+    "scope": "Private source build only; unmodified selected upstream CMake functions, devkit and bridge source. No root setup, game addon or shader replacement inputs."
+  },
+  "private_build_log_sha256": "f7c4061da89d74fe528aff565b2a7cc4fbc88644079b89bc54c188d4ab168ee7",
+  "core_runtime_dependencies_changed": false,
+  "interpretation": "The exact owned-child pipe was verified, the observer snapshot completed with all five retained counts zero, a fresh bridge reconnected, and the target exited cooperatively with code zero. Empty boot/live/dump directories and input postflight passed. This qualifies this private build and transport lifecycle on the original clear-only owned fixture. It does not qualify actual geometry draw tracking, vertex-only table coverage, submission markers, constant-buffer byte snapshots, game compatibility or any camera control. No headset or game process was accessed.",
+  "external_devkit_execution": "OWNED_PROCESS_ONLY",
+  "game_addon_execution": "NOT_RUN",
+  "rendered_geometry": "NOT_RUN_CLEAR_ONLY",
+  "native_stereo": "UNVERIFIED",
+  "hosted_qualification": {
+    "source_commit": "07d12e8ea5c9990acfc78d7a1cf4ac2d39d68a12",
+    "run_url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42271236573",
+    "debug": "PASS",
+    "release": "PASS",
+    "core_native_checks_per_configuration": 34,
+    "python_tests_per_configuration": 94,
+    "optional_research_suites_per_configuration": 4,
+    "new_synthetic_protocol_identity_tests_actually_ran": 5,
+    "external_devkit_execution": "NOT_RUN",
+    "scope": "CI uses synthetic protocol/device/snapshot tests and fixture compilation, not this local external-tool runtime experiment."
+  }
+}

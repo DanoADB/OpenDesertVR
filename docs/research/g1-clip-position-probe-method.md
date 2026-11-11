@@ -1,0 +1,373 @@
+# Private vertex-position influence probe
+
+Probe18 runtime configuration requires `ODVClipProbeEnabled=1`,
+`ODVDefaultConstants=1` and `ODVNativeMetadata=1`. The latter two install the
+native command-list state and draw/indirect callbacks needed by the probe.
+`ODVUploadInputs` remains0. No snapshot or constant-buffer copy is requested
+by the clip probe. These settings are read at addon initialization, so changing
+them requires a normal game restart. A mode1 status with zero recorded
+replacements is not an executed identity control. The first game attempt
+exposed this configuration error; see the
+[attempt record](../evidence/g1-game-clip-probe18-2026-11-10.json).
+
+The observed world VS has bounded target-CBV loads, while three PS variants
+still contain unsupported target-handle uses. A private vertex shader can test
+visible geometry influence without copying or changing any game buffer and
+without lifting a descriptor-table CBV into the root signature.
+
+The owned implementation identifies one VS entry point, its exact float4
+SV_Position output element and one X-component store. It inserts one fixed
+`clip.x += delta` instruction, using delta0 for the identity control and
+delta+/-0.125 for the two geometry controls. All other instructions and shader
+metadata remain unchanged. Unsupported/ambiguous output layouts and non-VS
+input are rejected. DXC text and assembled shaders stay in process.
+
+Microsoft's SDK [assembler](https://learn.microsoft.com/en-us/windows/win32/api/dxcapi/nf-dxcapi-idxcassembler-assembletocontainer)
+accepts LLVM-style DXIL. The modified container must also pass its
+[validator](https://learn.microsoft.com/en-us/windows/win32/api/dxcapi/nf-dxcapi-idxcvalidator-validate)
+before PSO creation. Assembly and validation do not by themselves prove useful
+rendering; the owned fixture checks GPU pixels and preserved inputs.
+
+The original owned quad is rendered at clip-W1 and2, using the same original
+root signature, exact40-byte IBV/root0/DrawIndexed command signature, original
+CBV and argument/count/index buffers. Only the PSO changes. Eleven cases cover
+original and identity output, both shift directions, near/far displacement,
+original PSO restoration and GPU count0/max0. Every case checks1,024 pixels.
+The shift creates4-pixel blank strips at W1 and2-pixel strips at W2. Camera,
+DEFAULT argument/count and index bytes must remain exact after a covering GPU
+fence. The harness runs both SDK-compiled SM6.0 and SM6.6 shaders and rejects a
+pixel shader supplied as the VS. No game data is used by these controls.
+
+This is a geometry-influence diagnostic, not a finished alternate camera or
+stereo solution. A constant homogeneous-X change produces depth-dependent
+displacement; a constant multiplied by W would instead make a uniform screen
+pan. Neither technique alone fixes original-camera culling, disocclusions,
+temporal effects, lighting or headset pose/render delivery.
+
+Game integration remains NOT_RUN. It requires preserving the actual native PSO
+description, including fields omitted by generic ReShade pipeline subobjects
+(for example sample quality, node mask, strip-cut and view-instancing state).
+The private PSO must retain the original root and unchanged PS/other stages,
+forward the original native indirect call once, restore the original PSO and
+remain alive through submitted GPU use. No shader/root/signature replacement
+is enabled in the current game observer.
+
+## Active query correction (Probe19)
+
+The corrected Probe18 configuration found 6,123 tagged world-shader candidates,
+but recorded no replacement draws. A bounded current-scene snapshot found an
+active GPU query on both matching world draws. The generic replay eligibility
+gate therefore rejected them before variant creation.
+
+Probe19 uses a separate single-forward eligibility gate: known active queries
+may surround the unchanged application command, forwarded exactly once. Unknown
+state, missing native capabilities, protected sessions, render passes and stream
+output remain rejected. Replay/copy eligibility is unchanged. Owned GPU controls
+now wrap all eleven cases in pipeline-statistics and occlusion intervals; exact
+primitive and covered-sample counts detect accidental double execution.
+Debug and Release SM6.0/6.6 legacy/stream controls pass locally. Local D3D12 debug
+validation remains unavailable; hosted validation is separate. Native wrapper
+attachment controls also pass with the new addon and tracking enabled.
+
+The game retry with Probe19 remains NOT_RUN until the current game exits normally
+and the qualified observer is staged. No game stereo or headset result follows
+from these owned tests.
+
+Probe19 live retry reached shader processing but rejected its first identity
+candidate. No replacement draw was recorded; mode0 was restored and the original
+scene continued. Probe20 adds fixed numeric compiler-stage/HRESULT reporting
+without compiler text or shader export. Owned non-vertex controls verify stage4
+rejection, and Debug/Release geometry controls pass. Probe20 game retry is NOT_RUN.
+
+Probe20 live retry isolates stage6 validation failure, HRESULT0x80AA0009
+(DXC_E_IR_VERIFICATION_FAILED, per Microsoft ErrorCodes.h). No replacement draw
+was recorded. Probe21 checks the untouched original container and an untouched
+assembly round trip before the clip rewrite. These controls distinguish compiler
+compatibility from an edit-induced error; neither bypasses validation. It exports
+only a bounded plain-language diagnostic line, rejecting instruction, function
+and quoted-identifier excerpts. Owned Debug/Release tests and native attachment
+controls pass. Probe21 game retry is NOT_RUN.
+
+Probe21 live control rejects the untouched original shader at stage7 with the
+same IR-verification HRESULT; the round trip and clip rewrite are not reached.
+The next isolated test changes only the private compiler/validator sidecars to
+Microsoft.Direct3D.DXC1.9.2609.5, pinned from Microsoft NuGet with valid Microsoft
+Authenticode signatures and retained licenses. Owned native legacy/stream
+controls pass with this pair. Compatibility with the game original remains
+UNVERIFIED until the new live control. No validation is disabled.
+
+The newer compiler-pair game retry now passes original and untouched-round-trip
+validation, plus identity and both clip-X modifications. It records4,635 identity,
+3,414 left and3,429 right replacements, with no failure and original mode restored
+between runs. Game/tool hashes remain unchanged; no Devkit assets are written.
+Visible displacement is still UNVERIFIED: the small shift is not confidently
+separable from animation in desktop observation. This is successful native
+replacement recording, not independent game eye rendering or headset acceptance.
+
+Probe23 adds a larger fixed diagnostic preset to make visible influence easier
+to assess: ODVClipProbeLarge0 uses the existing0.125 clip-X magnitude; value1
+uses128. Any other value disables the probe. The choice is read once before a
+nonzero mode is published and remains fixed for that process, preserving the
+three-slot native variant cache. Modes/expiry/original forwarding are unchanged.
+This magnitude is a visibility diagnostic, not an IPD or comfort calibration.
+Owned Debug/Release SM6.0/6.6 legacy/stream tests cover both presets. The large
+preset moves the test quad outside the view while identity/original restoration
+and exact primitive/occlusion accounting still pass. Game large-preset testing
+remains NOT_RUN. The currently running game is restored to original mode0.
+
+Probe23 live tests record4,779 identity,3,363 left and3,414 right replacements
+with no compiler failure and original mode0 restored. Original game/tool hashes
+remain unchanged; Devkit asset files0. Both desktop observation and the user
+report no noticeable world change, even with the128 preset. Geometry influence
+remains UNVERIFIED. Successful CPU recording is insufficient to establish that
+the selected indirect work is nonzero or contributes to the displayed world.
+See [live evidence](../evidence/g1-game-clip-probe23-2026-11-10.json).
+
+Probe24 adds a scale-independent influence control. ODVClipProbeCollapse1
+forces selected nonidentity SV_Position.x outputs to zero, collapsing triangles
+to zero rasterized area without depending on unknown homogeneous coordinate
+scale. Identity and original rendering remain intact. This is a diagnostic,
+not a camera or stereo technique. The preset is disabled by default, mutually
+exclusive with the large preset, and fixed before nonzero mode publication.
+The original narrow shader/signature/target filters, single forwarding,
+three-slot immutable variant cache and expiring control lease remain in place.
+Owned Debug/Release SM6.0/6.6 legacy/stream tests check all1,024 pixels in11
+cases per run for standard, large and collapsed presets; exact primitive and
+occlusion counts distinguish disappearance from forwarding twice or no work.
+Game collapse control is NOT_RUN.
+
+The live Probe24 identity and collapse controls record4,713 and3,342 native
+replacements without compiler errors, restore mode0, and leave original game
+and tool hashes unchanged. Both desktop observation and the user report no
+noticeable change. Thus the fixed homogeneous coordinate scale does not alone
+explain the negative visual result. No second equivalent collapse run is needed.
+
+A bounded metadata-only snapshot retains128 submitted graphics records and is
+truncated. Selected VS C02F6FB5 appears in two native indirect draws into five
+2560x720 material targets, with maximum counts36 and30 and GPU count buffers.
+Actual GPU counts remain UNMEASURED. The same snapshot includes another
+vsStandard vertex variant80800FE6/18,680 bytes in that material-target pass,
+maximum count3,099, with the same40-byte IBV/root0/DrawIndexed signature and
+one active query. This is a more substantial alternate candidate for the next
+reversible influence check, not proof of visibility or camera semantics. The
+former role0 candidate87BF0C9A is identified by reflection as a shadow VS;
+its matrix observations must not be promoted to a proven main-view camera.
+No shader bodies, texture assets or constant-buffer contents were exported.
+See [Probe24 evidence](../evidence/g1-game-clip-probe24-2026-11-10.json).
+
+Probe25 selects the actually observed alternate material-pass vertex variant
+80800FE6/18,680 bytes instead of C02F6FB5. Both the native source attachment
+and addon check this exact observed identity; the owned4344-byte control stays
+allowlisted for qualification. No generic shader-family hook is enabled. The
+compiled shader, native PSO fields, original root/indirect/count resources and
+guards follow the same qualified path. Native wrapper legacy and stream pixel
+and query-accounting controls pass with the new binaries and modern compiler.
+The original-mode identity control must pass in the live scene before the
+scale-independent collapse check. Game geometry influence remains UNVERIFIED.
+
+Probe25 live identity records4,653 replacements and the static collapse control
+records3,411. No clear influence is visible. A separate scroll-input attempt
+records5,700 but does not visibly change camera distance, so it is not evidence
+of a motion check. The subsequent user-driven rotation is visibly confirmed:
+5,493 replacements record during the30-second run, and both the user and
+desktop observation report no noticeable probe influence. All runs restore
+mode0 with no failure; game/tool hashes remain unchanged and asset files0.
+Hosted Debug/Release core and owned controls pass; external wrapper/addon
+binaries retain their separate local qualification.
+
+This negative moving-view control removes a static-view-only explanation as
+a sufficient account of the lack of effect. It does not prove GPU commands
+executed with nonzero counts or affected visible pixels. Before another shader
+selection, the next diagnostic must establish actual indirect work, including
+count/argument values and predication if present. Native SetPredication is not
+yet observed by the metadata contract; a GPU readback inserted under unknown
+predication must not be interpreted as a measured zero. No GPU copy or game
+shader bypass has been added in this step.
+See [live Probe25 evidence](../evidence/g1-game-clip-probe25-2026-11-10.json).
+
+
+Probe26 adds a bounded GPU-work diagnostic instead of another shader target.
+At most six samples (three per mode) wrap the exact original single-forwarded
+indirect draw in a private query. It selects pipeline statistics when that
+family is absent from tracked active queries, otherwise occlusion when free;
+unknown query types, invalid recordings and unavailable families reject sampling.
+The existing capture driver supplies AFTER-native-execute fences and recording
+retirement; private query heaps and readback allocations survive until both.
+No game argument/count buffer is read and the predicate is never rebound.
+Microsoft documents that query begin/end/resolution are not predicated while
+indirect draws are; see [predication](https://learn.microsoft.com/en-us/windows/win32/direct3d12/predication).
+
+Owned Debug and Release controls pass all five affected test groups. Each of
+12 clip GPU runs preserves the existing eleven pixel/query cases and adds six
+fenced work samples: two occlusion samples under active pipeline statistics,
+and four statistics samples under active occlusion. Two consecutive draws
+under a zero skip predicate report zero; two under the allowing predicate report
+six IA vertices and two primitives, with nonzero shader work. Full-budget
+rejection records no callback. Family aliases and unknown types are checked.
+Hosted CI requires the new marker in all twelve GPU runs.
+
+The exact wrapper25/addon26 binaries also pass legacy/stream owned qualification
+with the modern compiler pair. Local debug-layer validation is unavailable;
+the owned harness does not exercise game-specific addon selection. The new
+addon is built and input-locked but live GPU-work collection is NOT_RUN.
+These counters measure executed work or depth/stencil-passing samples, not raw
+indirect counts or final visible pixels. Stereo and headset delivery remain
+NOT_RUN. See [owned qualification](../evidence/g1-owned-clip-probe26-2026-11-10.json).
+
+
+The live Probe26 run completes 4,704 identity and 3,399 collapse replacements,
+then restores mode0 without failure. All six private occlusion-query samples
+become READY after covering fences. Identity reports23,254 /2,383 /23,324
+samples at maximum command capacities3,099 /623 /3,099. Collapse reports0 /0 /0
+at the same capacities. These are different sampled draws/frames, not identical
+A/B replay inputs. The response is consistent with the collapsed shader affecting
+rasterization; it establishes nonzero rasterized work in the sampled identity
+pass, not main-camera visibility or raw indirect counts. Desktop observations
+still show no obvious geometry change. No additional user visual verdict was
+collected in this run.
+
+The mode0 metadata snapshot again reaches its128-record bound while still
+recording indirect graphics. Target VS80800FE6 appears at indices62 and65.
+Consequently the existing snapshot cannot establish a complete downstream chain
+to the presented image. The next observer change should expose a bounded later
+capture window and resource/view relationships, preserving the128-record storage
+bound and clearly separating across-frame observations. Repeated blind shader
+target changes are not supported by this result. Original game identity, staged
+files and tool hashes remain unchanged; asset files0. See
+[live GPU evidence](../evidence/g1-game-clip-probe26-2026-11-10.json).
+
+
+Probe27 adds opt-in metadata windows via `snapshot-window-start.txt` in the
+private case directory. Its exact contents are a canonical decimal start0..4096
+followed by LF, at most five bytes. The selector is read once when a queued
+snapshot starts. Absence retains legacy capture behavior; malformed/unreadable
+selectors or missing graphics-only/native-metadata prerequisites capture no
+window records. A selected window spans at most128 eligible graphics recording
+callbacks after the existing filters. Skipped callbacks do not allocate draw
+metadata. The ordinal counter saturates after the first callback beyond the
+window, and later eligible callbacks mark truncation without increasing storage.
+
+Each retained window record carries `windowFirst`, `eligibleRecordingOrdinal`,
+its recording-callback domain and `sameGpuFrameProven:false`. Metadata does not
+need a native state payload merely to identify its window ordinal. A selected
+window ends at the next relevant Present interval even when it contains no
+records; it does not silently accumulate an empty late window across four
+intervals. Separate windows are separate observations, and recording callback
+order is not GPU submission/execution order. Graphics-only capture still omits
+compute/copy consumers; this change alone cannot prove the complete frame graph.
+
+
+The helper passes MSVC /W4 /WX Debug and Release tests, including128 retained
+records at starts0 /128 /4096, bounded counter saturation, short/empty intervals
+and malformed selectors. Exact wrapper25/addon27 qualification passes nine
+owned-loop snapshots: absent selector, starts0 /1 /2, empty starts4 /4096,
+invalid4097 /malformed text, then a fresh start0 restoration. The four authored
+draws yield4 /3 /2 retained records with exact recording ordinals. Independent
+GPU pixels and cooperative exit pass; native-device reference warnings0 and
+asset files0. The original native clip/query owned controls also pass with the
+new addon binary. Local debug-layer validation remains unavailable. Game
+window captures are NOT_RUN until the observer is replaced normally.
+See [window qualification](../evidence/g1-owned-snapshot-window27-2026-11-10.json)
+and [clip qualification](../evidence/g1-owned-clip-probe27-2026-11-10.json).
+
+
+Live Probe27 exposes a completion-timing defect that its initial owned checks
+missed. Three first0 windows each retain0 records, while removing the selector
+restores a128-record legacy snapshot in the same visible world scene. Graphics
+and native-metadata prerequisites are confirmed active. These empty windows are
+not evidence of zero draw activity. Probe27 remains mode0; game/tool/staged hashes
+remain unchanged and asset files0. See
+[live timing evidence](../evidence/g1-game-clip-probe27-2026-11-10.json).
+
+Probe28 corrects the completion rule: it allows at most four idle Present
+intervals before any eligible recording callback, then ends the first active
+interval even when its callbacks all precede the requested offset. No two
+intervals containing eligible recording activity are combined. The existing
+owned fixture can deliberately issue two Present calls with no intervening
+draws: the frozen observer27 ends first0 with0 records, while observer28 retains
+the expected four draws with ordinals0..3. Both preserve GPU pixels and exit
+cooperatively. The prior nine offset/malformed/recovery controls also pass with
+observer28, with native-device reference warnings0 and asset files0.
+
+Debug/Release helper tests additionally check bounded idle timeout, activity
+arriving after idle Presents, and an empty late window ending after skipped
+eligible callbacks. Exact wrapper25/addon28 clip/query legacy and stream controls
+pass separately. Source inputs and binary are locked; this fix still requires
+live game validation. The128-record capacity,4096 maximum start, resource/frame
+identity limitations and absence of compute/copy consumers remain unchanged.
+See [owned timing regression](../evidence/g1-owned-snapshot-window28-2026-11-10.json)
+and [clip qualification](../evidence/g1-owned-clip-probe28-2026-11-10.json).
+
+
+Probe28's live retry succeeds: starts0 /128 /256 each initially return128
+records; start384 returns97 and start512 returns0. Later recaptures vary
+(start384 returns62), so these are separate observations, not a stitched single
+frame. Every retained record carries the expected bounded recording ordinal.
+The visual effect stays mode0 throughout, with no failure, unchanged original
+identity/tool/staged hashes and asset files0. Both hosted Debug/Release jobs for
+c231e04 pass. See [live window evidence](../evidence/g1-game-clip-probe28-2026-11-10.json).
+
+The later window exposes an explicit terrain candidate: VSC48DB423/25,924 bytes,
+entry `vsTerrainMesh`, paired with PS2F35F124/36,840 bytes, `psTerrainMesh`.
+It is observed after the original128-record limit, submitted with maximum
+command capacity15,140 and an original GPU count buffer. The actual GPU count
+is not read. Its original40-byte IBV/root0word/DrawIndexed signature matches
+the existing single-forward control; active queries1, draw state valid, no
+render-pass block. Its five2560x720 targets match the material-target format set.
+Reflection marks b18/space35,2,816 bytes used by an active shader, but neither
+vertex-stage-specific consumption nor camera-transform identity is proved.
+Stage summaries also identify voxel generation, dynamic-shadow and glare
+families; their apparent frequency/capacity is not main-camera evidence.
+
+Probe29 selects only this exact observed terrain VS in both independently
+copied native wrapper and addon. The owned4344-byte vertex control remains
+allowed. Default-off lease/control behavior, original signature/root/buffers,
+private PSO ownership, modern compiler validation, bounded GPU queries and
+snapshot timing guards are unchanged. Exact wrapper29/addon29 pass legacy and
+stream clip/pixel/query controls, the nine owned metadata windows and the idle
+Present regression, with cooperative exit and native-device reference warnings0.
+These owned runs do not exercise actual terrain shader selection. The next live
+run must validate identity first, then reversible collapse and GPU-query results,
+followed by a visual verdict. No game camera or stereo success is claimed.
+See [clip qualification](../evidence/g1-owned-clip-probe29-2026-11-10.json)
+and [window qualification](../evidence/g1-owned-snapshot-window29-2026-11-10.json).
+
+The [live Probe29 run](../evidence/g1-game-clip-probe29-2026-11-10.json) validates
+identity and collapse with no compile failure:1,539 and1,121 CPU forwards.
+Fenced identity occlusion samples are1,230,726 /1,165,379 /1,244,588;
+collapse samples are0 /0 /0. These are different draws/frames, not a same-draw
+A/B comparison. The user reports "No noticeable change". Desktop observations
+do not establish a reproducible visible disappearance. Thus the terrain
+entrypoint, screen-shaped attachments and GPU response still do not prove a
+connection to the presented world. Restore mode0, original game/tool/staged
+hash checks and asset files0 all pass. Both hosted CI configurations pass.
+Investigate the resource-consumer connection before selecting another shader;
+camera transforms, independently rendered eyes and headset delivery remain
+unverified or NOT_RUN.
+
+## Same-binary terrain confirmation and displacement control
+
+A second bounded18-second mode2 control is performed from a stationary view
+with prominent pale rock faces. Direct desktop observations before, during and
+after show those rock faces at the left and behind the character disappear,
+then return. The character, trees and grass persist. The confirmation records
+1,180 additional collapse forwards and restores mode0 without failure. It does
+not replace the earlier user's "No noticeable change" verdict; it is separately
+graded desktop evidence. Selected displayed terrain influence is now observed.
+Camera semantics, whole-world coverage and independently rendered eyes remain
+unverified.
+
+The next configuration, terrain-shift30, reuses the immutable native29/addon29
+binaries and modern compiler pair. No new shader family is selected. Set
+ODVClipProbeCollapse=0 and ODVClipProbeLarge=0 at a fresh launch; the addon reads
+these flags once and caches variants, so do not change them in a running game.
+After identity, bounded modes2/3 apply the existing -/+0.125 homogeneous clip-X
+offset. This tests displayed displacement, not a full camera adapter. The
+original projection, root/signature, argument/count and descriptor buffers
+remain unchanged. Exact-binary owned legacy/stream controls each pass11 pixel
+cases, near/far4/2-pixel displacement, restoration and fenced query controls.
+Local debug-layer validation is unavailable. See
+[qualification](../evidence/g1-owned-terrain-shift30-2026-11-10.json).
+Normal exit and exact manifest cleanup precede staging this configuration;
+keep original mode0 until a stationary loaded scene is observed. Live shift,
+game stereo, head tracking and game OpenXR delivery are still NOT_RUN.

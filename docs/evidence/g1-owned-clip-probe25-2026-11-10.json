@@ -1,0 +1,40 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "b5b4ee00997a625488970f48fe9c8fd6b95d87ac8674258878304ef401deee6b"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "61e918f3c144e4a585ccf06be96baee6b6c2500713dc2c4907fa190780f58146"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "a57e90449c75ae06d3eb37663d527e28bc31a1f0b88fe139b013aee5f115fffa",
+    "renodx-devkit.addon64": "8400aa9fe3aee29d173dfd13c096a26cfb5b279b3dd3f713316a6a2967ecd7ad",
+    "owned_app.exe": "d35d88e66f69843065329fe640b2dcc4bf938e6beb4ccf976d18c57b7d2d4413",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "schema_version": 1,
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "scope": "Owned resources/shaders only; exact new wrapper and addon binaries loaded. The owned harness uses the native wrapper payload; game-specific addon selection is not exercised.",
+  "collapse_probe": true,
+  "large_probe": false,
+  "target_vertex_crc32": "80800FE6",
+  "target_vertex_bytes": 18680,
+  "query_accounting": "PASS",
+  "all_cases_check_pixels": true,
+  "cases_per_gpu_run": 11,
+  "original_and_identity_restoration": "PASS",
+  "debug_validation": "UNAVAILABLE_LOCALLY",
+  "game": "NOT_RUN"
+}

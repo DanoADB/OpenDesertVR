@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "source_commit": "ca2b75acfe925178308298349fbd8445ede4b095",
+  "status": "QUALIFIED_OWNED_VERTEX_STREAM_COMPONENT_AND_PREPARED_REPLAY",
+  "source_sha256": {
+    "vertex_constant_stream.hpp": "f89452aaf6415171b7519aeb426079056221c2eb6935a0f5b93408c857f50da2",
+    "vertex_stream_tests.cpp": "529470042b2f3eb26f4c11eac2a9a6c250ab77e0927e5f2546e4dd7b490db969",
+    "fixture.cpp": "3d21f1cc4dc990aa6b54e11c7f4a753b1b8584d780a8f0fb35213a3c0c64d83d",
+    "prepared_graphics_replay.hpp": "b7159e8f659a0d5fad381ec964e29107466a02ed03cd2c07fa8009a5cd1b2e5e",
+    "constant_capture_driver.hpp": "1c01657afdd6c08c9319c7210fb42d149ef5a93c38963b23873b869b52fb2177",
+    "deferred_resource_release.hpp": "d87a2c41b9cf8eee5c89efc81de0ae14c5f3cacdafbfe2c5a43d25669af4e57c"
+  },
+  "binary_sha256": {
+    "Debug_byte_test": "c943370f177aee7da76164dc7e7ebb96433cacc2753aadbfe841a48312adb725",
+    "Debug_render_test": "22ce5e2dd88632b044681ebe698760c12f744464591114554de79aef174b5f6f",
+    "Release_byte_test": "249ea4b4290670ab064c8492c4ddc9adaf7d290a73b599b1483e0c4209a2eb41",
+    "Release_render_test": "997273c56209de79e0aaeb7912ff38bc25c042a65a07a57295dba3e68356f125"
+  },
+  "local_ctest": {
+    "Debug": {"passed": 9, "failed": 0, "skipped": 0},
+    "Release": {"passed": 9, "failed": 0, "skipped": 0}
+  },
+  "physical_gpu_Debug_component": "PASS",
+  "local_debug_layer": "UNAVAILABLE",
+  "controls": {
+    "mixed_bit_exact_2816_bytes": "PASS",
+    "original_source_bytes_unchanged": "PASS",
+    "skipped_and_incomplete_output_rejected": "PASS",
+    "component_unsubmitted_and_pending_reads_empty": "PASS",
+    "same_recording_executed_twice": "PASS",
+    "latest_blocked_fence_prevents_retirement": "PASS",
+    "successful_recording_reset_then_release": "PASS",
+    "unsubmitted_recording_reset_then_discard": "PASS",
+    "driver_requires_exact_after_execute": "PASS",
+    "driver_present_and_other_recording_rejected_after_actual_gpu_completion": "PASS",
+    "driver_duplicate_source_rejected": "PASS",
+    "driver_frozen_sample_survives_retirement": "PASS",
+    "missing_context_fields_and_misalignment_rejected": "PASS",
+    "render_frames": 2,
+    "pixels_verified_per_frame": 2048,
+    "original_vertex_sources_per_frame": 3,
+    "bytes_per_vertex_source": 2816,
+    "render_state_replay": "PREPARED_NATIVE_PACKET_OWNED_ROOT_CBV_AND_DESCRIPTOR_TABLE_LAYOUTS",
+    "state_rebinding_between_replay_and_original_draw": false,
+    "original_draw_pixels_unchanged": "PASS"
+  },
+  "component_scope": "Caller-supplied context and prepared noexcept replay. The reader never changes source barriers, descriptors, predication, viewports or scissors. Its own resource barriers return DEFAULT outputs to COMMON. Resources and the capacity slot remain quarantined without explicit retirement and completion; deferred COM release occurs outside caller locks.",
+  "replay_scope": "Authored two-CBV root signatures, original PSO and topology, one RTV, null DSV and four unbound SO targets. This does not qualify arbitrary root SRVs/UAVs/constants, bound SO, DSV or RenoDX snapshot replay.",
+  "remaining_gates": [
+    "Derive context and complete prepared replay from actual same-recording metadata in a separately pinned observer.",
+    "Qualify real frontend query/render-pass/SO/protected/unknown-state rejection on an owned application.",
+    "Qualify frontend submission, concurrent queue rejection and recording retirement before game use."
+  ],
+  "hosted_validation": {
+    "current_component": "NOT_RUN",
+    "prior_121f0e6_Release": "PASS_DEBUG_LAYER_ENABLED",
+    "prior_121f0e6_overall_run": "FAILURE_WITH_ONLY_RELEASE_JOB_REPORTED",
+    "prior_3d22d25_overall_run": "FAILURE_ZERO_JOBS_NO_CHECK_ANNOTATIONS",
+    "prior_6160107_Debug": "PASS_VERTEX_COMPONENT_AND_RENDER_WITH_DEBUG_LAYER_ENABLED",
+    "prior_6160107_optional_suite": {"passed": 5, "skipped_unsupported_enhanced": 4, "failed": 0},
+    "prior_6160107_overall_run": "FAILURE_WITH_ONLY_DEBUG_JOB_REPORTED",
+    "prior_6160107_debug_LastTest_log_sha256": "7ae15bb5c355fb0fb7005c2d519088e88c7fea50bf62a0f23b6e38980f268828",
+    "failure_cause": "UNVERIFIED_NO_SOURCE_FAILURE_LOGS_AVAILABLE"
+  },
+  "game": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

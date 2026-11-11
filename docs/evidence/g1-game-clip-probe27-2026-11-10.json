@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "PREMATURE_EMPTY_WINDOW_REPRODUCED_IN_OWNED_CONTROL",
+  "source_commit": "9532c54be085158322dd5800e64181239c7a78a6",
+  "game_build": "26480954",
+  "scene": "Loaded stationary 3D world, Hills of No Return",
+  "window_start": 0,
+  "empty_attempts_observed": 3,
+  "window_records": 0,
+  "legacy_capture_records": 128,
+  "legacy_capture_truncated": true,
+  "interpretation": "Idle Present interval can finish the requested window before eligible draw callbacks; empty result is not proof of zero GPU work or absent scene geometry",
+  "corrective_build": "Probe28",
+  "mode": 0,
+  "failed": false,
+  "asset_files": 0,
+  "game_identity_unchanged": true,
+  "tool_hashes_unchanged": true,
+  "staged_files_unchanged": true,
+  "visible_geometry": "UNVERIFIED",
+  "game_stereo": "NOT_RUN",
+  "private_report_sha256": {
+    "metadata-window-0.private.json": "f2b1ee1d3659f4398219234337553a73729f686fc8b17e4df96ac4d63bea4b2f",
+    "metadata-draws.private.json": "06655230c492d8213cacafed700969696ed32f6dd6574c334f3955c3e33e8be6"
+  }
+}

@@ -1,0 +1,388 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-04",
+  "evidence_grade": "STATIC_SOURCE_REVIEW",
+  "repositories": [
+    {
+      "repository": "pinducoding/Cyberpunk2077-VR-OpenSource",
+      "revision": "222d9061b02cce6a90123c51950900610a086400",
+      "root_license": "MIT",
+      "files_read": [
+        {
+          "path": ".gitmodules",
+          "sha256": "4cb70b65c1bf6cf3d74be29956edda5b1ae6609586f0a90b35cde56098081d70",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/.gitmodules"
+        },
+        {
+          "path": "bin/x64/plugins/cyber_engine_tweaks/mods/CyberpunkVR/init.lua",
+          "sha256": "02e1ae9c5d01d35efbd73b782c4055fd5428f96358b2bdbf1998f2ad7cb572e9",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/bin/x64/plugins/cyber_engine_tweaks/mods/CyberpunkVR/init.lua"
+        },
+        {
+          "path": "CMakeLists.txt",
+          "sha256": "4e62cabb05c6ea238fe445f2dd8de17c689cb771b87ea09dae08113619e046ea",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/CMakeLists.txt"
+        },
+        {
+          "path": "include/CameraHook.hpp",
+          "sha256": "6593828373e428ec4986e3f7a150091440f841222b32917f44e2f0247c21f04c",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/CameraHook.hpp"
+        },
+        {
+          "path": "include/D3D12Hook.hpp",
+          "sha256": "cb208f6dcd0c237fa693528121e99947209d150b2e85b2a476da17e01e24a998",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/D3D12Hook.hpp"
+        },
+        {
+          "path": "include/InputHook.hpp",
+          "sha256": "480ba680c80d0620488a2384ef0d87b4f530e8b2d6a84e4de716ced90ccfc17d",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/InputHook.hpp"
+        },
+        {
+          "path": "include/PatternScanner.hpp",
+          "sha256": "5194c94935f9f117e49e4d988f1f8e38aa0a3add59bfa647b2266c6f3e54ff58",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/PatternScanner.hpp"
+        },
+        {
+          "path": "include/ThreadSafe.hpp",
+          "sha256": "63a16db0f40a86291fd96808d8a87d98bbbfff6d4091220540cb2387e38d3b7c",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/ThreadSafe.hpp"
+        },
+        {
+          "path": "include/Utils.hpp",
+          "sha256": "e1da2992e1c9f1ede181896dc907b80232d46016dd8c849e6eb0b4f03dfe027f",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/Utils.hpp"
+        },
+        {
+          "path": "include/VRSettings.hpp",
+          "sha256": "29a49bfe80ec6846e430a698b575e12bfd90a0f8382648053e22fa0865bea401",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/VRSettings.hpp"
+        },
+        {
+          "path": "include/VRSystem.hpp",
+          "sha256": "acbe70f8363126851918d00ddaac256be4f581be2177a7315147ca953fe96dae",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/include/VRSystem.hpp"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "e2f69e7913e3faa91393a035979d2b4e350e6e0e016be3614bfd84b6c475ea56",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "sha256": "6a54dac5642d5222455fcd128428bfbbe7dee21b5246dc1927efafaaa010db29",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/README.md"
+        },
+        {
+          "path": "SPECIFICATION.md",
+          "sha256": "cd11608e2dd02e50c576842dbc1af051fd142f9e53fe4ba0088ccccb60bdf435",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/SPECIFICATION.md"
+        },
+        {
+          "path": "src/CameraHook.cpp",
+          "sha256": "3ca9d2afd4a0370a731b17428fef7768c51f95e224e366cc0a8dd04965bb7574",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/CameraHook.cpp"
+        },
+        {
+          "path": "src/D3D12Hook.cpp",
+          "sha256": "c66df615540cd3a0fe74890fdcf9b805a93f5b3391b01d53de401a076d0b58f0",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/D3D12Hook.cpp"
+        },
+        {
+          "path": "src/InputHook.cpp",
+          "sha256": "0fbffd31434321fa5d24a26a5ff6cf5c076f818b11352af4fb3a666305fd8437",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/InputHook.cpp"
+        },
+        {
+          "path": "src/Main.cpp",
+          "sha256": "58e16ca0c7a8dcdaa12a692bbe19b62bea8f7f203f4700279eae2de3c76baef4",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/Main.cpp"
+        },
+        {
+          "path": "src/PatternScanner.cpp",
+          "sha256": "193719eac6919e2c2f72d3b32f575d18e15585a70085832c1e49f5811d58c60c",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/PatternScanner.cpp"
+        },
+        {
+          "path": "src/TestBuild.cpp",
+          "sha256": "c754fcc6427e98c75214545d729f8494ffa069fa27cbc6797c13985f45bfbf3d",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/TestBuild.cpp"
+        },
+        {
+          "path": "src/VRSettings.cpp",
+          "sha256": "d3af5f3b883e9f461edfe4bb30b159d254ab0fe6b48305d79f73df23d4306a6f",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/VRSettings.cpp"
+        },
+        {
+          "path": "src/VRSystem.cpp",
+          "sha256": "524998b8ce33fbaec5635b79ec6f4e6a9cd828d7933b9b4df12709bc6409ab7b",
+          "source_url": "https://github.com/pinducoding/Cyberpunk2077-VR-OpenSource/blob/222d9061b02cce6a90123c51950900610a086400/src/VRSystem.cpp"
+        }
+      ]
+    },
+    {
+      "repository": "praydog/REFramework",
+      "revision": "f00d6bee503125180621a6666779499f9a30881d",
+      "root_license": "MIT",
+      "files_read": [
+        {
+          "path": ".gitmodules",
+          "sha256": "c6c5f19d6358b59bf200a202a5d1d2d04f6362fba977dd2802d4c52c1271ff03",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/.gitmodules"
+        },
+        {
+          "path": "CMakeLists.txt",
+          "sha256": "fcfe62cd0234f22d53c85043f72d29dc48158679b8bcb867992018a10de41bd6",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/CMakeLists.txt"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "7124c298a1fe76b169db561ee640101f88f573f21d1f269b34817b9538321f5f",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/LICENSE"
+        },
+        {
+          "path": "shared/sdk/CameraSystemDispatch.hpp",
+          "sha256": "0b2de1627ab9effbcea604668c6709c805913e8c39491c903853fc10af424d28",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/shared/sdk/CameraSystemDispatch.hpp"
+        },
+        {
+          "path": "shared/sdk/Renderer.cpp",
+          "sha256": "9ca0d2010e3b8076f7f9c2764be5a012f8f028c15c64c231c4b75e8e0c1527f5",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/shared/sdk/Renderer.cpp"
+        },
+        {
+          "path": "src/CMakeLists.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/CMakeLists.txt"
+        },
+        {
+          "path": "src/D3D12Hook.cpp",
+          "sha256": "bc0b18356442dd606d81bb976d10fd2766e63ff04f34e715c7fb323d2fa792c2",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/D3D12Hook.cpp"
+        },
+        {
+          "path": "src/Mod.hpp",
+          "sha256": "bc357e605cd5a498e4fb6182ec17c4f6ac81b86c57c0fcea6c6e02351f57ad60",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/Mod.hpp"
+        },
+        {
+          "path": "src/mods/Camera.cpp",
+          "sha256": "242673308d8edbf2780b3c1a96101218aec94ea0b16227d1c49a27d3a909505e",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/Camera.cpp"
+        },
+        {
+          "path": "src/mods/Hooks.cpp",
+          "sha256": "731f7b0d324135a8d38135653bb0246e4286a425ad2b871d9f06dd7508d50d1a",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/Hooks.cpp"
+        },
+        {
+          "path": "src/mods/vr/d3d12/ResourceCopier.cpp",
+          "sha256": "3f9e11e0a7f3c59847b1aac661d003ffbdc13c6a73d45288cb93ea628ba052ee",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/d3d12/ResourceCopier.cpp"
+        },
+        {
+          "path": "src/mods/vr/D3D12Component.cpp",
+          "sha256": "f329d9d005ea5585662e6e851ed611c380b1b1bca565a547812a5700f8e53c4d",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/D3D12Component.cpp"
+        },
+        {
+          "path": "src/mods/vr/D3D12Component.hpp",
+          "sha256": "90124513d80edc0c0b0f8110f0341f73112f76bc4f3ea29951998b4537c7298c",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/D3D12Component.hpp"
+        },
+        {
+          "path": "src/mods/vr/runtimes/OpenXR.cpp",
+          "sha256": "ac777071ace89178e32e16a0cc6d1dcb93a97722411b42ab8e3b47adf00d30d3",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/runtimes/OpenXR.cpp"
+        },
+        {
+          "path": "src/mods/vr/runtimes/OpenXR.hpp",
+          "sha256": "53f568191138465c4b7a22ff356cf973c0364946430c6b405a1d3353e39eabfd",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/runtimes/OpenXR.hpp"
+        },
+        {
+          "path": "src/mods/vr/runtimes/VRRuntime.hpp",
+          "sha256": "464f3d5a7bd1f088e7ec27fa49c0d558b0b66a734cf4d2c554eb7df8257e73fb",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/vr/runtimes/VRRuntime.hpp"
+        },
+        {
+          "path": "src/mods/VR.cpp",
+          "sha256": "3570662ba0f556d5df4bf11b0b8e61a59d57a69be9fa18c4d6cab26ee7c8bd48",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/VR.cpp"
+        },
+        {
+          "path": "src/mods/VR.hpp",
+          "sha256": "c36c116197c2810bfe1164b3d79bc6e4ffa92326a0fed964e48ad1c8accb2c93",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/mods/VR.hpp"
+        },
+        {
+          "path": "src/REFramework.cpp",
+          "sha256": "236f2575d53c5c23a379da90789c0ff6bac35cdb2f3f4d7378bf38cf640f17bb",
+          "source_url": "https://github.com/praydog/REFramework/blob/f00d6bee503125180621a6666779499f9a30881d/src/REFramework.cpp"
+        }
+      ]
+    }
+  ],
+  "selected_direct_dependency_licenses": [
+    {
+      "name": "Cyberpunk OpenXR",
+      "repository": "KhronosGroup/OpenXR-SDK",
+      "revision": "c15d38cb4bb10a5b7e075f74493ff13896e2597a",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/OpenXR-SDK/c15d38cb4bb10a5b7e075f74493ff13896e2597a/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "status": "retrieved",
+      "reviewed_license": "Apache-2.0 root; per-file inventory required"
+    },
+    {
+      "name": "asmjit",
+      "repository": "asmjit/asmjit",
+      "revision": "2a706fd2ba355808cada31ac1eed8ce28caa6b37",
+      "path": "LICENSE.md",
+      "url": "https://raw.githubusercontent.com/asmjit/asmjit/2a706fd2ba355808cada31ac1eed8ce28caa6b37/LICENSE.md",
+      "sha256": "a80880a56c0f7f1e8cf838544ff193d30e66dd562c117e07acba58c9063c62f9",
+      "status": "retrieved",
+      "reviewed_license": "Zlib"
+    },
+    {
+      "name": "REFramework OpenXR",
+      "repository": "KhronosGroup/OpenXR-SDK",
+      "revision": "458984d7f59d1ae6dc1b597d94b02e4f7132eaba",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/OpenXR-SDK/458984d7f59d1ae6dc1b597d94b02e4f7132eaba/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "status": "retrieved",
+      "reviewed_license": "Apache-2.0 root; per-file inventory required"
+    },
+    {
+      "name": "DirectXTK",
+      "repository": "microsoft/DirectXTK",
+      "revision": "f5026eb34e7053b1aff325d38db107703f394974",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/microsoft/DirectXTK/f5026eb34e7053b1aff325d38db107703f394974/LICENSE",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+      "status": "retrieved",
+      "reviewed_license": "MIT"
+    },
+    {
+      "name": "DirectXTK12",
+      "repository": "microsoft/DirectXTK12",
+      "revision": "be5dfc7e391aefaa4eeab8e8a08f7e2669e56cbb",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/microsoft/DirectXTK12/be5dfc7e391aefaa4eeab8e8a08f7e2669e56cbb/LICENSE",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+      "status": "retrieved",
+      "reviewed_license": "MIT"
+    },
+    {
+      "name": "safetyhook",
+      "repository": "cursey/safetyhook",
+      "revision": "b046e123dc69821f2c375161e0adef3c6d9c9db4",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/cursey/safetyhook/b046e123dc69821f2c375161e0adef3c6d9c9db4/LICENSE",
+      "sha256": "8d8291caf1cee26d23acf3eb67c9f9a2d58f1c681b16a4fbe8cbfb9e3c0b5a9b",
+      "status": "retrieved",
+      "reviewed_license": "BSL-1.0"
+    },
+    {
+      "name": "freetype",
+      "repository": "freetype/freetype",
+      "revision": "f1cd6dbfa0c98f352b698448f40ac27e8fb3832e",
+      "path": "LICENSE.TXT",
+      "url": "https://raw.githubusercontent.com/freetype/freetype/f1cd6dbfa0c98f352b698448f40ac27e8fb3832e/LICENSE.TXT",
+      "sha256": "bd36c8b474855fa294c2ec5c184544478ef3720aad37d65a6296a4f264fd2d3b",
+      "status": "retrieved",
+      "reviewed_license": "FTL or GPL-2.0-or-later plus component-specific notices"
+    },
+    {
+      "name": "bddisasm",
+      "repository": "bitdefender/bddisasm",
+      "revision": "70db095765ab2066dd88dfb7bbcc42259ed167c5",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/bitdefender/bddisasm/70db095765ab2066dd88dfb7bbcc42259ed167c5/LICENSE",
+      "sha256": "b7d1681672f9a0cd1f0c29e3562ff352b8462a8fce18ce8ab9e9e191bbda1f80",
+      "status": "retrieved",
+      "reviewed_license": "Apache-2.0"
+    },
+    {
+      "name": "kananlib",
+      "repository": "cursey/kananlib",
+      "revision": "43cb5353615dcbc5d4945b1b9ab685b11e8b0d37",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/cursey/kananlib/43cb5353615dcbc5d4945b1b9ab685b11e8b0d37/LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "status": "retrieved",
+      "reviewed_license": "BSL-1.0"
+    },
+    {
+      "name": "glm",
+      "repository": "g-truc/glm",
+      "revision": "bf71a834948186f4097caa076cd2663c69a10e1e",
+      "path": "copying.txt",
+      "url": "https://raw.githubusercontent.com/g-truc/glm/bf71a834948186f4097caa076cd2663c69a10e1e/copying.txt",
+      "sha256": "62d2d642c7d054d4fb4c9b42faad617d6c88fcd91e317f8035aa9f277cc159c3",
+      "status": "retrieved",
+      "reviewed_license": "MIT option in dual-license text"
+    },
+    {
+      "name": "imgui",
+      "repository": "ocornut/imgui",
+      "revision": "85b2fe8486190fa9326565a2fb5fccb6caea4396",
+      "path": "LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/ocornut/imgui/85b2fe8486190fa9326565a2fb5fccb6caea4396/LICENSE.txt",
+      "sha256": "c80c5789748d955c4a650562baa0d750494e2c7128c2ca66aaebe2e3c4e198bf",
+      "status": "retrieved",
+      "reviewed_license": "MIT"
+    },
+    {
+      "name": "minhook",
+      "repository": "TsudaKageyu/minhook",
+      "revision": "98b74f1fc12d00313d91f10450e5b3e0036175e3",
+      "path": "LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/TsudaKageyu/minhook/98b74f1fc12d00313d91f10450e5b3e0036175e3/LICENSE.txt",
+      "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8",
+      "status": "retrieved",
+      "reviewed_license": "BSD-2-Clause with embedded HDE notices"
+    },
+    {
+      "name": "spdlog",
+      "repository": "gabime/spdlog",
+      "revision": "7c02e204c92545f869e2f04edaab1f19fe8b19fd",
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/gabime/spdlog/7c02e204c92545f869e2f04edaab1f19fe8b19fd/LICENSE",
+      "sha256": "4ccecab18d1ff0b61174fe3d6c430541625d3ddb865b0d5887db296f883c76e7",
+      "status": "retrieved",
+      "reviewed_license": "MIT plus fmt notices"
+    },
+    {
+      "name": "RED4ext.SDK",
+      "repository": "WopsS/RED4ext.SDK",
+      "revision": "a0776d41359fe1ba01705fd97835018c56aee69b",
+      "path": "LICENSE.md",
+      "url": "https://raw.githubusercontent.com/WopsS/RED4ext.SDK/a0776d41359fe1ba01705fd97835018c56aee69b/LICENSE.md",
+      "sha256": "5ca30f2a0a632d852865bd0b1a047c25e9db5d99543725324b5d378e90244d65",
+      "status": "retrieved",
+      "reviewed_license": "MIT"
+    },
+    {
+      "name": "RED4ext-third-party",
+      "repository": "WopsS/RED4ext.SDK",
+      "revision": "a0776d41359fe1ba01705fd97835018c56aee69b",
+      "path": "THIRD_PARTY_LICENSES.md",
+      "url": "https://raw.githubusercontent.com/WopsS/RED4ext.SDK/a0776d41359fe1ba01705fd97835018c56aee69b/THIRD_PARTY_LICENSES.md",
+      "sha256": "d61fe633021bf0a84304db3b9b9ae3e6aa080ce19a829a4fa9841cfcd779aac7",
+      "status": "retrieved",
+      "reviewed_license": "D3D12MemoryAllocator MIT notice"
+    }
+  ],
+  "builds": "NOT_RUN",
+  "hardware": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "adopted_code": [],
+  "not_cleared_for_redistribution": [
+    "Complete transitive dependency trees",
+    "REFramework bundled OpenVR binaries/headers provenance",
+    "Bundled fonts/resources and all component-specific notices",
+    "spdlog bundled fmt version/notice correspondence"
+  ]
+}

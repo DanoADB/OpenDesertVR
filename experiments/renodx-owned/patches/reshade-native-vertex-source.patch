@@ -1,0 +1,60 @@
+--- a/ReShade.vcxproj
++++ b/ReShade.vcxproj
+@@ -569,7 +569,7 @@
+     <ClCompile Include="source\d3d12\d3d12_command_queue.cpp" />
+     <ClCompile Include="source\d3d12\d3d12_command_queue_downlevel.cpp" />
+     <ClCompile Include="source\d3d12\d3d12_descriptor_heap.cpp" />
+-    <ClCompile Include="source\d3d12\d3d12_device.cpp" />
++    <ClCompile Include="source\d3d12\d3d12_device.cpp"><ExceptionHandling>Sync</ExceptionHandling></ClCompile>
+     <ClCompile Include="source\d3d12\d3d12_device_downlevel.cpp" />
+     <ClCompile Include="source\d3d12\d3d12_extensions.cpp" />
+     <ClCompile Include="source\d3d12\d3d12_impl_command_list.cpp" />
+--- a/source/d3d12/d3d12_device.cpp
++++ b/source/d3d12/d3d12_device.cpp
+@@ -6,6 +6,7 @@
+ #include "d3d12_device.hpp"
+ #include "odv/native_indirect_events.hpp"
+ #include "odv/native_root_signature.hpp"
++#include "odv/native_vertex_pipeline_payload.hpp"
+ #include "d3d12_device_downlevel.hpp"
+ #include "d3d12_command_list.hpp"
+ #include "d3d12_command_queue.hpp"
+@@ -2646,6 +2647,7 @@
+ 
+ 	subobjects.push_back({ reshade::api::pipeline_subobject_type::dynamic_pipeline_states, static_cast<uint32_t>(dynamic_states.size()), dynamic_states.data() });
+ 
++	bool odv_native_source_exact = !with_create_pipeline;
+ 	if (with_create_pipeline)
+ 	{
+ 		if (reshade::invoke_addon_event<reshade::addon_event::create_pipeline>(this, layout, static_cast<uint32_t>(subobjects.size()), subobjects.data()))
+@@ -2660,6 +2662,7 @@
+ 				return false;
+ 
+ 			hr = static_cast<ID3D12Device2 *>(_orig)->CreatePipelineState(&internal_desc, IID_PPV_ARGS(&d3d_pipeline));
++			odv_native_source_exact = true;
+ 		}
+ 	}
+ 	else
+@@ -2670,6 +2673,22 @@
+ 
+ 	if (SUCCEEDED(hr))
+ 	{
++        // Exact native source only for the observed world VS. Build identity
++        // is verified separately; CRC32/length only route the private probe.
++        if (odv_native_source_exact && vs_desc.code != nullptr && (vs_desc.code_size == 19800 || vs_desc.code_size == 4344))
++        {
++            uint32_t crc = 0xFFFFFFFFu;
++            const auto *bytes = static_cast<const uint8_t *>(vs_desc.code);
++            for (size_t i = 0; i < vs_desc.code_size; ++i)
++            {
++                crc ^= bytes[i];
++                for (unsigned bit = 0; bit < 8; ++bit)
++                    crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
++            }
++            if ((vs_desc.code_size == 19800 && (crc ^ 0xFFFFFFFFu) == 0xC02F6FB5u) ||
++                (vs_desc.code_size == 4344 && (crc ^ 0xFFFFFFFFu) == 0x56EC8691u))
++                (void)odv::research::NativeVertexPipelinePayload::attach(d3d_pipeline, internal_desc);
++        }
+ 		reshade::invoke_addon_event<reshade::addon_event::init_pipeline>(this, layout, static_cast<uint32_t>(subobjects.size()), subobjects.data(), to_handle(d3d_pipeline));
+ 
+ 		if (reshade::has_addon_event<reshade::addon_event::destroy_pipeline>())

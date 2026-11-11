@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_SHARED_BINDING_CANDIDATES",
+  "source_commit": "055bb7bc70682b9cfc729011aa3389739d1c2f8a",
+  "observer_version": "bc0ead3-command-provenance-8",
+  "scene": "title_menu",
+  "private_details_sha256": "3b449fd07667aca5c55ce852c750a7e20a7fa937eb86e807d4c2485cf3ce10c8",
+  "detail_records_examined": 6,
+  "finite_range_bytes": 2816,
+  "unique_active_ranges": 2,
+  "candidates": [
+    {
+      "local_alias": "candidate_1",
+      "distinct_detail_records": 6,
+      "direct_graphics_records": 1,
+      "binding_locations": [
+        {
+          "slot": 14,
+          "space": 35
+        },
+        {
+          "slot": 17,
+          "space": 35
+        }
+      ],
+      "range_offset": 0,
+      "source_handles": "PRIVATE_ONLY",
+      "covering_upload_observation": "NO_UPLOAD_WITHIN_WINDOW"
+    },
+    {
+      "local_alias": "candidate_2",
+      "distinct_detail_records": 5,
+      "direct_graphics_records": 1,
+      "binding_locations": [
+        {
+          "slot": 18,
+          "space": 35
+        },
+        {
+          "slot": 21,
+          "space": 35
+        }
+      ],
+      "range_offset": 0,
+      "source_handles": "PRIVATE_ONLY",
+      "covering_upload_observation": "NO_UPLOAD_WITHIN_WINDOW"
+    }
+  ],
+  "camera_semantics": "UNVERIFIED",
+  "candidate_bytes_acquired": false,
+  "game_buffer_writes": "NOT_RUN",
+  "stereo_game_rendering": "NOT_RUN",
+  "interpretation": "Shared finite CBV ranges are candidates for scene-wide data, not identified cameras. The one ready768byte upload input is a different range. usedByActiveShader reflects declared register use; indirect records describe pre-argument bindings. The direct indexed draw also binds both candidates. Next compare real world scene and camera movement; descriptor byte size alone supplies no semantic proof."
+}

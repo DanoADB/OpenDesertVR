@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "4be273d894d63dc7a5a47dce01e012a87fde5786",
+  "sourceDirty": false,
+  "observedDate": "2026-11-06",
+  "status": "PASS",
+  "configurations": {
+    "debug": {
+      "status": "PASS",
+      "testLogSha256": "446ba91d8e18e4f8b2d89b9548a9081d0b588a85a59853b12d7ba4dbfe5b422d",
+      "schemaVersion": 1,
+      "appSha256": "8152bb16d8f3caad11c263e09c3f2849aa8f6724cc926938cd3071c9f99674e7",
+      "shaders": [
+        {
+          "name": "owned.vs.cso",
+          "bytes": 924,
+          "sha256": "091d9d9dc8df5d6a1f4c0c6f46fd71c3772e458b4d881aaa1472abd3c0530a6d",
+          "crc32": "0x2A0B8703"
+        },
+        {
+          "name": "owned.ps.cso",
+          "bytes": 648,
+          "sha256": "0f2be6e3ee15b938f829ba9737c3a78e8e9644e58fd15148557ebe0c4b4dfe3e",
+          "crc32": "0x8FB67D93"
+        }
+      ],
+      "controls": [
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "adapter": "WARP",
+          "frames": 2,
+          "pixelsVerifiedPerFrame": 2048,
+          "recordedDrawsPerFrame": 4,
+          "submittedDrawsPerFrame": 3,
+          "fourthColumn": "black",
+          "captureTool": "NOT_RUN",
+          "headset": "NOT_RUN",
+          "game": "NOT_RUN"
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "adapter": "WARP",
+          "frames": 2,
+          "pixelsVerifiedPerFrame": 2048,
+          "recordedDrawsPerFrame": 4,
+          "submittedDrawsPerFrame": 4,
+          "fourthColumn": "yellow",
+          "captureTool": "NOT_RUN",
+          "headset": "NOT_RUN",
+          "game": "NOT_RUN"
+        }
+      ],
+      "scope": "Actual software-GPU pixels only; capture bindings and execution metadata NOT_RUN"
+    },
+    "release": {
+      "status": "PASS",
+      "testLogSha256": "0ae06fab26e27c8d00563b95b8661bc8379b0315c0932ff28875c449b5ea86c9",
+      "schemaVersion": 1,
+      "appSha256": "10d54bdafd3b5a16207e158350adeb0fda38af8bfbf45f9645b4bb6f2070d62c",
+      "shaders": [
+        {
+          "name": "owned.vs.cso",
+          "bytes": 924,
+          "sha256": "091d9d9dc8df5d6a1f4c0c6f46fd71c3772e458b4d881aaa1472abd3c0530a6d",
+          "crc32": "0x2A0B8703"
+        },
+        {
+          "name": "owned.ps.cso",
+          "bytes": 648,
+          "sha256": "0f2be6e3ee15b938f829ba9737c3a78e8e9644e58fd15148557ebe0c4b4dfe3e",
+          "crc32": "0x8FB67D93"
+        }
+      ],
+      "controls": [
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "adapter": "WARP",
+          "frames": 2,
+          "pixelsVerifiedPerFrame": 2048,
+          "recordedDrawsPerFrame": 4,
+          "submittedDrawsPerFrame": 3,
+          "fourthColumn": "black",
+          "captureTool": "NOT_RUN",
+          "headset": "NOT_RUN",
+          "game": "NOT_RUN"
+        },
+        {
+          "schemaVersion": 1,
+          "status": "PASS",
+          "adapter": "WARP",
+          "frames": 2,
+          "pixelsVerifiedPerFrame": 2048,
+          "recordedDrawsPerFrame": 4,
+          "submittedDrawsPerFrame": 4,
+          "fourthColumn": "yellow",
+          "captureTool": "NOT_RUN",
+          "headset": "NOT_RUN",
+          "game": "NOT_RUN"
+        }
+      ],
+      "scope": "Actual software-GPU pixels only; capture bindings and execution metadata NOT_RUN"
+    }
+  },
+  "captureBindings": "NOT_RUN",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "scope": "Local original WARP pixels and paired submission controls; not capture metadata, camera values or game integration",
+  "sourceFiles": [
+    {
+      "path": "experiments/draw-binding-owned/fixture.cpp",
+      "sha256": "03e903a98cfd57d0664c68d5b251b0e0b1521c2c66b7244182891e413af92c8d"
+    },
+    {
+      "path": "experiments/draw-binding-owned/baseline.py",
+      "sha256": "cbd8c14d927ab162037537ee56c3ee928b57a4d093caa54cc8372faa27049ce3"
+    },
+    {
+      "path": "experiments/draw-binding-owned/CMakeLists.txt",
+      "sha256": "30f354baaa0402e2eb4cd40e1a194b7d7132c4b39b269e2cff142ebe5b8676da"
+    }
+  ],
+  "hostedValidation": {
+    "status": "PASS",
+    "sourceCommit": "4be273d894d63dc7a5a47dce01e012a87fde5786",
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42273418459",
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "coreNativeChecksPerConfiguration": 34,
+    "pythonTestsPerConfiguration": 94,
+    "optionalNativeChecksPerConfiguration": 5,
+    "ownedDrawPixelControlsActuallyRanInBoth": true,
+    "externalCaptureTool": "NOT_RUN",
+    "logSha256": "8b233758b77855cc2316993f81063a1ce7e424e16e7a53ab6449cbec61354a30"
+  }
+}

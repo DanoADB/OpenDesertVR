@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "source_commit": "112cdadf3ab1923500cfa262989f9fee8c39cd0b",
+  "source_dirty": false,
+  "configuration": "Release",
+  "architecture": "x64",
+  "artifact": {
+    "filename": "OpenDesertVR-M0-112cdad-win64.zip",
+    "bytes": 1431101,
+    "sha256": "5f473894e59a5d9adba986061a887e2f9fab9f73e908fd2e173b7e16ed782d31",
+    "desktop_executable": "OpenDesertVR.exe",
+    "desktop_executable_sha256": "a34d4d81de4326cf3366fe722207c9f80b21bab2013144b08eacb9e123c5e1b3",
+    "start_here_included": true
+  },
+  "package_metadata_validation": "PASS",
+  "packaged_desktop_idle_startup": "PASS",
+  "hosted_ci": {
+    "url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42274958575",
+    "status": "PASS",
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "core_native_checks_per_configuration": 35,
+    "python_tests_per_configuration": 94,
+    "optional_native_checks_per_configuration": 5,
+    "cooperative_stop_actually_executed": true,
+    "graphics_debug_validation_actually_executed": true
+  },
+  "local_native_validation": {
+    "configurations": [
+      "Debug",
+      "Release"
+    ],
+    "checks_per_configuration": 35,
+    "passed_per_configuration": 34,
+    "failed_per_configuration": 0,
+    "skipped_per_configuration": 1,
+    "skip": "Optional D3D12 graphics debug validation unavailable locally"
+  },
+  "headset_validation": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "scope": "Packaged desktop startup and software validation only. Earlier Quest Pro acceptance applies to 404d38a; current-build visual stereo, tracking, comfort, menu return and Stop require device observations."
+}

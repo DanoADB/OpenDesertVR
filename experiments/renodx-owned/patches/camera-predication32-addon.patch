@@ -1,0 +1,129 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -292,6 +292,11 @@
+     draw_events.render_pass = [](void* opaque, bool begin, D3D12_RENDER_PASS_FLAGS flags) noexcept {
+       auto* self = static_cast<ODVNativeState*>(opaque);
+       try { const std::lock_guard lock(self->mutex); self->draw_state.render_pass(begin,flags); }
++      catch (...) { self->failed = true; }
++    };
++    draw_events.predication = [](void* opaque, bool bound, UINT64 offset, D3D12_PREDICATION_OP operation) noexcept {
++      auto* self = static_cast<ODVNativeState*>(opaque);
++      try { const std::lock_guard lock(self->mutex); self->draw_state.predication(bound,offset,operation); }
+       catch (...) { self->failed = true; }
+     };
+     recording_serial = ++odv_recording_serial;
+@@ -5412,6 +5417,8 @@
+         {"recordingList",std::format("0x{:X}",native->list)},{"role",odv_role},
+         {"nativeDrawCapable",native->draw_capable},{"renderPassBlocked",native->draw_state.render_pass_blocked()},
+         {"activeQueries",native->draw_state.active_queries()},{"drawStateFailed",native->draw_state.failed()},
++        {"predicationStateKnown",native->draw_state.predication_known()},{"predicateBound",native->draw_state.predicate_bound()},
++        {"copyUnpredicatedAllowed",native->draw_state.copy_unpredicated()},
+         {"indirect",indirect},{"signatureMetadataKnown",indirect && native->indirect_active && native->indirect_known},
+         {"bindingPhase",indirect ? "PRE_INDIRECT_ARGUMENTS" : "DIRECT_BINDINGS"},
+         {"postIndirectRootCacheCorrected",false}};
+@@ -5849,6 +5856,19 @@
+             break;
+           }
+           auto& attempt = draw_details.odv_constant_attempts[slot_space];
++          // A covering fence cannot prove a predicated copy executed. Require
++          // native reset/SetPredication coverage for both heap paths. Original
++          // predicate state and its GPU value are never changed or read here.
++          {
++            const auto native = command_list_data->odv_native_state;
++            if (!native) { attempt.state = "COPY_PREDICATION_STATE_UNVERIFIED"; continue; }
++            const std::lock_guard lock(native->mutex);
++            if (native->draw_state.render_pass_blocked()) { attempt.state = "COPY_BLOCKED_NATIVE_RENDER_PASS"; continue; }
++            if (native->failed || native->protected_session || !native->draw_capable || !native->draw_state.predication_known()) {
++              attempt.state = "COPY_PREDICATION_STATE_UNVERIFIED"; continue;
++            }
++            if (!native->draw_state.copy_unpredicated()) { attempt.state = "COPY_BLOCKED_PREDICATION"; continue; }
++          }
+           odv::research::ConstantCaptureDriver::Ticket sample;
+           auto* source = reinterpret_cast<ID3D12Resource*>(range.buffer.handle);
+           const auto source_info = odv::research::ConstantSnapshot::inspect_source(source, range.offset, static_cast<size_t>(range.size));
+--- a/src/addons/devkit/odv/native_draw_events.hpp
++++ b/src/addons/devkit/odv/native_draw_events.hpp
+@@ -9,24 +9,26 @@
+ // Arrays are borrowed only for the synchronous callback. No application calls
+ // are replaced, suppressed or changed by this sink.
+ inline constexpr std::uint8_t native_draw_events_guid[16] = {0x6e, 0x1c, 0xd8, 0x45, 0x1a, 0x9b, 0x4f, 0x72,
+-                                                             0x8a, 0xf9, 0x39, 0x21, 0x61, 0x08, 0x34, 0xdd};
+-inline constexpr std::uint32_t native_draw_capabilities = 7; // SO, query, render pass.
++                                                             0x8a, 0xf9, 0x39, 0x21, 0x61, 0x08, 0x34, 0xde};
++inline constexpr std::uint32_t native_draw_capabilities = 15; // SO, query, render pass, predication.
+ struct NativeDrawEvents final {
+     std::uint32_t size = sizeof(NativeDrawEvents);
+-    std::uint32_t version = 1;
++    std::uint32_t version = 2;
+     void *context = nullptr;
+     void(__cdecl *stream_output)(void *, UINT, UINT, const D3D12_STREAM_OUTPUT_BUFFER_VIEW *) noexcept = nullptr;
+     void(__cdecl *query)(void *, ID3D12QueryHeap *, D3D12_QUERY_TYPE, UINT, bool) noexcept = nullptr;
+     void(__cdecl *render_pass)(void *, bool, D3D12_RENDER_PASS_FLAGS) noexcept = nullptr;
+     void(__cdecl *capabilities)(void *, std::uint32_t) noexcept = nullptr;
++    // Presence only: never retain/read the application's predicate buffer.
++    void(__cdecl *predication)(void *, bool, UINT64, D3D12_PREDICATION_OP) noexcept = nullptr;
+ };
+-static_assert(sizeof(void *) == 8 && sizeof(NativeDrawEvents) == 48);
++static_assert(sizeof(void *) == 8 && sizeof(NativeDrawEvents) == 56);
+ template <class CommandList> NativeDrawEvents *get_native_draw_events(CommandList *list) noexcept {
+     if (!list)
+         return nullptr;
+     std::uint64_t value = 0;
+     list->get_private_data(native_draw_events_guid, &value);
+     auto *events = reinterpret_cast<NativeDrawEvents *>(value);
+-    return events && events->size == sizeof(*events) && events->version == 1 ? events : nullptr;
++    return events && events->size == sizeof(*events) && events->version == 2 ? events : nullptr;
+ }
+ } // namespace odv::research
+--- a/src/addons/devkit/odv/draw_recording_state.hpp
++++ b/src/addons/devkit/odv/draw_recording_state.hpp
+@@ -22,6 +22,7 @@
+     std::array<Query, 64> queries_{};
+     UINT query_count_ = 0;
+     bool failed_ = true, active_pass_ = false, suspended_ = false, suspending_ = false;
++    bool predicated_ = false;
+     std::uint32_t capabilities_ = 0;
+     std::array<D3D12_STREAM_OUTPUT_BUFFER_VIEW, 4> stream_outputs_{};
+ 
+@@ -31,9 +32,26 @@
+         query_count_ = 0;
+         failed_ = active_pass_ = suspended_ = suspending_ = false;
+         stream_outputs_ = {};
++        predicated_ = false; // Direct recordings start with predication disabled.
+     }
+     void invalidate() noexcept { failed_ = true; }
+     void capabilities(std::uint32_t value) noexcept { capabilities_ = value; }
++    void predication(bool bound, UINT64 offset, D3D12_PREDICATION_OP operation) noexcept {
++        if ((bound && offset % 8 != 0) ||
++            (operation != D3D12_PREDICATION_OP_EQUAL_ZERO && operation != D3D12_PREDICATION_OP_NOT_EQUAL_ZERO)) {
++            invalidate();
++            return;
++        }
++        predicated_ = bound;
++    }
++    bool predication_known() const noexcept { return !failed_ && capabilities_ == 15; }
++    bool predicate_bound() const noexcept { return predicated_; }
++    // CopyBufferRegion is predicated. Completion alone cannot prove it ran.
++    // This guard never disables/rebinds the application's predicate and never
++    // assumes its GPU value. Active queries are independent of this copy gate.
++    bool copy_unpredicated() const noexcept {
++        return predication_known() && !predicated_ && !active_pass_ && !suspended_;
++    }
+     void stream_output(UINT first, UINT count, const D3D12_STREAM_OUTPUT_BUFFER_VIEW *views) noexcept {
+         if (!count || first > stream_outputs_.size() || count > stream_outputs_.size() - first) {
+             invalidate();
+@@ -86,12 +104,12 @@
+             suspending_ = false;
+         }
+     }
+-    bool eligible() const noexcept { return eligible_single_forward() && !query_count_; }
++    bool eligible() const noexcept { return eligible_single_forward() && !query_count_ && copy_unpredicated(); }
+     // A replacement forwards the application's existing command exactly once.
+     // Active queries still observe that command; replay/copy users retain the
+     // stricter eligible() gate. Unknown query lifetimes remain fail-closed.
+     bool eligible_single_forward() const noexcept {
+-        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
++        return !failed_ && (capabilities_ == 7 || capabilities_ == 15) && !active_pass_ && !suspended_;
+     }
+     bool failed() const noexcept { return failed_; }
+     // Select a query family not already active in the application's recording.

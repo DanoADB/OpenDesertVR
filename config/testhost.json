@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "near_z": 0.05,
+  "far_z": 100,
+  "duration_seconds": 60,
+  "debug_layer": false
+}

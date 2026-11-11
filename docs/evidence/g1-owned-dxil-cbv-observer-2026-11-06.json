@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "status": "OBSERVED_CORRECTED_OWNED_DXIL_CBV_ASSOCIATION",
+  "upstream_revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "shader_model": "6.6",
+  "owned_shader_sha256": {
+    "owned.dxil.vs.cso": {
+      "sha256": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+      "bytes": 3612,
+      "profile": "vs_6_6"
+    },
+    "owned.dxil.ps.cso": {
+      "sha256": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+      "bytes": 3256,
+      "profile": "ps_6_6"
+    }
+  },
+  "expected_resource_indices": [
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      6,
+      7
+    ]
+  ],
+  "binding_keys": {
+    "vertex": {
+      "slot": 2,
+      "space": 3
+    },
+    "pixel": {
+      "slot": 5,
+      "space": 7
+    }
+  },
+  "variants": {
+    "unmodified": {
+      "source_commit": "3a796e77123cd48775601e8313444d55d9148e24",
+      "source_dirty": false,
+      "observer_version": "bc0ead3-owned-qualification",
+      "addon_sha256": "7d61585c925197c5000ed99fae8f97aed1ac5bb5fd93166cb317640a53cf6b82",
+      "owned_app_sha256": "05e44c421054da95b7dcb735d2d0d1e17bc45334c77772cfb53c8328ad6fd3c9",
+      "dxcompiler_sha256": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+      "controller_sha256": "359d702d3f96a9bc49585519530c189405dc580b413ac7d3d1ec91bac45f7aa5",
+      "observed_resource_indices": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "pixel_binding_identity": "PASS",
+      "vertex_table_binding_identity": "FAIL_STALE_ROOT",
+      "recorded_unsubmitted_draw_listed": true,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 6,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "source_binary_postflight": "PASS",
+      "devkit_asset_files": 0
+    },
+    "cbv_patch": {
+      "source_commit": "50f438d3d22818fe601a81034b025884a1b23aab",
+      "source_dirty": false,
+      "observer_version": "bc0ead3-cbv-observer-1",
+      "addon_sha256": "d6719e9dc2bea28da1bb754d4e1fa785bccf7f2d3f8febc4ebcce80ac19fcbfb",
+      "owned_app_sha256": "05e44c421054da95b7dcb735d2d0d1e17bc45334c77772cfb53c8328ad6fd3c9",
+      "dxcompiler_sha256": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+      "controller_sha256": "b781349bdaee858794101d6d0cac3871d393bf48f51ba4f5ac8c3e2ca5ff08be",
+      "observed_resource_indices": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "pixel_binding_identity": "PASS",
+      "vertex_table_binding_identity": "PASS_OWNED_DISTINCT_REGISTERS",
+      "recorded_unsubmitted_draw_listed": true,
+      "gpu_pixel_control": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 7,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "owned_exit_code": 0,
+      "source_binary_postflight": "PASS",
+      "devkit_asset_files": 0
+    }
+  },
+  "patch": "experiments/renodx-owned/patches/all-graphics-cbvs.patch",
+  "input_lock": "experiments/renodx-owned/devkit-cbv-input-lock.json",
+  "limits": [
+    "Owned original shader/geometry controls only; no game/headset access.",
+    "SM5.1 legacy parser failure is a separate observation; DXIL pixel bindings pass without this patch.",
+    "The CBV map cannot distinguish overlapping register/space bindings with different resources across stages.",
+    "usedByActiveShader still describes the selected pixel-stage reflection, not vertex usage.",
+    "Exported rows omit submission markers; a listed draw is not proof of execution.",
+    "GPU constant bytes, lifetime retention and actual game camera semantics remain unverified."
+  ],
+  "game_validation": "NOT_RUN",
+  "headset_validation": "NOT_RUN"
+}

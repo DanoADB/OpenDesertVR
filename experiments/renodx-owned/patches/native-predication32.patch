@@ -1,0 +1,61 @@
+--- a/res/version.h
++++ b/res/version.h
+@@ -1,10 +1,10 @@
+ #pragma once
+ 
+-#define VERSION_FULL 6.7.3.9013
++#define VERSION_FULL 6.7.3.9016
+ #define VERSION_MAJOR 6
+ #define VERSION_MINOR 7
+ #define VERSION_REVISION 3
+-#define VERSION_BUILD 9013
++#define VERSION_BUILD 9016
+ 
+-#define VERSION_STRING_FILE "6.7.3.9013"
++#define VERSION_STRING_FILE "6.7.3.9016"
+ #define VERSION_STRING_PRODUCT "6.7.3 UNOFFICIAL"
+--- a/source/d3d12/d3d12_command_list.cpp
++++ b/source/d3d12/d3d12_command_list.cpp
+@@ -942,6 +942,8 @@
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::SetPredication(ID3D12Resource *pBuffer, UINT64 AlignedBufferOffset, D3D12_PREDICATION_OP Operation)
+ {
+ 	_orig->SetPredication(pBuffer, AlignedBufferOffset, Operation);
++    if (auto *events = ODVDrawEvents(this); events != nullptr && events->predication != nullptr)
++        events->predication(events->context, pBuffer != nullptr, AlignedBufferOffset, Operation);
+ }
+ void STDMETHODCALLTYPE D3D12GraphicsCommandList::SetMarker(UINT Metadata, const void *pData, UINT Size)
+ {
+--- a/source/d3d12/odv/native_draw_events.hpp
++++ b/source/d3d12/odv/native_draw_events.hpp
+@@ -9,24 +9,26 @@
+ // Arrays are borrowed only for the synchronous callback. No application calls
+ // are replaced, suppressed or changed by this sink.
+ inline constexpr std::uint8_t native_draw_events_guid[16] = {0x6e, 0x1c, 0xd8, 0x45, 0x1a, 0x9b, 0x4f, 0x72,
+-                                                             0x8a, 0xf9, 0x39, 0x21, 0x61, 0x08, 0x34, 0xdd};
+-inline constexpr std::uint32_t native_draw_capabilities = 7; // SO, query, render pass.
++                                                             0x8a, 0xf9, 0x39, 0x21, 0x61, 0x08, 0x34, 0xde};
++inline constexpr std::uint32_t native_draw_capabilities = 15; // SO, query, render pass, predication.
+ struct NativeDrawEvents final {
+     std::uint32_t size = sizeof(NativeDrawEvents);
+-    std::uint32_t version = 1;
++    std::uint32_t version = 2;
+     void *context = nullptr;
+     void(__cdecl *stream_output)(void *, UINT, UINT, const D3D12_STREAM_OUTPUT_BUFFER_VIEW *) noexcept = nullptr;
+     void(__cdecl *query)(void *, ID3D12QueryHeap *, D3D12_QUERY_TYPE, UINT, bool) noexcept = nullptr;
+     void(__cdecl *render_pass)(void *, bool, D3D12_RENDER_PASS_FLAGS) noexcept = nullptr;
+     void(__cdecl *capabilities)(void *, std::uint32_t) noexcept = nullptr;
++    // Presence only: never retain/read the application's predicate buffer.
++    void(__cdecl *predication)(void *, bool, UINT64, D3D12_PREDICATION_OP) noexcept = nullptr;
+ };
+-static_assert(sizeof(void *) == 8 && sizeof(NativeDrawEvents) == 48);
++static_assert(sizeof(void *) == 8 && sizeof(NativeDrawEvents) == 56);
+ template <class CommandList> NativeDrawEvents *get_native_draw_events(CommandList *list) noexcept {
+     if (!list)
+         return nullptr;
+     std::uint64_t value = 0;
+     list->get_private_data(native_draw_events_guid, &value);
+     auto *events = reinterpret_cast<NativeDrawEvents *>(value);
+-    return events && events->size == sizeof(*events) && events->version == 1 ? events : nullptr;
++    return events && events->size == sizeof(*events) && events->version == 2 ? events : nullptr;
+ }
+ } // namespace odv::research

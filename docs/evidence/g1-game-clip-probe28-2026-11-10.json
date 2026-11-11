@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "LATER_GRAPHICS_WINDOWS_CAPTURED",
+  "source_commit": "c231e04bfa6c0563a2726fab1e9d2e3457459736",
+  "game_build": "26480954",
+  "scene": "Loaded stationary world, Hills of No Return",
+  "initial_window_counts": {
+    "0": 128,
+    "128": 128,
+    "256": 128,
+    "384": 97,
+    "512": 0
+  },
+  "latest_windows": [
+    {
+      "first": 0,
+      "latest_records": 128,
+      "truncated": true,
+      "private_sha256": "4597ae720ee5a946406a37d31870adba460e8e93629416bce5368951f0eb0217"
+    },
+    {
+      "first": 128,
+      "latest_records": 128,
+      "truncated": true,
+      "private_sha256": "add487c4dd3084deee73448aab3060f8c9ba609de2a35f3679dd7717da2dc299"
+    },
+    {
+      "first": 256,
+      "latest_records": 128,
+      "truncated": true,
+      "private_sha256": "ed5865bc3f3519ee277532af6611ba2c4cf4424eb699c5d892679235f7c20d2d"
+    },
+    {
+      "first": 384,
+      "latest_records": 62,
+      "truncated": false,
+      "private_sha256": "0ddcbe2785ccb3026ed087459f2d6b669dca5247cc90d9ad50a38e87da4948e5"
+    },
+    {
+      "first": 512,
+      "latest_records": 0,
+      "truncated": false,
+      "private_sha256": "82226aaf16be7b86a6b1328bbb98fab2c6969fe0730e19255a839a6d0e7a1083"
+    }
+  ],
+  "same_gpu_frame_proven": false,
+  "cross_window_resource_identity_stable": false,
+  "compute_copy_consumers": "NOT_CAPTURED",
+  "frame_graph_complete": false,
+  "terrain_candidate": {
+    "vertex_crc32": "C48DB423",
+    "vertex_bytes": 25924,
+    "vertex_entrypoint": "vsTerrainMesh",
+    "pixel_crc32": "2F35F124",
+    "pixel_bytes": 36840,
+    "pixel_entrypoint": "psTerrainMesh",
+    "window_first": 128,
+    "eligible_recording_ordinal": 205,
+    "submission_known": true,
+    "maximum_command_capacity": 15140,
+    "gpu_count_buffer_present": true,
+    "raw_gpu_count": "NOT_READ",
+    "signature_stride": 40,
+    "signature_arguments": "Original IBV / root0 word0 / DrawIndexed",
+    "active_queries": 1,
+    "draw_state_failed": false,
+    "render_pass_blocked": false,
+    "render_targets": [
+      {
+        "slot": 0,
+        "resource": {
+          "depthOrLayers": 1,
+          "format": "r16g16b16a16_uint",
+          "height": 720,
+          "levels": 1,
+          "samples": 1,
+          "type": "texture_2d",
+          "width": 2560
+        },
+        "view": {
+          "format": "r16g16b16a16_uint",
+          "texture": {
+            "firstLayer": 0,
+            "firstLevel": 0,
+            "layerCount": 0,
+            "levelCount": 1
+          },
+          "type": "texture_2d"
+        }
+      },
+      {
+        "slot": 1,
+        "resource": {
+          "depthOrLayers": 1,
+          "format": "r10g10b10a2_unorm",
+          "height": 720,
+          "levels": 1,
+          "samples": 1,
+          "type": "texture_2d",
+          "width": 2560
+        },
+        "view": {
+          "format": "r10g10b10a2_unorm",
+          "texture": {
+            "firstLayer": 0,
+            "firstLevel": 0,
+            "layerCount": 0,
+            "levelCount": 1
+          },
+          "type": "texture_2d"
+        }
+      },
+      {
+        "slot": 2,
+        "resource": {
+          "depthOrLayers": 1,
+          "format": "r8g8b8a8_unorm",
+          "height": 720,
+          "levels": 1,
+          "samples": 1,
+          "type": "texture_2d",
+          "width": 2560
+        },
+        "view": {
+          "format": "r8g8b8a8_unorm",
+          "texture": {
+            "firstLayer": 0,
+            "firstLevel": 0,
+            "layerCount": 0,
+            "levelCount": 1
+          },
+          "type": "texture_2d"
+        }
+      },
+      {
+        "slot": 3,
+        "resource": {
+          "depthOrLayers": 1,
+          "format": "r32g32_float",
+          "height": 720,
+          "levels": 1,
+          "samples": 1,
+          "type": "texture_2d",
+          "width": 2560
+        },
+        "view": {
+          "format": "r32g32_float",
+          "texture": {
+            "firstLayer": 0,
+            "firstLevel": 0,
+            "layerCount": 0,
+            "levelCount": 1
+          },
+          "type": "texture_2d"
+        }
+      },
+      {
+        "slot": 4,
+        "resource": {
+          "depthOrLayers": 1,
+          "format": "r8_uint",
+          "height": 720,
+          "levels": 1,
+          "samples": 1,
+          "type": "texture_2d",
+          "width": 2560
+        },
+        "view": {
+          "format": "r8_uint",
+          "texture": {
+            "firstLayer": 0,
+            "firstLevel": 0,
+            "layerCount": 0,
+            "levelCount": 1
+          },
+          "type": "texture_2d"
+        }
+      }
+    ],
+    "camera_candidate": {
+      "slot": 18,
+      "space": 35,
+      "bytes": 2816,
+      "active_shader_use_observed": true,
+      "vertex_stage_use_proven": false,
+      "camera_transform_proven": false
+    }
+  },
+  "other_stage_observations": {
+    "566AE0F1": "GenerateVoxelsObjectVS",
+    "D7CBDF1A": "DynamicShadowMainVS",
+    "6B156447": "GlareBladesVS",
+    "AE4C2AD8": "GlareBladesGS",
+    "3FD5B463": "GlareBladesPS"
+  },
+  "scope": "Metadata and stage summaries only; no shader text or game assets exported. Capacity and entrypoint are candidate evidence, not proof of visible contribution. Windows span separate capture observations.",
+  "mode": 0,
+  "failed": false,
+  "asset_files": 0,
+  "game_identity_unchanged": true,
+  "tool_hashes_unchanged": true,
+  "staged_files_unchanged": true,
+  "geometry_influence": "UNVERIFIED",
+  "game_stereo": "NOT_RUN",
+  "next_control": "Probe29 exact observed terrain VS; private identity/collapse plus fenced GPU queries before a visual verdict"
+}

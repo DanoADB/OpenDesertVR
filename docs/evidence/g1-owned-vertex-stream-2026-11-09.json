@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "QUALIFIED_OWNED_VERTEX_STREAM_FEASIBILITY",
+  "source_file": "experiments/draw-binding-owned/vertex_stream_tests.cpp",
+  "source_sha256": "a0a24a704e6c5039e267da3aea63aaf130151cd5597b9cffd4c4e7baa4f432ca",
+  "binary_sha256": {
+    "Debug": "ce5eeef23d39f77d6245dc38d0a9952fe891c97d15971b38f887a3db9b1596e8",
+    "Release": "e52c003e2497ba9b8a7c021493752d715b7c5abe40fdad8ca32490da2bb720ce"
+  },
+  "local_ctest": {
+    "Debug": {"passed": 8, "failed": 0, "skipped": 0},
+    "Release": {"passed": 8, "failed": 0, "skipped": 0}
+  },
+  "physical_gpu_Debug": "PASS",
+  "local_debug_layer": "UNAVAILABLE",
+  "hosted_debug_layer": "PENDING_CI",
+  "controls": {
+    "default_source_bytes": 4096,
+    "constant_offset_bytes": 256,
+    "constant_bytes": 2816,
+    "source_access_during_read": "VERTEX_AND_CONSTANT_BUFFER_ONLY",
+    "source_barriers_during_sampling": 0,
+    "source_writes_during_sampling": 0,
+    "output": "176_POINT_VERTICES_UINT4_STREAM_OUTPUT_NO_RASTERIZATION",
+    "bit_exact_including_nan_infinity_signed_zero_and_integer_patterns": "PASS",
+    "independent_all_source_bytes_unchanged": "PASS",
+    "actual_covering_fence_initially_blocked": "PASS",
+    "predication_disabled_exact_sample": "PASS",
+    "zero_predicate_EQUAL_ZERO_draw_and_copy_skipped": "PASS",
+    "zero_predicate_NOT_EQUAL_ZERO_exact_sample": "PASS",
+    "unpredicated_so_statistics_reject_skipped_draw": "PASS",
+    "filled_byte_counter_matches_exact_payload": "PASS",
+    "undersized_output_175_written_176_needed_2800_bytes_rejected": "PASS",
+    "recording_reset_before_releasing_resources": "PASS"
+  },
+  "scope": "Standalone owned D3D12 feasibility executable only. Original source transitions occur solely in setup and independent verification, outside sampling. No app state restoration implementation is exercised.",
+  "remaining_gates": [
+    "Qualify restoration of root signature, every root argument, PSO, topology, stream-output targets and render/depth targets before the original application draw.",
+    "Reject active application queries, native render passes, unknown replay state, unverified vertex CBV usage, protected or unsupported command lists.",
+    "Integrate bounded tickets, exact native submission fences, repeated execution and recording retirement before game use."
+  ],
+  "game": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN"
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "actual_game_d3d12_execution_events",
+  "scene": "title/start menu (user confirmed)",
+  "source_commit": "bba85046aceccaced974efbffbe02621733ca1a1",
+  "capture_info": {
+    "schema_version": 1,
+    "tool": "Windows logman and Get-WinEvent",
+    "provider": "Microsoft-Windows-Direct3D12",
+    "provider_guid": "5d8087dd-3a9b-4f56-90df-49196cdc4f11",
+    "keyword_mask": "0x2 (Devices)",
+    "circular_file_limit_mb": 64,
+    "requested_duration_seconds": 10,
+    "target": "CrimsonDesert.exe",
+    "game_executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "game_executable_size_bytes": 327116696,
+    "game_file_version": "1.0.0.3549",
+    "script_sha256": "6ab772627d0bdc36b86d0902f6408053996bdc88b2ece7078972cc56e55ec17d",
+    "status": "CAPTURED",
+    "start_exit": 0,
+    "stop_exit": 0,
+    "trace_session_stopped": true
+  },
+  "summary": {
+    "schema_version": 1,
+    "evidence_kind": "external_d3d12_etw_event_counts",
+    "application": "CrimsonDesert.exe",
+    "provider_guid": "5d8087dd-3a9b-4f56-90df-49196cdc4f11",
+    "input_sha256": "24f3f55ae87f0846ea1894e122d2031ff875ca529847b3f0509dc76b2fc45aaf",
+    "events": [
+      {
+        "event_id": 139,
+        "version": 0,
+        "count": 6623
+      },
+      {
+        "event_id": 140,
+        "version": 0,
+        "count": 6623
+      },
+      {
+        "event_id": 52,
+        "version": 0,
+        "count": 8429
+      }
+    ],
+    "execute_command_list_start_events": 6623,
+    "d3d12_execution": "OBSERVED",
+    "world_render_pass_identity": "UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED",
+    "limitations": [
+      "Counts cover retained events in a bounded circular trace, not complete frame/GPU timing.",
+      "Observed D3D12 command-list execution does not identify world passes, camera matrices or stereo.",
+      "No matching execution events is inconclusive; it does not prove a D3D11 renderer."
+    ]
+  },
+  "post_capture_verification": {
+    "game_executable_sha256_rechecked": true,
+    "execution_start_schema": [
+      {
+        "opcode": "win:Start",
+        "task": "ExecuteCommandList",
+        "version": 0,
+        "event_id": 53
+      },
+      {
+        "opcode": "win:Start",
+        "task": "ExecuteCommandList",
+        "version": 0,
+        "event_id": 139
+      }
+    ],
+    "all_game_event_counts_independently_recomputed": true,
+    "etl_sha256_rechecked": true,
+    "capture_script_hash_matches_original_git_revision": true
+  },
+  "scope": "D3D12 command-list execution observed. World-pass identity, camera control and stereo remain unverified. Raw ETL and PID context remain local."
+}

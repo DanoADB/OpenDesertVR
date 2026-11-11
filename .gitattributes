@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.png binary
+*.zip binary
+# Preserve exact patch bytes, including CRLF context from frozen input sources.
+# Unified patches contain a context prefix before blank lines and source tabs.
+*.patch -text whitespace=-blank-at-eol,-space-before-tab

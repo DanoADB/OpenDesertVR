@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "IDENTITY_NOT_EXECUTED_REQUIRED_NATIVE_TRACKING_DISABLED",
+  "source_commit": "5325c36486c5e08955247e8de2560ca39bd057f5",
+  "game_build": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "binary_sha256": {
+    "renodx-devkit.addon64": "e9cdf7703b22c843c50352287d581af8f2b7607dadffac9d8a0692cfeffed6c7",
+    "dxcompiler.dll": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+    "dxil.dll": "fda4dde92222ddb8564c3173ce48faa56f7e1c7b46b0b67dada1182ee07a4123",
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3"
+  },
+  "desktop_capture": "BLACK_WINDOW_CONTENT_UNUSABLE_FOR_SCENE_CONFIRMATION",
+  "scene": "USER_CONFIRMED_AND_DESKTOP_OBSERVED_STILL_3D_SCENE",
+  "probe_status": {
+    "schema_version": 1,
+    "mode": 0,
+    "failed": false,
+    "candidates": 0,
+    "recorded": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "evidence": "CPU_RECORDING_ONLY",
+    "game_stereo": "NOT_RUN"
+  },
+  "devkit_asset_files": 0,
+  "private_gate_sha256": "e442437128cb179c5a24bf90ea7218c0385818de838a74d220fca1c41b9be196",
+  "private_controller_sha256": "e9c6e00087062e03e16661de3e13aad72f8f31ad996317d4bca84d8f11bdbb94",
+  "geometry_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "cleanup": "PASS_EXACT_STAGED_FILES_REMOVED_GAME_IDENTITY_UNCHANGED",
+  "identity_attempt": {
+    "private_report_sha256": "6af5b263e105422d274954fb45c869bd0330a85430c0234bd44edf896e41f9a4",
+    "recorded_replacements": 0,
+    "failed_shader_compile": false,
+    "reason": "ODVDefaultConstants=0 prevents native state installation; ODVNativeMetadata=0 prevents draw/indirect event installation. Probe required both.",
+    "geometry_influence": "NOT_RUN"
+  },
+  "cleanup_sha256": "23bcecac848e96f2b9eb6200c9ee8ae80ba23df1598162f559c083fef0609d6d",
+  "corrected_configuration": {
+    "ODVClipProbeEnabled": 1,
+    "ODVDefaultConstants": 1,
+    "ODVNativeMetadata": 1,
+    "ODVUploadInputs": 0,
+    "fresh_launch": "STARTED_EFFECT_DISABLED",
+    "controller_sha256": "ecdede6dd3367a5149a8751954f44c296e74b71fc1df00607670263f2ced149c",
+    "owned_gpu_controls": {
+      "status": "PASS_NATIVE_TRACKING_ENABLED",
+      "controls": [
+        {
+          "path": "legacy",
+          "exit_code": 0,
+          "stdout_sha256": "3b622e5b9747024a4039d50e6be7d2c0e53b54155e0f5b129115650022b14a8e"
+        },
+        {
+          "path": "stream",
+          "exit_code": 0,
+          "stdout_sha256": "e4f142929356d6897142fcd5f512333552e7bb2ac132dbe4718613f24d09275a"
+        }
+      ],
+      "config_sha256": "57f62e51aa26fe9a693453e71484121c62f21afe9a63183a7684d375e70b961f",
+      "native_draw_tracking": true,
+      "native_indirect_tracking": true,
+      "asset_files": 0
+    },
+    "identity_attempt": {
+      "candidates": 6123,
+      "recorded_replacements": 0,
+      "shader_or_pipeline_failure": false,
+      "restored_mode": 0,
+      "private_report_sha256": "244d6c933a74036448144fabef9d54c42cf7ea1b0fca5168aabcfb630441d92d"
+    },
+    "guard_observation": {
+      "matching_world_draws": 2,
+      "active_queries_per_draw": 1,
+      "native_draw_state_failed": false,
+      "render_pass_blocked": false,
+      "primary_dimensions": [
+        5120,
+        1440
+      ],
+      "world_target_dimensions": [
+        2560,
+        720
+      ],
+      "private_details_sha256": "a859d5f8136956e0b186df98b4c7c92a517f17e00a3e7b0dad9d81429bca7736",
+      "finding": "Replay guard rejects active queries before shader compilation. Use qualified single-forward guard for replacement only."
+    }
+  }
+}

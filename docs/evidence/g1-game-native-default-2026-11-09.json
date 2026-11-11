@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "OBSERVED_ENHANCED_BARRIER_GAP",
+  "source_commit": "cecc4b145d1900c1606660be3d6b52f5276a767d",
+  "game_identity": {
+    "steam_app_id": "3321460",
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "observer_version": "bc0ead3-native-default-10",
+  "addon_sha256": "3d1db006d123d7db91fb984f0f3ac371afbeea17214b01ac901022c749c8a461",
+  "native_reshade_sha256": "ca06d2e10c285046f246e01e7dd244b00459af61b62a73532af09d1cc3346c27",
+  "controller_sha256": "b2c73118eea3287d240d1f269690aba30ce7fb7124fd0e93c261a9e5cfc0d9aa",
+  "same_reviewed_game_build": "PASS",
+  "bootstrap_and_tool_identity": "PASS_PRELAUNCH",
+  "expected_process_identity": "PASS",
+  "pipe_server_matches_expected_game": true,
+  "presenting_d3d12_devices": 1,
+  "prior_case_normal_exit_and_exact_cleanup": "PASS",
+  "configuration": {
+    "ODVConstantBytes": 2816,
+    "ODVConstantMaxBytes": 0,
+    "ODVGraphicsOnly": 1,
+    "ODVUploadInputs": 0,
+    "ODVDefaultConstants": 1
+  },
+  "capture": "COMPLETE_METADATA_ONLY",
+  "camera_semantics": "UNVERIFIED",
+  "game_buffer_data_writes": "NOT_RUN",
+  "game_stereo": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "cleanup": "PASS",
+  "interpretation": "Native enhanced barrier and actual after-execute callbacks worked in the current verified game process. Observer10 invalidates metadata on enhanced barriers, so it recorded no DEFAULT copies and returned no candidate bytes. Callback counts alone do not establish which barrier covers a candidate buffer. A separate enhanced-buffer path requires owned qualification and a new normal game launch; no camera or stereo proof exists.",
+  "supplemental_controller_sha256": "ef2c070f0d5e07c7692e1e0f18d2dfe4c89da88e3179c4b58ae8efdbb27bdfdb",
+  "capture_report_sha256": "3f9147c3aed1934dcb4da2fb18a669e422565afedffd5fcd8955471d854fb672",
+  "scene": "USER_CONFIRMED_STILL_3D_WORLD",
+  "retained_records": 128,
+  "known_submission_records": 128,
+  "detail_records": 6,
+  "command_origins": {
+    "DrawIndexed": 8,
+    "DrawOrDispatchIndirect": 120
+  },
+  "truncated": true,
+  "direct_gpu_samples": 0,
+  "direct_gpu_bytes": 0,
+  "queried_default_sources": 11,
+  "queried_source_state": "DEFAULT_STATE_UNVERIFIED",
+  "native_event_metadata": [
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 36,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 91,
+      "failed": false,
+      "legacyBarrierCalls": 43,
+      "protectedSession": false
+    },
+    {
+      "afterExecuteCalls": 1,
+      "enabled": true,
+      "enhancedBarrierCalls": 177,
+      "failed": false,
+      "legacyBarrierCalls": 0,
+      "protectedSession": false
+    }
+  ],
+  "prior_stale_pid_attempt": "REJECTED_PROCESS_IDENTITY_BEFORE_CAPTURE",
+  "cleanup_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+}

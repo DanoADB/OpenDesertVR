@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-06",
+  "source_commit": "cffb5d6aac5f4eb6f203230d6a46f125e0a20adf",
+  "source_dirty": false,
+  "qualification": "FAIL_STALE_DESCRIPTOR_TABLE_BINDINGS",
+  "stage_reached": "BINDING_COMPARISON",
+  "tool_revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "binary_sha256": {
+    "owned_app.exe": "74bdebda6453d5dd3a1ab96188a3da8d9889befe1ebb97a04afc65fa84183735",
+    "renodx-devkit.addon64": "7d61585c925197c5000ed99fae8f97aed1ac5bb5fd93166cb317640a53cf6b82",
+    "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+    "dxgi.dll": "ec9245d05c11751f2ac0d2256e6921ad8fb36be9172ef6d587856591eb729a25"
+  },
+  "controller_sha256": "5ba96eca1363c3921a90d2634d4a880a4fcc6b4bc48eddbbd5408da5e669c1bd",
+  "source_sha256": {
+    "experiments\\draw-binding-owned\\fixture.cpp": "5cc58d6f2a9603d0a561cde1bb4fc136b8c666d19f900b6e713c5ba0e62d734c",
+    "experiments\\draw-binding-owned\\CMakeLists.txt": "0ea87d8ebf834f84a9585819513f419d69aaa2cd00d1a85299b4f26e855aa3e7",
+    "experiments\\renodx-owned\\bridge_client.py": "1574ee4f557ce321dcb361c49bd56cc00f5c1201d80f4c973350aa29f692160c",
+    "experiments\\renodx-owned\\qualify_transport.py": "e3f5ce95039c54b55b8ff0d531578dacdac3f80b57f70f361e38024ff1c09dfc",
+    "experiments\\renodx-owned\\devkit-input-lock.json": "c966826f742643f24f96918f092acbee020bd6db61754c1c689027c53267d741"
+  },
+  "owned_shader_crc32": [
+    "0x2A0B8703",
+    "0x8FB67D93"
+  ],
+  "pipe_server_matches_owned_child": true,
+  "expected_draw_resources": [
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      6,
+      7
+    ]
+  ],
+  "observed_rows": [
+    {
+      "row": 0,
+      "bindings": [
+        {
+          "slot": 2,
+          "space": 3,
+          "owned_resource_index": 0,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        },
+        {
+          "slot": 5,
+          "space": 7,
+          "owned_resource_index": 1,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        }
+      ]
+    },
+    {
+      "row": 1,
+      "bindings": [
+        {
+          "slot": 2,
+          "space": 3,
+          "owned_resource_index": 0,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        },
+        {
+          "slot": 5,
+          "space": 7,
+          "owned_resource_index": 1,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        }
+      ]
+    },
+    {
+      "row": 2,
+      "bindings": [
+        {
+          "slot": 2,
+          "space": 3,
+          "owned_resource_index": 0,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        },
+        {
+          "slot": 5,
+          "space": 7,
+          "owned_resource_index": 1,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        }
+      ]
+    },
+    {
+      "row": 3,
+      "bindings": [
+        {
+          "slot": 2,
+          "space": 3,
+          "owned_resource_index": 6,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        },
+        {
+          "slot": 5,
+          "space": 7,
+          "owned_resource_index": 7,
+          "offset": 0,
+          "size": null,
+          "full_range": true
+        }
+      ]
+    }
+  ],
+  "independent_gpu_pixels": {
+    "schemaVersion": 1,
+    "status": "PASS",
+    "adapter": "WARP",
+    "frames": 6,
+    "pixelsVerifiedPerFrame": 2048,
+    "recordedDrawsPerFrame": 4,
+    "submittedDrawsPerFrame": 3,
+    "fourthColumn": "black",
+    "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+    "headset": "NOT_RUN",
+    "game": "NOT_RUN"
+  },
+  "post_observation_input_hash_check": "PASS",
+  "devkit_boot_live_dump_files": 0,
+  "native_handle_convention": "Matched known root controls; no raw handles exported",
+  "interpretation": "Root red and unsubmitted yellow metadata match their own resources. Both table draws incorrectly retain root-red VS and PS resources, while independent GPU pixels are red/green/blue/black. The observer does not qualify descriptor-table CBV association for this SM5.1 owned case. The recorded yellow draw is listed despite never being submitted; listed draws alone do not establish execution. No claim about current-game DXIL bindings follows.",
+  "game_access": "NOT_RUN",
+  "headset_test": "NOT_RUN",
+  "camera_semantics": "UNVERIFIED",
+  "raw_metadata_retained_privately": true
+}

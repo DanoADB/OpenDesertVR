@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "evidence_kind": "external_trace_probe",
+  "tool": "PresentMon console",
+  "tool_version": "2.6.0",
+  "tool_release": "https://github.com/GameTechDev/PresentMon/releases/tag/v2.6.0",
+  "tool_sha256": "b2a706bc6ad475749e3b7e3409263aa1e6906d45bdcf993f6dbc0f660188f1af",
+  "signature_status": "Valid",
+  "elevated": false,
+  "performance_log_users_member": false,
+  "target": "CrimsonDesert.exe",
+  "target_running": false,
+  "duration_seconds": 2,
+  "exit_code": 6,
+  "status": "ACCESS_DENIED_STARTING_ETW_SESSION",
+  "game_presentation": "NOT_RUN",
+  "native_stereo": "UNVERIFIED",
+  "d3d12_render_path": "UNVERIFIED",
+  "interpretation": "Windows denied trace-session creation. No game incompatibility or protection interference is inferred."
+}

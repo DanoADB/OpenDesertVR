@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_GAME_TARGET_LAYOUT_AND_LOSSLESS_WORDS",
+  "observer_version": "bc0ead3-camera-layout-15",
+  "source_commit": "310989fe4c612855675e8f3bab103eb3e6fef7c5",
+  "scene": "WORLD_STATIC",
+  "scene_observation": "Desktop screenshot shows loaded third-person 3D world after automated Play selection.",
+  "retained_records": 5,
+  "detail_records": 4,
+  "selected_checks": [
+    {
+      "draw_index": 1,
+      "slot": 17,
+      "space": 35,
+      "word_count": 704,
+      "selected_layout": "NUMERIC_LAYOUT_CHECKS_PASSED",
+      "nonfinite_float_words": 5,
+      "resolution_matches_swapchain": true,
+      "historical_sentinel_matches": true,
+      "payload_sha256": "b105f8b97104ee6be896a8aed8b2d98731ea29c7c8a21950e1a308874a6c7781"
+    }
+  ],
+  "draw_layouts": [
+    {
+      "draw_index": 1,
+      "role": 0,
+      "root_layout": {
+        "descriptorKnown": true,
+        "dwordCost": 21,
+        "flags": 29,
+        "nodeMask": 0,
+        "nonArrayBoundedShaderReadProven": false,
+        "parameters": 19,
+        "staticSamplers": 13,
+        "tagPresent": true,
+        "targetLayoutBounded": true,
+        "targetMatches": [
+          {
+            "baseRegister": 0,
+            "descriptorOffset": 17,
+            "descriptorOffsetKnown": true,
+            "finite": true,
+            "kind": "TABLE_CBV",
+            "rangeDescriptors": 50,
+            "rangeFlags": 1,
+            "rangeIndex": 0,
+            "rootParameter": 4,
+            "visibility": 0
+          }
+        ],
+        "targetSlot": 17,
+        "targetSpace": 35,
+        "unboundedTableRanges": 0,
+        "version": 2
+      },
+      "signature_stride": 40,
+      "signature_arguments": [
+        {
+          "type": 4
+        },
+        {
+          "firstWord": 0,
+          "rootParameter": 0,
+          "type": 5,
+          "wordCount": 1
+        },
+        {
+          "type": 1
+        }
+      ],
+      "root_mutation_mask": 1,
+      "active_queries": 1,
+      "render_pass_blocked": false,
+      "source_states": [
+        "ELIGIBLE_DEFAULT_ENHANCED_SCOPE"
+      ]
+    },
+    {
+      "draw_index": 2,
+      "role": 1,
+      "root_layout": {
+        "descriptorKnown": true,
+        "dwordCost": 22,
+        "flags": 17,
+        "nodeMask": 0,
+        "nonArrayBoundedShaderReadProven": false,
+        "parameters": 20,
+        "staticSamplers": 13,
+        "tagPresent": true,
+        "targetLayoutBounded": true,
+        "targetMatches": [
+          {
+            "baseRegister": 0,
+            "descriptorOffset": 18,
+            "descriptorOffsetKnown": true,
+            "finite": true,
+            "kind": "TABLE_CBV",
+            "rangeDescriptors": 52,
+            "rangeFlags": 1,
+            "rangeIndex": 0,
+            "rootParameter": 5,
+            "visibility": 0
+          }
+        ],
+        "targetSlot": 18,
+        "targetSpace": 35,
+        "unboundedTableRanges": 0,
+        "version": 2
+      },
+      "signature_stride": 40,
+      "signature_arguments": [
+        {
+          "type": 4
+        },
+        {
+          "firstWord": 0,
+          "rootParameter": 0,
+          "type": 5,
+          "wordCount": 1
+        },
+        {
+          "type": 1
+        }
+      ],
+      "root_mutation_mask": 1,
+      "active_queries": 1,
+      "render_pass_blocked": false,
+      "source_states": [
+        "DEFAULT_STATE_UNVERIFIED"
+      ]
+    },
+    {
+      "draw_index": 3,
+      "role": 1,
+      "root_layout": {
+        "descriptorKnown": true,
+        "dwordCost": 22,
+        "flags": 17,
+        "nodeMask": 0,
+        "nonArrayBoundedShaderReadProven": false,
+        "parameters": 20,
+        "staticSamplers": 13,
+        "tagPresent": true,
+        "targetLayoutBounded": true,
+        "targetMatches": [
+          {
+            "baseRegister": 0,
+            "descriptorOffset": 18,
+            "descriptorOffsetKnown": true,
+            "finite": true,
+            "kind": "TABLE_CBV",
+            "rangeDescriptors": 52,
+            "rangeFlags": 1,
+            "rangeIndex": 0,
+            "rootParameter": 5,
+            "visibility": 0
+          }
+        ],
+        "targetSlot": 18,
+        "targetSpace": 35,
+        "unboundedTableRanges": 0,
+        "version": 2
+      },
+      "signature_stride": 40,
+      "signature_arguments": [
+        {
+          "type": 4
+        },
+        {
+          "firstWord": 0,
+          "rootParameter": 0,
+          "type": 5,
+          "wordCount": 1
+        },
+        {
+          "type": 1
+        }
+      ],
+      "root_mutation_mask": 1,
+      "active_queries": 1,
+      "render_pass_blocked": false,
+      "source_states": [
+        "DEFAULT_STATE_UNVERIFIED"
+      ]
+    },
+    {
+      "draw_index": 4,
+      "role": 1,
+      "root_layout": {
+        "descriptorKnown": true,
+        "dwordCost": 22,
+        "flags": 17,
+        "nodeMask": 0,
+        "nonArrayBoundedShaderReadProven": false,
+        "parameters": 20,
+        "staticSamplers": 13,
+        "tagPresent": true,
+        "targetLayoutBounded": true,
+        "targetMatches": [
+          {
+            "baseRegister": 0,
+            "descriptorOffset": 18,
+            "descriptorOffsetKnown": true,
+            "finite": true,
+            "kind": "TABLE_CBV",
+            "rangeDescriptors": 52,
+            "rangeFlags": 1,
+            "rangeIndex": 0,
+            "rootParameter": 5,
+            "visibility": 0
+          }
+        ],
+        "targetSlot": 18,
+        "targetSpace": 35,
+        "unboundedTableRanges": 0,
+        "version": 2
+      },
+      "signature_stride": 40,
+      "signature_arguments": [
+        {
+          "type": 4
+        },
+        {
+          "firstWord": 0,
+          "rootParameter": 0,
+          "type": 5,
+          "wordCount": 1
+        },
+        {
+          "type": 1
+        }
+      ],
+      "root_mutation_mask": 1,
+      "active_queries": 1,
+      "render_pass_blocked": false,
+      "source_states": [
+        "DEFAULT_STATE_UNVERIFIED"
+      ]
+    }
+  ],
+  "private_evidence_sha256": {
+    "details.private.json": "06c1596cecd3a8558b09f297038d82a42b7bae79ad61f912f1efe8ac95adcac6",
+    "draws.private.json": "b02cb7ea13b21864ad1c810e11b7f93d0c6f3b416e45b9172747ce6f83cdb236",
+    "report.json": "5801c0abba4568b8eb129b14975ac8ae3ab6e1c0b5f56b080bfa6161c7cb5def",
+    "camera-selected-check.json": "0520c835acce227b39c7683292035e7ace657f8689d2316e7d9f91ce97389022"
+  },
+  "cleanup": "PASS",
+  "world_gpu_copy": "NOT_RUN_DEFAULT_STATE_UNVERIFIED",
+  "world_camera_influence": "NOT_RUN",
+  "independent_game_eye_views": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "limits": [
+    "Finite root descriptor range is not shader descriptor-array or access-bounds proof.",
+    "Lossless words include NaN/integer bit patterns; only selected historical numeric fields passed checks.",
+    "Shadow and world bindings occur on different command-list recordings; no copy-forward or frozen private-camera payload is qualified.",
+    "Root layout metadata does not establish complete private root/PSO compatibility; no game binding or original source modification performed."
+  ],
+  "cleanup_postflight": {
+    "status": "PASS",
+    "game_identity_unchanged": true,
+    "created_files_removed": [
+      "dxgi.dll",
+      "ReShade.ini"
+    ],
+    "devkit_asset_files": 0,
+    "private_report_sha256": "e50829c080f8a8e75a6e9115fdbb52944c5c04eecea3a0afa7fa485122782d74"
+  }
+}

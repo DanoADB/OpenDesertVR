@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_pamt_directory_markers",
+  "status": "OBSERVED_DIRECTORY_MARKERS",
+  "camera_publication": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "source_sha256": "79c253ab6300aa41fe2a0fb42a85f50e5776154b4502fdf84b5d3ff8ad2bba79",
+  "steam_app_id": "3321460",
+  "steam_build_id": "26480954",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "reviewed_catalog_sha256": "e530f8eacf2c1bf4e23826efaa040a525ad52591d84a314dae2ae7624d523067",
+  "index_count": 34,
+  "index_bytes_per_pass": 47417639,
+  "index_passes": 2,
+  "observations": [
+    {
+      "index_sha256": "b8a286f9f8b0b59f42bb464159426feebfc351d321fd9ca8eace4dcd40637482",
+      "index_bytes": 5292535,
+      "directory_bytes": 13976,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c44bd0f3f0a69df7d9f557c207dda149c61a49e07602a6680563be8f003c8287",
+      "index_bytes": 312871,
+      "directory_bytes": 49,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c0587fa8439b3e8b6dc4f5cf16b305a1557bc790824876a0664ab385523f8a47",
+      "index_bytes": 7530,
+      "directory_bytes": 25,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "fa2bd2ebd9dc63f769fdb96ffc0f0ca863ab98d2545351ac08073e51a7ce031b",
+      "index_bytes": 15895,
+      "directory_bytes": 40,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "246bd549ce6cf4a32d4d7eaf0a23cd18250451527fa482920aa71265eda2f4c5",
+      "index_bytes": 5798620,
+      "directory_bytes": 181,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "a1a5b68bc4e6bc5aacc4a11905c563dd35c854a4ed3a017a7da0daedcb084b0d",
+      "index_bytes": 3028256,
+      "directory_bytes": 823,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "792b1cda23f44d9393f0f7cf298b275302a04d5e9bd4b798dd0c7cd7d3c2d353",
+      "index_bytes": 2990145,
+      "directory_bytes": 801,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c67b77ccddc1ccfb88b63af61d34e0a7f4d7018fa234109c133fc9ccef562656",
+      "index_bytes": 409916,
+      "directory_bytes": 124,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "ad098da361cdcba553b3902140c34d207177062cfdda361d492635f724ccf4d9",
+      "index_bytes": 962197,
+      "directory_bytes": 220,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "125225e637d22cf7d1a09d037c194e2990005e0e7efc6f1f66cb564a0ada71b9",
+      "index_bytes": 9004586,
+      "directory_bytes": 99588,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "8704a87bc4aa9c4b93c8402988bcb80018982799924a113367483d39cdbb3ec4",
+      "index_bytes": 3720578,
+      "directory_bytes": 8628,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "56c68c1aa24b6f7878814af3d8b3608c8225a54febe9e4f67da25c11646a5744",
+      "index_bytes": 9687,
+      "directory_bytes": 158,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "6656990aa3b2561dfe6fa512d162ba5fdd602365e32a90fe78dc7f678b1756b1",
+      "index_bytes": 819656,
+      "directory_bytes": 538,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "2b3beba002ebb7ae952c1d76e8e3caa6b8e07823de53948113198c427eda69db",
+      "index_bytes": 164,
+      "directory_bytes": 18,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "7fef76e4011b7f99a653a54db7f2a2aefe0e5e8714e1470d1c6e6c7a74702573",
+      "index_bytes": 520164,
+      "directory_bytes": 7303,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "b33189f66bb395b4ce634a0cc6380a7c24a7a27f9ecd9f126d83f542857830c1",
+      "index_bytes": 8764729,
+      "directory_bytes": 342,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "425ddaad606aaf194aa1cff75d40ea534d6e74a15020baf5d24229514d8feb38",
+      "index_bytes": 96,
+      "directory_bytes": 0,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "3aacea36345f8fe4ce1170d97bc0cadb916ff70aa59fc41421dd25642ffd55a2",
+      "index_bytes": 2755921,
+      "directory_bytes": 33,
+      "marker_counts": {
+        "shadercache__": 1,
+        "d3d12": 1
+      }
+    },
+    {
+      "index_sha256": "ab0344d8ec40a1ffafcbe90da694524c59329624bdcd06667e1fe48746fc7b4c",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "900d8bd870f50bed7e0745b21b0b57999248b54ccdcb6560f04d9cfba14f93e9",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "ec5705deffbb9bbdc6b8e4f18b492f059bc3229b1893af8d6242c4b607936902",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "e3eef4ffaf5162cfabac0a60b7ae4fb8522b42c22b284ad2440856307a40b4ff",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c7d7c34578ad34c295cbcbad802b5809b47c0c20a49bf6b4425974181d1b3ed8",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "885990cca2d6fc0dd9f4720cbffb69970616fc9861a979fa99ad1f25b896c6c2",
+      "index_bytes": 1558,
+      "directory_bytes": 44,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "637cb33a5868cd1402fd0a6105eb9b1855935994e9438ed974d89c9a1009dd10",
+      "index_bytes": 1558,
+      "directory_bytes": 44,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "3eda581926008ad9fb1c9602838b6c88b3a64f57db9d65204bdc705cb5ce4002",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "8102b7a14078bbcdd5cc54ec9c8a6d4b06227528870f3fa3bf27cb36e94f73d0",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c6ffe007c27ec4e66783293a70bf8ad61871873b61ac088de3f4f27bba1b1f87",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "5aaa006fb0727c3d62329364fe1b6afb27eb56cfde67274e8f805b08c49b2e2b",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "b9e22f148ec154016abf869721c895e5e928d87de73bd0a2b172418919745014",
+      "index_bytes": 1558,
+      "directory_bytes": 44,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "976f284c1b041da7efd49d5ff5a1db6bcfc120387f1cb3a5830203c7099ffdbb",
+      "index_bytes": 1558,
+      "directory_bytes": 44,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "b741d7aea9d98a987b45ca7579253564d620ed9455e1250e95f524f46cb94477",
+      "index_bytes": 1558,
+      "directory_bytes": 44,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "c8fc301e04a144aa601cde56f58578d15ace7aee0a4bcf7fe99f39eaa6bb87b1",
+      "index_bytes": 1555,
+      "directory_bytes": 41,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    },
+    {
+      "index_sha256": "739188d7dfcf74c138a339dde2045501c141098eaedc199a64c0796388d2d5c4",
+      "index_bytes": 2980753,
+      "directory_bytes": 817,
+      "marker_counts": {
+        "shadercache__": 0,
+        "d3d12": 0
+      }
+    }
+  ],
+  "scope": "Header/directory bytes only parsed; rest hashed for identity. Marker counts are candidate locators, not resolved paths, shader entry identities, payload/reflection data, active bindings or camera semantics. No archive payload, process memory, game write, decryption, extraction, import of upstream code or retry.",
+  "date": "2026-11-06",
+  "probe_source_commit": "3e7c797c6e15bb6e29f309e2c3526b4893b011b6",
+  "probe_exit_code": 0,
+  "interpretation": "One bounded metadata observation. Exactly one of 34 indices contains both fixed directory markers, not necessarily in the same resolved path. No shader entry/payload, active binding, CPU/GPU layout mapping or camera publication capability established. No game-process access or writes."
+}

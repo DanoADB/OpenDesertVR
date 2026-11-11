@@ -1,0 +1,250 @@
+{
+  "repository": "clshortfuse/renodx",
+  "revision": "bc0ead39917634e95c534f7e8cfb59ab82880747",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "e9e2da3991a48d9c09b710c9ddbf5673275b6d569c976bcffab3111d0c509d51",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/LICENSE"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a4497fc204ddc628a89bb275abc1879dfec4695998ce3de8149b4e24e64ec309",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/README.md"
+    },
+    {
+      "path": "docs/DEVKIT_MCP.md",
+      "sha256": "5eaff6084e4623c6a34e3b0ddde6ed1f8cea8e5d01f1327fc65e4decc5ed41a2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/docs/DEVKIT_MCP.md"
+    },
+    {
+      "path": "src/games/crimsondesert/addon.cpp",
+      "sha256": "b2e958126e80aae8486a24dd4c9fbc932a7f6f0abb9bafa2bb3b132263309822",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/games/crimsondesert/addon.cpp"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "sha256": "9c079ce00a873a4f9239e7185c3d9d009d5775a5d334eca6e6f51f17bd98cb75",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/CMakeLists.txt"
+    },
+    {
+      "path": ".gitmodules",
+      "sha256": "a077cec4f2a741b81693c65f9dda6d07b22b646954f4b3c815c9a1052c3eb991",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/.gitmodules"
+    },
+    {
+      "path": "docs/CONTRIBUTING.md",
+      "sha256": "76906d095a9bf592401f4dae126371b31b5635eb160f62a298d207512d8f6379",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/docs/CONTRIBUTING.md"
+    },
+    {
+      "path": "src/apps/mcp_bridge/main.cpp",
+      "sha256": "8aeffd2c58e94c9f7db0f6ee3ac160050e0800599328d5572cd259d3ed911bb4",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/apps/mcp_bridge/main.cpp"
+    },
+    {
+      "path": "src/utils/mcp.hpp",
+      "sha256": "128fb7e608cf2d6ff5c925de7133f9708b1f8f1320287a117cea600b7363b4d9",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp.hpp"
+    },
+    {
+      "path": "src/utils/mcp/server.hpp",
+      "sha256": "d5c85b0f75f6081f5a4c9108ccc0478de9879de7cf99d421338166f06fdd6899",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/server.hpp"
+    },
+    {
+      "path": "src/utils/mcp/protocol.hpp",
+      "sha256": "912d6abe367fbd535a0fa563a1b052c5f4e5e014d561df36792f87724db2bb4c",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/protocol.hpp"
+    },
+    {
+      "path": "src/utils/mcp/types.hpp",
+      "sha256": "8b7e61ceeab3e0b8ac46658006f15f63d0192e64f9bfd990f57309afeba46007",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/mcp/types.hpp"
+    },
+    {
+      "path": "src/addons/devkit/addon.cpp",
+      "sha256": "d716eb55f7bd8eed1a9f67188a1497638de6bbb3508503cdce30f268ca4eb5f2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/addon.cpp"
+    },
+    {
+      "path": "src/addons/devkit/formatting.hpp",
+      "sha256": "7ae9980316df87ead64082c98c00b63f1fa4b2470090edfc476f10e2b05ec92a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/formatting.hpp"
+    },
+    {
+      "path": "src/addons/devkit/tools_path.hpp",
+      "sha256": "f5df5c674f837741e28a7a49a092769d1d89899d2c91188db9fa73b84fb7bf8e",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/tools_path.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/device_selection.hpp",
+      "sha256": "e6932e9ae1de92d10ce342de61e24a2824db1c8296128bd4d78bd716f15b7a3a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/device_selection.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/device_summary.hpp",
+      "sha256": "615a8405c923e843136d6510830b5f333dddcc391935073e15840ae0618f5e4a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/device_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/draw_summary.hpp",
+      "sha256": "4f4c5cf7750492e425019186afcf92068128b17b73651a718e3ec98a66a3865b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/draw_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/live_shaders.hpp",
+      "sha256": "de5bc421c43f67875d0e86cf33616d6e0a4228f142bb67fbc24250186eb83d4d",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/live_shaders.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_analysis.hpp",
+      "sha256": "252da68c6e07bc38350de829739bea47c794f307b73ff1f0c8c6e2167002cab2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_analysis.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_clone.hpp",
+      "sha256": "30e5893f9819ff1ebf38d67bd91f455bc1ccdf1d4069189d61f33829e80fefa5",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_clone.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_handle.hpp",
+      "sha256": "e6c54d7da149f871238a7af26e12da609da4f1dba2fac636083d33c1ef3bfd9b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_handle.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/resource_view_summary.hpp",
+      "sha256": "5fdd8002af12816fe00d1785443462433a2bc9c895d80fdd4bf7fc40f4a8dab8",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/resource_view_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/runtime.hpp",
+      "sha256": "b793101e6b6f574694d1fa22829ddfab84eab4b2c1ca13bed5120ad9af6cfdc2",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/runtime.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/server_session.hpp",
+      "sha256": "2b413e800734da2a6297221bf5ece13d09c1a90313fed959a5cfb0f8b6486d25",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/server_session.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_hash.hpp",
+      "sha256": "5f1e4151a5248fcccc4f23e6c6a394076d16d8f5ee12b68e22212d73d8ce9c14",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_hash.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_inspection.hpp",
+      "sha256": "a09c046041bece67d9f4d5ad42f4896863118262b80d107426dd34d8607f0748",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_inspection.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/shader_summary.hpp",
+      "sha256": "eef8e75f63e057112d4a9dd81f5b403783096e9b06391a5392579fb363b69eb3",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/shader_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/snapshot_summary.hpp",
+      "sha256": "b3a33e73fa9277c0e03df2935e60009286b267b4826ffd241268c70399883084",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/snapshot_summary.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/snapshot_tools.hpp",
+      "sha256": "8f9b295186636c263f7516cb00ee937120d25d2e4e56a1f4f21ac5c5885300ad",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/snapshot_tools.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/texture_replace.hpp",
+      "sha256": "a115d537f6a0dd19cdcff8a06cb1de86e3aba4651951f14a440a464b01058783",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/texture_replace.hpp"
+    },
+    {
+      "path": "src/addons/devkit/mcp/tool_catalog.hpp",
+      "sha256": "48b311a88e0350d2f59a0e99029e28f5fa25681c0412c80c8b014a6aad71e566",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/addons/devkit/mcp/tool_catalog.hpp"
+    },
+    {
+      "path": "src/utils/constants.hpp",
+      "sha256": "b2431f8487a393828e5584b8bef3e04f3493199c89f11bc3c20587d86861453a",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/constants.hpp"
+    },
+    {
+      "path": "src/utils/state.hpp",
+      "sha256": "031fc1c11fe0630d831b3ddabd769aa64a05c2e8ead42686d3d1890d9a2c53f7",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/state.hpp"
+    },
+    {
+      "path": "src/utils/descriptor.hpp",
+      "sha256": "db5928fddc3267c7b48b1206edaaa31e31488cfea914b09cbd087c34d1406db9",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/descriptor.hpp"
+    },
+    {
+      "path": "src/utils/ipc/ipc.hpp",
+      "sha256": "81530a4b5c1ba71483dce9c61b4bca7eeb456b29ae397334ba2369648820bc7b",
+      "url": "https://github.com/clshortfuse/renodx/blob/bc0ead39917634e95c534f7e8cfb59ab82880747/src/utils/ipc/ipc.hpp"
+    }
+  ],
+  "execution": "NOT_RUN",
+  "adoption": "NOT_RUN",
+  "scope": "Selected source and metadata-schema review only, with retrieved references inventoried by SHA-256. File inventory does not assert exhaustive review of every line or transitive dependency. No HLSL game replacements, compiled addons, game payloads or binaries were adopted. No upstream code built or executed.",
+  "declared_dependency_gitlinks": [
+    {
+      "path": "external/reshade",
+      "revision": "4a50d1eddace85734871d91792ff214f13f66c01",
+      "repository": "https://github.com/crosire/reshade",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/json",
+      "revision": "55f93686c01528224f448c19128836e7df245f72",
+      "repository": "https://github.com/nlohmann/json.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/gtl",
+      "revision": "51eb683658378d67086d8fc04d5fd162a0ae30c5",
+      "repository": "https://github.com/greg7mdp/gtl.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/Detours",
+      "revision": "9764cebcb1a75940e68fa83d6730ffaf0f669401",
+      "repository": "https://github.com/microsoft/Detours.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/minhook",
+      "revision": "c3fcafdc10146beb5919319d0683e44e3c30d537",
+      "repository": "https://github.com/TsudaKageyu/minhook.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/Streamline",
+      "revision": "e8aaa6eaac968711fb62473d4ae8256dde20919b",
+      "repository": "https://github.com/clshortfuse/Streamline.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    },
+    {
+      "path": "external/DLSS",
+      "revision": "a291cc7d2cc642a51566f3dfd5376f635cd1b284",
+      "repository": "https://github.com/NVIDIA/DLSS.git",
+      "license_audit": "NOT_COMPLETED",
+      "adopted": false
+    }
+  ],
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "root_license": "MIT",
+  "root_copyright": "Copyright (c) 2025 Carlos Lopez Jr.",
+  "selected_header_notices": "Selected devkit/MCP headers state MIT and Copyright (C) 2026 Carlos Lopez.",
+  "license_notice": "docs/licenses/RenoDX-MIT.txt",
+  "code_adopted": false,
+  "dependencies_adopted": false,
+  "game_access": "NOT_RUN",
+  "headset_test": "NOT_RUN_USER_DEFERRED"
+}

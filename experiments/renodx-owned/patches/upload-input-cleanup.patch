@@ -1,0 +1,402 @@
+--- a/src/addons/devkit/addon.cpp
++++ b/src/addons/devkit/addon.cpp
+@@ -5,6 +5,9 @@
+ 
+ #define ImTextureID ImU64
+ 
++#include "odv/constant_capture_driver.hpp"
++#include "odv/upload_input_observer.hpp"
++#include <cmath>
+ #include <d3d11.h>
+ #include <d3d12.h>
+ #include <Windows.h>
+@@ -114,6 +117,7 @@
+ 
+ inline constexpr std::wstring_view DEVKIT_MCP_PIPE_PREFIX = L"renodx-devkit-mcp";
+ 
++static constexpr uint32_t ODV_SNAPSHOT_RECORD_LIMIT = 128u;
+ std::atomic<reshade::api::device*> snapshot_device = nullptr;
+ std::atomic<reshade::api::device*> snapshot_queued_device = nullptr;
+ std::atomic<uint32_t> snapshot_submission_counter = 0u;
+@@ -225,6 +229,11 @@
+   std::vector<uint32_t> shader_hashes;
+ };
+ 
++odv::research::ConstantCaptureDriver odv_constant_driver;
++odv::research::UploadInputObserver odv_upload_observer;
++bool odv_upload_inputs = false;
++uint32_t odv_constant_bytes = 0u; // OFF unless explicitly configured.
++
+ struct DrawDetails {
+   enum class DrawMethods : std::uint8_t {
+     PRESENT,
+@@ -238,6 +247,11 @@
+   uint64_t cmd_list_handle = 0u;
+   uint32_t cmd_list_draw_index = 0u;
+   uint32_t submission_order = 0u;
++  bool capture_truncated = false;
++  std::map<std::pair<uint32_t, uint32_t>, odv::research::ConstantCaptureDriver::Ticket> odv_constant_samples;
++  std::map<std::pair<uint32_t, uint32_t>, odv::research::ConstantCaptureDriver::RecordStatus> odv_constant_attempts;
++  bool odv_constant_attempts_truncated = false;
++  std::map<std::pair<uint32_t, uint32_t>, odv::research::UploadInputObserver::Ticket> odv_upload_inputs;
+   std::map<std::pair<uint32_t, uint32_t>, ResourceViewDetails> srv_binds;
+   std::map<std::pair<uint32_t, uint32_t>, ResourceViewDetails> uav_binds;
+   std::map<std::pair<uint32_t, uint32_t>, reshade::api::buffer_range> constants;
+@@ -397,6 +411,7 @@
+   std::unordered_map<uint32_t, ShaderDetails> shader_details;
+   // std::vector<CommandListData> command_list_data;
+   std::vector<DrawDetails> draw_details_list;
++  bool capture_truncated = false;
+   std::unordered_map<uint64_t, std::vector<size_t>> draw_detail_indexes_by_cmd_list;
+   std::unordered_set<uint64_t> live_pipelines;
+   std::unordered_map<uint64_t, std::unordered_map<reshade::api::format, reshade::api::resource_view>> preview_srvs;
+@@ -2591,7 +2606,15 @@
+       .timestamp_ms = std::chrono::duration_cast<std::chrono::milliseconds>(draw_details.timestamp.time_since_epoch()).count(),
+       .srv_count = draw_details.srv_binds.size(),
+       .uav_count = draw_details.uav_binds.size(),
++      .submission_order = draw_details.submission_order,
++      .submission_known = draw_details.submission_order != 0u,
++      .capture_record_limit = ODV_SNAPSHOT_RECORD_LIMIT,
++      .capture_truncated = draw_details.capture_truncated,
+       .constant_count = draw_details.constants.size(),
++      .odv_gpu_constant_sample_count = draw_details.odv_constant_samples.size(),
++      .odv_gpu_constant_attempt_count = draw_details.odv_constant_attempts.size(),
++      .odv_gpu_constant_attempts_truncated = draw_details.odv_constant_attempts_truncated,
++      .odv_upload_input_count = draw_details.odv_upload_inputs.size(),
+       .render_target_count = draw_details.render_targets.size(),
+       .pipeline_count = draw_details.pipeline_binds.size(),
+   };
+@@ -2616,6 +2639,47 @@
+     return draw_summary;
+   }
+ 
++  if (odv_constant_bytes != 0u) {
++    auto samples = devkit_draw_summary::json::array();
++    for (const auto& [slot_space, ticket] : draw_details.odv_constant_samples) {
++      auto sample = odv_constant_driver.read(ticket);
++      auto values = devkit_draw_summary::json::array();
++      for (size_t i = 0; i + sizeof(float) <= sample.bytes.size(); i += sizeof(float)) {
++        float value = 0.f;
++        std::memcpy(&value, sample.bytes.data() + i, sizeof(value));
++        values.push_back(std::isfinite(value) ? devkit_draw_summary::json(value) : devkit_draw_summary::json(nullptr));
++      }
++      samples.push_back({{"slot",slot_space.first},{"space",slot_space.second},
++          {"state",sample.state},{"byteCount",sample.bytes.size()},
++          {"semantics","FIRST_QUALIFIED_EXECUTION_NOT_CAMERA_PROOF"},{"float32",std::move(values)}});
++    }
++    draw_summary.odv_gpu_constant_samples = std::move(samples);
++    auto attempts = devkit_draw_summary::json::array();
++    for (const auto& [slot_space, attempt] : draw_details.odv_constant_attempts) {
++      attempts.push_back({{"slot",slot_space.first},{"space",slot_space.second},
++          {"state",attempt.state},{"sourceState",attempt.source.state},
++          {"sourceHeapType",attempt.source.heap_type == 0u ? devkit_draw_summary::json(nullptr) : devkit_draw_summary::json(attempt.source.heap_type)},
++          {"sourceAllocationBytes",attempt.source.width == 0u ? devkit_draw_summary::json(nullptr) : devkit_draw_summary::json(attempt.source.width)}});
++    }
++    draw_summary.odv_gpu_constant_attempts = std::move(attempts);
++  }
++  if (odv_upload_inputs) {
++    auto inputs = devkit_draw_summary::json::array();
++    for (const auto& [slot_space, ticket] : draw_details.odv_upload_inputs) {
++      const auto sample = odv_upload_observer.read(ticket);
++      auto values = devkit_draw_summary::json::array();
++      for (size_t i = 0; i + sizeof(float) <= sample.bytes.size(); i += sizeof(float)) {
++        float value = 0.f;
++        std::memcpy(&value, sample.bytes.data() + i, sizeof(value));
++        values.push_back(std::isfinite(value) ? devkit_draw_summary::json(value) : devkit_draw_summary::json(nullptr));
++      }
++      inputs.push_back({{"slot",slot_space.first},{"space",slot_space.second},{"state",sample.state},
++          {"byteCount",sample.bytes.size()},{"sourceState",sample.source.state},
++          {"sourceHeapType",sample.source.heap_type},{"sourceAllocationBytes",sample.source.width},
++          {"semantics","SUBSEQUENT_UPLOAD_INPUT_NOT_LATER_DEFAULT_OR_CAMERA_PROOF"},{"float32",std::move(values)}});
++    }
++    draw_summary.odv_upload_inputs = std::move(inputs);
++  }
+   std::vector<devkit_draw_summary::SlotResourceBindingSummary> srv_bindings = {};
+   srv_bindings.reserve(draw_details.srv_binds.size());
+   for (const auto& [slot_space, resource_view_details] : draw_details.srv_binds) {
+@@ -4274,6 +4338,11 @@
+ }
+ 
+ void OnDestroyDevice(reshade::api::device* device) {
++  try {
++    if (device->get_api() == reshade::api::device_api::d3d12)
++      odv_upload_observer.release_device(reinterpret_cast<ID3D12Device*>(device->get_native()));
++  } catch (...) {}
++
+   if (snapshot_device == device) {
+     snapshot_device = nullptr;
+   }
+@@ -4451,6 +4520,7 @@
+ }
+ 
+ void OnDestroyCommandList(reshade::api::command_list* cmd_list) {
++  try { odv_constant_driver.destroyed(reinterpret_cast<uintptr_t>(cmd_list)); odv_upload_observer.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list), true); } catch (...) {}
+   auto* device = cmd_list->get_device();
+   if (SupportsSnapshotSubmissionOrder(device->get_api())) {
+     if (auto* device_data = renodx::utils::data::Get<DeviceData>(device);
+@@ -4463,7 +4533,16 @@
+   renodx::utils::data::Delete<CommandListData>(cmd_list);
+ }
+ 
++void OnCloseCommandList(reshade::api::command_list* cmd_list) {
++  // Close can be the first callback after a successful reset to an EMPTY list.
++  try {
++    odv_constant_driver.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list));
++    odv_upload_observer.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list));
++  } catch (...) {}
++}
++
+ void OnResetCommandList(reshade::api::command_list* cmd_list) {
++  try { odv_constant_driver.before_reset(reinterpret_cast<uintptr_t>(cmd_list)); odv_upload_observer.before_reset(reinterpret_cast<uintptr_t>(cmd_list)); } catch (...) {}
+   auto* device = cmd_list->get_device();
+   if (SupportsSnapshotSubmissionOrder(device->get_api())) {
+     if (auto* device_data = renodx::utils::data::Get<DeviceData>(device);
+@@ -4652,6 +4731,10 @@
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
+     }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
++    }
+     const auto draw_index = device_data->draw_details_list.size();
+     device_data->draw_details_list.push_back(std::move(draw_details));
+     if (SupportsSnapshotSubmissionOrder(device->get_api()) && device_data->draw_details_list.back().cmd_list_handle != 0u) {
+@@ -4697,6 +4780,10 @@
+     std::unique_lock lock(device_data->mutex);
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
++    }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
+     }
+     const auto draw_index = device_data->draw_details_list.size();
+     device_data->draw_details_list.push_back(std::move(draw_details));
+@@ -4882,6 +4969,7 @@
+ }
+ 
+ bool OnDraw(reshade::api::command_list* cmd_list, DrawDetails::DrawMethods draw_method) {
++  try { odv_constant_driver.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list)); odv_upload_observer.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list)); } catch (...) {}
+   bool bypass_draw = false;
+ 
+   auto* device = cmd_list->get_device();
+@@ -5128,6 +5216,7 @@
+                   continue;
+                 }
+                 if (draw_method != DrawDetails::DrawMethods::DISPATCH
++                    && range.type != reshade::api::descriptor_type::constant_buffer
+                     && !renodx::utils::bitwise::HasFlag(range.visibility, reshade::api::shader_stage::pixel)) {
+                   continue;
+                 }
+@@ -5178,7 +5267,7 @@
+                 const bool is_vulkan = device->get_api() == reshade::api::device_api::vulkan;
+                 const uint32_t range_slot = is_vulkan ? range.binding : range.dx_register_index;
+                 const uint32_t range_space = is_vulkan ? param_index : range.dx_register_space;
+-                if (has_reflected_resource_binds) {
++                if (has_reflected_resource_binds && range_bind_type != ResourceBind::BindType::CBV) {
+                   candidate_slots.reserve(draw_details.resource_binds->size());
+                   for (const auto& bind : *draw_details.resource_binds) {
+                     if (bind.type != range_bind_type) continue;
+@@ -5277,6 +5366,39 @@
+     // device_data->command_list_data.push_back(*command_list_data);
+     if (snapshot_trace_with_snapshot) {
+       reshade::log::message(reshade::log::level::debug, std::format("Snapshot #{}", device_data->draw_details_list.size()).c_str());
++    }
++    if (device_data->draw_details_list.size() >= ODV_SNAPSHOT_RECORD_LIMIT) {
++      device_data->capture_truncated = true;
++      return false;
++    }
++    // Copy only finite, active reflected CBVs with the explicitly requested
++    // size. Native resource pointers are used only during this valid callback.
++    // UPLOAD-only state/lifetime checks and fixed capacity are in the driver.
++    if (odv_constant_bytes != 0u && device->get_api() == reshade::api::device_api::d3d12) {
++      try {
++        for (const auto& [slot_space, range] : draw_details.constants) {
++          if (range.buffer.handle == 0u || range.size != odv_constant_bytes ||
++              !IsResourceBindUsedByShader(draw_details.resource_binds, ResourceBind::BindType::CBV,
++                  slot_space.first, slot_space.second)) continue;
++          if (draw_details.odv_constant_attempts.size() >= 6u) {
++            draw_details.odv_constant_attempts_truncated = true;
++            break;
++          }
++          auto& attempt = draw_details.odv_constant_attempts[slot_space];
++          auto sample = odv_constant_driver.record(reinterpret_cast<uintptr_t>(cmd_list),
++              reinterpret_cast<ID3D12Device*>(device->get_native()),
++              reinterpret_cast<ID3D12GraphicsCommandList*>(cmd_list->get_native()),
++              reinterpret_cast<ID3D12Resource*>(range.buffer.handle), range.offset, odv_constant_bytes, &attempt);
++          if (sample) draw_details.odv_constant_samples.emplace(slot_space, std::move(sample));
++          if (odv_upload_inputs && attempt.source.heap_type == D3D12_HEAP_TYPE_DEFAULT) {
++            auto ticket = odv_upload_observer.register_target(reinterpret_cast<ID3D12Resource*>(range.buffer.handle),
++                range.offset, odv_constant_bytes);
++            if (ticket) draw_details.odv_upload_inputs.emplace(slot_space, std::move(ticket));
++          }
++        }
++      } catch (...) {
++        // Preserve the original application command; never throw into the game.
++      }
+     }
+     const auto draw_index = device_data->draw_details_list.size();
+     const auto cmd_list_handle = draw_details.cmd_list_handle;
+@@ -8819,6 +8941,15 @@
+ }
+ 
+ void InitializeUserSettings() {
++  uint32_t upload_inputs = 0u;
++  if (reshade::get_config_value(nullptr, "renodx-dev", "ODVUploadInputs", upload_inputs))
++    odv_upload_inputs = upload_inputs == 1u;
++
++  uint32_t requested_bytes = 0u;
++  if (reshade::get_config_value(nullptr, "renodx-dev", "ODVConstantBytes", requested_bytes)
++      && requested_bytes > 0u && requested_bytes <= 4096u && requested_bytes % 4u == 0u)
++    odv_constant_bytes = requested_bytes;
++
+   {
+     char temp[256] = "";
+     size_t size = 256;
+@@ -9119,9 +9250,29 @@
+   ImGui::EndChild();
+ }
+ 
++bool OnCopyBufferRegion(reshade::api::command_list* cmd_list, reshade::api::resource source,
++    uint64_t source_offset, reshade::api::resource destination, uint64_t destination_offset, uint64_t bytes) {
++  if (odv_upload_inputs && cmd_list->get_device()->get_api() == reshade::api::device_api::d3d12) {
++    try {
++      odv_upload_observer.recording_resumed(reinterpret_cast<uintptr_t>(cmd_list));
++      odv_upload_observer.observe_copy(reinterpret_cast<uintptr_t>(cmd_list),
++          reinterpret_cast<ID3D12Resource*>(source.handle), source_offset,
++          reinterpret_cast<ID3D12Resource*>(destination.handle), destination_offset, bytes);
++    } catch (...) {}
++  }
++  return false; // Preserve the application's copy command without modification.
++}
++
+ void OnExecuteCommandList(
+     reshade::api::command_queue* queue,
+     reshade::api::command_list* cmd_list) {
++  try {
++    if (queue->get_device()->get_api() == reshade::api::device_api::d3d12) {
++      auto* native_queue = reinterpret_cast<ID3D12CommandQueue*>(queue->get_native());
++      odv_constant_driver.before_execute(reinterpret_cast<uintptr_t>(cmd_list), native_queue);
++      odv_upload_observer.before_execute(reinterpret_cast<uintptr_t>(cmd_list), native_queue);
++    }
++  } catch (...) {}
+   if (snapshot_device == nullptr) return;
+ 
+   auto* device = cmd_list->get_device();
+@@ -9146,6 +9297,13 @@
+     }
+   }
+   device_data->draw_detail_indexes_by_cmd_list.erase(index_pair);
++}
++
++void OnFinishPresent(reshade::api::command_queue* queue, reshade::api::swapchain*) {
++  try {
++    if (queue->get_device()->get_api() == reshade::api::device_api::d3d12)
++      odv_constant_driver.after_present(reinterpret_cast<ID3D12CommandQueue*>(queue->get_native()));
++  } catch (...) {}
+ }
+ 
+ void OnPresent(
+@@ -9254,7 +9412,9 @@
+     if (snapshot_queued_device == device) {
+       auto* device_data = get_data();
+       std::unique_lock lock(device_data->mutex);
++      try { odv_constant_driver.begin_capture(); odv_upload_observer.begin_capture(); } catch (...) {}
+       device_data->draw_details_list.clear();
++      device_data->capture_truncated = false;
+       device_data->draw_detail_indexes_by_cmd_list.clear();
+       device_data->resource_usage_by_handle.clear();
+       device_data->snapshot_rows.clear();
+@@ -9269,6 +9429,7 @@
+     snapshot_device = nullptr;
+     auto* device_data = get_data();
+     std::unique_lock lock(device_data->mutex);
++    for (auto& draw : device_data->draw_details_list) draw.capture_truncated = device_data->capture_truncated;
+     std::ranges::sort(device_data->draw_details_list, [](const DrawDetails& a, const DrawDetails& b) {
+       const bool a_unknown_submission = a.submission_order == 0u;
+       const bool b_unknown_submission = b.submission_order == 0u;
+@@ -9358,6 +9519,8 @@
+       reshade::register_event<reshade::addon_event::init_command_list>(OnInitCommandList);
+       reshade::register_event<reshade::addon_event::destroy_command_list>(OnDestroyCommandList);
+       reshade::register_event<reshade::addon_event::reset_command_list>(OnResetCommandList);
++      reshade::register_event<reshade::addon_event::close_command_list>(OnCloseCommandList);
++      reshade::register_event<reshade::addon_event::copy_buffer_region>(OnCopyBufferRegion);
+       reshade::register_event<reshade::addon_event::init_pipeline>(OnInitPipelineTrackAddons);
+       reshade::register_event<reshade::addon_event::init_pipeline>(OnInitPipeline);
+       reshade::register_event<reshade::addon_event::bind_pipeline>(OnBindPipeline);
+@@ -9372,6 +9535,7 @@
+       reshade::register_event<reshade::addon_event::draw_or_dispatch_indirect>(OnDrawOrDispatchIndirect);
+       reshade::register_event<reshade::addon_event::dispatch>(OnDispatch);
+       reshade::register_event<reshade::addon_event::present>(OnPresent);
++      reshade::register_event<reshade::addon_event::finish_present>(OnFinishPresent);
+       reshade::register_event<reshade::addon_event::execute_command_list>(OnExecuteCommandList);
+       reshade::register_event<reshade::addon_event::create_swapchain>(OnCreateSwapchain);
+       reshade::register_event<reshade::addon_event::init_swapchain>(OnInitSwapchain);
+@@ -9400,9 +9564,12 @@
+       reshade::unregister_event<reshade::addon_event::init_device>(OnInitDevice);
+       reshade::unregister_event<reshade::addon_event::destroy_device>(OnDestroyDevice);
+       reshade::unregister_event<reshade::addon_event::present>(OnPresent);
++      reshade::unregister_event<reshade::addon_event::finish_present>(OnFinishPresent);
+       reshade::unregister_event<reshade::addon_event::init_command_list>(OnInitCommandList);
+       reshade::unregister_event<reshade::addon_event::destroy_command_list>(OnDestroyCommandList);
+       reshade::unregister_event<reshade::addon_event::reset_command_list>(OnResetCommandList);
++      reshade::unregister_event<reshade::addon_event::close_command_list>(OnCloseCommandList);
++      reshade::unregister_event<reshade::addon_event::copy_buffer_region>(OnCopyBufferRegion);
+       reshade::unregister_event<reshade::addon_event::init_pipeline>(OnInitPipeline);
+       reshade::unregister_event<reshade::addon_event::bind_pipeline>(OnBindPipeline);
+       reshade::unregister_event<reshade::addon_event::destroy_pipeline>(OnDestroyPipeline);
+--- a/src/addons/devkit/mcp/draw_summary.hpp
++++ b/src/addons/devkit/mcp/draw_summary.hpp
+@@ -156,7 +156,15 @@
+   std::int64_t timestamp_ms = 0;
+   std::size_t srv_count = 0u;
+   std::size_t uav_count = 0u;
++  std::uint32_t submission_order = 0u;
++  bool submission_known = false;
++  std::uint32_t capture_record_limit = 0u;
++  bool capture_truncated = false;
+   std::size_t constant_count = 0u;
++  std::size_t odv_gpu_constant_sample_count = 0u;
++  std::size_t odv_gpu_constant_attempt_count = 0u;
++  bool odv_gpu_constant_attempts_truncated = false;
++  std::size_t odv_upload_input_count = 0u;
+   std::size_t render_target_count = 0u;
+   std::size_t pipeline_count = 0u;
+   std::vector<std::string> shader_hashes;
+@@ -170,6 +178,9 @@
+   std::optional<std::vector<PipelineBindSummary>> pipelines = std::nullopt;
+   std::optional<std::vector<ResourceBindSummary>> shader_resource_binds = std::nullopt;
+   std::optional<BlendStateSummary> blend_state = std::nullopt;
++  std::optional<json> odv_gpu_constant_samples = std::nullopt;
++  std::optional<json> odv_gpu_constant_attempts = std::nullopt;
++  std::optional<json> odv_upload_inputs = std::nullopt;
+ };
+ 
+ // NOLINTNEXTLINE(readability-identifier-naming)
+@@ -180,7 +191,15 @@
+       {"timestampMs", value.timestamp_ms},
+       {"srvCount", value.srv_count},
+       {"uavCount", value.uav_count},
++      {"submissionOrder", value.submission_order},
++      {"submissionKnown", value.submission_known},
++      {"captureRecordLimit", value.capture_record_limit},
++      {"captureTruncated", value.capture_truncated},
+       {"constantCount", value.constant_count},
++      {"odvGpuConstantSampleCount", value.odv_gpu_constant_sample_count},
++      {"odvGpuConstantAttemptCount", value.odv_gpu_constant_attempt_count},
++      {"odvGpuConstantAttemptsTruncated", value.odv_gpu_constant_attempts_truncated},
++      {"odvUploadInputCount", value.odv_upload_input_count},
+       {"renderTargetCount", value.render_target_count},
+       {"pipelineCount", value.pipeline_count},
+       {"shaderHashes", value.shader_hashes},
+@@ -212,6 +231,9 @@
+   if (value.shader_resource_binds.has_value()) {
+     j["shaderResourceBinds"] = value.shader_resource_binds.value();
+   }
++  if (value.odv_gpu_constant_samples.has_value()) j["odvGpuConstantSamples"] = value.odv_gpu_constant_samples.value();
++  if (value.odv_gpu_constant_attempts.has_value()) j["odvGpuConstantAttempts"] = value.odv_gpu_constant_attempts.value();
++  if (value.odv_upload_inputs.has_value()) j["odvUploadInputs"] = value.odv_upload_inputs.value();
+   if (value.blend_state.has_value()) {
+     j["blendState"] = value.blend_state.value();
+   }

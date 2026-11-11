@@ -1,7 +1,11 @@
 name: Windows C++ validation
 on:
   push:
+    branches: [main]
   pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   build-and-test:
     runs-on: windows-2022
@@ -14,6 +18,144 @@ jobs:
       - name: Configure
         run: cmake --preset ${{ matrix.preset }}
       - name: Build
-        run: cmake --build --preset ${{ matrix.preset }} --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+        run: cmake --build --preset ${{ matrix.preset }} --parallel 4 --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
       - name: Test
-        run: ctest --preset ${{ matrix.preset }} -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+        run: ./scripts/ci-test.ps1 -Preset '${{ matrix.preset }}'
+      - name: Test owned descriptor result gate (synthetic text/files only)
+        run: python -m unittest discover -s tests -p test_owned_descriptor_result.py -v
+      - name: Test presentation-summary filtering and statistics
+        run: python -m unittest discover -s tests -p test_presentmon_summary.py -v
+      - name: Test owned Devkit protocol and identity gates (synthetic data only)
+        run: |
+          python -m unittest discover -s tests -p test_devkit_bridge_client.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_devkit_transport_contract.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test diagnostic game-build identity gate (owned test bytes only)
+        run: python -m unittest discover -s tests -p test_game_build_gate.py -v
+      - name: Test bounded local diagnostic-log snapshots
+        run: python -m unittest discover -s tests -p test_diagnostic_log.py -v
+      - name: Test offline camera-profile audit (owned PE bytes only)
+        run: python -m unittest discover -s tests -p test_camera_profile_audit.py -v
+      - name: Test static function extents (owned PE bytes only)
+        run: python -m unittest discover -s tests -p test_function_extents.py -v
+      - name: Test read-only association (owned process only)
+        run: python -m unittest discover -s tests -p test_camera_association.py -v
+      - name: Test candidate camera field hypotheses (owned data only)
+        run: python -m unittest discover -s tests -p test_camera_fields.py -v
+      - name: Test bounded archive-directory locator (owned metadata only)
+        run: python -m unittest discover -s tests -p test_pamt_directory_probe.py -v
+      - name: Test bounded shader-directory resolver (owned metadata only)
+        run: python -m unittest discover -s tests -p test_pamt_metadata.py -v
+      - name: Test shader-container structure (owned bytes and SDK compile only)
+        run: python -m unittest discover -s tests -p test_shader_container.py -v
+      - name: Test single-entry range gates (owned files only)
+        run: python -m unittest discover -s tests -p test_shader_entry.py -v
+      - name: Test reflection protocol and fingerprint gates (owned/mocked data only)
+        run: |
+          python -m unittest discover -s tests -p test_reflection_query.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_shader_reflection_probe.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test technique literal-reference contract (owned XML only, no codecs)
+        run: python -m unittest discover -s tests -p test_technique_contract.py -v
+      - name: Compile optional owned presenting fixture (no capture tool or game)
+        run: |
+          cmake -S experiments/capture-lab -B out/build/capture-lab -A x64 -DODV_BUILD_HEADLESS_CAPTURE_FIXTURE=OFF
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/capture-lab --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify original WARP draw pixels and unsubmitted-list control (no capture tool)
+        run: |
+          ./scripts/prepare-owned-warp.ps1
+          ./scripts/prepare-owned-agility.ps1
+          cmake -S experiments/draw-binding-owned -B out/build/draw-binding-owned -A x64 "-DODV_TEST_WARP_DLL:FILEPATH=$PWD/out/deps/warp-1.0.22/d3d10warp.dll" "-DODV_TEST_AGILITY_DIR:PATH=$PWD/out/deps/agility-1.619.6"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/draw-binding-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Keep the system-WARP reproduction as a diagnostic. Acceptance below
+          # still requires every assertion on the pinned, test-only runtime.
+          & "./out/build/draw-binding-owned/${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }}/odv_private_indirect_render_tests.exe" --system-warp *> out/ci-system-warp-indirect.log
+          $baselineExit = $LASTEXITCODE
+          Get-Content out/ci-system-warp-indirect.log
+          Write-Output "SYSTEM_WARP_DIAGNOSTIC_EXIT=$baselineExit"
+          ctest --test-dir out/build/draw-binding-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --no-tests=error --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $testLog = Get-Content out/build/draw-binding-owned/Testing/Temporary/LastTest.log -Raw
+          $indirectLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_private_indirect_render.*?<end of output>').Value
+          if (-not $indirectLog.Contains('warp_kind=PINNED_TEST_ONLY version=1.0.22.0') -or
+              -not $indirectLog.Contains('19 cases x256 pixels') -or
+              -not $indirectLog.Contains('debug=ENABLED')) {
+            throw 'Missing actual pinned-WARP 19-case GPU execution with debug validation'
+          }
+          $clipLog = [regex]::Match($testLog, '(?s)\d+/\d+ Testing: owned_clip_shift_render.*?<end of output>').Value
+          if ([regex]::Matches($clipLog, '11 cases x1024 pixels').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'near/far4/2-pixel displacement').Count -ne 8 -or
+              [regex]::Matches($clipLog, 'shifted quad outside view').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'selected triangles zero area').Count -ne 4 -or
+              [regex]::Matches($clipLog, 'PASS_FENCED_PREDICATION_SKIP_PASS_AND_FORWARDING').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'PASS_SINGLE_FORWARD_PIPELINE_STATISTICS_AND_OCCLUSION').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'debug=ENABLED').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'warp_kind=PINNED_TEST_ONLY version=1.0.22.0').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'native_source=LEGACY').Count -ne 8 -or
+              [regex]::Matches($clipLog, 'native_source=STREAM').Count -ne 8 -or
+              [regex]::Matches($clipLog, 'agility_requested=619').Count -ne 16 -or
+              [regex]::Matches($clipLog, 'PASS: camera-field row21.x').Count -ne 4 -or
+              -not $clipLog.Contains('owned SM6.0/6.6 clip and camera-field assembly/validation/GPU controls')) {
+            throw 'Missing actual SM6.0/6.6 clip geometry execution with pinned WARP and debug validation'
+          }
+      - name: Build and test optional selected-read batch (owned producers only)
+        run: |
+          cmake -S experiments/camera-profile-audit/native-batch -B out/build/selected-read -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/selected-read --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/selected-read -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and test isolated reflection helper (owned shaders only)
+        run: |
+          cmake -S experiments/shader-consumer-audit/reflection -B out/build/shader-reflection -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/shader-reflection --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/shader-reflection -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Qualify bounded disassembly (owned executable only)
+        run: |
+          cmake -S experiments/camera-profile-audit/native-static -B out/build/static-owned -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build out/build/static-owned --config ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --parallel 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --test-dir out/build/static-owned -C ${{ matrix.preset == 'windows-msvc-debug' && 'Debug' || 'Release' }} --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Check optional research-script syntax (no game or GPU capture)
+        run: |
+          python -m py_compile experiments/capture-lab/analyse_owned.py experiments/frame-capture/capture_once.py experiments/frame-capture/summarize_frame.py experiments/frame-capture/game_build_gate.py experiments/frame-capture/diagnostic_log.py experiments/camera-profile-audit/query_function_extents.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tokens = $null; $errors = $null
+          foreach ($script in @('start-probe.ps1', 'test-owned-control.ps1')) {
+            [Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD "experiments/frame-capture/$script"), [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count) { throw ($errors | Out-String) }
+          }
+      - name: Stage Release runtime (headset and game tests NOT_RUN)
+        if: matrix.preset == 'windows-msvc-release'
+        run: |
+          cmake --install out/build/release --config Release --component Runtime --prefix out/package
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $metadata = @{schema_version=1; source_commit=(git rev-parse HEAD); source_dirty=[bool](git status --porcelain); configuration='Release'; architecture='x64'; headset_validation='NOT_RUN'; game_validation='NOT_RUN'}
+          [IO.File]::WriteAllText((Join-Path $PWD 'out/package/build-info.json'), ($metadata | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
+      - uses: actions/upload-artifact@v4
+        if: matrix.preset == 'windows-msvc-release'
+        with:
+          name: OpenDesertVR-M0-win64
+          path: out/package
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tests-${{ matrix.preset }}
+          path: |
+            out/build/*/Testing/Temporary/LastTest.log
+            out/build/*/mock-*/report.json
+            out/build/*/mock-*/audit.json
+            out/build/*/collector-*/*.json
+            out/ci-*.log

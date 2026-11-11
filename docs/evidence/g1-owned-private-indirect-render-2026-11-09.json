@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_PRIVATE_INDIRECT_GPU_FORWARDING",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "format": {
+    "byte_stride": 40,
+    "arguments": [
+      "INDEX_BUFFER_VIEW",
+      "CONSTANT root0 word0 count1",
+      "DRAW_INDEXED"
+    ]
+  },
+  "pixel_cases": 19,
+  "pixels_per_case": 256,
+  "argument_buffer_offset": 16,
+  "gpu_count_offsets": [
+    0,
+    4,
+    8
+  ],
+  "count_values": [
+    0,
+    1,
+    2
+  ],
+  "maximum_counts": [
+    0,
+    1,
+    2
+  ],
+  "source_sha256": {
+    "experiments/draw-binding-owned/private_indirect_render_tests.cpp": "f2ba8fab82b0603561dbe0e999a3ee4b4e5a8b9a25d71aace12d964b5c990298",
+    "experiments/draw-binding-owned/private_indirect_signature.hpp": "33964118916bbc8008f6e580f88957841d275f45e06bcba18ccc1c93af9abc32",
+    "experiments/draw-binding-owned/private_cbv_layout.hpp": "57f6672b13d08ccf7d2bd99308fd9ae27691337f4cfcf62143326fbcee13f549",
+    "experiments/draw-binding-owned/CMakeLists.txt": "a1310c7d85e7e3ed8d44473ca175ad22bf42db39c74850e39d13cf71beebfe76"
+  },
+  "configurations": [
+    {
+      "name": "Debug",
+      "passed": 15,
+      "failed": 0,
+      "test_log_sha256": "b107934be118ac7381517d4115d4aa996d920c454cc873abd51df44883b7c34d",
+      "binary_sha256": "56f058a2c8faefc70161523bc5b055d8756bbb91ab514d4b6e75f10d9423d631"
+    },
+    {
+      "name": "Release",
+      "passed": 15,
+      "failed": 0,
+      "test_log_sha256": "69ebd3ddf792b5d63f456d73f6053a85e580202ac4844298093005b992e7c13c",
+      "binary_sha256": "d223d16dacc3ad0623441d1bb8a3aa25c78d0a2352c2bbdf00ffcf70300f665d"
+    }
+  ],
+  "controls": [
+    "Same original GPU argument/count buffers and byte offsets forwarded once per native call; no CPU rewriting of either buffer.",
+    "Exact signature cloned for a separately derived split-table camera root and PSO with the same authored shaders.",
+    "GPU token7 produces red, token8 produces green; count/max limits select actual rendered records.",
+    "Both original and replacement signatures cover zero count, zero maximum, count truncation and absent count buffer.",
+    "Private camera x-offset2 removes geometry; subsequent original-root/table/PSO draw restores red pixels.",
+    "Root0 resets to zero after nonzero, zero-count and zero-maximum ExecuteIndirect calls, verified by a subsequent nonindexed draw without resetting that constant.",
+    "Original camera256 bytes, private camera256 bytes, argument112 bytes, count16 bytes and index6 bytes remain exact after covering-fence completion."
+  ],
+  "limits": [
+    "Owned WARP and authored non-array bounded CBV shader only.",
+    "Native IBV null-reset behavior is required by D3D12; a direct GPU state probe is NOT_RUN.",
+    "Caller still owns full original/derived root rebinding and cached post-indirect state. No live native callback interception or game replacement is enabled.",
+    "No proof of cross-command-list camera version equality, queue ordering or absent intervening writes.",
+    "Local debug layer unavailable; hosted validation for this change pending."
+  ],
+  "release_stdout_sha256": "30d889dfc3415d37ed99b5d5dbaf9ba8339c73c58e07acd7b2d9b1a349bfc08b"
+}

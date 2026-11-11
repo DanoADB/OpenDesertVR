@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-10",
+  "scope": "Fresh GitHub reuse scan requested by user; static source review only",
+  "prior_reviews": [
+    "docs/research/stereo-pipeline-audit.md",
+    "docs/research/crimson-camera-feasibility.md",
+    "docs/research/crimson-telemetry-camera-lead.md",
+    "docs/research/g1-renodx-inspection-review.md"
+  ],
+  "new_inputs": [
+    {
+      "repository": "ZappendusterFX/CrimsonDesertTelemetry",
+      "revision": "3b5fb5b8739fd196f6317f42199bec4e860adb99",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "2121057d371629d2282e953f3abfd367cee1d48749f95b4008cb1193853e13f9",
+          "url": "https://raw.githubusercontent.com/ZappendusterFX/CrimsonDesertTelemetry/3b5fb5b8739fd196f6317f42199bec4e860adb99/LICENSE",
+          "bytes": 1093
+        },
+        {
+          "path": "docs/HANDOVER.md",
+          "sha256": "2ced117aa6f74f90ca30fa03cbfd84fd21d16b278c94875e6f4a8182cb7955a3",
+          "url": "https://raw.githubusercontent.com/ZappendusterFX/CrimsonDesertTelemetry/3b5fb5b8739fd196f6317f42199bec4e860adb99/docs/HANDOVER.md",
+          "bytes": 306725
+        },
+        {
+          "path": "docs/RUNTIME_RECOVERY.md",
+          "sha256": "dceb22bdceafa52c7d63ea93cc9209c0d1b690c842b084e241425a238d7fd6d3",
+          "url": "https://raw.githubusercontent.com/ZappendusterFX/CrimsonDesertTelemetry/3b5fb5b8739fd196f6317f42199bec4e860adb99/docs/RUNTIME_RECOVERY.md",
+          "bytes": 9371
+        },
+        {
+          "path": "native/CrimsonDesertTelemetry.Asi/src/runtime_recovery.cpp",
+          "sha256": "125b51db90f01a2d70acafbc1ec154133564e9e7352aa5f5a56347b385a76b09",
+          "url": "https://raw.githubusercontent.com/ZappendusterFX/CrimsonDesertTelemetry/3b5fb5b8739fd196f6317f42199bec4e860adb99/native/CrimsonDesertTelemetry.Asi/src/runtime_recovery.cpp",
+          "bytes": 28001
+        },
+        {
+          "path": "native/CrimsonDesertTelemetry.Asi/src/physics_probe.cpp",
+          "sha256": "61418632379b1c65784bbc4f5df9e9e1480d99a00893e62b157076b78a7df452",
+          "url": "https://raw.githubusercontent.com/ZappendusterFX/CrimsonDesertTelemetry/3b5fb5b8739fd196f6317f42199bec4e860adb99/native/CrimsonDesertTelemetry.Asi/src/physics_probe.cpp",
+          "bytes": 54068
+        }
+      ],
+      "finding": "Author HANDOVER reports live collector recovery and progressing feeds on exact installed build26480954 / EXE1.0.0.3576 with matching SHA256. Two commits since previous review update collector-vtable guard and recovery; no new camera-write/render callback contract established.",
+      "evidence_grade": "UPSTREAM_OWNER_REPORTED_NOT_OUR_LIVE_TEST",
+      "reuse_priority": "Refresh exact-build engine-camera lead; retain existing copied decoder attribution."
+    },
+    {
+      "repository": "jcooray/Shadow-of-the-Tomb-Raider-VR",
+      "revision": "9b748862b8d7fea2d47fe2c39ad53ec9c45b547d",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+          "bytes": 35148,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "sha256": "7632942ddbe8c317c2e4599057a7aad98e62b25a09ff494fc56062e1b10d735b",
+          "bytes": 15589,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/README.md"
+        },
+        {
+          "path": "src/d3d12_cb_hook.cpp",
+          "sha256": "5e281dcc855722e67e7b7428525dc4153ec60d97a15425902ad114e50c91e3f0",
+          "bytes": 24156,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/d3d12_cb_hook.cpp"
+        },
+        {
+          "path": "src/stereo_mode.cpp",
+          "sha256": "574b24eb4b8ce4cb280e6d4ffdc33fa8ac17e37fd20c4b6858ae1d8376bca33f",
+          "bytes": 5787,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/stereo_mode.cpp"
+        },
+        {
+          "path": "src/camera_interceptor.cpp",
+          "sha256": "3684728eb3c90de34df94bcdb53447476ef3b491b336164f311a4e70d56b8e66",
+          "bytes": 127622,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/camera_interceptor.cpp"
+        },
+        {
+          "path": "src/ansel_camera_hook.cpp",
+          "sha256": "bf5e1d296714e9f2acff75f84cf5b7843ad33445780120dfe7d90e051d81c413",
+          "bytes": 2795,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/ansel_camera_hook.cpp"
+        },
+        {
+          "path": "src/present_hook.cpp",
+          "sha256": "1982c64f6dd87048ae1cf69096950ab14dddefc2d99868f7e9addb316a519010",
+          "bytes": 13995,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/present_hook.cpp"
+        },
+        {
+          "path": "src/openxr_integration.cpp",
+          "sha256": "7575694f05d52435e1e41902ee8b0325f3081265b6355268ef37c02897e5fdeb",
+          "bytes": 153894,
+          "url": "https://raw.githubusercontent.com/jcooray/Shadow-of-the-Tomb-Raider-VR/9b748862b8d7fea2d47fe2c39ad53ec9c45b547d/src/openxr_integration.cpp"
+        }
+      ],
+      "root_license": "GPL-3.0",
+      "finding": "Actual source has game-specific camera-write interception, rendered-camera/eye pairing and D3D12/OpenXR submission. README describes alternating rendered eyes plus AFW synthesis of the other eye, with per-eye DLSS histories. SOTTR-specific offsets are not Crimson Desert addresses.",
+      "reuse_priority": "Architecture for pose-to-render-to-present provenance and temporal history. No source copied into MIT runtime.",
+      "evidence_grade": "STATIC_SOURCE_ONLY_NOT_EXECUTED"
+    }
+  ],
+  "search_result": "GitHub repository searches Crimson Desert VR / CrimsonDesert VR returned no additional public CD VR implementation; this is a search observation, not an exhaustive absence claim.",
+  "runtime_changes": false,
+  "proprietary_mod_code_adopted": false,
+  "remaining_gate": "Actual game geometry influence and independent eye views remain unverified."
+}

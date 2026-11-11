@@ -1,0 +1,39 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "3ba54a206825e0c3b0d66241c3b4735598baa343bc285d09c9e595438b73c25f"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "05aec06bf29756090b147d190eeb86511dd8728cdb998536a613b054fe737364"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3",
+    "renodx-devkit.addon64": "01c9f3cb220f37d95fe99b7da8f5bf869f4a7e6f3609affef44c3c27eb7dc299",
+    "owned_app.exe": "ecb3ebd787866f133bab998a45e9c8693cffe95253a46ac1c92fd9e4875a44a7",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "schema_version": 1,
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "scope": "Owned resources/shaders only",
+  "large_probe": true,
+  "fixed_clip_x_magnitude": 128,
+  "local_clip_tests": "PASS_DEBUG_RELEASE_SM60_SM66_LEGACY_STREAM_STANDARD_AND_LARGE",
+  "cases_per_gpu_run": 11,
+  "all_cases_check_pixels": true,
+  "query_accounting": "PASS",
+  "original_and_identity_restoration": "PASS",
+  "debug_validation": "UNAVAILABLE_LOCALLY",
+  "game": "NOT_RUN"
+}

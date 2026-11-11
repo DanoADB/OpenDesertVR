@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "source_commit": "02b24a794deee32d082e12c68b1290f0e1418189",
+  "game_build": "26480954",
+  "target_vertex_crc32": "C48DB423",
+  "target_vertex_bytes": 25924,
+  "target_entrypoint": "vsTerrainMesh",
+  "scene": "Loaded save, Hills of No Return, stationary world view",
+  "status": "VISIBLE_TERRAIN_INFLUENCE_OBSERVED_ON_DESKTOP",
+  "recorded": [
+    0,
+    1539,
+    1121,
+    0
+  ],
+  "gpu_work": [
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 1230726
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 1165379
+    },
+    {
+      "mode": 1,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 1244588
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 0
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 0
+    },
+    {
+      "mode": 2,
+      "type": 0,
+      "maximum_count": 15606,
+      "state": "READY",
+      "occlusion_samples": 0
+    }
+  ],
+  "interpretation": {
+    "identity": "Original and identity shader validation succeeded; three private fenced samples report nonzero depth/stencil-passing samples",
+    "collapse": "Three private fenced samples report zero under homogeneous clip-X collapse",
+    "limits": "Different draws/frames, not controlled same-draw A/B. GPU counts and predicate values not read. Query samples do not establish downstream contribution to the presented scene.",
+    "user_visual_verdict": "No noticeable change",
+    "desktop_observation": "Possible differences in left rocky foreground are not established as reproducible terrain disappearance; no positive visible-world claim",
+    "visible_world_control": "SELECTED_TERRAIN_GEOMETRY_INFLUENCE_OBSERVED; camera/view control remains UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "game_stereo": "NOT_RUN",
+    "head_tracking": "NOT_RUN",
+    "openxr_delivery": "NOT_RUN"
+  },
+  "restoration": {
+    "mode": 0,
+    "failed": false,
+    "desktop_scene": "NORMAL_RENDERING_OBSERVED",
+    "game_identity_unchanged": true,
+    "tool_hashes_unchanged": true,
+    "staged_files_unchanged": true,
+    "asset_files": 0
+  },
+  "private_report_sha256": {
+    "identity-probe-report.json": "219c61f24cccd957ad363f8546fdaacc4b729df46aae5e477ac11db8df8d41fb",
+    "left-probe-report.json": "9d1c029ffdbc8b31c344d1db406b36a40e396fd7a4929944d29740d8f890545e",
+    "metadata-window-128.private.json": "4cb48a91f9ce954ad91c96f7efcc976c480a4b72ab9fc04e50e85baa67fd5f60",
+    "metadata-window-256.private.json": "a7166a8d60c28176b4f2613d9053a85cbb096bae997ec753d70aa6d7c313839c",
+    "metadata-selected-window-128.private.json": "33faeb88e45db3aeb14818649c106c0b477bc3e978c1c57c90866b11faedb95c",
+    "metadata-selected-window-256.private.json": "3b769f857177da758d3d31debd55c315ed25c7689f687da6b34576f80b93ed20",
+    "metadata-consumer-shaders.private.json": "3c812f38d67f51a721b8c52f73aa34cc5be743d4926b6541bf34831851c880f8"
+  },
+  "input_locks": [
+    "experiments/renodx-owned/devkit-clip-probe29-input-lock.json",
+    "experiments/renodx-owned/reshade-native-vertex29-input-lock.json"
+  ],
+  "next_decision": "Test small left/right homogeneous clip-X shifts on the same observed terrain target; require displayed displacement and restoration before any stereo claim",
+  "downstream_metadata": {
+    "status": "CANDIDATE_HANDLE_RECURRENCE_ACROSS_OBSERVATIONS",
+    "captures": [
+      128,
+      256
+    ],
+    "same_gpu_frame_proven": false,
+    "resource_lifetime_identity_proven": false,
+    "terrain_attachment_recurrence": "First two terrain MRT resource handles recur as active shader SRVs in observed postprocess material and composite draws",
+    "observed_chain": [
+      "MotionBlurPS:5120x1440 FP16 output",
+      "psPostProcessMaterial:2560x720 FP16 output",
+      "psPostProcessCompositeMaterial:5120x1440 FP16 output",
+      "RenderPostProcessPS:5120x1440 RGBA8 output"
+    ],
+    "presented_swapchain_connection": "NOT_PROVEN",
+    "compute_copy_consumers": "NOT_CAPTURED",
+    "stage_summaries": {
+      "0xE33D8168": {
+        "stage": "vertex_shader",
+        "entrypoint": "FullScreenVS",
+        "shaderDataSize": 3192,
+        "programVersion": "vs_6_6"
+      },
+      "0xF498002C": {
+        "stage": "pixel_shader",
+        "entrypoint": "MotionBlurPS",
+        "shaderDataSize": 28568,
+        "programVersion": "ps_6_6"
+      },
+      "0x43CF818C": {
+        "stage": "pixel_shader",
+        "entrypoint": "psPostProcessMaterial",
+        "shaderDataSize": 36088,
+        "programVersion": "ps_6_6"
+      },
+      "0xA4451E3F": {
+        "stage": "pixel_shader",
+        "entrypoint": "psPostProcessCompositeMaterial",
+        "shaderDataSize": 46308,
+        "programVersion": "ps_6_6"
+      },
+      "0x3CBA244D": {
+        "stage": "vertex_shader",
+        "entrypoint": "RenderPostProcessVS",
+        "shaderDataSize": 3220,
+        "programVersion": "vs_6_6"
+      },
+      "0xB690521D": {
+        "stage": "pixel_shader",
+        "entrypoint": "RenderPostProcessPS",
+        "shaderDataSize": 12536,
+        "programVersion": "ps_6_6"
+      }
+    }
+  },
+  "confirmation": {
+    "scene": "Same save, stationary later view with prominent pale rock faces",
+    "duration_seconds": 18,
+    "additional_collapse_forwards": 1180,
+    "desktop_observation": "Large pale rock faces at left and behind the character disappear during mode2 and return in mode0. Trees, grass and character remain visible.",
+    "evidence_grade": "DIRECT_DESKTOP_OBSERVATION",
+    "new_user_visual_verdict": "NOT_REQUESTED",
+    "mode_after": 0,
+    "failed_after": false,
+    "report_sha256": "ac58b59689ed3776c66bf20fe5329e051a6e534d6f1ea2f88cc390bb69a53423"
+  }
+}

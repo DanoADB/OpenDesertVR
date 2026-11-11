@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-11-09",
+  "status": "COMPILED_NATIVE_DRAW_NOTIFICATION_DRAFT_RUNTIME_UNQUALIFIED",
+  "source_sha256": {
+    "native_draw_events.hpp": "105d4fe530cdd4decdc0ab0eedbe636c268abe78f4b9ceddc4a0f4bb230fb890",
+    "draw_recording_state.hpp": "8531b6515bc8a449ec42f1ae33ae89d9d73cc383e107983f3c4585005326215e",
+    "native_draw_state_tests.cpp": "921ab0f0ea7af3d583ce358c03107fc87fa1a96dc86d8d596fe1e685b02a9b96",
+    "vertex_constant_stream.hpp": "11d0d20660f50bac689163416a35861dab5482e693393f4b62d98abe9ad0ee16"
+  },
+  "wrapper_lock_sha256": "999b0adc69d2979825dbfb0ed527cdd5ee7cbd6fc272a29cf1caf61034d3f980",
+  "wrapper_patch_sha256": "1c56dcf929fd625b714415b11a2e52123db1cde0782b22a16845559739d61ee8",
+  "compiled_wrapper": {
+    "version": "6.7.3.9005 UNOFFICIAL",
+    "sha256": "9ee58f43fc9670d9f01a71c6730c0721adb43a53011a2c76e08b3e4a3cc69a2a",
+    "prior_barrier_and_after_execute_ABI": "PRESERVED_SEPARATE_DRAW_GUID",
+    "native_callback_runtime_qualification": "NOT_RUN",
+    "game_use": "NOT_RUN"
+  },
+  "local_tests": {
+    "Debug": {"passed": 10, "failed": 0, "skipped": 0},
+    "Release": {"passed": 10, "failed": 0, "skipped": 0},
+    "physical_gpu_byte_and_driver_controls": "PASS",
+    "local_debug_layer": "UNAVAILABLE"
+  },
+  "metadata_controls": [
+    "Capability proof required after recording initialization",
+    "Active, duplicate, unmatched and overflowing queries reject eligibility",
+    "Timestamp end does not create an active query",
+    "SO slot updates preserve other slots; invalid or ambiguous counts reject",
+    "Active and suspended render passes reject eligibility",
+    "Reset restores empty recording state; uncertainty remains rejected until reset"
+  ],
+  "access_contract_correction": "VertexConstantStream now separately requires known_constant_read_access. Reflection/binding alone cannot establish access for an additional GPU draw, including zero-work, branch-skipped and indirect cases. This method is not a solution for the game's unknown world-pass access state.",
+  "provisional_owned_observer_13": {
+    "status": "FAILED_NO_GPU_SAMPLES_NOT_QUALIFIED",
+    "report_sha256": "bf453e48fc1f22852dc6f98b97c99987af0470cf9f536713ffce6d37cb502fdf",
+    "source_dirty": true,
+    "retained_metadata_draws": 4,
+    "submitted_draws": 3,
+    "unsubmitted_draws": 1,
+    "gpu_samples": 0,
+    "independent_rendering": "PASS_24_FRAMES_2048_PIXELS_PER_FRAME",
+    "sample_absence_diagnosis": "Incomplete. Root CBV is reported as fullRange; no eligible attempt was retained. This is not camera or sampler runtime proof.",
+    "game_staging": "NOT_PERMITTED_BY_QUALIFICATION"
+  },
+  "next_experiment": "Compare the safely sampled shadow camera source with the standard geometry source in one bounded capture, including exact source range, recording identity and native indirect-signature effects. If shared with correct ordering, evaluate carrying a private camera copy forward to the geometry draw; no new read of an unknown-state world source.",
+  "headset": "NOT_RUN",
+  "camera_control": "NOT_RUN",
+  "game_stereo": "NOT_RUN"
+}

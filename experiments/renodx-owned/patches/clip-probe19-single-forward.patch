@@ -1,0 +1,28 @@
+--- a/src/addons/devkit/odv/draw_recording_state.hpp
++++ b/src/addons/devkit/odv/draw_recording_state.hpp
+@@ -85,8 +85,12 @@
+             suspending_ = false;
+         }
+     }
+-    bool eligible() const noexcept {
+-        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_ && !query_count_;
++    bool eligible() const noexcept { return eligible_single_forward() && !query_count_; }
++    // A replacement forwards the application's existing command exactly once.
++    // Active queries still observe that command; replay/copy users retain the
++    // stricter eligible() gate. Unknown query lifetimes remain fail-closed.
++    bool eligible_single_forward() const noexcept {
++        return !failed_ && capabilities_ == 7 && !active_pass_ && !suspended_;
+     }
+     bool failed() const noexcept { return failed_; }
+     UINT active_queries() const noexcept { return query_count_; }
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -68,7 +68,7 @@
+     {
+       const std::lock_guard lock(native->mutex);
+       if (native->failed || native->protected_session || !native->draw_capable || !native->indirect_capable ||
+-          !native->indirect_active || !native->indirect_known || !native->draw_state.eligible()) return false;
++          !native->indirect_active || !native->indirect_known || !native->draw_state.eligible_single_forward()) return false;
+       for (const auto& view : native->draw_state.stream_outputs())
+         if (view.BufferLocation || view.SizeInBytes || view.BufferFilledSizeLocation) return false;
+       call = native->indirect_call;

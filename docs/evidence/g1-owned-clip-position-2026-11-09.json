@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "QUALIFIED_OWNED_CLIP_POSITION_GEOMETRY_PROBE",
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "source_sha256": {
+    "experiments/draw-binding-owned/clip_shift_dxil.hpp": "1ca6531f9d30668e90f4019a687e7912cdc8ea3affd64f8bfc929c775925710d",
+    "experiments/draw-binding-owned/clip_shift_render_tests.cpp": "288e6f15eed173f22823568810419a2719553da8c93fa998afd7444528ab22ab",
+    "experiments/draw-binding-owned/owned_clip_shift.py": "11a273f73972aa9cc0c8f5360bf1613f298f1358b1adf12bad615f6da3770d7a",
+    "experiments/draw-binding-owned/CMakeLists.txt": "61b4027a13232bba46b15d53afc829e490243658b3322b4c4563f81ca289c701",
+    "experiments/shader-consumer-audit/static_cbv_access.hpp": "50ea47b5b94ebca99e37938997e6a45de8fff36d90a2508f2364358deef96a8b"
+  },
+  "sdk": {
+    "dxcompiler_sha256": "97abd3b3083607dc29cc3f8eae56c39c349b76ee3c20deeb2f66258708e55bd8",
+    "dxil_validator_sha256": "fda4dde92222ddb8564c3173ce48faa56f7e1c7b46b0b67dada1182ee07a4123"
+  },
+  "local_validation": [
+    {
+      "configuration": "Debug",
+      "optional_ctest_passed": 16,
+      "failed": 0,
+      "test_log_sha256": "48b6bc6ac709d2e5667c1306a700e94087c7878422f03185da3da5dbbd2c9a62",
+      "binary_sha256": "1ba62506fa66e608e4bbbccc29ac02976db0d35c622b74af2a354937d3e5b89e"
+    },
+    {
+      "configuration": "Release",
+      "optional_ctest_passed": 16,
+      "failed": 0,
+      "test_log_sha256": "72f61d2a054d573f0bbc5b7209a898077ee698e50ce24e1738d398f7c4949413",
+      "binary_sha256": "12bbba5ab7821cb7f4a51fd38713812f5fabdd6ead8ed2db114003e10aa8dd78"
+    }
+  ],
+  "controls": {
+    "shader_models": [
+      "6.0",
+      "6.6"
+    ],
+    "cases_per_model": 11,
+    "pixels_per_case": 1024,
+    "near_far_w": [
+      1,
+      2
+    ],
+    "observed_displacement_pixels": [
+      4,
+      2
+    ],
+    "original_root_and_signature": true,
+    "original_cbv_argument_count_index_bytes_preserved": true,
+    "identity_control": true,
+    "original_pso_restored": true,
+    "gpu_zero_count_and_maximum": true,
+    "non_vertex_shader_rejected": true
+  },
+  "limits": [
+    "Owned WARP graphics only; local debug layer unavailable. Hosted debug validation pending.",
+    "The fixture creates an authored original PSO description; actual game native PSO retention/cloning is not yet implemented.",
+    "Clip-X geometry perturbation is an influence diagnostic; game camera semantics, full stereo, headset delivery and culling/temporal corrections remain unverified."
+  ]
+}

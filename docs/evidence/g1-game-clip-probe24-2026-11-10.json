@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "COLLAPSE_CONTROL_RECORDED_NO_NOTICEABLE_VISUAL_CHANGE",
+  "source_commit": "e43702bedc050ee06dd998b561cc4c4762b53977",
+  "game_build": {
+    "steam_build_id": "26480954",
+    "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f"
+  },
+  "addon": "Probe24",
+  "compiler": "Microsoft.Direct3D.DXC/1.9.2609.5",
+  "collapse_probe": true,
+  "large_probe": false,
+  "binary_sha256": {
+    "renodx-devkit.addon64": "09aa729684b7f6f3bbd8fcbf8093abea1a545398a2da7ab1e196d3af9ff6b8b1",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+    "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+    "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+  },
+  "recorded_replacements": {
+    "identity": 4713,
+    "collapse": 3342
+  },
+  "private_report_sha256": {
+    "identity": "2932a1b886010934a03953d43705aa2e0cb1c91d2ca8ebf933a665489100e5e8",
+    "left": "ceafd9b419c648c6b664dc6709f88585b2e329e72d0532b1476a59efc019c564"
+  },
+  "restored_original_mode": 0,
+  "failed": false,
+  "original_game_identity_postflight": "PASS_UNCHANGED",
+  "tool_postflight": "PASS_UNCHANGED",
+  "asset_files": 0,
+  "desktop_observation": "NO_CLEAR_GEOMETRY_DISAPPEARANCE_DURING_COLLAPSE_CONTROL",
+  "user_observation": "NO_NOTICEABLE_CHANGE",
+  "geometry_influence": "UNVERIFIED",
+  "independent_game_eye_views": "NOT_RUN",
+  "game_openxr": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "ci": {
+    "run": 42847990632,
+    "result": "PASS_DEBUG_RELEASE"
+  },
+  "decision": "Do not increase the shift magnitude again. Check alternate observed world shader paths and actual GPU indirect work. A submitted recording does not prove visible output.",
+  "bounded_metadata": {
+    "limit": 128,
+    "retained_records": 128,
+    "truncated": true,
+    "selected_draws": [
+      {
+        "index": 65,
+        "shader_hashes": [
+          "0xC02F6FB5",
+          "0xF25B25BC"
+        ],
+        "submission_known": true,
+        "signature_stride": 40,
+        "signature_argument_count": 3,
+        "maximum_command_count": 36,
+        "gpu_count_buffer_present": true,
+        "actual_gpu_count": "UNMEASURED",
+        "active_queries": 1,
+        "render_target_dimensions": [
+          2560,
+          720
+        ],
+        "render_target_count": 5
+      },
+      {
+        "index": 66,
+        "shader_hashes": [
+          "0xC02F6FB5",
+          "0xEF095A1B"
+        ],
+        "submission_known": true,
+        "signature_stride": 40,
+        "signature_argument_count": 3,
+        "maximum_command_count": 30,
+        "gpu_count_buffer_present": true,
+        "actual_gpu_count": "UNMEASURED",
+        "active_queries": 1,
+        "render_target_dimensions": [
+          2560,
+          720
+        ],
+        "render_target_count": 5
+      },
+      {
+        "index": 57,
+        "shader_hashes": [
+          "0x1318D240",
+          "0x9BA1121C"
+        ],
+        "submission_known": true,
+        "signature_stride": 40,
+        "signature_argument_count": 3,
+        "maximum_command_count": 759,
+        "gpu_count_buffer_present": true,
+        "actual_gpu_count": "UNMEASURED",
+        "active_queries": 1,
+        "render_target_dimensions": [
+          2560,
+          720
+        ],
+        "render_target_count": 5
+      },
+      {
+        "index": 61,
+        "shader_hashes": [
+          "0x6C6D3F44",
+          "0x80800FE6"
+        ],
+        "submission_known": true,
+        "signature_stride": 40,
+        "signature_argument_count": 3,
+        "maximum_command_count": 3099,
+        "gpu_count_buffer_present": true,
+        "actual_gpu_count": "UNMEASURED",
+        "active_queries": 1,
+        "render_target_dimensions": [
+          2560,
+          720
+        ],
+        "render_target_count": 5
+      }
+    ],
+    "gpu_constant_copies_requested": 0,
+    "shader_body_export": false,
+    "raw_report_sha256": {
+      "metadata-draws.private.json": "2e0338563549f72e0bfee37801871cee951feab6ab3d9175dd9ba0415a76fbec",
+      "metadata-selected.private.json": "226724dbae7b98cebe6f32bb38261a0343398ab0bda36eac5913e90b15a68068",
+      "metadata-alternate.private.json": "4196c62a9022450f50fc60f007b0e414902086d8a4dcea382112a8e8b08a00c9",
+      "metadata-shaders.private.json": "5c5de216a7ea1fc0900eabc562c1e3911e819401db95c5a7195905fc99b88f41",
+      "metadata-candidates.private.json": "8f8ae0942d9ff227d87d918a8407c1b29806f028f0dcf24ed462377953e1a653"
+    }
+  }
+}

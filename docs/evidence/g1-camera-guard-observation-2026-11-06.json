@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "offline_camera_guard_observation",
+  "script_sha256": "92ee2fba38c35d3aa7e87042909e3672e15b290c4f90675a3c56247e6d1e9d3d",
+  "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+  "profile_sha256": "b5cf5e46256f29380f269e81a78fcad0fd557b28a7c9d4e552ecb6a5a13d3365",
+  "profile_steam_build_id": "26448710",
+  "profile_executable_hash_matches": false,
+  "observation": {
+    "camera_reference_matches_in_executable_sections": 1,
+    "reference_matches_at_published_rva": false,
+    "vtable_function_fingerprint_match_counts": [
+      1,
+      1
+    ],
+    "scope": "Pattern occurrences only. Does not resolve a vtable, validate a live object, relocate a profile or grant runtime compatibility."
+  },
+  "runtime_camera": "UNVERIFIED",
+  "native_stereo": "UNVERIFIED",
+  "game_execution": "NOT_RUN",
+  "process_memory_access": "NOT_RUN",
+  "date": "2026-11-06",
+  "reference_repository": "https://github.com/ZappendusterFX/CrimsonDesertTelemetry",
+  "reference_commit": "434b3b96646b410ab8396483e31c538e051f3a4e",
+  "reference_profile": "definitions/build-26448710.json",
+  "scope": "Read-only file observation, no execution, disassembly, process-memory access, profile relocation, game modification or offset adoption. All proprietary payloads remain local."
+}

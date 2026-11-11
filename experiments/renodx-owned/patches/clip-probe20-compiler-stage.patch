@@ -1,0 +1,122 @@
+--- a/src/addons/devkit/odv/clip_shift_dxil.hpp
++++ b/src/addons/devkit/odv/clip_shift_dxil.hpp
+@@ -13,6 +13,16 @@
+ 
+ namespace odv::research {
+ enum class ClipShift { left, identity, right };
++enum class ClipCompileStage : unsigned { sdk_load = 1, interfaces, disassembly, position_store, assembly, validation };
++class ClipCompileError final : public std::runtime_error {
++  public:
++    const ClipCompileStage stage;
++    const HRESULT result;
++    ClipCompileError(ClipCompileStage where, HRESULT hr)
++        : std::runtime_error(where == ClipCompileStage::position_store ? "unsupported_position_store"
++                                                                       : "dxil_clip_probe_rejected"),
++          stage(where), result(hr) {}
++};
+ // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
+ // every other output unchanged. This is NOT a complete stereo/game adapter.
+ // No source/descriptor/root/argument buffer is modified. Text stays in process.
+@@ -104,16 +114,16 @@
+ class ClipShiftCompiler final {
+     HMODULE compiler_ = nullptr, validator_ = nullptr;
+     DxcCreateInstanceProc create_ = nullptr, validate_create_ = nullptr;
+-    static void checked(HRESULT hr) {
++    static void checked(HRESULT hr, ClipCompileStage stage = ClipCompileStage::interfaces) {
+         if (FAILED(hr))
+-            throw std::runtime_error("dxil_clip_probe_rejected");
++            throw ClipCompileError(stage, hr);
+     }
+-    static Microsoft::WRL::ComPtr<IDxcBlob> result(IDxcOperationResult *operation) {
++    static Microsoft::WRL::ComPtr<IDxcBlob> result(IDxcOperationResult *operation, ClipCompileStage stage) {
+         HRESULT status = E_FAIL;
+-        checked(operation->GetStatus(&status));
+-        checked(status);
++        checked(operation->GetStatus(&status), stage);
++        checked(status, stage);
+         Microsoft::WRL::ComPtr<IDxcBlob> blob;
+-        checked(operation->GetResult(&blob));
++        checked(operation->GetResult(&blob), stage);
+         return blob;
+     }
+ 
+@@ -134,7 +144,7 @@
+                 FreeLibrary(validator_);
+             if (compiler_)
+                 FreeLibrary(compiler_);
+-            throw std::runtime_error("sdk_compiler_validator_unavailable");
++            throw ClipCompileError(ClipCompileStage::sdk_load, HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND));
+         }
+     }
+     ~ClipShiftCompiler() {
+@@ -152,7 +162,7 @@
+         checked(create_(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
+         Microsoft::WRL::ComPtr<IDxcBlobEncoding> source, text;
+         checked(utils->CreateBlob(original.data(), static_cast<UINT32>(original.size()), DXC_CP_ACP, &source));
+-        checked(compiler->Disassemble(source.Get(), &text));
++        checked(compiler->Disassemble(source.Get(), &text), ClipCompileStage::disassembly);
+         if (text->GetBufferSize() > 1024 * 1024)
+             throw std::runtime_error("shader_text_bound");
+         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
+@@ -160,19 +170,20 @@
+             view.remove_suffix(1);
+         auto shifted = shift_clip_x_text(view, shift);
+         if (!shifted)
+-            throw std::runtime_error("unsupported_position_store");
++            throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
+         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;
+         checked(utils->CreateBlob(shifted->data(), static_cast<UINT32>(shifted->size()), DXC_CP_UTF8, &assembly));
+         Microsoft::WRL::ComPtr<IDxcAssembler> assembler;
+         checked(create_(CLSID_DxcAssembler, IID_PPV_ARGS(&assembler)));
+         Microsoft::WRL::ComPtr<IDxcOperationResult> assembled;
+-        checked(assembler->AssembleToContainer(assembly.Get(), &assembled));
+-        auto binary = result(assembled.Get());
++        checked(assembler->AssembleToContainer(assembly.Get(), &assembled), ClipCompileStage::assembly);
++        auto binary = result(assembled.Get(), ClipCompileStage::assembly);
+         Microsoft::WRL::ComPtr<IDxcValidator> validator;
+         checked(validate_create_(CLSID_DxcValidator, IID_PPV_ARGS(&validator)));
+         Microsoft::WRL::ComPtr<IDxcOperationResult> validated;
+-        checked(validator->Validate(binary.Get(), DxcValidatorFlags_InPlaceEdit, &validated));
+-        auto accepted = result(validated.Get());
++        checked(validator->Validate(binary.Get(), DxcValidatorFlags_InPlaceEdit, &validated),
++                ClipCompileStage::validation);
++        auto accepted = result(validated.Get(), ClipCompileStage::validation);
+         if (accepted->GetBufferSize() < 32 || accepted->GetBufferSize() > 1024 * 1024)
+             throw std::runtime_error("output_shader_bound");
+         const auto *bytes = static_cast<const std::uint8_t *>(accepted->GetBufferPointer());
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -10,6 +10,8 @@
+ std::atomic_bool odv_clip_failed = false;
+ std::array<std::atomic_uint64_t, 4> odv_clip_recordings{};
+ std::atomic_uint64_t odv_clip_candidates = 0;
++std::atomic_uint odv_clip_compile_failure_stage = 0;
++std::atomic_uint32_t odv_clip_compile_failure_hr = 0;
+ 
+ void PollODVClipProbe() noexcept {
+   if (!odv_clip_enabled) return;
+@@ -38,7 +40,9 @@
+     status << "{\"schema_version\":1,\"mode\":" << mode << ",\"failed\":" << (odv_clip_failed ? "true" : "false")
+            << ",\"candidates\":" << odv_clip_candidates.load() << ",\"recorded\":[";
+     for (unsigned i = 0; i < 4; ++i) status << (i ? "," : "") << odv_clip_recordings[i].load();
+-    status << "],\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
++    status << "],\"compile_failure_stage\":" << odv_clip_compile_failure_stage.load()
++           << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
++           << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
+   } catch (...) {
+     odv_clip_mode = 0;
+     odv_clip_lease = 0;
+@@ -130,6 +134,13 @@
+       ++odv_clip_recordings[mode];
+       return true; // Original command was forwarded once, with native resets.
+     }
++  } catch (const odv::research::ClipCompileError& error) {
++    odv_clip_compile_failure_stage = static_cast<unsigned>(error.stage);
++    odv_clip_compile_failure_hr = static_cast<uint32_t>(error.result);
++    odv_clip_failed = true;
++    odv_clip_mode = 0;
++    // Fixed stage/code only: never export compiler text or shader contents.
++    reshade::log::message(reshade::log::level::error, "ODV clip probe: compiler rejected identity/shift; see numeric failure stage and HRESULT; original draw retained");
+   } catch (...) {
+     odv_clip_failed = true;
+     odv_clip_mode = 0;

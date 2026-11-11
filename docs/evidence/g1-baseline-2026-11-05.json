@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "stage": "G1 non-invasive baseline",
+  "storefront": "Steam",
+  "app_id": 3321460,
+  "manifest_name": "Crimson Desert Enhanced",
+  "manifest_build_id": "26448710",
+  "manifest_state_flags": 4,
+  "executable": {
+    "relative_path": "bin64/CrimsonDesert.exe",
+    "size_bytes": 327116696,
+    "sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "file_version": "1.0.0.3549",
+    "product_version": "1.0.0.3549",
+    "signature_status": "Valid"
+  },
+  "game_launch": "NOT_RUN",
+  "game_memory_access": "NOT_RUN",
+  "graphics_capture_or_hook": "NOT_RUN",
+  "camera_access": "UNVERIFIED",
+  "runtime_dx12_presentation": "UNVERIFIED",
+  "anti_cheat": "UNVERIFIED",
+  "protection": {
+    "store_discloses": "Denuvo Anti-tamper",
+    "bypass": "NOT_RUN",
+    "local_protection_implementation": "UNVERIFIED"
+  },
+  "permissions": {
+    "integration_decision": "HOLD_PENDING_PERMISSION_OR_REVIEWED_PERMITTED_APPROACH",
+    "approved_mod_api": "UNVERIFIED",
+    "publisher_permission_observed": false
+  },
+  "sources": [
+    "https://store.steampowered.com/eula/3321460_eula_0",
+    "https://store.steampowered.com/app/3321460/Crimson_Desert_Enhanced/"
+  ],
+  "limitations": [
+    "Installed manifest and file metadata identify this snapshot only; they do not prove ownership, launchability or compatibility.",
+    "Valid Authenticode status is a local Windows verification result, not an independent authenticity guarantee.",
+    "Version resource may differ from marketing or patch version.",
+    "DirectX 12 is listed as a requirement by the store; actual process presentation is not observed.",
+    "No game code, assets, account identifiers or absolute installation paths are redistributed."
+  ]
+}

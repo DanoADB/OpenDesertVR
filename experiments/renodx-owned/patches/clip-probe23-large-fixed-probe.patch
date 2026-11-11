@@ -1,0 +1,83 @@
+--- a/src/addons/devkit/odv/clip_shift_dxil.hpp
++++ b/src/addons/devkit/odv/clip_shift_dxil.hpp
+@@ -63,7 +63,7 @@
+ // Fixed research probe: add a constant to homogeneous clip.x, leaving w and
+ // every other output unchanged. This is NOT a complete stereo/game adapter.
+ // No source/descriptor/root/argument buffer is modified. Text stays in process.
+-inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift) {
++inline std::optional<std::string> shift_clip_x_text(std::string_view text, ClipShift shift, bool large_probe = false) {
+     using namespace cbv_detail;
+     if (text.empty() || text.size() > 1024 * 1024 || text.find("odv_clip_probe_x") != text.npos)
+         return {};
+@@ -117,8 +117,8 @@
+         R"(^(\s*call void @dx.op.storeOutput\.f32\(i32 5, i32 ([0-9]+), i32 ([0-9]+), i8 ([0-9]+), float )([A-Za-z0-9_%+.-]+)(\).*)$)");
+     std::string output;
+     unsigned changed = 0;
+-    const char *delta = shift == ClipShift::left    ? "-1.250000e-01"
+-                        : shift == ClipShift::right ? "1.250000e-01"
++    const char *delta = shift == ClipShift::left    ? (large_probe ? "-1.280000e+02" : "-1.250000e-01")
++                        : shift == ClipShift::right ? (large_probe ? "1.280000e+02" : "1.250000e-01")
+                                                     : "0.000000e+00";
+     for (std::size_t p = 0; p < text.size();) {
+         auto end = text.find('\n', p);
+@@ -197,7 +197,8 @@
+     }
+     ClipShiftCompiler(const ClipShiftCompiler &) = delete;
+     ClipShiftCompiler &operator=(const ClipShiftCompiler &) = delete;
+-    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift) const {
++    std::vector<std::uint8_t> compile(std::span<const std::uint8_t> original, ClipShift shift,
++                                      bool large_probe = false) const {
+         if (original.size() < 32 || original.size() > 1024 * 1024)
+             throw std::runtime_error("shader_input_bound");
+         Microsoft::WRL::ComPtr<IDxcUtils> utils;
+@@ -218,7 +219,7 @@
+         std::string_view view(static_cast<const char *>(text->GetBufferPointer()), text->GetBufferSize());
+         if (!view.empty() && view.back() == '\0')
+             view.remove_suffix(1);
+-        auto shifted = shift_clip_x_text(view, shift);
++        auto shifted = shift_clip_x_text(view, shift, large_probe);
+         if (!shifted)
+             throw ClipCompileError(ClipCompileStage::position_store, E_NOTIMPL);
+         Microsoft::WRL::ComPtr<IDxcBlobEncoding> assembly;
+--- a/src/addons/devkit/odv/clip_probe_addon.inc
++++ b/src/addons/devkit/odv/clip_probe_addon.inc
+@@ -5,6 +5,7 @@
+ // before the upstream addon's anonymous namespace.
+ 
+ bool odv_clip_enabled = false;
++bool odv_clip_large = false; // Read once before publishing a nonzero mode.
+ std::atomic_uint odv_clip_mode = 0;
+ std::atomic_uint64_t odv_clip_lease = 0;
+ std::atomic_bool odv_clip_failed = false;
+@@ -23,6 +24,14 @@
+   const auto now = GetTickCount64();
+   if (now < next_poll) return;
+   next_poll = now + 250;
++  static bool config_read = false;
++  if (!config_read) {
++    uint32_t large = 0;
++    reshade::get_config_value(nullptr, "renodx-dev", "ODVClipProbeLarge", large);
++    if (large > 1) { odv_clip_failed = true; return; }
++    odv_clip_large = large == 1;
++    config_read = true;
++  }
+   unsigned mode = 0;
+   try {
+     const auto directory = renodx::utils::path::GetReShadeBasePath();
+@@ -41,6 +50,7 @@
+            << ",\"candidates\":" << odv_clip_candidates.load() << ",\"recorded\":[";
+     for (unsigned i = 0; i < 4; ++i) status << (i ? "," : "") << odv_clip_recordings[i].load();
+     status << "],\"compile_failure_stage\":" << odv_clip_compile_failure_stage.load()
++           << ",\"large_probe\":" << (odv_clip_large ? "true" : "false")
+            << ",\"compile_failure_hr\":" << odv_clip_compile_failure_hr.load()
+            << ",\"evidence\":\"CPU_RECORDING_ONLY\",\"game_stereo\":\"NOT_RUN\"}\n";
+   } catch (...) {
+@@ -118,7 +128,7 @@
+       if (renodx::utils::hash::ComputeCRC32(bytes, vertex.BytecodeLength) != 0xC02F6FB5u) return false;
+       odv::research::ClipShiftCompiler compiler(renodx::utils::path::GetReShadeBasePath());
+       const auto shift = mode == 1 ? odv::research::ClipShift::identity : mode == 2 ? odv::research::ClipShift::left : odv::research::ClipShift::right;
+-      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift);
++      const auto modified = compiler.compile({bytes, vertex.BytecodeLength}, shift, odv_clip_large);
+       const HRESULT created = source->CreateVariant(reinterpret_cast<ID3D12Device*>(device->get_native()), slot,
+           modified.data(), modified.size(), &variant);
+       if (created == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) {

@@ -1,0 +1,43 @@
+{
+  "report": {
+    "schema_version": 1,
+    "evidence_kind": "controlled_external_frame_capture",
+    "status": "FAILED",
+    "game_gpu_capture": "NOT_RUN",
+    "world_render_pass_identity": "UNVERIFIED",
+    "camera_control": "UNVERIFIED",
+    "native_stereo": "UNVERIFIED",
+    "script_sha256": "00953cc03e9d16a61fc3e0a562f17b9043f4c6a2374e3d44fe23cb400c4cb68d",
+    "launch_context": "steam_development_appid",
+    "mode": "game_title",
+    "executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "failure_stage": "CAPTURE_REQUESTED",
+    "failure_type": "RuntimeError"
+  },
+  "source_commit": "f757616e1f986da73e5ea8237d9184a246d356bd",
+  "evidence_kind": "isolated_steam_context_frame_capture_attempt",
+  "scope": "Capture layer loaded early and a real frame request was issued. No RDC obtained. No world-pass/camera/native-stereo proof. Ordinary Steam client remained running; actual App ID hint was written only in the ignored capture directory. No game files, Steam options, authorization checks or protection settings changed.",
+  "observations": {
+    "capture_files": 0,
+    "one_frame_requested": true,
+    "failure_observed_by": "read_only_game_window_screenshot",
+    "game_remained_responsive": true,
+    "initial_target_retained_through_d3d12": true,
+    "renderdoc_overlay_api": "D3D12",
+    "capture_failure_operation": "create_readback_buffer",
+    "helper_terminal_reason": "polling deadline expired without a completed capture",
+    "scene": "title_start_menu",
+    "game_ui_version": "2.04.07",
+    "executable_sha256_after": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+    "capture_failure_hresult": "E_OUTOFMEMORY"
+  },
+  "schema_version": 1,
+  "after_failure_system_memory": {
+    "failing_allocation_size": "UNVERIFIED",
+    "allocation_failure_cause": "UNVERIFIED: HRESULT does not identify VRAM, system commit, fragmentation or tool incompatibility",
+    "committed_bytes": 52669620224,
+    "commit_limit_bytes": 77013434368,
+    "available_bytes": 8414228480
+  },
+  "date": "2026-11-05"
+}

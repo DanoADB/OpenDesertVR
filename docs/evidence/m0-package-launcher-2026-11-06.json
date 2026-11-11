@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "evidence_kind": "portable_package_and_collector_hardening",
+  "source_commit": "fb1b57428084b9565e64c5ab2903c46700c88a54",
+  "source_dirty": false,
+  "package_name": "OpenDesertVR-M0-fb1b574-win64.zip",
+  "package_sha256": "03c79d0c73c59d5bc613511715d13f9e9004eaed48f2fa25077a5cdffff80546",
+  "package_bytes": 1189910,
+  "host_sha256": "0b03b96b766088868d17eb67ca61116b96b78f058fec9ab724b07cfed9d1ef34",
+  "local_release_tests": {
+    "passed": 33,
+    "skipped": 1,
+    "failed": 0,
+    "skip_reason": "Optional graphics debug validation unavailable"
+  },
+  "collector_tests": {
+    "existing_reports_unchanged_on_rejection": true,
+    "debug": "PASS",
+    "release": "PASS"
+  },
+  "launcher_smoke": {
+    "unrelated_working_directory": true,
+    "simulated_missing_headset_exit": 3,
+    "host_invoked": false,
+    "path_contains_spaces_and_ampersand": true,
+    "status": "PASS",
+    "test_runtime": true,
+    "installed_package": true
+  },
+  "extracted_package_doctor": {
+    "ready": false,
+    "test_runtime": false,
+    "exit_code": 3
+  },
+  "explorer_launcher_included": true,
+  "research_tools_or_private_payload_files": 0,
+  "headset_validation": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "scope": "Software and package checks only. Latest doctor readiness is false; no headset session was started. Host bytes match the preceding portable build, but this does not transfer human visual acceptance to this artifact.",
+  "hosted_ci": {
+    "run_url": "https://github.com/DanoADB/OpenDesertVR/actions/runs/42237884506",
+    "source_commit": "fb1b57428084b9565e64c5ab2903c46700c88a54",
+    "debug": "PASS",
+    "release": "PASS",
+    "native_tests_per_configuration": 34,
+    "python_tests_per_configuration": 22
+  }
+}

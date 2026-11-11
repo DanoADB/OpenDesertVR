@@ -1,0 +1,88 @@
+{
+  "status": "QUALIFIED_OWNED_SNAPSHOT_WINDOWS",
+  "sha256": {
+    "owned_app.exe": "f639a1650e6a2aaee4244b68c8a6862cecbd651505413a28edf3f81ee1c85f1d",
+    "renodx-devkit.addon64": "6ec795d6c9db783df943817268db8d1f66492687ab95a1152953f9e85ba82709",
+    "dxgi.dll": "a57e90449c75ae06d3eb37663d527e28bc31a1f0b88fe139b013aee5f115fffa",
+    "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+    "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+    "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+  },
+  "controls": [
+    {
+      "selector": null,
+      "records": 4,
+      "ordinals": []
+    },
+    {
+      "selector": "0\n",
+      "records": 4,
+      "ordinals": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "selector": "1\n",
+      "records": 3,
+      "ordinals": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "selector": "2\n",
+      "records": 2,
+      "ordinals": [
+        2,
+        3
+      ]
+    },
+    {
+      "selector": "4\n",
+      "records": 0,
+      "ordinals": []
+    },
+    {
+      "selector": "4096\n",
+      "records": 0,
+      "ordinals": []
+    },
+    {
+      "selector": "4097\n",
+      "records": 0,
+      "ordinals": []
+    },
+    {
+      "selector": "1x\n",
+      "records": 0,
+      "ordinals": []
+    },
+    {
+      "selector": "0\n",
+      "records": 4,
+      "ordinals": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "game": "NOT_RUN",
+  "gpu_pixels": "PASS",
+  "asset_files": 0,
+  "schema_version": 1,
+  "native_device_reference_warning_count": 0,
+  "helper_debug": "PASS",
+  "helper_release": "PASS",
+  "record_capacity": 128,
+  "maximum_first": 4096,
+  "scope": "Exact observer27 metadata windows exercised with owned rendering loop; GPU pixels and cooperative shutdown pass. No game execution in this qualification.",
+  "source_patch_sha256": "cf2c1c52f03b797f7d3e1fe25ac402c8c8c767efbf353bed1d6ab557f4a9b681"
+}

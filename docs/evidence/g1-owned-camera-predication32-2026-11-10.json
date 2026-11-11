@@ -1,0 +1,643 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "status": "QUALIFIED_OWNED_CAMERA_PREDICATION32",
+  "source_state": "Qualified independently copied source/binaries; immutable inputs pinned in referenced locks. Game run not yet performed.",
+  "input_locks": [
+    "experiments/renodx-owned/reshade-native-predicate32-input-lock.json",
+    "experiments/renodx-owned/devkit-camera-predicate32-input-lock.json"
+  ],
+  "sha256": {
+    "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+    "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+    "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+    "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+    "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+    "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+    "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+    "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+  },
+  "controls": [
+    {
+      "heap": "DEFAULT",
+      "legacy_wrapper": false,
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 1,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_BLOCKED_PREDICATION"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 2,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_BLOCKED_PREDICATION"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        }
+      ],
+      "gpu_pixels": "PASS_EACH_FRAME_SKIP_ALLOW_AND_RECOVERY",
+      "report_sha256": "eed6466699ac293640d61ff5ac07a6d2074cc233874267d41246f4d3a0f1c574"
+    },
+    {
+      "heap": "UPLOAD",
+      "legacy_wrapper": false,
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 1,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_BLOCKED_PREDICATION"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 2,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": true,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_BLOCKED_PREDICATION"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        },
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "READY"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": true,
+              "sample_states": [
+                "UNSUBMITTED"
+              ],
+              "attempt_states": [
+                "RECORDED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        }
+      ],
+      "gpu_pixels": "PASS_EACH_FRAME_SKIP_ALLOW_AND_RECOVERY",
+      "report_sha256": "8d4a075fa0c1d84c9d025b0955e863e70c6d8e8383c0050ee7b192cfca0dcb65"
+    },
+    {
+      "heap": "DEFAULT",
+      "legacy_wrapper": true,
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "69b3359e22f388fcf011c28e7d8cf8761e892d5045b4380344f40a88385a8a7e",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": false,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": false,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": false,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": false,
+              "copy_allowed": false,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        }
+      ],
+      "gpu_pixels": "PASS_EACH_FRAME_SKIP_ALLOW_AND_RECOVERY",
+      "report_sha256": "2f7244dbbd45c4be723149a3fc671c1d6f9def5ceadd18b67a7151580c974d84"
+    },
+    {
+      "control": "camera-access32",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_CBV_ACCESS",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "gpu_pixels": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 26,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "report_sha256": "163324f7d10aec09c109db794684f7b79db25b254eace5949bf6993d6345e43d"
+    },
+    {
+      "control": "camera-access32-native-pass",
+      "status": "QUALIFIED_PROVISIONAL_OWNED_NATIVE_RENDER_PASS_REJECTION",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e"
+      },
+      "gpu_pixels": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "adapter": "WARP",
+        "frames": 38,
+        "pixelsVerifiedPerFrame": 2048,
+        "recordedDrawsPerFrame": 4,
+        "submittedDrawsPerFrame": 3,
+        "fourthColumn": "black",
+        "captureTool": "EXTERNAL_OBSERVER_POSSIBLE",
+        "headset": "NOT_RUN",
+        "game": "NOT_RUN"
+      },
+      "report_sha256": "5c0d58a35e48eaed1264d09de3ae1ff31cd709184b30fc7af5c0ec61663a6fb3"
+    },
+    {
+      "control": "clip-probe32",
+      "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+      "sha256": {
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "owned_app.exe": "d7d5954cc765c841592db0ec7e79e30a8a65b947d5046bbc1f77b96e3c5fae41",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac",
+        "LICENSE-MS.txt": "734f72f239fe7b07b4c7203f294c1a7ce27095687278bab7e56d630d7c672963",
+        "LICENSE-LLVM.txt": "729615317e28dd03907e46f0fc3b5e88f7853cee61d1a1471d2749335516b46f"
+      },
+      "report_sha256": "7ecc446042fdce2bcfd18a4cb08ff9910bff7bcae13afc11e7ffcf918dbe7708"
+    },
+    {
+      "control": "snapshot-window32",
+      "status": "QUALIFIED_OWNED_SNAPSHOT_WINDOWS",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "report_sha256": "774ea73e4b4135c5fc5454eabaddc2ed5cf5abcbea6ded68049bc7f7e7665c27"
+    },
+    {
+      "control": "metadata_export_disabled",
+      "status": "QUALIFIED_OWNED_PREDICATED_COPY32",
+      "sha256": {
+        "owned_app.exe": "d847b919e75fd58ba9fd0b4d27cabb348e50be7a3766dfc589acc188d14a3aec",
+        "renodx-devkit.addon64": "14af562a046b03125248a0ab4a7a10740f7ae1aff46e94c7c1698f04a24bd163",
+        "dxgi.dll": "8df2efc39f4e8fad800115420510e6d0333eb060a9479d554263a87e9962ee64",
+        "renodx-mcp-bridge.exe": "f5a64dc99ce157ac9e8c38c5e04dc8cbe31efd81e8de4074cb912f4fea43d8bb",
+        "owned.dxil.vs.cso": "4b6dff3996f9e70b7707e29459b4c7ef9ad0d8a9aff9e59878120710bdfc59ab",
+        "owned.dxil.ps.cso": "5bf3bb9efbe2ab2fe741483b9f5314dc3f3b28b355780bc0c39dc487ddf5323e",
+        "dxcompiler.dll": "0689e2fee0a1c9df8662a59680469f24e2a3ad7ce6bbbcc9284f7a83172bfc59",
+        "dxil.dll": "64be2368211d257a038a7d4ea6bb3e24c878eb8d588c7b8414fccf759b69c2ac"
+      },
+      "controls": [
+        {
+          "mode": 0,
+          "checks": [
+            {
+              "source_index": 1,
+              "predicate_bound": null,
+              "copy_allowed": null,
+              "sample_states": [],
+              "attempt_states": []
+            },
+            {
+              "source_index": 3,
+              "predicate_bound": null,
+              "copy_allowed": null,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            },
+            {
+              "source_index": 5,
+              "predicate_bound": null,
+              "copy_allowed": null,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            },
+            {
+              "source_index": 7,
+              "predicate_bound": null,
+              "copy_allowed": null,
+              "sample_states": [],
+              "attempt_states": [
+                "COPY_PREDICATION_STATE_UNVERIFIED"
+              ]
+            }
+          ],
+          "bridge_calls": 10
+        }
+      ],
+      "gpu_pixels": "PASS_EACH_FRAME_SKIP_ALLOW_AND_RECOVERY",
+      "report_sha256": "704ca0cc09c5f28de5c6b5912dbfff4823bf650dc55ff9e98ef7c0a6fc4596b9"
+    }
+  ],
+  "debug_tests": {
+    "status": "PASS",
+    "count": 17
+  },
+  "release_tests": {
+    "status": "PASS",
+    "count": 17
+  },
+  "invariants": [
+    "Native v2 GUID/size/version prevents an older native-draw ABI granting predication proof.",
+    "UPLOAD and DEFAULT table copies reject both skipping and allowing bound predicates; their GPU values are never read.",
+    "Unbinding permits exact current source words; reset and invalidation are covered by state tests.",
+    "Every GPU camera copy requires known unpredicated valid native state, including when metadata export is disabled.",
+    "Unknown root-CBV extent is not guessed. Unsubmitted recordings do not export payload.",
+    "Original predicate/draws are unchanged. Frame pixels prove skipped red/green, allowed red/green, unaffected blue, and recovery."
+  ],
+  "native_device_reference_warning_count": 0,
+  "asset_files": 0,
+  "game": "NOT_RUN",
+  "headset": "NOT_RUN",
+  "metadata_disabled_result": "No native draw/predication proof: all finite camera-copy attempts reject with COPY_PREDICATION_STATE_UNVERIFIED. Disabling metadata does not bypass the guard."
+}

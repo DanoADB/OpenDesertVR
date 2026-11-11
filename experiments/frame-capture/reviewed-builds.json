@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "steam_app_id": "3321460",
+  "scope": "Reviewed diagnostic-loading baselines only; no game VR compatibility is asserted.",
+  "builds": [
+    {
+      "steam_build_id": "26448710",
+      "executable_sha256": "25f24e06a1f886e9310fd290f9462f66b480a5e7763d1fe156bfddaa8d1992b9",
+      "executable_bytes": 327116696,
+      "file_version": "1.0.0.3549",
+      "evidence": "docs/evidence/g1-baseline-2026-11-05.json"
+    },
+    {
+      "steam_build_id": "26480954",
+      "executable_sha256": "c94ad6c3ea54970a6d2da7a2719753210a7728a91698ed3405dd9125470ed98f",
+      "executable_bytes": 326872984,
+      "file_version": "1.0.0.3576",
+      "evidence": "docs/evidence/g1-baseline-2026-11-06.json"
+    }
+  ]
+}

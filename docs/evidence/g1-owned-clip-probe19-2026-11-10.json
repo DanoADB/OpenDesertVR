@@ -1,0 +1,32 @@
+{
+  "status": "QUALIFIED_SINGLE_FORWARD_WITH_ACTIVE_QUERIES",
+  "controls": [
+    {
+      "path": "legacy",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "40447a7b9c08b01b902219558b71a528a8679e0825b16bef391b0c82e8670092"
+    },
+    {
+      "path": "stream",
+      "exit_code": 0,
+      "query_accounting": "PASS",
+      "stdout_sha256": "dbed0451bed903eac9aedc716814bccbd48ddcf1a2c0b7a56d4ea0d92bba2b2d"
+    }
+  ],
+  "asset_files": 0,
+  "sha256": {
+    "dxgi.dll": "cf27d87bb964ea7ac774324fb47e9e8bbb8f96ba410f86c39bddc9a811ab04d3",
+    "renodx-devkit.addon64": "c62b9040d31ab9ffb7b123ee2db528033e2abab3aeaf77fbaffa03243b90dd56",
+    "owned_app.exe": "3eb742d18961d9172b513c728695caa3c7f3151fc79a80fd33c36f2dba769366"
+  },
+  "schema_version": 1,
+  "scope": "Owned shaders and resources only; no game or headset acceptance",
+  "debug_validation": "UNAVAILABLE_LOCALLY",
+  "local_configurations": [
+    "Debug",
+    "Release"
+  ],
+  "gpu_cases_per_run": 11,
+  "pixels_per_case": 1024
+}
