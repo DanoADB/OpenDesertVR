@@ -2,6 +2,7 @@
 #include "odv/openxr/host.hpp"
 #include "odv/core/metrics.hpp"
 #include "odv/d3d12/renderer.hpp"
+#include "odv/d3d12/stereo_stream.hpp"
 #include "odv/openxr/lifecycle.hpp"
 #define XR_USE_PLATFORM_WIN32
 #define XR_USE_GRAPHICS_API_D3D12
@@ -51,6 +52,10 @@ class Host final : public IXrFrame {
     };
     std::array<Eye, 2> eyes;
     d3d::Renderer graphics;
+    std::wstring stream_channel;
+    std::unique_ptr<d3d::StereoReceiver> stream;
+    std::optional<d3d::StereoReadFrame> stream_frame;
+    uint64_t received_pairs{};
     Lifecycle lifecycle;
     Log log;
     Config config;
@@ -131,6 +136,11 @@ class Host final : public IXrFrame {
         if (!create_session) {
             checks.push_back(check("session_rendering", "NOT_RUN", "doctor does not create a presentation session"));
             return;
+        }
+        if (!stream_channel.empty()) {
+            stream = std::make_unique<d3d::StereoReceiver>(graphics.queue(), stream_channel);
+            checks.push_back(check("stereo_image_stream", "PASS",
+                                   "Same-adapter stereo image receiver opened; source camera validity separate"));
         }
         uint32_t view_count = 0;
         xrcheck(xrEnumerateViewConfigurationViews(instance, system, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, 0,
@@ -263,9 +273,24 @@ class Host final : public IXrFrame {
         XrViewState state{XR_TYPE_VIEW_STATE};
         uint32_t count = 0;
         xrcheck(xrLocateViews(session, &locate_info, &state, 2, &count, views.data()), "locate views");
-        return count == 2 &&
-               (state.viewStateFlags & (XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT)) ==
-                   (XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT);
+        const bool valid = count == 2 && (state.viewStateFlags &
+                                          (XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT)) ==
+                                             (XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT);
+        if (!valid)
+            return false;
+        if (stream) {
+            if (stream_frame && stream->newer_available()) {
+                stream->release();
+                stream_frame.reset();
+            }
+            if (!stream_frame) {
+                stream_frame = stream->acquire();
+                if (stream_frame)
+                    ++received_pairs;
+            }
+            return stream_frame.has_value(); // No synthetic fallback for a missing image pair.
+        }
+        return true;
     }
     void eye(unsigned index) override {
         auto &eye = eyes.at(index);
@@ -293,9 +318,18 @@ class Host final : public IXrFrame {
             const auto &p = v.pose;
             math::Pose pose{{p.orientation.x, p.orientation.y, p.orientation.z, p.orientation.w},
                             {p.position.x, p.position.y, p.position.z}};
-            auto geometry = stereo::vertices(pose, {v.fov.angleLeft, v.fov.angleRight, v.fov.angleUp, v.fov.angleDown},
-                                             config.near_z, config.far_z);
-            graphics.render(eye.images.at(image).texture, format, eye.width, eye.height, geometry);
+            std::size_t vertices_count = 0;
+            if (stream_frame) {
+                graphics.render_texture(eye.images.at(image).texture, format, eye.width, eye.height,
+                                        index == 0 ? stream_frame->left : stream_frame->right,
+                                        stream->description().color == d3d::StreamColor::srgb);
+            } else {
+                auto geometry =
+                    stereo::vertices(pose, {v.fov.angleLeft, v.fov.angleRight, v.fov.angleUp, v.fov.angleDown},
+                                     config.near_z, config.far_z);
+                vertices_count = geometry.size();
+                graphics.render(eye.images.at(image).texture, format, eye.width, eye.height, geometry);
+            }
             frame_gpu_ms[index] = graphics.last_gpu_ms();
             if (frame_gpu_ms[index])
                 gpu_timings[index].add(*frame_gpu_ms[index]);
@@ -303,7 +337,13 @@ class Host final : public IXrFrame {
             layer.pose = v.pose;
             layer.fov = v.fov;
             layer.subImage = {eye.swapchain, {{0, 0}, {eye.width, eye.height}}, 0};
-            if (frames % 120 == 0) {
+            if (frames % 120 == 0 && stream_frame) {
+                log.record("EYE_STREAM", {{"eye", index},
+                                          {"frame_index", frames},
+                                          {"source_sequence", stream_frame->sequence},
+                                          {"left_source_frame", stream_frame->stamp.left_source_frame},
+                                          {"right_source_frame", stream_frame->stamp.right_source_frame}});
+            } else if (frames % 120 == 0) {
                 log.record("EYE_GEOMETRY",
                            {{"eye", index},
                             {"frame_index", frames},
@@ -320,9 +360,9 @@ class Host final : public IXrFrame {
                             {"right", v.fov.angleRight},
                             {"up", v.fov.angleUp},
                             {"down", v.fov.angleDown},
-                            {"vertices", geometry.size()}});
+                            {"vertices", vertices_count}});
                 std::cout << "eye=" << index << " position_m=" << p.position.x << ',' << p.position.y << ','
-                          << p.position.z << " vertices=" << geometry.size() << '\n';
+                          << p.position.z << " vertices=" << vertices_count << '\n';
             }
         } catch (...) {
             try {
@@ -412,11 +452,12 @@ Json doctor() {
     }
     return report;
 }
-Json run(const Config &config, std::stop_token stop) {
+static Json run_host(const Config &config, std::stop_token stop, const std::wstring &channel) {
     auto report = empty_report();
     Host host;
     host.config = config;
     host.stop = stop;
+    host.stream_channel = channel;
     interrupted = false;
     SetConsoleCtrlHandler(control, TRUE);
     try {
@@ -450,9 +491,11 @@ Json run(const Config &config, std::stop_token stop) {
         if (host.lifecycle.lost())
             throw Failure(ErrorCode::session, "OpenXR session or instance lost; restart testhost");
         report["ready"] = host.rendered > 0;
-        report["checks"].push_back(check("stereo_submission", host.rendered ? "PASS" : "NOT_RUN",
-                                         host.rendered ? "Synthetic frames submitted; visual correctness UNVERIFIED"
-                                                       : "No valid stereo frame submitted"));
+        report["checks"].push_back(
+            check("stereo_submission", host.rendered ? "PASS" : "NOT_RUN",
+                  host.rendered ? (host.stream ? "Stream eye images submitted; source stereo validity separate"
+                                               : "Synthetic frames submitted; visual correctness UNVERIFIED")
+                                : "No valid stereo frame submitted"));
     } catch (const Failure &e) {
         std::cerr << e.what() << '\n';
         failure(report, e);
@@ -471,6 +514,22 @@ Json run(const Config &config, std::stop_token stop) {
     report["timing_scope"] = "CPU includes runtime wait and GPU fence; GPU covers eye clear/draw commands only, "
                              "excludes compositor/display latency";
     report["reprojection_metrics"] = "NOT_RUN";
+    if (!channel.empty()) {
+        report["presentation_mode"] = "STATIC_STEREO_IMAGE_STREAM";
+        report["source_pairs_received"] = host.received_pairs;
+        report["stream_origin"] =
+            host.stream ? (host.stream->description().origin == d3d::StreamOrigin::owned_geometry ? "OWNED_GEOMETRY"
+                                                                                                  : "GAME_CANDIDATE")
+                        : "UNAVAILABLE";
+        report["game_camera_tracking"] = "NOT_RUN";
+        report["game_stereo"] = "UNVERIFIED";
+    }
     return report;
+}
+Json run(const Config &config, std::stop_token stop) { return run_host(config, stop, {}); }
+Json run_stream(const Config &config, const std::wstring &channel, std::stop_token stop) {
+    if (channel.empty())
+        throw Failure(ErrorCode::configuration, "Stereo stream channel required");
+    return run_host(config, stop, channel);
 }
 } // namespace odv::xr

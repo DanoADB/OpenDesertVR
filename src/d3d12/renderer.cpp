@@ -228,4 +228,140 @@ void Renderer::render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UI
                 1000.0 * static_cast<double>(values[1] - values[0]) / static_cast<double>(timestamp_frequency_);
     }
 }
+void Renderer::render_texture(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height,
+                              ID3D12Resource *source, bool source_srgb) {
+    if (!target || !source || target == source || !width || !height)
+        throw Failure(ErrorCode::configuration, "Invalid stream rendering target");
+    const auto source_desc = source->GetDesc();
+    if (source_desc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
+        source_desc.Format != DXGI_FORMAT_R8G8B8A8_UNORM || source_desc.DepthOrArraySize != 1 ||
+        source_desc.MipLevels != 1 || source_desc.SampleDesc.Count != 1)
+        throw Failure(ErrorCode::configuration, "Unsupported stream image descriptor");
+    Com<ID3D12Device> source_device;
+    hr(source->GetDevice(IID_PPV_ARGS(&source_device)), "stream image device");
+    if (source_device.Get() != device_.Get())
+        throw Failure(ErrorCode::adapter, "Stream image must be opened on the renderer device");
+    sync();               // Previous descriptor/allocator use must finish before reuse.
+    last_gpu_ms_.reset(); // Texture import timing is not yet instrumented.
+    if (!texture_pipeline_ || texture_format_ != format) {
+        constexpr char shader[] = R"(
+Texture2D<float4> image : register(t0);
+SamplerState image_sampler : register(s0);
+cbuffer Encoding : register(b0) { uint decode_srgb; };
+struct Pixel { float4 position : SV_Position; float2 uv : TEXCOORD0; };
+Pixel vs(uint id : SV_VertexID) {
+    Pixel o; o.uv = float2((id << 1) & 2, id & 2);
+    o.position = float4(o.uv.x * 2 - 1, 1 - o.uv.y * 2, 0, 1); return o;
+}
+float linear_channel(float c) { return c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4); }
+float4 ps(Pixel i) : SV_Target {
+    float3 c = image.Sample(image_sampler, i.uv).rgb;
+    if (decode_srgb) c = float3(linear_channel(c.r), linear_channel(c.g), linear_channel(c.b));
+    return float4(c, 1);
+})";
+        Com<ID3DBlob> vs, ps, errors, serialized;
+        hr(D3DCompile(shader, sizeof(shader) - 1, "owned-stream-copy", nullptr, nullptr, "vs", "vs_5_0",
+                      D3DCOMPILE_ENABLE_STRICTNESS, 0, &vs, &errors),
+           "stream vertex shader");
+        hr(D3DCompile(shader, sizeof(shader) - 1, "owned-stream-copy", nullptr, nullptr, "ps", "ps_5_0",
+                      D3DCOMPILE_ENABLE_STRICTNESS, 0, &ps, &errors),
+           "stream pixel shader");
+        D3D12_DESCRIPTOR_RANGE range{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, 0};
+        D3D12_ROOT_PARAMETER parameters[2]{};
+        parameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+        parameters[0].DescriptorTable = {1, &range};
+        parameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+        parameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+        parameters[1].Constants = {0, 0, 1};
+        parameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+        D3D12_STATIC_SAMPLER_DESC sampler{};
+        sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+        sampler.AddressU = sampler.AddressV = sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        sampler.MaxLOD = D3D12_FLOAT32_MAX;
+        sampler.MaxAnisotropy = 1;
+        sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+        sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+        D3D12_ROOT_SIGNATURE_DESC root{2, parameters, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+        hr(D3D12SerializeRootSignature(&root, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &errors),
+           "serialize stream root signature");
+        hr(device_->CreateRootSignature(0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
+                                        IID_PPV_ARGS(&texture_root_)),
+           "stream root signature");
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC p{};
+        p.pRootSignature = texture_root_.Get();
+        p.VS = {vs->GetBufferPointer(), vs->GetBufferSize()};
+        p.PS = {ps->GetBufferPointer(), ps->GetBufferSize()};
+        p.BlendState.RenderTarget[0] = {FALSE,
+                                        FALSE,
+                                        D3D12_BLEND_ONE,
+                                        D3D12_BLEND_ZERO,
+                                        D3D12_BLEND_OP_ADD,
+                                        D3D12_BLEND_ONE,
+                                        D3D12_BLEND_ZERO,
+                                        D3D12_BLEND_OP_ADD,
+                                        D3D12_LOGIC_OP_NOOP,
+                                        D3D12_COLOR_WRITE_ENABLE_ALL};
+        p.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+        p.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+        p.RasterizerState.DepthClipEnable = TRUE;
+        p.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+        p.DepthStencilState.FrontFace = {D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP,
+                                         D3D12_COMPARISON_FUNC_ALWAYS};
+        p.DepthStencilState.BackFace = p.DepthStencilState.FrontFace;
+        p.SampleMask = UINT_MAX;
+        p.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        p.NumRenderTargets = 1;
+        p.RTVFormats[0] = format;
+        p.SampleDesc.Count = 1;
+        hr(device_->CreateGraphicsPipelineState(&p, IID_PPV_ARGS(&texture_pipeline_)), "stream texture pipeline");
+        D3D12_DESCRIPTOR_HEAP_DESC heap{};
+        heap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heap.NumDescriptors = 1;
+        heap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        hr(device_->CreateDescriptorHeap(&heap, IID_PPV_ARGS(&texture_srv_)), "stream SRV heap");
+        texture_format_ = format;
+    }
+    D3D12_SHADER_RESOURCE_VIEW_DESC srv{};
+    srv.Format = source_desc.Format;
+    srv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srv.Texture2D.MipLevels = 1;
+    device_->CreateShaderResourceView(source, &srv, texture_srv_->GetCPUDescriptorHandleForHeapStart());
+    D3D12_RENDER_TARGET_VIEW_DESC rtv{};
+    rtv.Format = format;
+    rtv.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+    device_->CreateRenderTargetView(target, &rtv, rtv_->GetCPUDescriptorHandleForHeapStart());
+    hr(allocator_->Reset(), "stream render allocator reset");
+    hr(commands_->Reset(allocator_.Get(), texture_pipeline_.Get()), "stream render list reset");
+    D3D12_RESOURCE_BARRIER barrier{};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Transition = {source, 0, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE};
+    commands_->ResourceBarrier(1, &barrier);
+    const auto handle = rtv_->GetCPUDescriptorHandleForHeapStart();
+    commands_->OMSetRenderTargets(1, &handle, FALSE, nullptr);
+    const float black[]{0, 0, 0, 1};
+    commands_->ClearRenderTargetView(handle, black, 0, nullptr);
+    const double scale =
+        (std::min)(static_cast<double>(width) / source_desc.Width, static_cast<double>(height) / source_desc.Height);
+    const float content_width = static_cast<float>(source_desc.Width * scale),
+                content_height = static_cast<float>(source_desc.Height * scale);
+    D3D12_VIEWPORT viewport{
+        (width - content_width) / 2, (height - content_height) / 2, content_width, content_height, 0, 1};
+    D3D12_RECT scissor{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+    commands_->RSSetViewports(1, &viewport);
+    commands_->RSSetScissorRects(1, &scissor);
+    ID3D12DescriptorHeap *heaps[]{texture_srv_.Get()};
+    commands_->SetDescriptorHeaps(1, heaps);
+    commands_->SetGraphicsRootSignature(texture_root_.Get());
+    commands_->SetGraphicsRootDescriptorTable(0, texture_srv_->GetGPUDescriptorHandleForHeapStart());
+    commands_->SetGraphicsRoot32BitConstant(1, source_srgb ? 1 : 0, 0);
+    commands_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commands_->DrawInstanced(3, 1, 0, 0);
+    std::swap(barrier.Transition.StateBefore, barrier.Transition.StateAfter);
+    commands_->ResourceBarrier(1, &barrier);
+    hr(commands_->Close(), "close stream render list");
+    ID3D12CommandList *lists[]{commands_.Get()};
+    queue_->ExecuteCommandLists(1, lists);
+    sync();
+}
 } // namespace odv::d3d

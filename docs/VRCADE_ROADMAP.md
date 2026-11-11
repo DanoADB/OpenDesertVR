@@ -21,6 +21,12 @@ One free, local-first launcher for compatible PC games that selects honest, evid
 
 ## Roadmap and gates
 
+Delivery progress (2026-11-10): the optional desktop/CLI receiver now accepts a
+cross-process D3D12 left/right image stream and submits it through OpenXR.
+Owned pixel tests and mock-runtime checks cover the delivery path. There is no
+validated Crimson Desert image producer yet; native game stereo remains
+UNVERIFIED. See [stream contract and remaining integration](research/stereo-image-stream.md).
+
 ### Active priority: Crimson Desert VR showcase (2026-11-06)
 
 User direction supersedes the earlier delivery note that made further testing

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-10",
+  "scope": "Owned D3D12 two-eye image transport and mock OpenXR delivery; no game source",
+  "software_gpu": "WARP",
+  "debug_build": "PASS",
+  "release_build": "PASS",
+  "debug_ctest": {"passed": 36, "failed": 0, "skipped": 2},
+  "release_ctest": {"passed": 36, "failed": 0, "skipped": 2},
+  "skipped_reason": "D3D12 debug layer unavailable locally; both validation tests return 77",
+  "checks": {
+    "cross_device_exact_left_right_pixels": "PASS",
+    "cross_process_exact_left_right_pixels": "PASS",
+    "texture_to_render_target_exact_pixels": "PASS",
+    "held_pair_survives_new_publications": "PASS",
+    "reconnect_rejects_stale_pairs": "PASS",
+    "incomplete_copy_not_exposed": "PASS",
+    "busy_slots_drop_without_waiting": "PASS",
+    "source_images_restored": "PASS",
+    "moving_owned_pair_to_mock_xr": "PASS",
+    "disconnect_stops_without_synthetic_fallback": "PASS",
+    "missing_source_has_no_synthetic_fallback": "PASS",
+    "mock_xr_balanced_ownership_teardown": "PASS"
+  },
+  "desktop_visual_validation": "NOT_RUN",
+  "headset_validation": "NOT_RUN",
+  "game_validation": "NOT_RUN",
+  "game_stereo": "UNVERIFIED",
+  "game_camera_tracking": "NOT_RUN",
+  "method": "../research/stereo-image-stream.md"
+}

@@ -26,6 +26,7 @@ struct App {
     std::jthread worker;
     std::mutex mutex;
     std::wstring message, explanation;
+    std::wstring stream_channel;
     bool busy = false, closing = false, running_test = false, host_ran = false, test_runtime = false;
     std::chrono::steady_clock::time_point began;
 };
@@ -114,6 +115,8 @@ void operation(bool test) {
                                      {"host_invoked", false},
                                      {"test_runtime", test_runtime},
                                      {"runner", "OpenDesertVR desktop"}};
+                summary["presentation_mode"] =
+                    app.stream_channel.empty() ? "SYNTHETIC_GEOMETRY" : "STATIC_STEREO_IMAGE_STREAM";
                 const auto build_path = app.package / L"build-info.json";
                 if (std::filesystem::is_regular_file(build_path) && std::filesystem::file_size(build_path) < 65536) {
                     std::ifstream file(build_path);
@@ -137,7 +140,8 @@ void operation(bool test) {
                                                                  {"far_z", config.far_z},
                                                                  {"duration_seconds", 60},
                                                                  {"debug_layer", false}});
-                    auto report = odv::xr::run(config, stop);
+                    auto report = app.stream_channel.empty() ? odv::xr::run(config, stop)
+                                                             : odv::xr::run_stream(config, app.stream_channel, stop);
                     host_ran = true;
                     test_runtime = report.value("test_runtime", false);
                     write_json(directory / L"host.json", report);
@@ -247,10 +251,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
                 return 0;
             }
             SetWindowTextW(app.status, L"Stereo test running (up to 60 seconds). Put on your headset.");
-            SetWindowTextW(app.detail,
-                           L"Look for red, green and blue cubes at different depths. Move your head gently.\r\n"
-                           L"If comfortable, open and close the Meta menu and check that the cubes return.\r\nPress "
-                           L"Stop at any time to request a safe exit.");
+            SetWindowTextW(
+                app.detail,
+                !app.stream_channel.empty()
+                    ? L"Receiving the source's left/right images. Source stereo validity is unverified.\r\nGame head "
+                      L"tracking is unavailable. Press Stop to exit safely."
+                    : L"Look for red, green and blue cubes at different depths. Move your head gently.\r\n"
+                      L"If comfortable, open and close the Meta menu and check that the cubes return.\r\nPress "
+                      L"Stop at any time to request a safe exit.");
         }
         return 0;
     case finished: {
@@ -286,6 +294,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
 } // namespace
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
     try {
+        int argc{};
+        auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+        if (!argv)
+            return 2;
+        const bool valid = argc == 1 || (argc == 3 && std::wstring_view(argv[1]) == L"--stereo-stream" && argv[2][0]);
+        if (valid && argc == 3)
+            app.stream_channel = argv[2];
+        LocalFree(argv);
+        if (!valid)
+            return 2;
+        const bool streaming = !app.stream_channel.empty();
         wchar_t module[32768]{};
         const auto size = GetModuleFileNameW(nullptr, module, 32768);
         if (!size || size >= 32768)
@@ -313,11 +332,19 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
             return 1;
         auto title = control(L"STATIC", L"OpenDesertVR", 0, 26, 18, 730, 40);
         SendMessageW(title, WM_SETFONT, reinterpret_cast<WPARAM>(app.heading), TRUE);
-        control(L"STATIC", L"Quest Pro headset test  |  Standalone stereo cubes", 0, 28, 62, 720, 24);
         control(L"STATIC",
-                L"1. Connect Quest Link and wake your headset.\r\n2. Start the test. Wear the headset and check depth "
-                L"and tracking.\r\n3. After it finishes, save your observations and open the reports.",
-                0, 28, 98, 720, 72);
+                streaming ? L"Stereo stream viewer  |  Static source camera"
+                          : L"Quest Pro headset test  |  Standalone stereo cubes",
+                0, 28, 62, 720, 24);
+        control(
+            L"STATIC",
+            streaming
+                ? L"Receiving independent left/right images from a running source.\r\nSource camera validity is "
+                  L"unverified. Game head tracking is not implemented.\r\nThe viewer stops if the source disconnects."
+                : L"1. Connect Quest Link and wake your headset.\r\n2. Start the test. Wear the headset and check "
+                  L"depth "
+                  L"and tracking.\r\n3. After it finishes, save your observations and open the reports.",
+            0, 28, 98, 720, 72);
         app.start =
             control(L"BUTTON", L"Start 60-second test", WS_TABSTOP | BS_DEFPUSHBUTTON, 28, 185, 210, 40, start_id);
         app.doctor = control(L"BUTTON", L"Check readiness", WS_TABSTOP, 250, 185, 165, 40, doctor_id);
@@ -326,15 +353,21 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
         EnableWindow(app.stop, FALSE);
         EnableWindow(app.folder, FALSE);
         app.status = control(L"STATIC", L"Ready when you are. No test has started.", 0, 28, 244, 710, 44);
-        app.detail = control(L"EDIT",
-                             L"This tests synthetic cubes, not Crimson Desert.\r\nTechnical results and your visual "
-                             L"observations are saved separately.",
-                             ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | WS_VSCROLL, 28, 292, 710, 105);
+        app.detail =
+            control(L"EDIT",
+                    streaming ? L"Stream delivery and source stereo validity are reported separately.\r\nCrimson "
+                                L"Desert stereo remains unverified."
+                              : L"This tests synthetic cubes, not Crimson Desert.\r\nTechnical results and your visual "
+                                L"observations are saved separately.",
+                    ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | WS_VSCROLL, 28, 292, 710, 105);
         control(L"STATIC", L"After testing, tick only what you personally checked:", 0, 28, 411, 710, 23);
-        const wchar_t *labels[] = {L"Correct depth", L"Head tracking", L"Comfortable", L"Meta menu return"};
+        const wchar_t *labels[] = {L"Correct depth", streaming ? L"Head tracking (unavailable)" : L"Head tracking",
+                                   L"Comfortable", L"Meta menu return"};
         for (int i = 0; i < 4; ++i)
             app.visual[i] =
                 control(L"BUTTON", labels[i], BS_AUTOCHECKBOX | WS_TABSTOP, 28 + i * 177, 439, 177, 27, 200 + i);
+        if (streaming)
+            EnableWindow(app.visual[1], FALSE);
         control(L"STATIC", L"Notes (optional):", 0, 28, 486, 128, 25);
         app.notes = control(L"EDIT", L"", WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL, 160, 481, 378, 30);
         SendMessageW(app.notes, EM_SETCUEBANNER, TRUE,
@@ -348,6 +381,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
                 0, 28, 541, 710, 52);
         ShowWindow(app.window, show);
         UpdateWindow(app.window);
+        if (streaming)
+            PostMessageW(app.window, WM_COMMAND, start_id, 0);
         MSG message{};
         while (GetMessageW(&message, nullptr, 0, 0) > 0)
             if (!IsDialogMessageW(app.window, &message)) {

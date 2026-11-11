@@ -21,6 +21,10 @@ class Renderer {
     Com<ID3D12Fence> fence_;
     Com<ID3D12RootSignature> root_;
     Com<ID3D12PipelineState> pipeline_;
+    Com<ID3D12RootSignature> texture_root_;
+    Com<ID3D12PipelineState> texture_pipeline_;
+    Com<ID3D12DescriptorHeap> texture_srv_;
+    DXGI_FORMAT texture_format_{};
     Com<ID3D12DescriptorHeap> rtv_, dsv_;
     Com<ID3D12Resource> upload_, depth_;
     Com<ID3D12QueryHeap> timestamp_heap_;
@@ -37,6 +41,10 @@ class Renderer {
     void pipeline(DXGI_FORMAT format);
     void render(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height,
                 const std::vector<stereo::Vertex> &vertices);
+    // Stream images arrive in COMMON and are restored to COMMON. The target
+    // remains RENDER_TARGET, as required by the OpenXR D3D12 graphics binding.
+    void render_texture(ID3D12Resource *target, DXGI_FORMAT format, UINT width, UINT height, ID3D12Resource *source,
+                        bool source_srgb = false);
     void sync();
     ID3D12Device *device() const { return device_.Get(); }
     ID3D12CommandQueue *queue() const { return queue_.Get(); }

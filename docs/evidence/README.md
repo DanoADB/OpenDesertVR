@@ -22,6 +22,11 @@ tests use process environment overrides from a non-elevated shell.
 See m0-hardening-2026-11-04.json for the linked successful Debug/Release run.
 No software test artifact is evidence of a real headset or game render.
 
+Owned stereo image delivery (2026-11-10):
+[cross-process pixels and mock OpenXR](stereo-image-stream-2026-11-10.json).
+The optional desktop/CLI stream receiver is implemented; a validated game
+image producer and acceptance in a real headset remain pending.
+
 Current native desktop delivery (2026-11-06):
 [clean 112cdad package and software validation](m0-desktop-package-2026-11-06.json).
 This is the button-based testing app. Its own headset acceptance remains
